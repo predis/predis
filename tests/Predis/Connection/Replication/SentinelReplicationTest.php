@@ -1517,6 +1517,20 @@ class SentinelReplicationTest extends PredisTestCase
         $replication->updateSentinels();
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testGetParameters(): void
+    {
+        $sentinel = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+
+        $replication = $this->getReplicationConnection('srv', [$sentinel]);
+        $replication->add($master);
+
+        $this->assertSame($master->getParameters(), $replication->getParameters());
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

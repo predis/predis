@@ -550,4 +550,12 @@ class MasterSlaveReplication implements ReplicationInterface
     {
         return ['master', 'slaves', 'pool', 'aliases', 'strategy'];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters()
+    {
+        return $this->getMaster()->getParameters();
+    }
 }

@@ -137,13 +137,18 @@ class Pipeline implements ClientContextInterface
 
         $responses = [];
         $exceptions = $this->throwServerExceptions();
+        $protocolVersion = (int) $connection->getParameters()->protocol;
 
         while (!$commands->isEmpty()) {
             $command = $commands->dequeue();
             $response = $connection->readResponse($command);
 
             if (!$response instanceof ResponseInterface) {
-                $responses[] = $command->parseResponse($response);
+                if ($protocolVersion === 2) {
+                    $responses[] = $command->parseResponse($response);
+                } else {
+                    $responses[] = $command->parseResp3Response($response);
+                }
             } elseif ($response instanceof ErrorResponseInterface && $exceptions) {
                 $this->exception($connection, $response);
             } else {

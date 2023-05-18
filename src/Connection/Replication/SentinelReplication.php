@@ -771,4 +771,12 @@ class SentinelReplication implements ReplicationInterface
             'master', 'slaves', 'pool', 'service', 'sentinels', 'connectionFactory', 'strategy',
         ];
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters()
+    {
+        return $this->getMaster()->getParameters();
+    }
 }

@@ -17,6 +17,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\Factory as CommandFactory;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\Replication\MasterSlaveReplication;
 use PredisTestCase;
@@ -548,10 +549,49 @@ class ClientTest extends PredisTestCase
                 ['foo', 'bar', 'hoge', 'piyo']
             );
 
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $client = new Client($connection);
 
         $this->assertEquals('PONG', $client->executeCommand($ping));
         $this->assertSame(['foo' => 'bar', 'hoge' => 'piyo'], $client->executeCommand($hgetall));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecuteCommandReturnsResp3ParsedResponses(): void
+    {
+        $commands = $this->getCommandFactory();
+
+        $ping = $commands->create('ping', []);
+        $get = $commands->create('get', []);
+
+        $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
+        $connection
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$ping],
+                [$get]
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('PONG'),
+                []
+            );
+
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 3]));
+
+        $client = new Client($connection);
+
+        $this->assertEquals('PONG', $client->executeCommand($ping));
+        $this->assertSame([], $client->executeCommand($get));
     }
 
     /**
@@ -608,6 +648,11 @@ class ClientTest extends PredisTestCase
             ->method('executeCommand')
             ->with($this->isInstanceOf('Predis\Command\Redis\PING'))
             ->willReturn('PONG');
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
@@ -1159,6 +1204,11 @@ class ClientTest extends PredisTestCase
     public function testMonitorReturnsMonitorConsumer(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $client = new Client($connection);
 
         $this->assertInstanceOf('Predis\Monitor\Consumer', $monitor = $client->monitor());
@@ -1194,6 +1244,11 @@ class ClientTest extends PredisTestCase
                 new Response\Error('NOSCRIPT'),
                 'OK'
             );
+
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $client = new Client($connection);
 

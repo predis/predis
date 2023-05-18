@@ -12,7 +12,10 @@
 
 namespace Predis\Connection\Cluster;
 
+use Predis\Connection\Parameters;
+use Predis\Connection\ParametersInterface;
 use PredisTestCase;
+use UnexpectedValueException;
 
 class PredisClusterTest extends PredisTestCase
 {
@@ -81,6 +84,24 @@ class PredisClusterTest extends PredisTestCase
         $this->assertFalse($cluster->remove($connection3));
 
         $this->assertCount(1, $cluster);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRemoveConnectionsUnsetParametersOnEmptyConnectionPool(): void
+    {
+        $connection = $this->getMockConnection('tcp://127.0.0.1:7001?alias=node01');
+
+        $cluster = new PredisCluster();
+
+        $cluster->add($connection);
+
+        $this->assertInstanceOf(ParametersInterface::class, $cluster->getParameters());
+
+        $cluster->remove($connection);
+
+        $this->assertNull($cluster->getParameters());
     }
 
     /**
@@ -412,5 +433,24 @@ class PredisClusterTest extends PredisTestCase
         $unserialized = unserialize(serialize($cluster));
 
         $this->assertEquals($cluster, $unserialized);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetParameters(): void
+    {
+        $connection = $this->getMockConnection('tcp://127.0.0.1:7001?protocol=3');
+        $expectedParameters = new Parameters([
+            'scheme' => 'tcp',
+            'host' => '127.0.0.1',
+            'port' => 7001,
+            'protocol' => '3',
+        ]);
+
+        $cluster = new PredisCluster();
+        $cluster->add($connection);
+
+        $this->assertEquals($expectedParameters, $cluster->getParameters());
     }
 }

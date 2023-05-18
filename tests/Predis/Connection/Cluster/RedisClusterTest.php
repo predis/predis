@@ -16,6 +16,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Cluster;
 use Predis\Command;
 use Predis\Connection;
+use Predis\Connection\Parameters;
+use Predis\Connection\ParametersInterface;
 use Predis\Response;
 use PredisTestCase;
 
@@ -91,6 +93,25 @@ class RedisClusterTest extends PredisTestCase
         $this->assertTrue($cluster->remove($connection1));
         $this->assertFalse($cluster->remove($connection3));
         $this->assertCount(1, $cluster);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRemoveConnectionsUnsetParametersOnEmptyConnectionPool(): void
+    {
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $connection = $this->getMockConnection('tcp://127.0.0.1:7001?alias=node01');
+
+        $cluster = new RedisCluster($factory);
+
+        $cluster->add($connection);
+
+        $this->assertInstanceOf(ParametersInterface::class, $cluster->getParameters());
+
+        $cluster->remove($connection);
+
+        $this->assertNull($cluster->getParameters());
     }
 
     /**
@@ -1437,5 +1458,26 @@ class RedisClusterTest extends PredisTestCase
         $this->AssertEqualsWithDelta($expectedTime, $totalTime, 1, 'Unexpected execution time');
 
         $this->assertCount(16384, $cluster->getSlotMap());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetParameters(): void
+    {
+        $connection = $this->getMockConnection('tcp://127.0.0.1:7001?protocol=3');
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+
+        $expectedParameters = new Parameters([
+            'scheme' => 'tcp',
+            'host' => '127.0.0.1',
+            'port' => 7001,
+            'protocol' => '3',
+        ]);
+
+        $cluster = new RedisCluster($factory);
+        $cluster->add($connection);
+
+        $this->assertEquals($expectedParameters, $cluster->getParameters());
     }
 }

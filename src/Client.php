@@ -347,6 +347,7 @@ class Client implements ClientInterface, IteratorAggregate
     public function executeCommand(CommandInterface $command)
     {
         $response = $this->connection->executeCommand($command);
+        $parameters = $this->connection->getParameters();
 
         if ($response instanceof ResponseInterface) {
             if ($response instanceof ErrorResponseInterface) {
@@ -356,7 +357,11 @@ class Client implements ClientInterface, IteratorAggregate
             return $response;
         }
 
-        return $command->parseResponse($response);
+        if ($parameters->protocol === 2) {
+            return $command->parseResponse($response);
+        }
+
+        return $command->parseResp3Response($response);
     }
 
     /**

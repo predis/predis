@@ -1436,4 +1436,17 @@ repl_backlog_histlen:12978
         $this->assertEquals($master, $unserialized->getConnectionByRole('master'));
         $this->assertEquals($slave1, $unserialized->getConnectionByRole('slave'));
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetParameters(): void
+    {
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+
+        $this->assertSame($master->getParameters(), $replication->getParameters());
+    }
 }
