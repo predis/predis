@@ -89,6 +89,18 @@ class ACL_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetUserResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->acl->setUser('Test'));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisVersion >= 7.0.0
      */
     public function testDryRunSimulateExecutionOfGivenCommandByUser(): void
@@ -103,6 +115,22 @@ class ACL_Test extends PredisCommandTestCase
         $this->assertEquals(
             "This user has no permissions to run the 'get' command",
             $redis->acl->dryRun('Test', 'GET', 'foo')
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testDryRunResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->acl->setUser('Test', '+SET', '~*'));
+        $this->assertEquals(
+            'OK',
+            $redis->acl->dryRun('Test', 'SET', 'foo', 'bar')
         );
     }
 
@@ -129,6 +157,32 @@ class ACL_Test extends PredisCommandTestCase
 
         foreach (['flags', 'passwords', 'commands', 'keys', 'channels'] as $key) {
             $this->assertContains($key, $redis->acl->getUser('alan'));
+        }
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testGetUserResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser(
+                'alan',
+                'allkeys',
+                '+@string',
+                '+@set',
+                '-SADD',
+                '>alanpassword'
+            )
+        );
+
+        foreach (['flags', 'passwords', 'commands', 'keys', 'channels'] as $key) {
+            $this->assertArrayHasKey($key, $redis->acl->getUser('alan'));
         }
     }
 
