@@ -19,6 +19,7 @@ use Predis\Cluster\PredisStrategy;
 use Predis\Cluster\StrategyInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
 use ReturnTypeWillChange;
 
@@ -47,6 +48,11 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
      * @var \Predis\Cluster\Distributor\DistributorInterface
      */
     private $distributor;
+
+    /**
+     * @var ParametersInterface
+     */
+    private $connectionParameters;
 
     /**
      * @param StrategyInterface $strategy Optional cluster strategy.
@@ -98,6 +104,10 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     {
         $parameters = $connection->getParameters();
 
+        if (!isset($this->connectionParameters)) {
+            $this->connectionParameters = $parameters;
+        }
+
         $this->pool[(string) $connection] = $connection;
 
         if (isset($parameters->alias)) {
@@ -118,6 +128,10 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
 
             if ($this->aliases && $alias = $connection->getParameters()->alias) {
                 unset($this->aliases[$alias]);
+            }
+
+            if (empty($this->pool) && isset($this->connectionParameters)) {
+                $this->connectionParameters = null;
             }
 
             return true;
@@ -239,5 +253,13 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function executeCommand(CommandInterface $command)
     {
         return $this->getConnectionByCommand($command)->executeCommand($command);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): ?ParametersInterface
+    {
+        return $this->connectionParameters;
     }
 }

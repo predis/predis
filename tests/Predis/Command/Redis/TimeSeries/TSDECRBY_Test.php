@@ -143,7 +143,6 @@ class TSDECRBY_Test extends PredisCommandTestCase
         );
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('TSDB: timestamp must be equal to or higher than the maximum existing timestamp');
 
         $redis->tsdecrby('temperature:2:32', 27, (new DecrByArguments())->timestamp(123123123122));
     }

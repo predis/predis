@@ -25,6 +25,7 @@ use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -62,6 +63,11 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $connections;
     private $retryLimit = 5;
     private $retryInterval = 10;
+
+    /**
+     * @var ParametersInterface
+     */
+    private $connectionParameters;
 
     /**
      * @param FactoryInterface  $connections Optional connection factory.
@@ -149,6 +155,10 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function add(NodeConnectionInterface $connection)
     {
+        if (!isset($this->connectionParameters)) {
+            $this->connectionParameters = $connection->getParameters();
+        }
+
         $this->pool[(string) $connection] = $connection;
         $this->slotmap->reset();
     }
@@ -162,6 +172,10 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
             $this->slotmap->reset();
             $this->slots = array_diff($this->slots, [$connection]);
             unset($this->pool[$id]);
+
+            if (empty($this->pool) && isset($this->connectionParameters)) {
+                $this->connectionParameters = null;
+            }
 
             return true;
         }
@@ -668,5 +682,13 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function useClusterSlots($value)
     {
         $this->useClusterSlots = (bool) $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): ?ParametersInterface
+    {
+        return $this->connectionParameters;
     }
 }

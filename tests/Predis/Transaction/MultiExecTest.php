@@ -18,6 +18,7 @@ use Predis\Client;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Parameters;
 use Predis\Response;
 use PredisTestCase;
 use RuntimeException;
@@ -850,6 +851,10 @@ class MultiExecTest extends PredisTestCase
             ->method('executeCommand')
             ->willReturnCallback($executeCallback);
 
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         return $connection;
     }
 
@@ -867,6 +872,11 @@ class MultiExecTest extends PredisTestCase
     protected function getMockedTransaction($executeCallback, $txOpts = null, $clientOpts = null): MultiExec
     {
         $connection = $this->getMockedConnection($executeCallback);
+
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $client = new Client($connection, $clientOpts ?: []);
         $transaction = new MultiExec($client, $txOpts ?: []);
 
