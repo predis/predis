@@ -96,7 +96,7 @@ class GETRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 2.4.0
+     * @requiresRedisVersion >= 6.0.0
      */
     public function testReturnsSubstringResp3(): void
     {

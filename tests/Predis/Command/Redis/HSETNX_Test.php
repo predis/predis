@@ -95,7 +95,7 @@ class HSETNX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 2.0.0
+     * @requiresRedisVersion >= 6.0.0
      */
     public function testSetsNewFieldsAndPreserversExistingOnesResp3(): void
     {
