@@ -93,6 +93,22 @@ class HINCRBYFLOAT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testIncrementsValueOfFieldByFloatResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame('10.5', $redis->hincrbyfloat('metavars', 'foo', 10.5));
+
+        $redis->hincrbyfloat('metavars', 'hoge', 10.001);
+        $this->assertSame('11', $redis->hincrbyfloat('metavars', 'hoge', 0.999));
+
+        $this->assertSame(['foo' => '10.5', 'hoge' => '11'], $redis->hgetall('metavars'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testDecrementsValueOfFieldByFloat(): void

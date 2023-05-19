@@ -97,6 +97,18 @@ class COMMAND_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsEmptyCommandInfoOnNonExistingCommandResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertCount(1, $response = $redis->command('INFO', 'FOOBAR'));
+        $this->assertSame([null], $response);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.8.13
      */
     public function testReturnsCommandInfoOnExistingCommand(): void

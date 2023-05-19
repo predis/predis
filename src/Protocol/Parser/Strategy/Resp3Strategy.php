@@ -15,6 +15,11 @@ namespace Predis\Protocol\Parser\Strategy;
 class Resp3Strategy extends Resp2Strategy
 {
     /**
+     * Verbatim string offset to skip file extension bytes.
+     */
+    public const VERBATIM_STRING_EXTENSION_OFFSET = 4;
+
+    /**
      * @var string[]
      */
     protected $resp3TypeCallbacks = [
@@ -95,6 +100,7 @@ class Resp3Strategy extends Resp2Strategy
         return [
             'type' => 'verbatimString',
             'value' => (int) $string,
+            'offset' => self::VERBATIM_STRING_EXTENSION_OFFSET,
         ];
     }
 

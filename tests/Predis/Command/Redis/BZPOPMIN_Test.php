@@ -54,6 +54,24 @@ class BZPOPMIN_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsPoppedMinElementFromGivenNonEmptySortedSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $sortedSetDictionary = [1, 'member1', 2, 'member2', 3, 'member3'];
+        $expectedResponse = ['test-bzpopmin' => ['member1' => 1.0]];
+        $expectedModifiedSortedSet = ['member2', 'member3'];
+
+        $redis->zadd('test-bzpopmin', ...$sortedSetDictionary);
+
+        $this->assertSame($expectedResponse, $redis->bzpopmin(['empty sorted set', 'test-bzpopmin'], 0));
+        $this->assertSame($expectedModifiedSortedSet, $redis->zrange('test-bzpopmin', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisVersion >= 5.0.0
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(): void

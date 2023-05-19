@@ -104,7 +104,10 @@ class Resp3StrategyTest extends PredisTestCase
 
         $actualResponse = $this->strategy->parseData($data);
 
-        $this->assertSame(['type' => 'verbatimString', 'value' => 15], $actualResponse);
+        $this->assertSame(
+            ['type' => 'verbatimString', 'value' => 15, 'offset' => Resp3Strategy::VERBATIM_STRING_EXTENSION_OFFSET],
+            $actualResponse
+        );
     }
 
     /**

@@ -97,6 +97,21 @@ class HSETNX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
+    public function testSetsNewFieldsAndPreserversExistingOnesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(1, $redis->hsetnx('metavars', 'foo', 'bar'));
+        $this->assertSame(1, $redis->hsetnx('metavars', 'hoge', 'piyo'));
+        $this->assertSame(0, $redis->hsetnx('metavars', 'foo', 'barbar'));
+
+        $this->assertSame(['bar', 'piyo'], $redis->hmget('metavars', 'foo', 'hoge'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.0.0
+     */
     public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');

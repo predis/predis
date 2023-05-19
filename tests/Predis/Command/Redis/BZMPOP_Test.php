@@ -65,7 +65,7 @@ class BZMPOP_Test extends PredisCommandTestCase
      * @param  array  $expectedResponse
      * @param  array  $expectedModifiedSortedSet
      * @return void
-     * @requiresRedisVersion >= 7.0
+     * @requiresRedisVersion >= 7.0.0
      */
     public function testReturnsPoppedElementsFromGivenSortedSet(
         int $timeout,
@@ -87,6 +87,22 @@ class BZMPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsPoppedElementsFromGivenSortedSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('test-bzmpop', 1, 'member1', 2, 'member2', 3, 'member3');
+        $actualResponse = $redis->bzmpop(1, ['test-bzmpop'], 'min', 1);
+
+        $this->assertSame(['test-bzmpop' => ['member1' => 1.0]], $actualResponse);
+        $this->assertSame(['member2', 'member3'], $redis->zrange('test-bzmpop', 0, -1));
+    }
+
+    /**
+     * @group connected
      * @dataProvider unexpectedValuesProvider
      * @param  int    $timeout
      * @param  array  $keys
@@ -94,7 +110,7 @@ class BZMPOP_Test extends PredisCommandTestCase
      * @param  int    $count
      * @param  string $expectedExceptionMessage
      * @return void
-     * @requiresRedisVersion >= 7.0
+     * @requiresRedisVersion >= 7.0.0
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(
         int $timeout,
@@ -113,7 +129,7 @@ class BZMPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 7.0
+     * @requiresRedisVersion >= 7.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {

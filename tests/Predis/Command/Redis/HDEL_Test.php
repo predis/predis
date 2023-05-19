@@ -106,6 +106,21 @@ class HDEL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testDeletesSpecifiedFieldsFromHashResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
+
+        $this->assertSame(2, $redis->hdel('metavars', 'foo', 'hoge'));
+        $this->assertSame(0, $redis->hdel('metavars', 'foofoo'));
+        $this->assertSame(0, $redis->hdel('unknown', 'foo'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

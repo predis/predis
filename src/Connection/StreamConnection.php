@@ -313,10 +313,14 @@ class StreamConnection extends AbstractConnection
                 return $data;
 
             case 'bulkString':
-            case 'verbatimString':
                 $bulkData = $this->readByChunks($socket, $parsedData['value']);
 
                 return substr($bulkData, 0, -2);
+
+            case 'verbatimString':
+                $bulkData = $this->readByChunks($socket, $parsedData['value']);
+
+                return substr($bulkData, $parsedData['offset'], -2);
 
             case 'blobError':
                 $errorMessage = $this->readByChunks($socket, $parsedData['value']);

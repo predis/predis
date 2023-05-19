@@ -89,6 +89,17 @@ class EXPIRE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsZeroOnNonExistingKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(0, $redis->expire('foo', 2));
+    }
+
+    /**
      * @medium
      * @group connected
      * @group slow

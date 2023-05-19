@@ -93,6 +93,20 @@ class HLEN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
+    public function testReturnsLengthOfHashResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
+
+        $this->assertSame(3, $redis->hlen('metavars'));
+        $this->assertSame(0, $redis->hlen('unknown'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.0.0
+     */
     public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');

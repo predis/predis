@@ -63,4 +63,16 @@ class DBSIZE_Test extends PredisCommandTestCase
         $redis->set('foo', 'bar');
         $this->assertGreaterThan(0, $redis->dbsize());
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsCurrentSizeOfDatabaseResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('foo', 'bar');
+        $this->assertGreaterThan(0, $redis->dbsize());
+    }
 }

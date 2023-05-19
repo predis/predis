@@ -95,6 +95,22 @@ class GETBIT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCanGetBitsFromStringResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('key:binary', "\x80\x00\00\x01");
+
+        $this->assertSame(1, $redis->getbit('key:binary', 0));
+        $this->assertSame(0, $redis->getbit('key:binary', 15));
+        $this->assertSame(1, $redis->getbit('key:binary', 31));
+        $this->assertSame(0, $redis->getbit('key:binary', 63));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
     public function testThrowsExceptionOnNegativeOffset(): void

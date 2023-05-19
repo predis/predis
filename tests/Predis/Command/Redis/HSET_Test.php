@@ -94,6 +94,20 @@ class HSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetsValueOfSpecifiedFieldResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(1, $redis->hset('metavars', 'foo', 'bar'));
+        $this->assertSame(1, $redis->hset('metavars', 'hoge', 'piyo'));
+
+        $this->assertSame(['bar', 'piyo'], $redis->hmget('metavars', 'foo', 'hoge'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

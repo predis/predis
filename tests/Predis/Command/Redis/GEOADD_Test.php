@@ -112,6 +112,19 @@ class GEOADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCommandFillsSortedSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo');
+
+        $this->assertSame([['Palermo' => 3479099956230698.0]], $redis->zrange('Sicily', 0, -1, 'WITHSCORES'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
     public function testThrowsExceptionOnWrongType(): void

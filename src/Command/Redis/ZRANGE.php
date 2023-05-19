@@ -103,6 +103,25 @@ class ZRANGE extends RedisCommand
         return $data;
     }
 
+    /**
+     * @param $data
+     * @return array|mixed|string|null
+     */
+    public function parseResp3Response($data)
+    {
+        if (!is_array($data)) {
+            return $data;
+        }
+
+        $parsedData = [];
+
+        foreach ($data as $element) {
+            $parsedData[] = $this->parseResponse($element);
+        }
+
+        return $parsedData;
+    }
+
     public function prefixKeys($prefix)
     {
         $this->applyPrefixForFirstArgument($prefix);
