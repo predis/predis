@@ -90,8 +90,8 @@ class EXPIRE_Test extends PredisCommandTestCase
     /**
      * @medium
      * @group connected
-     * @dataProvider keysProvider
      * @group slow
+     * @dataProvider keysProvider
      * @param  array $firstKeyArguments
      * @param  array $secondKeyArguments
      * @param  array $positivePathArguments
@@ -143,14 +143,14 @@ class EXPIRE_Test extends PredisCommandTestCase
                 ['noExpiry', 2, 'XX'],
             ],
             'only if new expiry is greater then current one' => [
-                ['newExpiryLower', 'value', 'EXAT', time() + 1000],
-                ['newExpiryGreater', 'value', 'EXAT', time() + 10],
-                ['newExpiryGreater', 20, 'GT'],
+                ['newExpiryLower', 'value', 'EX', 1000],
+                ['newExpiryGreater', 'value', 'EX', 10],
+                ['newExpiryGreater', 100, 'GT'],
                 ['newExpiryLower', 20, 'GT'],
             ],
             'only if new expiry is lower then current one' => [
-                ['newExpiryLower', 'value', 'EXAT', time() + 1000],
-                ['newExpiryGreater', 'value', 'EXAT', time() + 10],
+                ['newExpiryLower', 'value', 'EX', 1000],
+                ['newExpiryGreater', 'value', 'EX', 10],
                 ['newExpiryLower', 20, 'LT'],
                 ['newExpiryGreater', 20, 'LT'],
             ],

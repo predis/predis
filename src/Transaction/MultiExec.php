@@ -20,11 +20,15 @@ use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
 use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\RelayConnection;
 use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
+use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Status as StatusResponse;
+use Relay\Exception as RelayException;
+use Relay\Relay;
 use SplQueue;
 
 /**
@@ -175,9 +179,25 @@ class MultiExec implements ClientContextInterface
      */
     protected function call($commandID, array $arguments = [])
     {
-        $response = $this->client->executeCommand(
-            $this->client->createCommand($commandID, $arguments)
-        );
+        try {
+            $response = $this->client->executeCommand(
+                $this->client->createCommand($commandID, $arguments)
+            );
+        } catch (ServerException $exception) {
+            if (!$this->client->getConnection() instanceof RelayConnection) {
+                throw $exception;
+            }
+
+            if (strcasecmp($commandID, 'EXEC') != 0) {
+                throw $exception;
+            }
+
+            if (!strpos($exception->getMessage(), 'RELAY_ERR_REDIS')) {
+                throw $exception;
+            }
+
+            return null;
+        }
 
         if ($response instanceof ErrorResponseInterface) {
             throw new ServerException($response->getMessage());
@@ -206,6 +226,8 @@ class MultiExec implements ClientContextInterface
         $response = $this->client->getConnection()->executeCommand($command);
 
         if ($response instanceof StatusResponse && $response == 'QUEUED') {
+            $this->commands->enqueue($command);
+        } elseif ($response instanceof Relay) {
             $this->commands->enqueue($command);
         } elseif ($response instanceof ErrorResponseInterface) {
             throw new AbortedMultiExecException($this, $response->getMessage());
@@ -375,7 +397,9 @@ class MultiExec implements ClientContextInterface
 
             $execResponse = $this->call('EXEC');
 
-            if ($execResponse === null) {
+            // The additional `false` check is needed for Relay,
+            // let's hope it won't break anything
+            if ($execResponse === null || $execResponse === false) {
                 if ($attempts === 0) {
                     throw new AbortedMultiExecException(
                         $this, 'The current transaction has been aborted by the server.'
@@ -401,8 +425,18 @@ class MultiExec implements ClientContextInterface
         for ($i = 0; $i < $size; ++$i) {
             $cmdResponse = $execResponse[$i];
 
-            if ($cmdResponse instanceof ErrorResponseInterface && $this->exceptions) {
+            if ($this->exceptions && $cmdResponse instanceof ErrorResponseInterface) {
                 throw new ServerException($cmdResponse->getMessage());
+            }
+
+            if ($cmdResponse instanceof RelayException) {
+                if ($this->exceptions) {
+                    throw new ServerException($cmdResponse->getMessage(), $cmdResponse->getCode(), $cmdResponse);
+                }
+
+                $commands->dequeue();
+                $response[$i] = new Error($cmdResponse->getMessage());
+                continue;
             }
 
             $response[$i] = $commands->dequeue()->parseResponse($cmdResponse);

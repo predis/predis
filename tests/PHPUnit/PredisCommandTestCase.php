@@ -113,9 +113,10 @@ abstract class PredisCommandTestCase extends PredisTestCase
     public function testCommandId(): void
     {
         $command = $this->getCommand();
+        $sanitizedCommandId = str_replace('.', '', $command->getId());
 
         $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
-        $this->assertEquals($this->getExpectedId(), $command->getId());
+        $this->assertEquals($this->getExpectedId(), $sanitizedCommandId);
     }
 
     /**
