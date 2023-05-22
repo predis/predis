@@ -108,6 +108,18 @@ class PUNSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testDoesNotSwitchToSubscribeModeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(['punsubscribe', 'channel:*', 0], $redis->punsubscribe('channel:*'));
+        $this->assertSame('echoed', $redis->echo('echoed'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testUnsubscribesFromNotSubscribedChannels(): void

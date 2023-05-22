@@ -107,6 +107,17 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsTheFirstPsubscribedChannelDetailsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(['psubscribe', 'channel:*', 1], $redis->psubscribe('channel:*'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendPsubscribeAfterPsubscribe(): void

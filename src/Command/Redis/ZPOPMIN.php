@@ -40,4 +40,23 @@ class ZPOPMIN extends RedisCommand
 
         return $result;
     }
+
+    /**
+     * @param $data
+     * @return array|mixed|string|null
+     */
+    public function parseResp3Response($data)
+    {
+        $parsedData = [];
+
+        foreach ($data as $element) {
+            if (is_array($element)) {
+                $parsedData[] = $this->parseResponse($element);
+            } else {
+                return $this->parseResponse($data);
+            }
+        }
+
+        return $parsedData;
+    }
 }

@@ -96,6 +96,25 @@ class ZCOUNT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsNumberOfElementsInGivenScoreRangeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('letters', 10, 'a', 20, 'b', 30, 'c', 40, 'd', 50, 'e');
+
+        $this->assertSame(5, $redis->zcount('letters', 0, 100));
+        $this->assertSame(5, $redis->zcount('letters', -100, 100));
+        $this->assertSame(2, $redis->zcount('letters', 25, 45));
+        $this->assertSame(1, $redis->zcount('letters', 20, 20));
+        $this->assertSame(0, $redis->zcount('letters', 0, 0));
+
+        $this->assertSame(0, $redis->zcount('unknown', 0, 100));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testInfinityScoreIntervals(): void

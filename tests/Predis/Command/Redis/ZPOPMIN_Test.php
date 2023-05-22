@@ -85,6 +85,25 @@ class ZPOPMIN_Test extends PredisCommandTestCase
     }
 
     /**
+     * @requiresRedisVersion >= 6.0.0
+     *
+     * @group connected
+     */
+    public function testReturnsElementsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame([], $redis->zpopmin('letters'));
+        $this->assertSame([], $redis->zpopmin('letters', 3));
+
+        $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
+
+        $this->assertSame(['a' => -10.0], $redis->zpopmin('letters'));
+        $this->assertSame([['b' => 0.0], ['c' => 10.0], ['d' => 20.0]], $redis->zpopmin('letters', 3));
+        $this->assertSame([['e' => 20.0], ['f' => 30.0]], $redis->zpopmin('letters', 3));
+    }
+
+    /**
      * @requiresRedisVersion >= 5.0.0
      *
      * @group connected

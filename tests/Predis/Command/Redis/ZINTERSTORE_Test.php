@@ -118,6 +118,27 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testStoresIntersectedValuesOnSortedSetsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('test-zunionstore1', 1, 'member1', 2, 'member2', 3, 'member3');
+        $redis->zadd('test-zunionstore2', 1, 'member1', 2, 'member2');
+
+        $actualResponse = $redis->zinterstore('destination', ['test-zunionstore1', 'test-zunionstore2']);
+
+        $this->assertSame(2, $actualResponse);
+        $this->assertSame(
+            [['member1' => 2.0], ['member2' => 4.0]],
+            $redis->zrange('destination', 0, -1, ['withscores' => true])
+        );
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

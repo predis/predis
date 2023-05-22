@@ -85,6 +85,25 @@ class ZPOPMAX_Test extends PredisCommandTestCase
     }
 
     /**
+     * @requiresRedisVersion >= 6.0.0
+     *
+     * @group connected
+     */
+    public function testReturnsElementsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame([], $redis->zpopmax('letters'));
+        $this->assertSame([], $redis->zpopmax('letters', 3));
+
+        $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
+
+        $this->assertSame(['f' => 30.0], $redis->zpopmax('letters'));
+        $this->assertSame([['e' => 20.0], ['d' => 20.0], ['c' => 10.0]], $redis->zpopmax('letters', 3));
+        $this->assertSame([['b' => 0.0], ['a' => -10.0]], $redis->zpopmax('letters', 3));
+    }
+
+    /**
      * @requiresRedisVersion >= 5.0.0
      *
      * @group connected

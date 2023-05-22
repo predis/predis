@@ -99,4 +99,30 @@ class TYPE_Test extends PredisCommandTestCase
         $redis->hset('type:hash', 'foo', 'bar');
         $this->assertEquals('hash', $redis->type('type:hash'));
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsTypeOfKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('none', $redis->type('type:keydoesnotexist'));
+
+        $redis->set('type:string', 'foobar');
+        $this->assertEquals('string', $redis->type('type:string'));
+
+        $redis->lpush('type:list', 'foobar');
+        $this->assertEquals('list', $redis->type('type:list'));
+
+        $redis->sadd('type:set', 'foobar');
+        $this->assertEquals('set', $redis->type('type:set'));
+
+        $redis->zadd('type:zset', 0, 'foobar');
+        $this->assertEquals('zset', $redis->type('type:zset'));
+
+        $redis->hset('type:hash', 'foo', 'bar');
+        $this->assertEquals('hash', $redis->type('type:hash'));
+    }
 }

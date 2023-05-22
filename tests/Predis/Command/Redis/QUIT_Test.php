@@ -68,4 +68,18 @@ class QUIT_Test extends PredisCommandTestCase
         $this->assertInstanceOf('Predis\Response\Status', $response);
         $this->assertEquals('OK', $response);
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsStatusResponseWhenClosingConnectionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $command = $this->getCommand();
+        $response = $redis->executeCommand($command);
+
+        $this->assertInstanceOf('Predis\Response\Status', $response);
+        $this->assertEquals('OK', $response);
+    }
 }

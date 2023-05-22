@@ -75,6 +75,26 @@ class UNWATCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testUnwatchWatchedKeysResp3(): void
+    {
+        $redis1 = $this->getResp3Client();
+        $redis2 = $this->getResp3Client();
+
+        $redis1->set('foo', 'bar');
+        $redis1->watch('foo');
+        $this->assertEquals('OK', $redis1->unwatch());
+        $redis1->multi();
+        $redis1->get('foo');
+
+        $redis2->set('foo', 'hijacked');
+
+        $this->assertSame(['hijacked'], $redis1->exec());
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
     public function testCanBeCalledInsideTransaction(): void

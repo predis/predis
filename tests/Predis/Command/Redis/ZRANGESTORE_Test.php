@@ -101,6 +101,27 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testStoresSortedSetRangesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('source', 1, 'member1', 2, 'member2', 3, 'member3');
+        $actualResponse = $redis->zrangestore(
+            'destination',
+            'source',
+            0,
+            -1
+        );
+
+        $this->assertSame(3, $actualResponse);
+        $this->assertSame(['member1', 'member2', 'member3'], $redis->zrange('destination', 0, -1));
+    }
+
+    /**
+     * @group connected
      * @dataProvider unexpectedValuesProvider
      * @param int|string  $min
      * @param int|string  $max

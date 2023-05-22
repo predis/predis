@@ -22,13 +22,13 @@ trait Rev
 {
     public function setArguments(array $arguments)
     {
-        $argument = $arguments[static::$revArgumentPositionOffset];
-
-        if (false === $argument) {
+        if (count($arguments) <= static::$revArgumentPositionOffset || false === $arguments[static::$revArgumentPositionOffset]) {
             parent::setArguments($arguments);
 
             return;
         }
+
+        $argument = $arguments[static::$revArgumentPositionOffset];
 
         if (true === $argument) {
             $argument = 'REV';

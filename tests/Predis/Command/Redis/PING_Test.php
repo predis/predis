@@ -67,4 +67,17 @@ class PING_Test extends PredisCommandTestCase
         $this->assertInstanceOf('Predis\Response\Status', $response);
         $this->assertEquals('PONG', $response);
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testAlwaysReturnsStatusResponseResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $response = $redis->ping();
+
+        $this->assertInstanceOf('Predis\Response\Status', $response);
+        $this->assertEquals('PONG', $response);
+    }
 }

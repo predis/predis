@@ -116,6 +116,22 @@ class ZREVRANGEBYLEX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsElementsInWholeRangeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
+
+        $this->assertSame(['g', 'f', 'e', 'd', 'c', 'b', 'a'], $redis->zrevrangebylex('letters', '+', '-'));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '-', '+'));
+        $this->assertSame([], $redis->zrevrangebylex('unknown', '-', '+'));
+        $this->assertSame([], $redis->zrevrangebylex('unknown', '+', '-'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
     public function testReturnsElementsInInclusiveRange(): void

@@ -97,6 +97,25 @@ class LMOVE_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
+    public function testReturnsCorrectListElementResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->rpush('test-lmove1', 'element1', 'element2', 'element3');
+        $redis->rpush('test-lmove2', 'element4', 'element5', 'element6');
+
+        $actualResponse = $redis->lmove('test-lmove1', 'test-lmove2', 'LEFT', 'LEFT');
+
+        $this->assertSame('element1', $actualResponse);
+        $this->assertSame(['element2', 'element3'], $redis->lrange('test-lmove1', 0, -1));
+        $this->assertSame(['element1', 'element4', 'element5', 'element6'], $redis->lrange('test-lmove2', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
     public function testReturnsNullAndNoOperationPerformedOnNonExistingSource(): void
     {
         $redis = $this->getClient();

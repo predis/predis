@@ -90,6 +90,20 @@ class ZCARD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsSizeOfSortedSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('letters', 1, 'a', 2, 'b', 3, 'c');
+        $this->assertSame(3, $redis->zcard('letters'));
+
+        $this->assertSame(0, $redis->zcard('unknown'));
+    }
+
+    /**
+     * @group connected
      */
     public function testThrowsExceptionOnWrongType(): void
     {

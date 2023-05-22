@@ -76,6 +76,20 @@ class LCS_Test extends PredisCommandTestCase
         $this->assertSame($expectedResponse, $redis->lcs(...$functionArguments));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsLongestCommonSubsequenceFromGivenStringsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->mset('key1', 'value1', 'key2', '2value');
+
+        $this->assertSame('value', $redis->lcs('key1', 'key2'));
+    }
+
     public function argumentsProvider(): array
     {
         return [

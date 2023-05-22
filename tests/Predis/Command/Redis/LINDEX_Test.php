@@ -91,6 +91,21 @@ class LINDEX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsElementAtIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e');
+
+        $this->assertSame('a', $redis->lindex('letters', 0));
+        $this->assertSame('c', $redis->lindex('letters', 2));
+        $this->assertNull($redis->lindex('letters', 100));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsElementAtNegativeIndex(): void
     {

@@ -164,6 +164,26 @@ class XRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testMultipleKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->xadd('stream', ['key1' => 'val1', 'key2' => 'val2'], '0-1');
+        $redis->xadd('stream', ['key1' => 'val1', 'key2' => 'val2'], '1-1');
+
+        $this->assertSame(
+            [
+                '0-1' => ['key1' => 'val1', 'key2' => 'val2'],
+                '1-1' => ['key1' => 'val1', 'key2' => 'val2'],
+            ],
+            $redis->xrange('stream', '-', '+')
+        );
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 5.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

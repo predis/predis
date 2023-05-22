@@ -67,6 +67,19 @@ class MULTI_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testInitializesNewTransactionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->multi());
+        $this->assertEquals('QUEUED', $redis->echo('tx1'));
+        $this->assertEquals('QUEUED', $redis->echo('tx2'));
+    }
+
+    /**
+     * @group connected
      */
     public function testActuallyReturnsResponseObjectAbstraction(): void
     {

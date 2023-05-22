@@ -119,6 +119,18 @@ class MIGRATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsStatusNOKEYOnNonExistingKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('NOKEY', $response = $redis->migrate('169.254.10.10', 16379, 'foo', 15, 1));
+        $this->assertInstanceOf('Predis\Response\Status', $response);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.0
      * @group slow
      */

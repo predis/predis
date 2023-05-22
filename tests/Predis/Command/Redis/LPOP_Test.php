@@ -91,6 +91,21 @@ class LPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testPopsTheFirstElementFromListResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->rpush('letters', 'a', 'b', 'c', 'd');
+
+        $this->assertSame('a', $redis->lpop('letters'));
+        $this->assertSame('b', $redis->lpop('letters'));
+        $this->assertSame(['c', 'd'], $redis->lrange('letters', 0, -1));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsNullOnEmptyList(): void
     {

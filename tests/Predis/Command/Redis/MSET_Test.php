@@ -100,4 +100,17 @@ class MSET_Test extends PredisCommandTestCase
         $this->assertSame('bar', $redis->get('foo'));
         $this->assertSame('piyo', $redis->get('hoge'));
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCreatesMultipleKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->mset('foo', 'bar', 'hoge', 'piyo'));
+        $this->assertSame('bar', $redis->get('foo'));
+        $this->assertSame('piyo', $redis->get('hoge'));
+    }
 }

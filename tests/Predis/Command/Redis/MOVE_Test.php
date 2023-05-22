@@ -101,6 +101,26 @@ class MOVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testMovesKeysToDifferentDatabasesResp3(): void
+    {
+        $db = REDIS_SERVER_DBNUM + 1;
+        $redis = $this->getResp3Client();
+
+        $redis->set('foo', 'bar');
+
+        $this->assertSame(1, $redis->move('foo', $db));
+        $this->assertSame(0, $redis->exists('foo'));
+
+        $redis->select($db);
+        $this->assertSame(1, $redis->exists('foo'));
+
+        $redis->del('foo');
+    }
+
+    /**
+     * @group connected
      */
     public function testThrowsExceptionOnInvalidDatabases(): void
     {
