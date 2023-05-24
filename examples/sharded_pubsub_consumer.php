@@ -19,7 +19,7 @@ require __DIR__ . '/shared.php';
 $client = new Client(
     [
         'tcp://127.0.0.1:6372?read_write_timeout=0',
-        'tcp://127.0.0.1:6373?read_write_timeout=0&',
+        'tcp://127.0.0.1:6373?read_write_timeout=0',
         'tcp://127.0.0.1:6374?read_write_timeout=0',
     ], [
     'cluster' => 'redis',
