@@ -342,6 +342,7 @@ use Predis\Response\Status;
  * @method mixed             save()
  * @method mixed             slaveof(string $host, int $port)
  * @method mixed             slowlog($subcommand, $argument = null)
+ * @method int               spublish(string $shardChannel, string $message)
  * @method array             time()
  * @method array             command()
  * @method int               geoadd(string $key, $longitude, $latitude, $member)

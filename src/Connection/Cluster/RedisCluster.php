@@ -31,6 +31,7 @@ use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use ReturnTypeWillChange;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -56,6 +57,10 @@ use Throwable;
 class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 {
     private $useClusterSlots = true;
+
+    /**
+     * @var NodeConnectionInterface[]
+     */
     private $pool = [];
     private $slots = [];
     private $slotmap;
@@ -63,6 +68,11 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $connections;
     private $retryLimit = 5;
     private $retryInterval = 10;
+
+    /**
+     * @var resource[]
+     */
+    private $sockets;
 
     /**
      * @var ParametersInterface
@@ -158,6 +168,10 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         if (!isset($this->connectionParameters)) {
             $this->connectionParameters = $connection->getParameters();
         }
+
+        // Keep socket to connection mapping, so we can read from any connection.
+        $socket = $connection->getResource();
+        $this->sockets[] = ['socket' => $socket, 'connectionId' => (string) $connection];
 
         $this->pool[(string) $connection] = $connection;
         $this->slotmap->reset();
@@ -690,5 +704,52 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function getParameters(): ?ParametersInterface
     {
         return $this->connectionParameters;
+    }
+
+    /**
+     * Loop over sockets and reads incoming data.
+     *
+     * @return mixed
+     */
+    public function read()
+    {
+        $this->setSocketsNonBlockingMode();
+
+        $i = 0;
+        while (true) {
+            $socket = $this->sockets[$i]['socket'];
+            $socketArray = [$socket];
+            $write = null;
+            $except = null;
+            $num = stream_select($socketArray, $write, $except, 0);
+
+            if ($num) {
+                $connection = $this->getConnectionById($this->sockets[$i]['connectionId']);
+
+                if (null === $connection) {
+                    throw new RuntimeException('Incorrect node connection within given cluster.');
+                }
+
+                return $connection->read();
+            }
+
+            if (!isset($this->sockets[++$i])) {
+                $i = 0;
+            }
+
+            usleep(1000);
+        }
+    }
+
+    /**
+     * Loop over sockets and set them into non-blocking mode.
+     *
+     * @return void
+     */
+    private function setSocketsNonBlockingMode(): void
+    {
+        foreach ($this->sockets as $socket) {
+            stream_set_blocking($socket['socket'], false);
+        }
     }
 }

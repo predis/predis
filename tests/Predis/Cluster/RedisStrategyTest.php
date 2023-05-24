@@ -234,6 +234,21 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForSUnsubscribeCommand(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = [];
+
+        foreach ($this->getExpectedCommands('keys-sunsubscribe') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForScriptCommand(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -467,6 +482,11 @@ class RedisStrategyTest extends PredisTestCase
             'GEODIST' => 'keys-first',
             'GEORADIUS' => 'keys-georadius',
             'GEORADIUSBYMEMBER' => 'keys-georadius',
+
+            /* sharded pubsub */
+            'SSUBSCRIBE' => 'keys-all',
+            'SUNSUBSCRIBE' => 'keys-sunsubscribe',
+            'SPUBLISH' => 'keys-first',
         ];
 
         if (isset($type)) {

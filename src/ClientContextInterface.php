@@ -324,6 +324,7 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this save()
  * @method $this slaveof($host, $port)
  * @method $this slowlog($subcommand, $argument = null)
+ * @method $this spublish(string $shardChannel, string $message)
  * @method $this time()
  * @method $this command()
  * @method $this geoadd($key, $longitude, $latitude, $member)

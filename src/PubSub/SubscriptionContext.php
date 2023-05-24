@@ -1,0 +1,48 @@
+<?php
+
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis\PubSub;
+
+class SubscriptionContext
+{
+    public const CONTEXT_SHARDED = 'sharded';
+    public const CONTEXT_NON_SHARDED = 'non_sharded';
+
+    /**
+     * @var string
+     */
+    private $context = self::CONTEXT_NON_SHARDED;
+
+    /**
+     * @return string
+     */
+    public function getContext(): string
+    {
+        return $this->context;
+    }
+
+    /**
+     * @return void
+     */
+    public function setShardedContext(): void
+    {
+        $this->context = self::CONTEXT_SHARDED;
+    }
+
+    /**
+     * @return void
+     */
+    public function setNonShardedContext(): void
+    {
+        $this->context = self::CONTEXT_NON_SHARDED;
+    }
+}

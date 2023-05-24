@@ -21,7 +21,9 @@ use ReturnTypeWillChange;
 abstract class AbstractConsumer implements Iterator
 {
     public const SUBSCRIBE = 'subscribe';
+    public const SSUBSCRIBE = 'ssubscribe';
     public const UNSUBSCRIBE = 'unsubscribe';
+    public const SUNSUBSCRIBE = 'sunsubscribe';
     public const PSUBSCRIBE = 'psubscribe';
     public const PUNSUBSCRIBE = 'punsubscribe';
     public const MESSAGE = 'message';
@@ -31,6 +33,7 @@ abstract class AbstractConsumer implements Iterator
     public const STATUS_VALID = 1;       // 0b0001
     public const STATUS_SUBSCRIBED = 2;  // 0b0010
     public const STATUS_PSUBSCRIBED = 4; // 0b0100
+    public const STATUS_SSUBSCRIBED = 8; // 0b1000
 
     private $position = null;
     private $statusFlags = self::STATUS_VALID;
@@ -67,6 +70,17 @@ abstract class AbstractConsumer implements Iterator
     }
 
     /**
+     * Subscribes to the specified shard channels.
+     *
+     * @param string ...$channels
+     */
+    public function ssubscribe(string ...$channels)
+    {
+        $this->writeRequest(self::SSUBSCRIBE, func_get_args());
+        $this->statusFlags |= self::STATUS_SSUBSCRIBED;
+    }
+
+    /**
      * Unsubscribes from the specified channels.
      *
      * @param string ...$channel One or more channel names.
@@ -74,6 +88,16 @@ abstract class AbstractConsumer implements Iterator
     public function unsubscribe(...$channel)
     {
         $this->writeRequest(self::UNSUBSCRIBE, func_get_args());
+    }
+
+    /**
+     * Unsubscribes from the specified shard channels.
+     *
+     * @param string ...$channels
+     */
+    public function sunsubscribe(string ...$channels)
+    {
+        $this->writeRequest(self::SUNSUBSCRIBE, func_get_args());
     }
 
     /**
@@ -131,6 +155,9 @@ abstract class AbstractConsumer implements Iterator
             }
             if ($this->isFlagSet(self::STATUS_PSUBSCRIBED)) {
                 $this->punsubscribe();
+            }
+            if ($this->isFlagSet(self::STATUS_SSUBSCRIBED)) {
+                $this->sunsubscribe();
             }
         }
 
@@ -202,7 +229,7 @@ abstract class AbstractConsumer implements Iterator
     public function valid()
     {
         $isValid = $this->isFlagSet(self::STATUS_VALID);
-        $subscriptionFlags = self::STATUS_SUBSCRIBED | self::STATUS_PSUBSCRIBED;
+        $subscriptionFlags = self::STATUS_SUBSCRIBED | self::STATUS_PSUBSCRIBED | self::STATUS_SSUBSCRIBED;
         $hasSubscriptions = ($this->statusFlags & $subscriptionFlags) > 0;
 
         return $isValid && $hasSubscriptions;
