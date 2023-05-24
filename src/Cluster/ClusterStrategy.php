@@ -394,7 +394,7 @@ abstract class ClusterStrategy implements StrategyInterface
     }
 
     /**
-     * Extracts keu from SUNSUBSCRIBE command if it's given.
+     * Extracts key from SUNSUBSCRIBE command if it's given.
      *
      * @param  CommandInterface $command
      * @return string
