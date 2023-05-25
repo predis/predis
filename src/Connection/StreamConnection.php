@@ -380,7 +380,7 @@ class StreamConnection extends AbstractConnection
     /**
      * Reads given resource split on chunks with given size.
      *
-     * @param $resource
+     * @param         $resource
      * @param  int    $chunkSize
      * @return string
      */

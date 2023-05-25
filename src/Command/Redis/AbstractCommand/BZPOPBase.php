@@ -42,7 +42,7 @@ abstract class BZPOPBase extends RedisCommand
     }
 
     /**
-     * @param $data
+     * @param                                       $data
      * @return array|false|mixed|null[]|string|null
      */
     public function parseResp3Response($data)

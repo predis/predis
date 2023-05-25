@@ -78,7 +78,7 @@ class ZMPOP extends RedisCommand
     }
 
     /**
-     * @param $data
+     * @param                                               $data
      * @return array|array[]|false|mixed|null[]|string|null
      */
     public function parseResp3Response($data)

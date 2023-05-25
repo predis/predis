@@ -51,7 +51,7 @@ class SLOWLOG extends RedisCommand
     }
 
     /**
-     * @param $data
+     * @param                          $data
      * @return array|mixed|string|null
      */
     public function parseResp3Response($data)
