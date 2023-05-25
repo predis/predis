@@ -29,14 +29,15 @@ $client = new Client(
 $context = new SubscriptionContext();
 $context->setShardedContext();
 
-// 3. Run pub/sub loop.
+// 3. Run pub/sub loop. Sharded channels belongs to different shards.
 $pubSub = $client->pubSubLoop(['context' => $context]);
-$pubSub->ssubscribe('{channels}_control_channel', '{channels}_notifications');
+$pubSub->ssubscribe('{channels}_notifications');
+$pubSub->ssubscribe('control_channel');
 
 // Start processing the pubsup messages. Open a terminal and use redis-cli
 // to push messages to the channels. Examples:
 //   ./redis-cli SPUBLISH {channels}_notifications "this is a test"
-//   ./redis-cli SPUBLISH {channels}_control_channel quit_loop
+//   ./redis-cli SPUBLISH control_channel quit_loop
 foreach ($pubSub as $message) {
     switch ($message->kind) {
         case 'ssubscribe':
@@ -44,7 +45,7 @@ foreach ($pubSub as $message) {
             break;
 
         case 'message':
-            if ($message->channel == '{channels}_control_channel') {
+            if ($message->channel == 'control_channel') {
                 if ($message->payload == 'quit_loop') {
                     echo 'Aborting pubsub loop...', PHP_EOL;
                     $pubSub->sunsubscribe();
