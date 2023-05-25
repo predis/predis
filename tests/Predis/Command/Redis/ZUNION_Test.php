@@ -118,8 +118,8 @@ class ZUNION_Test extends PredisCommandTestCase
 
     /**
      * @dataProvider unexpectedValueProvider
-     * @param $keys
-     * @param $weights
+     * @param         $keys
+     * @param         $weights
      * @param  string $aggregate
      * @param  bool   $withScores
      * @param  string $expectedExceptionMessage

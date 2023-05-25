@@ -61,10 +61,10 @@ class EVALSHA_RO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider scriptsProvider
-     * @param string $script
-     * @param array  $keys
-     * @param array  $arguments
-     * @param $expectedResponse
+     * @param  string $script
+     * @param  array  $keys
+     * @param  array  $arguments
+     * @param         $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */

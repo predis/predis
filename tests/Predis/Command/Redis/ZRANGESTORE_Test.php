@@ -123,14 +123,14 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param int|string  $min
-     * @param int|string  $max
-     * @param string|bool $by
-     * @param $rev
-     * @param $limit
-     * @param  int    $offset
-     * @param  int    $count
-     * @param  string $expectedExceptionMessage
+     * @param  int|string  $min
+     * @param  int|string  $max
+     * @param  string|bool $by
+     * @param              $rev
+     * @param              $limit
+     * @param  int         $offset
+     * @param  int         $count
+     * @param  string      $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
