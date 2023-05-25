@@ -40,8 +40,7 @@ $client = new Client(
 ]);
 
 // 2. Create context object to run loop in sharded pub/sub context.
-$context = new SubscriptionContext();
-$context->setShardedContext();
+$context = new SubscriptionContext(SubscriptionContext::CONTEXT_SHARDED);
 
 // 3. Run pub/sub loop.
 $pubSub = $client->pubSubLoop(['context' => $context]);

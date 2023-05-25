@@ -20,7 +20,12 @@ class SubscriptionContext
     /**
      * @var string
      */
-    private $context = self::CONTEXT_NON_SHARDED;
+    private $context;
+
+    public function __construct(string $context = self::CONTEXT_NON_SHARDED)
+    {
+        $this->context = $context;
+    }
 
     /**
      * @return string
@@ -28,21 +33,5 @@ class SubscriptionContext
     public function getContext(): string
     {
         return $this->context;
-    }
-
-    /**
-     * @return void
-     */
-    public function setShardedContext(): void
-    {
-        $this->context = self::CONTEXT_SHARDED;
-    }
-
-    /**
-     * @return void
-     */
-    public function setNonShardedContext(): void
-    {
-        $this->context = self::CONTEXT_NON_SHARDED;
     }
 }
