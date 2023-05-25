@@ -14,6 +14,12 @@ namespace Predis\Protocol\Parser\Strategy;
 
 class Resp3Strategy extends Resp2Strategy
 {
+    public const TYPE_BLOB_ERROR = 'blobError';
+    public const TYPE_VERBATIM_STRING = 'verbatimString';
+    public const TYPE_MAP = 'map';
+    public const TYPE_SET = 'set';
+    public const TYPE_PUSH = 'push';
+
     /**
      * Verbatim string offset to skip file extension bytes.
      */
@@ -84,7 +90,7 @@ class Resp3Strategy extends Resp2Strategy
     protected function parseBlobError(string $string): array
     {
         return [
-            'type' => 'blobError',
+            'type' => self::TYPE_BLOB_ERROR,
             'value' => (int) $string,
         ];
     }
@@ -98,7 +104,7 @@ class Resp3Strategy extends Resp2Strategy
     protected function parseVerbatimString(string $string): array
     {
         return [
-            'type' => 'verbatimString',
+            'type' => self::TYPE_VERBATIM_STRING,
             'value' => (int) $string,
             'offset' => self::VERBATIM_STRING_EXTENSION_OFFSET,
         ];
@@ -129,7 +135,7 @@ class Resp3Strategy extends Resp2Strategy
     protected function parseMap(string $string): array
     {
         return [
-            'type' => 'map',
+            'type' => self::TYPE_MAP,
             'value' => (int) $string,
         ];
     }
@@ -143,7 +149,7 @@ class Resp3Strategy extends Resp2Strategy
     protected function parseSet(string $string): array
     {
         return [
-            'type' => 'set',
+            'type' => self::TYPE_SET,
             'value' => (int) $string,
         ];
     }
@@ -157,7 +163,7 @@ class Resp3Strategy extends Resp2Strategy
     protected function parsePush(string $string): array
     {
         return [
-            'type' => 'push',
+            'type' => self::TYPE_PUSH,
             'value' => (int) $string,
         ];
     }

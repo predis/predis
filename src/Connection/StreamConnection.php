@@ -14,6 +14,8 @@ namespace Predis\Connection;
 
 use InvalidArgumentException;
 use Predis\Command\CommandInterface;
+use Predis\Protocol\Parser\Strategy\Resp2Strategy;
+use Predis\Protocol\Parser\Strategy\Resp3Strategy;
 use Predis\Protocol\Parser\UnexpectedTypeException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -302,8 +304,8 @@ class StreamConnection extends AbstractConnection
         }
 
         switch ($parsedData['type']) {
-            case 'push':
-            case 'array':
+            case Resp3Strategy::TYPE_PUSH:
+            case Resp2Strategy::TYPE_ARRAY:
                 $data = [];
 
                 for ($i = 0; $i < $parsedData['value']; ++$i) {
@@ -312,22 +314,22 @@ class StreamConnection extends AbstractConnection
 
                 return $data;
 
-            case 'bulkString':
+            case Resp2Strategy::TYPE_BULK_STRING:
                 $bulkData = $this->readByChunks($socket, $parsedData['value']);
 
                 return substr($bulkData, 0, -2);
 
-            case 'verbatimString':
+            case Resp3Strategy::TYPE_VERBATIM_STRING:
                 $bulkData = $this->readByChunks($socket, $parsedData['value']);
 
                 return substr($bulkData, $parsedData['offset'], -2);
 
-            case 'blobError':
+            case Resp3Strategy::TYPE_BLOB_ERROR:
                 $errorMessage = $this->readByChunks($socket, $parsedData['value']);
 
                 return new Error(substr($errorMessage, 0, -2));
 
-            case 'map':
+            case Resp3Strategy::TYPE_MAP:
                 $data = [];
 
                 for ($i = 0; $i < $parsedData['value']; ++$i) {
@@ -337,7 +339,7 @@ class StreamConnection extends AbstractConnection
 
                 return $data;
 
-            case 'set':
+            case Resp3Strategy::TYPE_SET:
                 $data = [];
 
                 for ($i = 0; $i < $parsedData['value']; ++$i) {
