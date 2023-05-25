@@ -35,7 +35,7 @@ abstract class AbstractConsumer implements Iterator
     public const STATUS_PSUBSCRIBED = 4; // 0b0100
     public const STATUS_SSUBSCRIBED = 8; // 0b1000
 
-    private $position = null;
+    private $position;
     private $statusFlags = self::STATUS_VALID;
 
     /**

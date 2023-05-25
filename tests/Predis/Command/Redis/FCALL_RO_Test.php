@@ -113,8 +113,8 @@ class FCALL_RO_Test extends PredisCommandTestCase
         );
 
         if (
-            isset($annotations['method']['group']) &&
-            in_array('connected', $annotations['method']['group'], true)
+            isset($annotations['method']['group'])
+            && in_array('connected', $annotations['method']['group'], true)
         ) {
             $redis = $this->getClient();
             $redis->function->delete(self::LIB_NAME);

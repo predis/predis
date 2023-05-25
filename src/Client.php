@@ -314,7 +314,7 @@ class Client implements ClientInterface, IteratorAggregate
     }
 
     /**
-     * @param $name
+     * @param                     $name
      * @return ContainerInterface
      */
     public function __get($name)
@@ -323,8 +323,8 @@ class Client implements ClientInterface, IteratorAggregate
     }
 
     /**
-     * @param $name
-     * @param $value
+     * @param        $name
+     * @param        $value
      * @return mixed
      */
     public function __set($name, $value)
@@ -333,7 +333,7 @@ class Client implements ClientInterface, IteratorAggregate
     }
 
     /**
-     * @param $name
+     * @param        $name
      * @return mixed
      */
     public function __isset($name)
