@@ -100,7 +100,12 @@ class DispatcherLoop
 
         $this->assertCallback($callback);
         $this->callbacks[$callbackName] = $callback;
-        $this->pubsub->subscribe($channel);
+
+        if ($this->pubsub->getSubscriptionContext()->getContext() === SubscriptionContext::CONTEXT_SHARDED) {
+            $this->pubsub->ssubscribe($channel);
+        } else {
+            $this->pubsub->subscribe($channel);
+        }
     }
 
     /**
@@ -114,7 +119,12 @@ class DispatcherLoop
 
         if (isset($this->callbacks[$callbackName])) {
             unset($this->callbacks[$callbackName]);
-            $this->pubsub->unsubscribe($channel);
+
+            if ($this->pubsub->getSubscriptionContext()->getContext() === SubscriptionContext::CONTEXT_SHARDED) {
+                $this->pubsub->sunsubscribe($channel);
+            } else {
+                $this->pubsub->unsubscribe($channel);
+            }
         }
     }
 

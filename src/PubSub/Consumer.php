@@ -65,6 +65,16 @@ class Consumer extends AbstractConsumer
     }
 
     /**
+     * Returns subscription context for current instance.
+     *
+     * @return SubscriptionContext
+     */
+    public function getSubscriptionContext(): SubscriptionContext
+    {
+        return $this->subscriptionContext;
+    }
+
+    /**
      * Checks if the client instance satisfies the required conditions needed to
      * initialize a PUB/SUB consumer.
      *
