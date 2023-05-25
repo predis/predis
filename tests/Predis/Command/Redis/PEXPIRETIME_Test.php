@@ -72,7 +72,7 @@ class PEXPIRETIME_Test extends PredisCommandTestCase
 
         $this->assertSame($expirationTime, $redis->pexpiretime('key'));
         $this->assertSame(-1, $redis->pexpiretime('key1'));
-        $this->assertSame(-2, $redis->pexpiretime('non-existing key'));
+        $this->assertSame(-2, $redis->pexpiretime('pexpire_non-existing-key'));
     }
 
     /**
