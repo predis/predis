@@ -15,8 +15,8 @@ namespace Predis\PubSub;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\Command;
-use Predis\Connection\Cluster\ClusterInterface;
 use Predis\NotSupportedException;
+use Throwable;
 
 /**
  * PUB/SUB consumer abstraction.
@@ -84,15 +84,6 @@ class Consumer extends AbstractConsumer
      */
     private function checkCapabilities(ClientInterface $client)
     {
-        if (
-            $client->getConnection() instanceof ClusterInterface
-            && $this->subscriptionContext->getContext() === SubscriptionContext::CONTEXT_NON_SHARDED
-        ) {
-            throw new NotSupportedException(
-                'Cannot initialize a PUB/SUB consumer over cluster connections.'
-            );
-        }
-
         $commands = ['publish', 'spublish', 'subscribe', 'ssubscribe', 'unsubscribe', 'sunsubscribe', 'psubscribe', 'punsubscribe'];
 
         if (!$client->getCommandFactory()->supports(...$commands)) {

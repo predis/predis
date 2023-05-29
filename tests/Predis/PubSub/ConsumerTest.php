@@ -43,20 +43,6 @@ class ConsumerTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPubSubConsumerDoesNotWorkOnClusters(): void
-    {
-        $this->expectException('Predis\NotSupportedException');
-        $this->expectExceptionMessage('Cannot initialize a PUB/SUB consumer over cluster connections');
-
-        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
-        $client = new Client($cluster);
-
-        new PubSubConsumer($client);
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testPubSubConsumerAllowsClusterConnectionOnShardedContext(): void
     {
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();

@@ -25,11 +25,8 @@ $client = new Client(
     'cluster' => 'redis',
 ]);
 
-// 2. Create context object to run loop in sharded pub/sub context.
-$context = new SubscriptionContext(SubscriptionContext::CONTEXT_SHARDED);
-
-// 3. Run pub/sub loop. Sharded channels belongs to different shards.
-$pubSub = $client->pubSubLoop(['context' => $context]);
+// 2. Run pub/sub loop. Sharded channels belongs to different shards.
+$pubSub = $client->pubSubLoop();
 $pubSub->ssubscribe('{channels}_notifications');
 $pubSub->ssubscribe('control_channel');
 
