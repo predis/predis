@@ -11,7 +11,6 @@
  */
 
 use Predis\Client;
-use Predis\PubSub\SubscriptionContext;
 
 require __DIR__ . '/shared.php';
 

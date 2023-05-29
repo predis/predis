@@ -16,7 +16,6 @@ use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\Command;
 use Predis\NotSupportedException;
-use Throwable;
 
 /**
  * PUB/SUB consumer abstraction.
