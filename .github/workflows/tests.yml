@@ -43,6 +43,7 @@ jobs:
 
       redis-cluster:
         image: redisfab/redis-py-cluster:unstable
+        options: -v /docker/unstable_cluster/redis.conf:/redis.conf:rw
         ports:
           - 6372:6372
           - 6373:6373
@@ -50,8 +51,6 @@ jobs:
           - 6375:6375
           - 6376:6376
           - 6377:6377
-        volumes:
-          - "docker/unstable_cluster/redis.conf:/redis.conf"
 
     steps:
 
