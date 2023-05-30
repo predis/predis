@@ -44,7 +44,7 @@ class OneOfConstraint extends Constraint
     }
 
     /**
-     * @param $other
+     * @param         $other
      * @return string
      */
     protected function failureDescription($other): string
