@@ -51,7 +51,7 @@ jobs:
           - 6376:6376
           - 6377:6377
         volumes:
-          - "${PWD}/docker/unstable_cluster/redis.conf:/redis.conf"
+          - "docker/unstable_cluster/redis.conf:/redis.conf"
 
     steps:
 
