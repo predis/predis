@@ -42,7 +42,7 @@ jobs:
           - 6379:6379
 
       redis-cluster:
-        image: redisfab/redis-py-cluster:6.2.6
+        image: redisfab/redis-py-cluster:unstable
         ports:
           - 6372:16379
           - 6373:16380
