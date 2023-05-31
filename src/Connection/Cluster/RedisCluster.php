@@ -31,7 +31,6 @@ use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use ReturnTypeWillChange;
-use RuntimeException;
 use Throwable;
 
 /**
