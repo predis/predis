@@ -703,7 +703,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
-     * Loop over connections and reads incoming data.
+     * Loop over connections until there's data to read.
      *
      * @return mixed
      */
