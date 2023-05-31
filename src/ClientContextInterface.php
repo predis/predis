@@ -179,6 +179,7 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
  * @method $this jsonnumincrby(string $key, string $path, int $value)
  * @method $this jsonmget(array $keys, string $path)
+ * @method $this jsonmset(string ...$keyPathValue)
  * @method $this jsonobjkeys(string $key, string $path = '$')
  * @method $this jsonobjlen(string $key, string $path = '$')
  * @method $this jsonresp(string $key, string $path = '$')
