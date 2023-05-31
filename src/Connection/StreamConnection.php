@@ -372,6 +372,25 @@ class StreamConnection extends AbstractConnection
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function hasDataToRead(): bool
+    {
+        $resource = $this->getResource();
+
+        if ($resource) {
+            $resourceArray = [$resource];
+            $write = null;
+            $except = null;
+            $num = stream_select($resourceArray, $write, $except, 0);
+
+            return $num > 0;
+        }
+
+        return false;
+    }
+
+    /**
      * Reads given resource split on chunks with given size.
      *
      * @param         $resource

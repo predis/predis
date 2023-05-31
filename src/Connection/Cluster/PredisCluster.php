@@ -55,10 +55,12 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $connectionParameters;
 
     /**
-     * @param StrategyInterface $strategy Optional cluster strategy.
+     * @param ParametersInterface    $parameters
+     * @param StrategyInterface|null $strategy   Optional cluster strategy.
      */
-    public function __construct(StrategyInterface $strategy = null)
+    public function __construct(ParametersInterface $parameters, StrategyInterface $strategy = null)
     {
+        $this->connectionParameters = $parameters;
         $this->strategy = $strategy ?: new PredisStrategy();
         $this->distributor = $this->strategy->getDistributor();
     }
@@ -104,10 +106,6 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     {
         $parameters = $connection->getParameters();
 
-        if (!isset($this->connectionParameters)) {
-            $this->connectionParameters = $parameters;
-        }
-
         $this->pool[(string) $connection] = $connection;
 
         if (isset($parameters->alias)) {
@@ -128,10 +126,6 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
 
             if ($this->aliases && $alias = $connection->getParameters()->alias) {
                 unset($this->aliases[$alias]);
-            }
-
-            if (empty($this->pool) && isset($this->connectionParameters)) {
-                $this->connectionParameters = null;
             }
 
             return true;
@@ -258,7 +252,7 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     /**
      * {@inheritdoc}
      */
-    public function getParameters(): ?ParametersInterface
+    public function getParameters(): ParametersInterface
     {
         return $this->connectionParameters;
     }

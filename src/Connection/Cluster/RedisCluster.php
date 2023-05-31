@@ -70,9 +70,9 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $retryInterval = 10;
 
     /**
-     * @var resource[]
+     * @var int
      */
-    private $sockets;
+    private $readTimeout = 1000;
 
     /**
      * @var ParametersInterface
@@ -80,16 +80,24 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $connectionParameters;
 
     /**
-     * @param FactoryInterface  $connections Optional connection factory.
-     * @param StrategyInterface $strategy    Optional cluster strategy.
+     * @param FactoryInterface       $connections Optional connection factory.
+     * @param StrategyInterface|null $strategy    Optional cluster strategy.
+     * @param int|null               $readTimeout Optional read timeout
      */
     public function __construct(
         FactoryInterface $connections,
-        StrategyInterface $strategy = null
+        ParametersInterface $parameters,
+        StrategyInterface $strategy = null,
+        int $readTimeout = null
     ) {
         $this->connections = $connections;
+        $this->connectionParameters = $parameters;
         $this->strategy = $strategy ?: new RedisClusterStrategy();
         $this->slotmap = new SlotMap();
+
+        if (!is_null($readTimeout)) {
+            $this->readTimeout = $readTimeout;
+        }
     }
 
     /**
@@ -165,14 +173,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function add(NodeConnectionInterface $connection)
     {
-        if (!isset($this->connectionParameters)) {
-            $this->connectionParameters = $connection->getParameters();
-        }
-
-        // Keep socket to connection mapping, so we can read from any connection.
-        $socket = $connection->getResource();
-        $this->sockets[] = ['socket' => $socket, 'connectionId' => (string) $connection];
-
         $this->pool[(string) $connection] = $connection;
         $this->slotmap->reset();
     }
@@ -186,10 +186,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
             $this->slotmap->reset();
             $this->slots = array_diff($this->slots, [$connection]);
             unset($this->pool[$id]);
-
-            if (empty($this->pool) && isset($this->connectionParameters)) {
-                $this->connectionParameters = null;
-            }
 
             return true;
         }
@@ -713,43 +709,18 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function read()
     {
-        $this->setSocketsNonBlockingMode();
-
-        $i = 0;
         while (true) {
-            $socket = $this->sockets[$i]['socket'];
-            $socketArray = [$socket];
-            $write = null;
-            $except = null;
-            $num = stream_select($socketArray, $write, $except, 0);
-
-            if ($num) {
-                $connection = $this->getConnectionById($this->sockets[$i]['connectionId']);
-
+            foreach ($this->pool as $connection) {
                 if (null === $connection) {
                     throw new RuntimeException('Incorrect node connection within given cluster.');
                 }
 
-                return $connection->read();
+                if ($connection->hasDataToRead()) {
+                    return $connection->read();
+                }
             }
 
-            if (!isset($this->sockets[++$i])) {
-                $i = 0;
-            }
-
-            usleep(1000);
-        }
-    }
-
-    /**
-     * Loop over sockets and set them into non-blocking mode.
-     *
-     * @return void
-     */
-    private function setSocketsNonBlockingMode(): void
-    {
-        foreach ($this->sockets as $socket) {
-            stream_set_blocking($socket['socket'], false);
+            usleep($this->readTimeout);
         }
     }
 }
