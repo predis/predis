@@ -711,10 +711,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     {
         while (true) {
             foreach ($this->pool as $connection) {
-                if (null === $connection) {
-                    throw new RuntimeException('Incorrect node connection within given cluster.');
-                }
-
                 if ($connection->hasDataToRead()) {
                     return $connection->read();
                 }
