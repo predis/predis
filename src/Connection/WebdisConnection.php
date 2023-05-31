@@ -363,4 +363,12 @@ class WebdisConnection implements NodeConnectionInterface
         $this->resource = $this->createCurl();
         $this->reader = $this->createReader();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasDataToRead(): bool
+    {
+        return true;
+    }
 }
