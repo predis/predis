@@ -159,6 +159,7 @@ when needed. The client options supported by default in Predis are:
   - `aggregate`: configures the client with a custom aggregate connection (callable).
   - `parameters`: list of default connection parameters for aggregate connections.
   - `commands`: specifies a command factory instance to use through the library.
+  - `readTimeout`: (cluster only) Timeout between read operations while loop over connections.
 
 Users can also provide custom options with values or callable objects (for lazy initialization) that
 are stored in the options container for later use through the library.
