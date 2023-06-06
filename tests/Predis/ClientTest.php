@@ -1048,7 +1048,7 @@ class ClientTest extends PredisTestCase
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\PubSub\Consumer', $client->pubSubLoop());
+        $this->assertInstanceOf('Predis\Consumer\PubSub\Consumer', $client->pubSubLoop());
     }
 
     /**
@@ -1061,7 +1061,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($connection);
 
-        $this->assertInstanceOf('Predis\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
+        $this->assertInstanceOf('Predis\Consumer\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
 
         $reflection = new ReflectionProperty($pubsub, 'options');
         $reflection->setAccessible(true);
@@ -1123,11 +1123,11 @@ class ClientTest extends PredisTestCase
             ->method('__invoke')
             ->withConsecutive(
                 [
-                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    $this->isInstanceOf('Predis\Consumer\PubSub\Consumer'),
                     (object) ['kind' => 'subscribe', 'channel' => 'channel', 'payload' => 1],
                 ],
                 [
-                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    $this->isInstanceOf('Predis\Consumer\PubSub\Consumer'),
                     (object) ['kind' => 'unsubscribe', 'channel' => 'channel', 'payload' => 0],
                 ]
             )

@@ -13,6 +13,8 @@
 namespace Predis\PubSub;
 
 use Predis\Client;
+use Predis\Consumer\PubSub\Consumer;
+use Predis\Consumer\PubSub\DispatcherLoop;
 use PredisTestCase;
 
 /**

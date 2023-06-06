@@ -13,7 +13,7 @@
 namespace Predis\PubSub;
 
 use Predis\Client;
-use Predis\PubSub\Consumer as PubSubConsumer;
+use Predis\Consumer\PubSub\Consumer as PubSubConsumer;
 use PredisTestCase;
 
 /**

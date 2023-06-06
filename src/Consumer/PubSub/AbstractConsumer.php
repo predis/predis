@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\PubSub;
+namespace Predis\Consumer\PubSub;
 
 use Iterator;
 use ReturnTypeWillChange;

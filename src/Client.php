@@ -25,9 +25,10 @@ use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
+use Predis\Consumer\PubSub\Consumer as PubSubConsumer;
+use Predis\Consumer\Push\Consumer as PushConsumer;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use Predis\Pipeline\Pipeline;
-use Predis\PubSub\Consumer as PubSubConsumer;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
@@ -314,7 +315,7 @@ class Client implements ClientInterface, IteratorAggregate
     }
 
     /**
-     * @param $name
+     * @param                     $name
      * @return ContainerInterface
      */
     public function __get($name)
@@ -323,8 +324,8 @@ class Client implements ClientInterface, IteratorAggregate
     }
 
     /**
-     * @param $name
-     * @param $value
+     * @param        $name
+     * @param        $value
      * @return mixed
      */
     public function __set($name, $value)
@@ -333,7 +334,7 @@ class Client implements ClientInterface, IteratorAggregate
     }
 
     /**
-     * @param $name
+     * @param        $name
      * @return mixed
      */
     public function __isset($name)
@@ -510,6 +511,17 @@ class Client implements ClientInterface, IteratorAggregate
     public function pubSubLoop(...$arguments)
     {
         return $this->sharedContextFactory('createPubSub', func_get_args());
+    }
+
+    /**
+     * Creates new push notifications consumer.
+     *
+     * @param  callable|null $preLoopCallback Callback that should be called on client before enter a loop.
+     * @return PushConsumer
+     */
+    public function push(callable $preLoopCallback = null): PushConsumer
+    {
+        return new PushConsumer($this, $preLoopCallback);
     }
 
     /**
