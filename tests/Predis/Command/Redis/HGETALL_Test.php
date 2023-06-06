@@ -62,6 +62,16 @@ class HGETALL_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testReturnsOriginalDataOnNonCountableDataProvided(): void
+    {
+        $command = $this->getCommand();
+
+        $this->assertSame(0, $command->parseResponse(0));
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */

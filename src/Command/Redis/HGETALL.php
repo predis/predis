@@ -32,7 +32,7 @@ class HGETALL extends RedisCommand
      */
     public function parseResponse($data)
     {
-        if ($data !== array_values($data)) {
+        if (!is_countable($data) || $data !== array_values($data)) {
             return $data; // Relay
         }
 
