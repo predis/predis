@@ -87,6 +87,22 @@ class JSONARRPOP_Test extends PredisCommandTestCase
         $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
+    public function testRemovesElementFromIndexOfJsonArrayResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1","key2":["value1","value2"]}');
+        $actualResponse = $redis->jsonarrpop('key', '$.key2', -1);
+
+        $this->assertSame(['"value2"'], $actualResponse);
+        $this->assertSame('{"key1":"value1","key2":["value1"]}', $redis->jsonget('key'));
+    }
+
     public function jsonProvider(): array
     {
         return [

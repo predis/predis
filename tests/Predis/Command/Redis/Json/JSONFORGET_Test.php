@@ -85,6 +85,22 @@ class JSONFORGET_Test extends PredisCommandTestCase
         $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
+    public function testDeletesPathsAtKeyFromGivenJsonStringResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}');
+        $actualResponse = $redis->jsonforget('key', '$.key2');
+
+        $this->assertSame(1, $actualResponse);
+        $this->assertSame('{"key1":"value1"}', $redis->jsonget('key'));
+    }
+
     public function jsonProvider(): array
     {
         return [

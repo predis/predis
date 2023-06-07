@@ -88,6 +88,22 @@ class JSONGET_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
+    public function testReturnsCorrectJsonResponseResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}');
+        $this->assertSame(
+            '{"key1":"value1","key2":"value2"}',
+            $redis->jsonget('key')
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
     public function testReturnsJsonValuesArrayOnMultiplePathsProvided(): void
     {
         $redis = $this->getClient();

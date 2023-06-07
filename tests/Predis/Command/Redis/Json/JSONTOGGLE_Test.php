@@ -85,6 +85,22 @@ class JSONTOGGLE_Test extends PredisCommandTestCase
         $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 2.0.0
+     */
+    public function testToggleChangesBooleanValueToOppositeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":true}');
+        $actualResponse = $redis->jsontoggle('key', '$.key1');
+
+        $this->assertSame([0], $actualResponse);
+        $this->assertSame('{"key1":false}', $redis->jsonget('key'));
+    }
+
     public function jsonProvider(): array
     {
         return [
