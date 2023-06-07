@@ -61,11 +61,11 @@ class EVAL_RO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider scriptsProvider
-     * @param array  $dictionary
-     * @param string $script
-     * @param array  $keys
-     * @param array  $arguments
-     * @param $expectedResponse
+     * @param  array  $dictionary
+     * @param  string $script
+     * @param  array  $keys
+     * @param  array  $arguments
+     * @param         $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
