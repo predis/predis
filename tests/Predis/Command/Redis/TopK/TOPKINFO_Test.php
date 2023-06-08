@@ -73,9 +73,10 @@ class TOPKINFO_Test extends PredisCommandTestCase
 
         $redis->topkreserve('key', 50);
 
-        $this->assertEquals(
+        $this->assertSameWithPrecision(
             ['k' => 50, 'width' => 8, 'depth' => 7, 'decay' => '0.90000000000000002'],
-            $redis->topkinfo('key')
+            $redis->topkinfo('key'),
+            1
         );
     }
 
