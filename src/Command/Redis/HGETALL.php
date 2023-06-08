@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see http://redis.io/commands/hgetall
@@ -32,6 +32,10 @@ class HGETALL extends RedisCommand
      */
     public function parseResponse($data)
     {
+        if ($data !== array_values($data)) {
+            return $data; // Relay
+        }
+
         $result = [];
 
         for ($i = 0; $i < count($data); ++$i) {
@@ -39,5 +43,10 @@ class HGETALL extends RedisCommand
         }
 
         return $result;
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

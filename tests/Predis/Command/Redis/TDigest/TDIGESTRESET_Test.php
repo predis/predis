@@ -71,7 +71,7 @@ class TDIGESTRESET_Test extends PredisCommandTestCase
         $redis->tdigestcreate('key', 500);
         $redis->tdigestadd('key', 1, 2, 2, 3, 3, 3);
 
-        $this->assertSame(
+        $this->assertEquals(
             ['1', '2', '2', '3', '3', '3'],
             $redis->tdigestbyrank('key', 0, 1, 2, 3, 4, 5)
         );
@@ -81,7 +81,7 @@ class TDIGESTRESET_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $actualResponse);
         $this->assertSame(500, $info['Compression']);
-        $this->assertSame(
+        $this->assertEquals(
             ['nan', 'nan', 'nan', 'nan', 'nan', 'nan'],
             $redis->tdigestbyrank('key', 0, 1, 2, 3, 4, 5)
         );

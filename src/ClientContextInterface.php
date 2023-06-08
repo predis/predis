@@ -38,11 +38,11 @@ use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
-use Predis\Command\Container\ACL;
-use Predis\Command\Container\FUNCTIONS;
-use Predis\Command\Container\Json\JSONDEBUG;
-use Predis\Command\Container\Search\FTCONFIG;
-use Predis\Command\Container\Search\FTCURSOR;
+use Predis\Command\Redis\Container\ACL;
+use Predis\Command\Redis\Container\FunctionContainer;
+use Predis\Command\Redis\Container\Json\JSONDEBUG;
+use Predis\Command\Redis\Container\Search\FTCONFIG;
+use Predis\Command\Redis\Container\Search\FTCURSOR;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -79,7 +79,7 @@ use Predis\Command\Container\Search\FTCURSOR;
  * @method $this bfmexists(string $key, ...$item)
  * @method $this bfreserve(string $key, float $errorRate, int $capacity, int $expansion = -1, bool $nonScaling = false)
  * @method $this bfscandump(string $key, int $iterator)
- * @method $this bitcount($key, $start = null, $end = null, string $index = 'byte')
+ * @method $this bitcount(string $key, $start = null, $end = null, string $index = 'byte')
  * @method $this bitop($operation, $destkey, $key)
  * @method $this bitfield($key, $subcommand, ...$subcommandArg)
  * @method $this bitpos($key, $bit, $start = null, $end = null, string $index = 'byte')
@@ -336,11 +336,11 @@ use Predis\Command\Container\Search\FTCURSOR;
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
- * @property FUNCTIONS $function
- * @property FTCONFIG  $ftconfig
- * @property FTCURSOR  $ftcursor
- * @property JSONDEBUG $jsondebug
- * @property ACL       $acl
+ * @property FunctionContainer $function
+ * @property FTCONFIG          $ftconfig
+ * @property FTCURSOR          $ftcursor
+ * @property JSONDEBUG         $jsondebug
+ * @property ACL               $acl
  */
 interface ClientContextInterface
 {

@@ -12,11 +12,13 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Response\ServerException;
 
 /**
  * @group commands
  * @group realm-scripting
+ * @requiresRedisVersion >= 7.0.0
  */
 class FCALL_Test extends PredisCommandTestCase
 {
@@ -57,6 +59,23 @@ class FCALL_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['function', ['arg1', 'arg2', 'arg3', 'arg4']];
+        $prefix = 'prefix:';
+        $expectedArguments = ['function', 4, 'prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @dataProvider functionsProvider
      * @param string $function
@@ -71,6 +90,7 @@ class FCALL_Test extends PredisCommandTestCase
         $expectedResponse
     ): void {
         $redis = $this->getClient();
+        $redis->executeRaw(['FUNCTION', 'FLUSH']);
 
         $this->assertSame('mylib', $redis->function->load($function));
 
@@ -87,6 +107,7 @@ class FCALL_Test extends PredisCommandTestCase
     public function testThrowsExceptionOnNonExistingFunctionGiven(): void
     {
         $redis = $this->getClient();
+        $redis->executeRaw(['FUNCTION', 'FLUSH']);
 
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('ERR Function not found');

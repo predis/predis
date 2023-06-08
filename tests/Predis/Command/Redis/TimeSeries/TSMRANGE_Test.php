@@ -16,6 +16,10 @@ use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class TSMRANGE_Test extends PredisCommandTestCase
 {
     /**

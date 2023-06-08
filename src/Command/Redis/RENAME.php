@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see http://redis.io/commands/rename
@@ -25,5 +25,10 @@ class RENAME extends RedisCommand
     public function getId()
     {
         return 'RENAME';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForAllArguments($prefix);
     }
 }

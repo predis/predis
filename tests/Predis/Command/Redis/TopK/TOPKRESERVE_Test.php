@@ -77,7 +77,7 @@ class TOPKRESERVE_Test extends PredisCommandTestCase
         $actualInfoResponse = $redis->topkinfo($key);
 
         $this->assertEquals('OK', $actualResponse);
-        $this->assertSame($expectedInfoResponse, $actualInfoResponse);
+        $this->assertEquals($expectedInfoResponse, $actualInfoResponse);
     }
 
     /**

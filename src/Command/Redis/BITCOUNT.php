@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 use Predis\Command\Traits\BitByte;
 
 /**
@@ -30,5 +30,10 @@ class BITCOUNT extends RedisCommand
     public function getId()
     {
         return 'BITCOUNT';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }
