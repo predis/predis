@@ -86,7 +86,7 @@ class JSONNUMINCRBY_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisJsonVersion >= 1.0.0
+     * @requiresRedisJsonVersion >= 2.6.1
      */
     public function testIncrementJsonNumericOnGivenValueResp3(): void
     {
@@ -94,7 +94,7 @@ class JSONNUMINCRBY_Test extends PredisCommandTestCase
 
         $redis->jsonset('key', '$', '{"key1":"value1","key2":1}');
 
-        $this->assertSame('[2]', $redis->jsonnumincrby('key', '$.key2', 1));
+        $this->assertSame([2], $redis->jsonnumincrby('key', '$.key2', 1));
     }
 
     public function jsonProvider(): array

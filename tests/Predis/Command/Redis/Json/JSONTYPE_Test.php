@@ -84,7 +84,7 @@ class JSONTYPE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisJsonVersion >= 1.0.0
+     * @requiresRedisJsonVersion >= 2.6.1
      */
     public function testReturnsJsonValueTypeResp3(): void
     {
@@ -92,7 +92,7 @@ class JSONTYPE_Test extends PredisCommandTestCase
 
         $redis->jsonset('key', '$', '{"key1":"value1"}');
 
-        $this->assertSame(['string'], $redis->jsontype('key', '$.key1'));
+        $this->assertSame([['string']], $redis->jsontype('key', '$.key1'));
     }
 
     public function jsonProvider(): array

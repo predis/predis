@@ -88,7 +88,7 @@ class JSONFORGET_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisJsonVersion >= 1.0.0
+     * @requiresRedisJsonVersion >= 2.6.1
      */
     public function testDeletesPathsAtKeyFromGivenJsonStringResp3(): void
     {
@@ -98,7 +98,7 @@ class JSONFORGET_Test extends PredisCommandTestCase
         $actualResponse = $redis->jsonforget('key', '$.key2');
 
         $this->assertSame(1, $actualResponse);
-        $this->assertSame('{"key1":"value1"}', $redis->jsonget('key'));
+        $this->assertSame([['{"key1":"value1"}']], $redis->jsonget('key'));
     }
 
     public function jsonProvider(): array

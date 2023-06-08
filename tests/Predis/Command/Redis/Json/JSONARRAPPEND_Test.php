@@ -91,7 +91,7 @@ class JSONARRAPPEND_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisJsonVersion >= 1.0.0
+     * @requiresRedisJsonVersion >= 2.6.1
      */
     public function testAppendItemsToGivenJsonArrayResp3(): void
     {
@@ -102,7 +102,7 @@ class JSONARRAPPEND_Test extends PredisCommandTestCase
         $actualResponse = $redis->jsonarrappend('key', '$.key2', '"value3"');
 
         $this->assertSame([3], $actualResponse);
-        $this->assertSame('{"key1":"value1","key2":["value1","value2","value3"]}', $redis->jsonget('key'));
+        $this->assertSame([['{"key1":"value1","key2":["value1","value2","value3"]}']], $redis->jsonget('key'));
     }
 
     public function jsonProvider(): array

@@ -86,7 +86,7 @@ class JSONGET_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisJsonVersion >= 1.0.0
+     * @requiresRedisJsonVersion >= 2.6.1
      */
     public function testReturnsCorrectJsonResponseResp3(): void
     {
@@ -94,7 +94,7 @@ class JSONGET_Test extends PredisCommandTestCase
 
         $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}');
         $this->assertSame(
-            '{"key1":"value1","key2":"value2"}',
+            [['{"key1":"value1","key2":"value2"}']],
             $redis->jsonget('key')
         );
     }

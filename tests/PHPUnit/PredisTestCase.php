@@ -10,6 +10,7 @@
  * file that was distributed with this source code.
  */
 
+use PHPUnit\AssertSameWithPrecisionConstraint;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\OneOfConstraint;
 use PHPUnit\Util\Test as TestUtil;
@@ -129,6 +130,20 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     public function assertOneOf(array $expected, $actual, string $message = ''): void
     {
         $this->assertThat($actual, new OneOfConstraint($expected), $message);
+    }
+
+    /**
+     * Asserts that two values (of the same type) have the same values with given precision.
+     *
+     * @param  mixed  $expected  Expected value
+     * @param  mixed  $actual    Actual value
+     * @param  int    $precision Precision value should be round to
+     * @param  string $message   Optional assertion message
+     * @return void
+     */
+    public function assertSameWithPrecision($expected, $actual, int $precision = 0, string $message = ''): void
+    {
+        $this->assertThat($actual, new AssertSameWithPrecisionConstraint($expected, $precision), $message);
     }
 
     /**
