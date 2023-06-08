@@ -113,6 +113,9 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $ftCreateResponse = $redis->ftcreate('idx_hash', $schema, $ftCreateArguments);
         $this->assertEquals('OK', $ftCreateResponse);
 
+        // Timeout to make sure that index created before search performed.
+        usleep(2000);
+
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->addReturn(1, 'should_return');
 
