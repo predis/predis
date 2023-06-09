@@ -83,7 +83,7 @@ class TSINFO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     * @requiresRedisTimeSeriesVersion >= 1.10.0
      */
     public function testReturnsInformationAboutGivenTimeSeriesResp3(): void
     {
