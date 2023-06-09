@@ -79,6 +79,26 @@ class TSCREATERULE_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
+    public function testCreateCompactionRuleWithinGivenTimeSeriesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $arguments = (new CreateArguments())
+            ->labels('type', 'temp', 'location', 'TLV');
+
+        $this->assertEquals('OK', $redis->tscreate('temp:TLV', $arguments));
+        $this->assertEquals('OK', $redis->tscreate('dailyAvgTemp:TLV', $arguments));
+        $this->assertEquals(
+            'OK',
+            $redis->tscreaterule('temp:TLV', 'dailyAvgTemp:TLV', 'twa', 86400000)
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
     public function testThrowsExceptionOnNonExistingDestinationKey(): void
     {
         $redis = $this->getClient();

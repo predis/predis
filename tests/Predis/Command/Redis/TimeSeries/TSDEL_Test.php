@@ -104,6 +104,48 @@ class TSDEL_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.6.0
      */
+    public function testDelRemovesSamplesWithinGivenTimestampsRangeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $createArguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('sensor_id', 2, 'area_id', 32);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:32', $createArguments)
+        );
+
+        $this->assertEquals(
+            123123123123,
+            $redis->tsadd('temperature:2:32', 123123123123, 27)
+        );
+
+        $this->assertEquals(
+            123123123124,
+            $redis->tsadd('temperature:2:32', 123123123124, 28)
+        );
+
+        $this->assertEquals(
+            123123123125,
+            $redis->tsadd('temperature:2:32', 123123123125, 29)
+        );
+
+        $this->assertSame(
+            2,
+            $redis->tsdel('temperature:2:32', 123123123124, 123123123125)
+        );
+
+        $this->assertEquals([123123123123, '27'], $redis->tsget('temperature:2:32'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.6.0
+     */
     public function testThrowsExceptionOnNonExistingKey(): void
     {
         $redis = $this->getClient();

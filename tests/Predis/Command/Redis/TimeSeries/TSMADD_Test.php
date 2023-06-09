@@ -92,6 +92,36 @@ class TSMADD_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
+    public function testAddSamplesIntoFewTimeSeriesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $createArguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('sensor_id', 2, 'area_id', 32);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:32', $createArguments)
+        );
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:33', $createArguments)
+        );
+
+        $this->assertEquals(
+            [123123123123, 123123123124],
+            $redis->tsmadd('temperature:2:32', 123123123123, 27, 'temperature:2:33', 123123123124, 28)
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
     public function testThrowsExceptionOnNonWrongArgumentsNumber(): void
     {
         $redis = $this->getClient();
