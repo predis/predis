@@ -40,7 +40,7 @@ $dispatcher = new DispatcherLoop($push);
 // PUBLISH channel message2
 // PUBLISH channel message3
 // PUBLISH control terminate
-// TODO Data types should be changed in near future. Instead of Message data type it should be one of kind data types.
+// Data types should be changed in near future. Instead of Message data type it should be one of kind data types.
 
 $dispatcher->attachCallback(
     PushResponseInterface::MESSAGE_DATA_TYPE,
