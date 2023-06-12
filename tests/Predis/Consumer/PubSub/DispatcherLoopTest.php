@@ -10,11 +10,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\PubSub;
+namespace Predis\Consumer\PubSub;
 
 use Predis\Client;
-use Predis\Consumer\PubSub\Consumer;
-use Predis\Consumer\PubSub\DispatcherLoop;
 use PredisTestCase;
 
 /**

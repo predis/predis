@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\PubSub;
+namespace Predis\Consumer\PubSub;
 
 use Predis\Client;
 use Predis\Consumer\PubSub\Consumer as PubSubConsumer;
@@ -172,7 +172,6 @@ class ConsumerTest extends PredisTestCase
         $pubsub = new PubSubConsumer($client);
 
         $this->assertFalse($pubsub->valid());
-        $this->assertNull($pubsub->next());
     }
 
     /**

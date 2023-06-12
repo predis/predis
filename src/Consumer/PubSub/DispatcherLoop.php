@@ -12,145 +12,73 @@
 
 namespace Predis\Consumer\PubSub;
 
-use InvalidArgumentException;
+use Predis\Consumer\AbstractDispatcherLoop;
 
 /**
  * Method-dispatcher loop built around the client-side abstraction of a Redis
  * PUB / SUB context.
  */
-class DispatcherLoop
+class DispatcherLoop extends AbstractDispatcherLoop
 {
-    private $pubsub;
-
-    protected $callbacks;
-    protected $defaultCallback;
-    protected $subscriptionCallback;
-
-    /**
-     * @param Consumer $pubsub PubSub consumer instance used by the loop.
-     */
-    public function __construct(Consumer $pubsub)
+    public function __construct(Consumer $consumer)
     {
-        $this->callbacks = [];
-        $this->pubsub = $pubsub;
-    }
-
-    /**
-     * Checks if the passed argument is a valid callback.
-     *
-     * @param mixed $callable A callback.
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function assertCallback($callable)
-    {
-        if (!is_callable($callable)) {
-            throw new InvalidArgumentException('The given argument must be a callable object.');
-        }
-    }
-
-    /**
-     * Returns the underlying PUB / SUB context.
-     *
-     * @return Consumer
-     */
-    public function getPubSubConsumer()
-    {
-        return $this->pubsub;
-    }
-
-    /**
-     * Sets a callback that gets invoked upon new subscriptions.
-     *
-     * @param mixed $callable A callback.
-     */
-    public function subscriptionCallback($callable = null)
-    {
-        if (isset($callable)) {
-            $this->assertCallback($callable);
-        }
-
-        $this->subscriptionCallback = $callable;
-    }
-
-    /**
-     * Sets a callback that gets invoked when a message is received on a
-     * channel that does not have an associated callback.
-     *
-     * @param mixed $callable A callback.
-     */
-    public function defaultCallback($callable = null)
-    {
-        if (isset($callable)) {
-            $this->assertCallback($callable);
-        }
-
-        $this->subscriptionCallback = $callable;
+        $this->consumer = $consumer;
     }
 
     /**
      * Binds a callback to a channel.
      *
-     * @param string   $channel  Channel name.
-     * @param callable $callback A callback.
+     * @param string   $messageType Channel name.
+     * @param callable $callback    A callback.
      */
-    public function attachCallback($channel, $callback)
+    public function attachCallback(string $messageType, callable $callback): void
     {
-        $callbackName = $this->getPrefixKeys() . $channel;
+        $callbackName = $this->getPrefixKeys() . $messageType;
 
-        $this->assertCallback($callback);
-        $this->callbacks[$callbackName] = $callback;
-        $this->pubsub->subscribe($channel);
+        $this->callbacksDictionary[$callbackName] = $callback;
+        $this->consumer->subscribe($messageType);
     }
 
     /**
      * Stops listening to a channel and removes the associated callback.
      *
-     * @param string $channel Redis channel.
+     * @param string $messageType Redis channel.
      */
-    public function detachCallback($channel)
+    public function detachCallback(string $messageType): void
     {
-        $callbackName = $this->getPrefixKeys() . $channel;
+        $callbackName = $this->getPrefixKeys() . $messageType;
 
-        if (isset($this->callbacks[$callbackName])) {
-            unset($this->callbacks[$callbackName]);
-            $this->pubsub->unsubscribe($channel);
+        if (isset($this->callbacksDictionary[$callbackName])) {
+            unset($this->callbacksDictionary[$callbackName]);
+            $this->consumer->unsubscribe($messageType);
         }
     }
 
     /**
      * Starts the dispatcher loop.
      */
-    public function run()
+    public function run(): void
     {
-        foreach ($this->pubsub as $message) {
+        foreach ($this->consumer as $message) {
             $kind = $message->kind;
 
             if ($kind !== Consumer::MESSAGE && $kind !== Consumer::PMESSAGE) {
-                if (isset($this->subscriptionCallback)) {
-                    $callback = $this->subscriptionCallback;
-                    call_user_func($callback, $message, $this);
+                if (isset($this->defaultCallback)) {
+                    $callback = $this->defaultCallback;
+                    $callback($message, $this);
                 }
 
                 continue;
             }
 
-            if (isset($this->callbacks[$message->channel])) {
-                $callback = $this->callbacks[$message->channel];
-                call_user_func($callback, $message->payload, $this);
+            if (isset($this->callbacksDictionary[$message->channel])) {
+                $callback = $this->callbacksDictionary[$message->channel];
+                $callback($message->payload, $this);
             } elseif (isset($this->defaultCallback)) {
                 $callback = $this->defaultCallback;
-                call_user_func($callback, $message, $this);
+                $callback($message, $this);
             }
         }
-    }
-
-    /**
-     * Terminates the dispatcher loop.
-     */
-    public function stop()
-    {
-        $this->pubsub->stop();
     }
 
     /**
@@ -158,9 +86,9 @@ class DispatcherLoop
      *
      * @return string
      */
-    protected function getPrefixKeys()
+    protected function getPrefixKeys(): string
     {
-        $options = $this->pubsub->getClient()->getOptions();
+        $options = $this->consumer->getClient()->getOptions();
 
         if (isset($options->prefix)) {
             return $options->prefix->getPrefix();

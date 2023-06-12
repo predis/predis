@@ -11,6 +11,8 @@
  */
 
 use Predis\ClientInterface;
+use Predis\Consumer\DispatcherLoopInterface;
+use Predis\Consumer\Push\DispatcherLoop;
 use Predis\Consumer\Push\PushResponseInterface;
 
 require __DIR__ . '/shared.php';
@@ -25,7 +27,13 @@ $push = $client->push(static function (ClientInterface $client) {
     echo "Channel subscription status: {$status}\n";
 });
 
-// 3. Run consumer that will handle message data type push notifications. And stops if certain message will be sent to control channel.
+// 3. Storage for upcoming notifications.
+$messages = [];
+
+// 4. Create dispatcher for push notifications.
+$dispatcher = new DispatcherLoop($push);
+
+// 5. Attach callback for message data type. Print every message and store them in storage.
 // Send following commands via redis-cli to test:
 //
 // PUBLISH channel message1
@@ -34,16 +42,27 @@ $push = $client->push(static function (ClientInterface $client) {
 // PUBLISH control terminate
 // TODO Data types should be changed in near future. Instead of Message data type it should be one of kind data types.
 
-foreach ($push as $notification) {
-    if ((null !== $notification) && $notification->getDataType() === PushResponseInterface::MESSAGE_DATA_TYPE) {
-        if ($notification[1] === 'control' && $notification[2] === 'terminate') {
+$dispatcher->attachCallback(
+    PushResponseInterface::MESSAGE_DATA_TYPE,
+    static function (array $payload, DispatcherLoopInterface $dispatcher) {
+        global $messages;
+        [$channel, $message] = $payload;
+
+        if ($channel === 'control' && $message === 'terminate') {
             echo "Terminating notification consumer.\n";
-            $push->stop();
-            break;
+            $dispatcher->stop();
+
+            return;
         }
 
-        $message = $notification[2];
-
+        $messages[] = $message;
         echo "Received message: {$message}\n";
     }
-}
+);
+
+// 6. Run consumer loop with attached callbacks.
+$dispatcher->run();
+
+// 7. Count all messages that were received during consumer loop.
+$messagesCount = count($messages);
+echo "We received: {$messagesCount} messages\n";

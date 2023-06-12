@@ -12,34 +12,18 @@
 
 namespace Predis\Consumer\Push;
 
-use Iterator;
 use Predis\ClientInterface;
-use ReturnTypeWillChange;
+use Predis\Consumer\AbstractConsumer;
 
-class Consumer implements Iterator
+class Consumer extends AbstractConsumer
 {
-    /**
-     * @var int
-     */
-    private $position = 0;
-
-    /**
-     * @var bool
-     */
-    private $isValid = true;
-
-    /**
-     * @var ClientInterface
-     */
-    private $client;
-
     /**
      * @param ClientInterface $client
      * @param callable|null   $preLoopCallback Callback that should be called on client before enter a loop.
      */
     public function __construct(ClientInterface $client, callable $preLoopCallback = null)
     {
-        $this->client = $client;
+        parent::__construct($client);
 
         if (null !== $preLoopCallback) {
             $preLoopCallback($this->client);
@@ -47,75 +31,11 @@ class Consumer implements Iterator
     }
 
     /**
-     * @return ClientInterface
+     * @return PushResponseInterface|null
      */
-    public function getClient(): ClientInterface
-    {
-        return $this->client;
-    }
-
-    /**
-     * Stops consumer loop executing.
-     *
-     * @param  bool $dropConnection
-     * @return void
-     */
-    public function stop(bool $dropConnection = false): void
-    {
-        $this->isValid = false;
-
-        if ($dropConnection) {
-            $this->client->disconnect();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    #[ReturnTypeWillChange]
     public function current(): ?PushResponseInterface
     {
-        return $this->getPushNotification();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    #[ReturnTypeWillChange]
-    public function next()
-    {
-        if ($this->valid()) {
-            ++$this->position;
-        }
-
-        return $this->position;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    #[ReturnTypeWillChange]
-    public function key()
-    {
-        return $this->position;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    #[ReturnTypeWillChange]
-    public function valid()
-    {
-        return $this->isValid;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    #[ReturnTypeWillChange]
-    public function rewind()
-    {
-        // NOOP
+        return parent::current();
     }
 
     /**
@@ -123,7 +43,7 @@ class Consumer implements Iterator
      *
      * @return PushResponseInterface|null
      */
-    protected function getPushNotification(): ?PushResponseInterface
+    protected function getValue(): ?PushResponseInterface
     {
         $response = $this->client->getConnection()->read();
 
