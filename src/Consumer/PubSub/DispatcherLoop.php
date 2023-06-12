@@ -99,6 +99,7 @@ class DispatcherLoop extends AbstractDispatcherLoop
         if (isset($options->prefix)) {
             /** @var KeyPrefixProcessor $processor */
             $processor = $options->prefix;
+
             return $processor->getPrefix();
         }
 
