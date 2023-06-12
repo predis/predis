@@ -12,6 +12,7 @@
 
 namespace Predis\Consumer\PubSub;
 
+use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Consumer\AbstractDispatcherLoop;
 
 /**
@@ -20,6 +21,11 @@ use Predis\Consumer\AbstractDispatcherLoop;
  */
 class DispatcherLoop extends AbstractDispatcherLoop
 {
+    /**
+     * @var Consumer
+     */
+    protected $consumer;
+
     public function __construct(Consumer $consumer)
     {
         $this->consumer = $consumer;
@@ -91,7 +97,9 @@ class DispatcherLoop extends AbstractDispatcherLoop
         $options = $this->consumer->getClient()->getOptions();
 
         if (isset($options->prefix)) {
-            return $options->prefix->getPrefix();
+            /** @var KeyPrefixProcessor $processor */
+            $processor = $options->prefix;
+            return $processor->getPrefix();
         }
 
         return '';

@@ -13,6 +13,7 @@
 namespace Predis\Consumer\Push;
 
 use Predis\ClientInterface;
+use Predis\Connection\NodeConnectionInterface;
 use Predis\Consumer\AbstractConsumer;
 
 class Consumer extends AbstractConsumer
@@ -45,7 +46,9 @@ class Consumer extends AbstractConsumer
      */
     protected function getValue(): ?PushResponseInterface
     {
-        $response = $this->client->getConnection()->read();
+        /** @var NodeConnectionInterface $connection */
+        $connection = $this->client->getConnection();
+        $response = $connection->read();
 
         return ($response instanceof PushResponse) ? $response : null;
     }

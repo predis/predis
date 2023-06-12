@@ -16,6 +16,7 @@ use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\Command;
 use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\NodeConnectionInterface;
 use Predis\Consumer\AbstractConsumer;
 use Predis\NotSupportedException;
 
@@ -251,7 +252,9 @@ class Consumer extends AbstractConsumer
      */
     protected function getValue()
     {
-        $response = $this->client->getConnection()->read();
+        /** @var NodeConnectionInterface $connection */
+        $connection = $this->client->getConnection();
+        $response = $connection->read();
 
         switch ($response[0]) {
             case self::SUBSCRIBE:
