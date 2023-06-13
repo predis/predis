@@ -60,7 +60,7 @@ class LCS_Test extends PredisCommandTestCase
      * @dataProvider stringsProvider
      * @param  array $stringsArguments
      * @param  array $functionArguments
-     * @param        $expectedResponse
+     * @param  mixed $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */

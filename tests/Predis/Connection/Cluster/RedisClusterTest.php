@@ -738,6 +738,7 @@ class RedisClusterTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @group slow
      */
     public function testThrowsClientExceptionWhenExecutingCommandWithEmptyPool(): void
     {

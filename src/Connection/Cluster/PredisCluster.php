@@ -22,6 +22,7 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
 use ReturnTypeWillChange;
+use Traversable;
 
 /**
  * Abstraction for a cluster of aggregate connections to various Redis servers
@@ -208,7 +209,7 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
-     * {@inheritdoc}
+     * @return int
      */
     #[ReturnTypeWillChange]
     public function count()
@@ -217,7 +218,7 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
-     * {@inheritdoc}
+     * @return Traversable<string, NodeConnectionInterface>
      */
     #[ReturnTypeWillChange]
     public function getIterator()

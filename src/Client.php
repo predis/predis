@@ -16,18 +16,24 @@ use ArrayIterator;
 use InvalidArgumentException;
 use IteratorAggregate;
 use Predis\Command\CommandInterface;
+use Predis\Command\Container\ContainerFactory;
+use Predis\Command\Container\ContainerInterface;
 use Predis\Command\RawCommand;
-use Predis\Command\Redis\Container\ContainerFactory;
-use Predis\Command\Redis\Container\ContainerInterface;
 use Predis\Command\ScriptCommand;
 use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
+use Predis\Connection\RelayConnection;
 use Predis\Monitor\Consumer as MonitorConsumer;
+use Predis\Pipeline\Atomic;
+use Predis\Pipeline\FireAndForget;
 use Predis\Pipeline\Pipeline;
+use Predis\Pipeline\RelayAtomic;
+use Predis\Pipeline\RelayPipeline;
 use Predis\PubSub\Consumer as PubSubConsumer;
+use Predis\PubSub\RelayConsumer as RelayPubSubConsumer;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
@@ -47,7 +53,7 @@ use Traversable;
  */
 class Client implements ClientInterface, IteratorAggregate
 {
-    public const VERSION = '2.1.2';
+    public const VERSION = '3.0.0-dev';
 
     /** @var OptionsInterface */
     private $options;
@@ -263,6 +269,32 @@ class Client implements ClientInterface, IteratorAggregate
     }
 
     /**
+     * Applies the configured serializer and compression to given value.
+     *
+     * @param  mixed  $value
+     * @return string
+     */
+    public function pack($value)
+    {
+        return $this->connection instanceof RelayConnection
+            ? $this->connection->pack($value)
+            : $value;
+    }
+
+    /**
+     * Deserializes and decompresses to given value.
+     *
+     * @param  mixed  $value
+     * @return string
+     */
+    public function unpack($value)
+    {
+        return $this->connection instanceof RelayConnection
+            ? $this->connection->unpack($value)
+            : $value;
+    }
+
+    /**
      * Executes a command without filtering its arguments, parsing the response,
      * applying any prefix to keys or throwing exceptions on Redis errors even
      * regardless of client options.
@@ -314,29 +346,29 @@ class Client implements ClientInterface, IteratorAggregate
     }
 
     /**
-     * @param                     $name
+     * @param  string             $name
      * @return ContainerInterface
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         return ContainerFactory::create($this, $name);
     }
 
     /**
-     * @param        $name
-     * @param        $value
+     * @param  string $name
+     * @param  mixed  $value
      * @return mixed
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         throw new RuntimeException('Not allowed');
     }
 
     /**
-     * @param        $name
+     * @param  string $name
      * @return mixed
      */
-    public function __isset($name)
+    public function __isset(string $name)
     {
         throw new RuntimeException('Not allowed');
     }
@@ -440,19 +472,29 @@ class Client implements ClientInterface, IteratorAggregate
     /**
      * Actual pipeline context initializer method.
      *
-     * @param array $options  Options for the context.
-     * @param mixed $callable Optional callable used to execute the context.
+     * @param array|null $options  Options for the context.
+     * @param mixed      $callable Optional callable used to execute the context.
      *
      * @return Pipeline|array
      */
     protected function createPipeline(array $options = null, $callable = null)
     {
         if (isset($options['atomic']) && $options['atomic']) {
-            $class = 'Predis\Pipeline\Atomic';
+            $class = Atomic::class;
         } elseif (isset($options['fire-and-forget']) && $options['fire-and-forget']) {
-            $class = 'Predis\Pipeline\FireAndForget';
+            $class = FireAndForget::class;
         } else {
-            $class = 'Predis\Pipeline\Pipeline';
+            $class = Pipeline::class;
+        }
+
+        if ($this->connection instanceof RelayConnection) {
+            if (isset($options['atomic']) && $options['atomic']) {
+                $class = RelayAtomic::class;
+            } elseif (isset($options['fire-and-forget']) && $options['fire-and-forget']) {
+                throw new NotSupportedException('The "relay" extension does not support fire-and-forget pipelines.');
+            } else {
+                $class = RelayPipeline::class;
+            }
         }
 
         /*
@@ -522,7 +564,11 @@ class Client implements ClientInterface, IteratorAggregate
      */
     protected function createPubSub(array $options = null, $callable = null)
     {
-        $pubsub = new PubSubConsumer($this, $options);
+        if ($this->connection instanceof RelayConnection) {
+            $pubsub = new RelayPubSubConsumer($this, $options);
+        } else {
+            $pubsub = new PubSubConsumer($this, $options);
+        }
 
         if (!isset($callable)) {
             return $pubsub;

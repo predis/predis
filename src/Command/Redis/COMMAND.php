@@ -26,4 +26,15 @@ class COMMAND extends BaseCommand
     {
         return 'COMMAND';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        // Relay (RESP3) uses maps and it might be good
+        // to make the return value a breaking change
+
+        return $data;
+    }
 }

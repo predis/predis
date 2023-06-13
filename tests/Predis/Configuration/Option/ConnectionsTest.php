@@ -66,7 +66,7 @@ class ConnectionsTest extends PredisTestCase
      * @group disconnected
      * @dataProvider provideSupportedStringValuesForOption
      */
-    public function testAcceptsStringToConfigurePhpiredisStreamBackend($value, $classFQCN)
+    public function testAcceptsStringToConfigureRelayBackend($value, $classFQCN)
     {
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
@@ -229,9 +229,7 @@ class ConnectionsTest extends PredisTestCase
     public function provideSupportedStringValuesForOption()
     {
         return [
-            ['phpiredis-stream', 'Predis\Connection\PhpiredisStreamConnection'],
-            ['phpiredis-socket', 'Predis\Connection\PhpiredisSocketConnection'],
-            ['phpiredis', 'Predis\Connection\PhpiredisStreamConnection'],
+            ['relay', \Predis\Connection\RelayConnection::class],
         ];
     }
 }

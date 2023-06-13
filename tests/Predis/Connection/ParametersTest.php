@@ -386,6 +386,23 @@ class ParametersTest extends PredisTestCase
         $this->assertSame($uri, (string) $parameters);
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testSettingRelayOptions(): void
+    {
+        $uri = 'tcp://10.10.10.10?serializer=igbinary&compression=lz4';
+
+        $expected = [
+            'scheme' => 'tcp',
+            'host' => '10.10.10.10',
+            'serializer' => 'igbinary',
+            'compression' => 'lz4',
+        ];
+
+        $this->assertSame($expected, Parameters::parse($uri));
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

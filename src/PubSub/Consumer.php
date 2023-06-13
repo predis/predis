@@ -18,12 +18,12 @@ use Predis\Command\Command;
 use Predis\NotSupportedException;
 
 /**
- * PUB/SUB consumer abstraction.
+ * PUB/SUB consumer.
  */
 class Consumer extends AbstractConsumer
 {
-    private $client;
-    private $options;
+    protected $client;
+    protected $options;
 
     /**
      * @var SubscriptionContext
@@ -81,7 +81,7 @@ class Consumer extends AbstractConsumer
      *
      * @throws NotSupportedException
      */
-    private function checkCapabilities(ClientInterface $client)
+    protected function checkCapabilities(ClientInterface $client)
     {
         $commands = ['publish', 'spublish', 'subscribe', 'ssubscribe', 'unsubscribe', 'sunsubscribe', 'psubscribe', 'punsubscribe'];
 
@@ -97,7 +97,7 @@ class Consumer extends AbstractConsumer
      *
      * @param string $subscribeAction Type of subscription.
      */
-    private function genericSubscribeInit($subscribeAction)
+    protected function genericSubscribeInit($subscribeAction)
     {
         if (isset($this->options[$subscribeAction])) {
             $this->$subscribeAction($this->options[$subscribeAction]);
