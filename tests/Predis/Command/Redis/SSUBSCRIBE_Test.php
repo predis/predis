@@ -61,7 +61,7 @@ class SSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-excluded
+     * @group relay-incompatible
      * @requiresRedisVersion >= 7.0.0
      */
     public function testSubscribesToGivenShardedChannels(): void
@@ -73,7 +73,7 @@ class SSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-excluded
+     * @group relay-incompatible
      * @requiresRedisVersion >= 7.0.0
      */
     public function testAllowsSUnsubscribeAfterSSubscribe(): void
