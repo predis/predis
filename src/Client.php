@@ -346,29 +346,29 @@ class Client implements ClientInterface, IteratorAggregate
     }
 
     /**
-     * @param                     $name
+     * @param  string             $name
      * @return ContainerInterface
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         return ContainerFactory::create($this, $name);
     }
 
     /**
-     * @param        $name
-     * @param        $value
+     * @param  string $name
+     * @param  mixed  $value
      * @return mixed
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         throw new RuntimeException('Not allowed');
     }
 
     /**
-     * @param        $name
+     * @param  string $name
      * @return mixed
      */
-    public function __isset($name)
+    public function __isset(string $name)
     {
         throw new RuntimeException('Not allowed');
     }
