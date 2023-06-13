@@ -396,6 +396,16 @@ $response = $client->lpushrand('random_values', $seed = mt_rand());
 
 ### Customizable connection backends ###
 
+Predis can use different connection backends to connect to Redis. The builtin Relay integration
+leverages the [Relay](https://github.com/cachewerk/relay) extension for PHP for major performance
+gains, by caching a partial replica of the Redis dataset in PHP shared runtime memory.
+
+```php
+$client = new Predis\Client('tcp://127.0.0.1', [
+    'connections' => 'relay',
+]);
+```
+
 Developers can create their own connection classes to support whole new network backends, extend
 existing classes or provide completely different implementations. Connection classes must implement
 `Predis\Connection\NodeConnectionInterface` or extend `Predis\Connection\AbstractConnection`:
@@ -438,23 +448,6 @@ be disabled. See [the tests README](tests/README.md) for more details about test
 
 Predis uses GitHub Actions for continuous integration and the history for past and current builds can be
 found [on its actions page](https://github.com/predis/predis/actions).
-
-
-## Other ##
-
-
-### Project related links ###
-
-- [Source code](https://github.com/predis/predis)
-- [Wiki](https://github.com/predis/predis/wiki)
-- [Issue tracker](https://github.com/predis/predis/issues)
-
-
-### Author ###
-
-- [Till Krüss](https://till.im) ([Twitter](http://twitter.com/tillkruss))
-- [Daniele Alessandri](mailto:suppakilla@gmail.com) ([twitter](http://twitter.com/JoL1hAHN))
-
 
 ### License ###
 

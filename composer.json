@@ -29,6 +29,9 @@
         "phpstan/phpstan": "^1.9",
         "phpunit/phpunit": "^8.0 || ~9.4.4"
     },
+    "suggest": {
+        "ext-relay": "Faster connection with in-memory caching (>=0.6.2)"
+    },
     "scripts": {
         "phpstan": "phpstan analyse",
         "style": "php-cs-fixer fix --diff --dry-run",

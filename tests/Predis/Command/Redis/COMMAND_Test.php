@@ -109,7 +109,11 @@ class COMMAND_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
+     * @group relay-fixme
      * @requiresRedisVersion >= 2.8.13
+     *
+     * Relay uses RESP3 maps, the `Predis\Command\Redis\COMMAND` needs a converter.
      */
     public function testReturnsCommandInfoOnExistingCommand(): void
     {

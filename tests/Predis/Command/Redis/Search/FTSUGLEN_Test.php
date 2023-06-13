@@ -14,6 +14,10 @@ namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Redis\PredisCommandTestCase;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTSUGLEN_Test extends PredisCommandTestCase
 {
     /**

@@ -16,6 +16,10 @@ use Predis\Command\Argument\Search\SugAddArguments;
 use Predis\Command\Argument\Search\SugGetArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTSUGGET_Test extends PredisCommandTestCase
 {
     /**
@@ -74,7 +78,7 @@ class FTSUGGET_Test extends PredisCommandTestCase
 
         $actualResponse = $redis->ftsugget(...$getArguments);
 
-        $this->assertSame($expectedResponse, $actualResponse);
+        $this->assertEquals($expectedResponse, $actualResponse);
     }
 
     /**

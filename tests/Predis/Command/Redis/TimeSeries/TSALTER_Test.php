@@ -18,6 +18,10 @@ use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class TSALTER_Test extends PredisCommandTestCase
 {
     /**

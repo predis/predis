@@ -83,7 +83,7 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
             (new SpellcheckArguments())->distance(2)->terms('dict')
         );
 
-        $this->assertSame($expectedResponse, $actualResponse);
+        $this->assertEquals($expectedResponse, $actualResponse);
     }
 
     /**

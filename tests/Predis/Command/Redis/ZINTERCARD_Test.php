@@ -125,8 +125,8 @@ class ZINTERCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param         $keys
-     * @param         $limit
+     * @param  mixed  $keys
+     * @param  mixed  $limit
      * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 7.0.0

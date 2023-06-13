@@ -17,6 +17,7 @@ use Predis\Response\ServerException;
 /**
  * @group commands
  * @group realm-scripting
+ * @requiresRedisVersion >= 7.0.0
  */
 class FUNCTIONS_Test extends PredisCommandTestCase
 {
@@ -85,6 +86,7 @@ class FUNCTIONS_Test extends PredisCommandTestCase
     public function testLoadFunctionAddFunctionIntoGivenLibrary(): void
     {
         $redis = $this->getClient();
+        $redis->executeRaw(['FUNCTION', 'FLUSH']);
 
         $actualResponse = $redis->function->load(
             "#!lua name={$this->libName} \n redis.register_function('myfunc', function(keys, args) return args[1] end)"
@@ -121,6 +123,7 @@ class FUNCTIONS_Test extends PredisCommandTestCase
     public function testLoadFunctionOverridesExistingFunctionWithReplaceArgumentGiven(): void
     {
         $redis = $this->getClient();
+        $redis->executeRaw(['FUNCTION', 'FLUSH']);
 
         $actualResponse = $redis->function->load(
             "#!lua name={$this->libName} \n redis.register_function('myfunc', function(keys, args) return args[1] end)"
@@ -147,6 +150,7 @@ class FUNCTIONS_Test extends PredisCommandTestCase
     public function testLoadFunctionThrowsErrorOnAlreadyExistingLibraryGiven(): void
     {
         $redis = $this->getClient();
+        $redis->executeRaw(['FUNCTION', 'FLUSH']);
 
         $actualResponse = $redis->function->load(
             "#!lua name={$this->libName} \n redis.register_function('myfunc', function(keys, args) return args[1] end)"
@@ -174,6 +178,7 @@ class FUNCTIONS_Test extends PredisCommandTestCase
     public function testDeleteFunctionRemovesAlreadyExistingLibrary(): void
     {
         $redis = $this->getClient();
+        $redis->executeRaw(['FUNCTION', 'FLUSH']);
 
         $actualResponse = $redis->function->load(
             "#!lua name={$this->libName} \n redis.register_function('myfunc', function(keys, args) return args[1] end)"
@@ -191,6 +196,7 @@ class FUNCTIONS_Test extends PredisCommandTestCase
     public function testDeleteFunctionThrowsErrorOnNonExistingLibrary(): void
     {
         $redis = $this->getClient();
+        $redis->executeRaw(['FUNCTION', 'FLUSH']);
 
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('ERR Library not found');

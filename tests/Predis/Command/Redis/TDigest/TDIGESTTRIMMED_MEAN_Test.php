@@ -82,7 +82,7 @@ class TDIGESTTRIMMED_MEAN_Test extends PredisCommandTestCase
 
         $actualResponse = $redis->tdigesttrimmed_mean(...$trimmedMeanArguments);
 
-        $this->assertSame($expectedResponse, $actualResponse);
+        $this->assertEquals($expectedResponse, $actualResponse);
     }
 
     /**
@@ -97,7 +97,7 @@ class TDIGESTTRIMMED_MEAN_Test extends PredisCommandTestCase
         $redis->tdigestcreate('key');
 
         $actualResponse = $redis->tdigesttrimmed_mean('key', 0, 1);
-        $this->assertSame('nan', $actualResponse);
+        $this->assertEquals('nan', $actualResponse);
     }
 
     /**

@@ -17,6 +17,10 @@ use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class FTEXPLAIN_Test extends PredisCommandTestCase
 {
     /**

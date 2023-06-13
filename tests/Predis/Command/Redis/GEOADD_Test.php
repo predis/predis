@@ -107,7 +107,7 @@ class GEOADD_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo');
-        $this->assertSame(['Palermo' => '3479099956230698'], $redis->zrange('Sicily', 0, -1, 'WITHSCORES'));
+        $this->assertEquals(['Palermo' => '3479099956230698'], $redis->zrange('Sicily', 0, -1, 'WITHSCORES'));
     }
 
     /**

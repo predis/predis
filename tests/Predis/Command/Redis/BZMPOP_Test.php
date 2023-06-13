@@ -81,7 +81,7 @@ class BZMPOP_Test extends PredisCommandTestCase
         $redis->zadd($key, ...$sortedSetDictionary);
         $actualResponse = $redis->bzmpop($timeout, [$key], $modifier, $count);
 
-        $this->assertSame($expectedResponse, $actualResponse);
+        $this->assertEquals($expectedResponse, $actualResponse);
         $this->assertSame($expectedModifiedSortedSet, $redis->zrange($key, 0, -1));
     }
 
