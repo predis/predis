@@ -134,8 +134,8 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
     /**
      * @dataProvider unexpectedValueProvider
      * @param  string $destination
-     * @param         $keys
-     * @param         $weights
+     * @param  mixed  $keys
+     * @param  mixed  $weights
      * @param  string $aggregate
      * @param  string $expectedExceptionMessage
      * @return void

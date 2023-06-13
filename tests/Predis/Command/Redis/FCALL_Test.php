@@ -80,7 +80,7 @@ class FCALL_Test extends PredisCommandTestCase
      * @dataProvider functionsProvider
      * @param  string $function
      * @param  array  $functionArguments
-     * @param         $expectedResponse
+     * @param  mixed  $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
