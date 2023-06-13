@@ -37,9 +37,9 @@ class Consumer extends AbstractConsumer
     public const STATUS_SUBSCRIBED = 2;  // 0b0010
     public const STATUS_PSUBSCRIBED = 4; // 0b0100
 
-    private $statusFlags = self::STATUS_VALID;
+    protected $statusFlags = self::STATUS_VALID;
 
-    private $options;
+    protected $options;
 
     /**
      * @param  ClientInterface       $client  Client instance used by the consumer.
