@@ -89,6 +89,32 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testSpellcheckReturnsPossibleSuggestionsToGivenMisspelledTermResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = [['TERM', 'held', [[0.0, 'hello'], [0.0, 'help']]]];
+
+        $this->assertEquals('OK', $redis->ftcreate(
+            'index',
+            [new TextField('text_field')]
+        ));
+
+        $this->assertEquals(2, $redis->ftdictadd('dict', 'hello', 'help'));
+
+        $actualResponse = $redis->ftspellcheck(
+            'index',
+            'held',
+            (new SpellcheckArguments())->distance(2)->terms('dict')
+        );
+
+        $this->assertSame($expectedResponse, $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRediSearchVersion >= 1.4.0
      */
     public function testThrowsExceptionOnIncorrectTermsModifierGiven(): void

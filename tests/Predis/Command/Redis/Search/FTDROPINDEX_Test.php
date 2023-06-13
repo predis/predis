@@ -77,6 +77,21 @@ class FTDROPINDEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testDropRemovesGivenIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $schema = [new TextField('text_field')];
+
+        $this->assertEquals('OK', $redis->ftcreate('index', $schema));
+        $this->assertEquals('OK', $redis->ftdropindex('index'));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRediSearchVersion >= 2.0.0
      */
     public function testThrowsExceptionOnNonExistingIndex(): void

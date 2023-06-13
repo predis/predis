@@ -68,4 +68,19 @@ class FTSUGLEN_Test extends PredisCommandTestCase
 
         $this->assertSame(2, $redis->ftsuglen('key'));
     }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testReturnsLengthOfGivenSuggestionDictionaryResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->ftsugadd('key', 'foo', 1);
+        $redis->ftsugadd('key', 'bar', 1);
+
+        $this->assertSame(2, $redis->ftsuglen('key'));
+    }
 }
