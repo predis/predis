@@ -127,8 +127,8 @@ class ZINTER_Test extends PredisCommandTestCase
 
     /**
      * @dataProvider unexpectedValueProvider
-     * @param $keys
-     * @param $weights
+     * @param  mixed  $keys
+     * @param  mixed  $weights
      * @param  string $aggregate
      * @param  bool   $withScores
      * @param  string $expectedExceptionMessage
