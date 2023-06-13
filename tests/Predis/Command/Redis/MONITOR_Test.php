@@ -74,6 +74,7 @@ class MONITOR_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 6.0.0
      */
     public function testReturnsStatusResponseAndReadsEventsFromTheConnectionResp3(): void

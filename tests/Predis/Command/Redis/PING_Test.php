@@ -71,6 +71,7 @@ class PING_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 6.0.0
      */
     public function testAlwaysReturnsStatusResponseResp3(): void
