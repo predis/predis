@@ -33,7 +33,7 @@ use SplQueue;
  */
 class Pipeline implements ClientContextInterface
 {
-    private $client;
+    protected $client;
     private $pipeline;
 
     private $responses = [];

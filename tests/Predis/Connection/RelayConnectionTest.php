@@ -17,43 +17,17 @@ use Predis\Command\RawCommand;
 use Predis\Response\Error as ErrorResponse;
 
 /**
- * @group ext-phpiredis
- * @requires extension phpiredis
+ * @group ext-relay
+ * @requires extension relay
  */
-class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
+class RelayConnectionTest extends PredisConnectionTestCase
 {
     /**
      * {@inheritDoc}
      */
     public function getConnectionClass(): string
     {
-        return 'Predis\Connection\PhpiredisStreamConnection';
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testSupportsSchemeTls(): void
-    {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('SSL encryption is not supported by this connection backend');
-
-        $connection = $this->createConnectionWithParams(['scheme' => 'tls']);
-
-        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testSupportsSchemeRediss(): void
-    {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('SSL encryption is not supported by this connection backend');
-
-        $connection = $this->createConnectionWithParams(['scheme' => 'rediss']);
-
-        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $connection);
+        return RelayConnection::class;
     }
 
     /**
@@ -91,6 +65,18 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     */
+    public function testGetResourceForcesConnection(): void
+    {
+        $connection = $this->createConnection();
+
+        $this->assertFalse($connection->isConnected());
+        $connection->getResource();
+        $this->assertTrue($connection->isConnected());
+    }
+
+    /**
+     * @group connected
      * @group slow
      * @requires PHP 5.4
      */
@@ -110,6 +96,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
     /**
      * @medium
      * @group connected
+     * @group relay-incompatible
      */
     public function testThrowsExceptionOnProtocolDesynchronizationErrors(): void
     {
@@ -126,6 +113,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requires PHP 5.4
      */
     public function testPersistentParameterWithFalseLikeValues(): void
@@ -145,6 +133,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requires PHP 5.4
      */
     public function testPersistentParameterWithTrueLikeValues(): void
@@ -166,6 +155,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requires PHP 5.4
      */
     public function testPersistentConnectionsToSameNodeShareResource(): void
@@ -183,6 +173,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requires PHP 5.4
      */
     public function testPersistentConnectionsToSameNodeDoNotShareResourceUsingDifferentPersistentID(): void
@@ -198,6 +189,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      */
     public function testTcpNodelayParameterSetsContextFlagWhenTrue()
     {
@@ -212,6 +204,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      */
     public function testTcpNodelayParameterDoesNotSetContextFlagWhenFalse()
     {
@@ -226,6 +219,7 @@ class PhpiredisStreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      */
     public function testTcpDelayContextFlagIsNotSetByDefault()
     {

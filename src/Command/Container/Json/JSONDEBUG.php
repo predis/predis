@@ -10,19 +10,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Redis\Container;
+namespace Predis\Command\Container\Json;
 
-use Predis\Response\Status;
+use Predis\Command\Container\AbstractContainer;
 
 /**
- * @method Status dryRun(string $username, string $command, ...$arguments)
- * @method array  getUser(string $username)
- * @method Status setUser(string $username, string ...$rules)
+ * @method array memory(string $key, string $path)
+ * @method array help()
  */
-class ACL extends AbstractContainer
+class JSONDEBUG extends AbstractContainer
 {
     public function getContainerCommandId(): string
     {
-        return 'acl';
+        return 'JSONDEBUG';
     }
 }

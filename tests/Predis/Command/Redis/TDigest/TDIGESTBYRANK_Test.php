@@ -76,8 +76,8 @@ class TDIGESTBYRANK_Test extends PredisCommandTestCase
 
         $actualResponse = $redis->tdigestbyrank('key', 0, 1, 2, 3, 4, 5, 6);
 
-        $this->assertSame($expectedResponse, $actualResponse);
-        $this->assertSame(['nan', 'nan'], $redis->tdigestbyrank('empty_key', 0, 1));
+        $this->assertEquals($expectedResponse, $actualResponse);
+        $this->assertEquals(['nan', 'nan'], $redis->tdigestbyrank('empty_key', 0, 1));
     }
 
     /**

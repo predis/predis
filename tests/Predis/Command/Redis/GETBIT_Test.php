@@ -99,8 +99,7 @@ class GETBIT_Test extends PredisCommandTestCase
      */
     public function testThrowsExceptionOnNegativeOffset(): void
     {
-        $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessage('ERR bit offset is not an integer or out of range');
+        $this->expectExceptionMessage('bit offset is not an integer or out of range');
 
         $redis = $this->getClient();
 
@@ -114,8 +113,7 @@ class GETBIT_Test extends PredisCommandTestCase
      */
     public function testThrowsExceptionOnInvalidOffset(): void
     {
-        $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessage('ERR bit offset is not an integer or out of range');
+        $this->expectExceptionMessage('bit offset is not an integer or out of range');
 
         $redis = $this->getClient();
 

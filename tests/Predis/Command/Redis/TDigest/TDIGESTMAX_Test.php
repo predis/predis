@@ -75,8 +75,8 @@ class TDIGESTMAX_Test extends PredisCommandTestCase
 
         $actualResponse = $redis->tdigestmax('key');
 
-        $this->assertSame('5', $actualResponse);
-        $this->assertSame('nan', $redis->tdigestmax('empty_key'));
+        $this->assertEquals('5', $actualResponse);
+        $this->assertEquals('nan', $redis->tdigestmax('empty_key'));
     }
 
     /**

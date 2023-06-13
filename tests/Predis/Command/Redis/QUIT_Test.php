@@ -58,6 +58,7 @@ class QUIT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      */
     public function testReturnsStatusResponseWhenClosingConnection(): void
     {
