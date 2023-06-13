@@ -25,4 +25,25 @@ class TDIGESTMIN extends RedisCommand
     {
         return 'TDIGEST.MIN';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResponse($data)
+    {
+        if (is_string($data) || !is_float($data)) {
+            return $data;
+        }
+
+        // convert Relay (RESP3) constants to strings
+        if (is_nan($data)) {
+            return 'nan';
+        }
+
+        switch ($data) {
+            case INF: return 'inf';
+            case -INF: return '-inf';
+            default: return $data;
+        }
+    }
 }

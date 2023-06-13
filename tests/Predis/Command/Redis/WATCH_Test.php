@@ -17,6 +17,7 @@ use Predis\Command\PrefixableCommand;
 /**
  * @group commands
  * @group realm-transaction
+ * @group relay-incompatible
  */
 class WATCH_Test extends PredisCommandTestCase
 {

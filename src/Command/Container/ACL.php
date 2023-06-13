@@ -10,20 +10,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Redis\Container\Search;
+namespace Predis\Command\Container;
 
-use Predis\Command\Redis\Container\AbstractContainer;
 use Predis\Response\Status;
 
 /**
- * @method array  get(string $option)
- * @method array  help(string $option)
- * @method Status set(string $option, $value)
+ * @method Status dryRun(string $username, string $command, ...$arguments)
+ * @method array  getUser(string $username)
+ * @method Status setUser(string $username, string ...$rules)
  */
-class FTCONFIG extends AbstractContainer
+class ACL extends AbstractContainer
 {
     public function getContainerCommandId(): string
     {
-        return 'FTCONFIG';
+        return 'acl';
     }
 }

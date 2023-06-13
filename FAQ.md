@@ -1,7 +1,6 @@
-# Some frequently asked questions about Predis #
-________________________________________________
+# Frequently asked questions about Predis #
 
-### What is the point of Predis? ###
+## What is the point of Predis? ##
 
 The main point of Predis is about offering a highly customizable and extensible client for Redis,
 that can be easily extended by developers while still being reasonably fast. With Predis you can
@@ -13,12 +12,12 @@ a great asset since it allows developers to add new and still missing features o
 the standard behaviour of the library without the need to break dependencies in production code (at
 least to some degree).
 
-### Does Predis support UNIX domain sockets and persistent connections? ###
+## Does Predis support UNIX domain sockets and persistent connections? ##
 
 Yes. Obviously persistent connections actually work only when using PHP configured as a persistent
 process reused by the web server (see [PHP-FPM](http://php-fpm.org)).
 
-### Does Predis support SSL-encrypted connections? ###
+## Does Predis support SSL-encrypted connections? ##
 
 Yes. Encrypted connections are mostly useful when connecting to Redis instances exposed by various
 cloud hosting providers without the need to configure an SSL proxy, but you should also take into
@@ -26,16 +25,21 @@ account the general performances degradation especially during the connect() ope
 handshake must be performed to secure the connection. Persistent SSL-encrypted connections may help
 in that respect, but they are supported only when running on PHP >= 7.0.0.
 
-### Does Predis support transparent (de)serialization of values? ###
+## Does Predis support transparent (de)serialization of values? ##
 
-No and it will not ever do that by default. The reason behind this decision is that serialization is
-usually something that developers prefer to customize depending on their needs and can not be easily
-generalized when using Redis because of the many possible access patterns for your data. This does
-not mean that it is impossible to have such a feature since you can leverage the extensibility of
-this library to define your own serialization-aware commands. You can find more details about how to
-do that [on this issue](http://github.com/predis/predis/issues/29#issuecomment-1202624).
+When using [Relay](https://github.com/cachewerk/relay) as the underlying client, several
+serialization and compression algorithms are supported. This slightly increases CPU usage,
+but significantly reduces bytes sent over the network and Redis memory usage.
 
-### How can I force Predis to connect to Redis before sending any command? ###
+Without Relay, Predis will not serialize data and will never do that by default. The reason
+behind this decision is that serialization is usually something that developers prefer to
+customize depending on their needs and can not be easilygeneralized when using Redis because
+of the many possible access patterns for your data. This does not mean that it is impossible
+to have such a feature since you can leverage the extensibility of this library to define
+your own serialization-aware commands. You can find more details about how to do that
+[on this issue](http://github.com/predis/predis/issues/29#issuecomment-1202624).
+
+## How can I force Predis to connect to Redis before sending any command? ##
 
 Explicitly connecting to Redis is usually not needed since the client initializes connections lazily
 only when they are needed. Admittedly, this behavior can be inconvenient in certain scenarios when
@@ -55,7 +59,7 @@ try {
 $client->info();
 ```
 
-### How Predis abstracts Redis commands? ###
+## How Predis abstracts Redis commands? ##
 
 The approach used to implement Redis commands is quite simple: by default each command follows the
 same signature as defined on the [Redis documentation](http://redis.io/commands) which makes things
@@ -75,12 +79,20 @@ $client->hmset('my:hash', ['field1'=>'value1', 'field2'=>'value2']); // single n
 An exception to this rule is [`SORT`](http://redis.io/commands/sort) for which modifiers are passed
 [using a named array](tests/Predis/Command/KeySortTest.php#L54-L75).
 
+## When should I use Relay? ##
 
-# Speaking about performances... #
-_________________________________________________
+If you care about performance, __always__. [Relay](https://github.com/cachewerk/relay) is free to use.
 
+## When should I use PhpRedis? ###
 
-### Predis is a pure-PHP implementation: it can not be fast enough! ###
+Predis is fast enough when Redis is located on the same machine as PHP, more on that later.
+
+[PhpRedis](https://github.com/phpredis/phpredis) (and Relay) perform significantly better when
+network I/O is involved, due to their ability to compress data by ~75%. Fewer bytes and received
+sent over the network [means faster operations](https://akalongman.medium.com/phpredis-vs-predis-comparison-on-real-production-data-a819b48cbadb),
+and potentially cost savings when network traffic isn't free (e.g. AWS Elasticache Inter-AZ transfer costs).
+
+## Predis is a pure-PHP implementation: it can not be fast enough! ##
 
 It really depends, but most of the times the answer is: _yes, it is fast enough_. I will give you a
 couple of easy numbers with a simple test that uses a single client and is executed by PHP 5.5.6
@@ -92,7 +104,7 @@ against a local instance of Redis 2.8 that runs under Ubuntu 13.10 on a Intel Q6
 0.130 seconds to fetch 30000 keys using _KEYS *_.
 ```
 
-How does it compare with [__phpredis__](http://github.com/nicolasff/phpredis), a nice C extension
+How does it compare with [__PhpRedis__](http://github.com/phpredis/phpredis), a nice C extension
 providing an efficient client for Redis?
 
 ```
@@ -101,7 +113,7 @@ providing an efficient client for Redis?
 0.035 seconds to fetch 30000 keys using "KEYS *"".
 ```
 
-Wow __phpredis__ seems much faster! Well, we are comparing a C extension with a pure-PHP library so
+Wow __PhpRedis__ seems much faster! Well, we are comparing a C extension with a pure-PHP library so
 lower numbers are quite expected but there is a fundamental flaw in them: is this really how you are
 going to use Redis in your application? Are you really going to send thousands of commands using a
 for-loop on each page request using a single client instance? If so... well I guess you are probably
@@ -119,7 +131,7 @@ Using Predis:
 3200 GET/sec while retrieving the very same values
 0.132 seconds to fetch 30000 keys using "KEYS *".
 
-Using phpredis:
+Using PhpRedis:
 3500 SET/sec using 12 bytes for both key and value
 3500 GET/sec while retrieving the very same values
 0.045 seconds to fetch 30000 keys using "KEYS *".
@@ -131,47 +143,3 @@ that we are measuring the overhead of client libraries implementations and the e
 round-trip times, so we are not really measuring how fast Redis is. Redis shines best with thousands
 of concurrent clients doing requests! Also, actual performances should be measured according to how
 your application will use Redis.
-
-### I am convinced, but performances for multi-bulk responses are still worse ###
-
-Fair enough, but there is an option available if you need even more speed and consists on installing
-__[phpiredis](http://github.com/nrk/phpiredis)__ (note the additional _i_ in the name) and let the
-client use it. __phpiredis__ is another C extension that wraps __hiredis__ (the official C client
-library for Redis) with a thin layer exposing its features to PHP. You can then choose between two
-different connection classes:
-
-  - `Predis\Connection\PhpiredisStreamConnection` (using native PHP streams).
-  - `Predis\Connection\PhpiredisSocketConnection` (requires `ext-socket`).
-
-You will now get the benefits of a faster protocol serializer and parser just by adding a couple of
-lines of code:
-
-```php
-$client = new Predis\Client('tcp://127.0.0.1', array(
-    'connections' => array(
-        'tcp'  => 'Predis\Connection\PhpiredisStreamConnection',
-        'unix' => 'Predis\Connection\PhpiredisSocketConnection',
-    ),
-));
-```
-
-Dead simple. Nothing changes in the way you use the library in your application. So how fast is it
-our basic benchmark script now? There are not much improvements for inline or short bulk responses
-like the ones returned by `SET` and `GET`, but the speed for parsing multi-bulk responses is now on
-par with phpredis:
-
-```
-Fatching 30000 keys with _KEYS *_ using Predis paired with phpiredis::
-
-0.035 seconds from a local Redis instance
-0.047 seconds from a remote Redis instance
-```
-
-### If I need an extension to get better performances, why not using phpredis? ###
-
-Good question. Generically speaking if you need absolute uber-speed using Redis on the localhost and
-you do not care about abstractions built around some Redis features such as MULTI / EXEC, or if you
-do not need any kind of extensibility or guaranteed backwards compatibility with different versions
-of Redis (Predis currently supports from 1.2 up to 2.8 and the current development version), then
-using __phpredis__ makes absolutely sense. Otherwise, Predis is perfect for the job and by adding
-__phpiredis__ you can get a nice speed bump almost for free.

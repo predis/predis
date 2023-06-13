@@ -19,6 +19,10 @@ use Predis\Command\Argument\TimeSeries\DecrByArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class TSDECRBY_Test extends PredisCommandTestCase
 {
     /**

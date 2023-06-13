@@ -10,10 +10,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Redis\Container\Search;
+namespace Predis\Command\Container\Search;
 
 use Predis\Command\Argument\Search\CursorArguments;
-use Predis\Command\Redis\Container\AbstractContainer;
+use Predis\Command\Container\AbstractContainer;
 use Predis\Response\Status;
 
 /**

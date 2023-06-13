@@ -60,9 +60,9 @@ class SORT extends RedisCommand
             }
         }
 
-        if (isset($sortParams['LIMIT']) &&
-            is_array($sortParams['LIMIT']) &&
-            count($sortParams['LIMIT']) == 2) {
+        if (isset($sortParams['LIMIT'])
+            && is_array($sortParams['LIMIT'])
+            && count($sortParams['LIMIT']) == 2) {
             $query[] = 'LIMIT';
             $query[] = $sortParams['LIMIT'][0];
             $query[] = $sortParams['LIMIT'][1];

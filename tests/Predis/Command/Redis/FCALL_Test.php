@@ -18,6 +18,7 @@ use Predis\Response\ServerException;
 /**
  * @group commands
  * @group realm-scripting
+ * @requiresRedisVersion >= 7.0.0
  */
 class FCALL_Test extends PredisCommandTestCase
 {
@@ -77,9 +78,9 @@ class FCALL_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider functionsProvider
-     * @param string $function
-     * @param array  $functionArguments
-     * @param $expectedResponse
+     * @param  string $function
+     * @param  array  $functionArguments
+     * @param  mixed  $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -89,6 +90,7 @@ class FCALL_Test extends PredisCommandTestCase
         $expectedResponse
     ): void {
         $redis = $this->getClient();
+        $redis->executeRaw(['FUNCTION', 'FLUSH']);
 
         $this->assertSame('mylib', $redis->function->load($function));
 
@@ -105,6 +107,7 @@ class FCALL_Test extends PredisCommandTestCase
     public function testThrowsExceptionOnNonExistingFunctionGiven(): void
     {
         $redis = $this->getClient();
+        $redis->executeRaw(['FUNCTION', 'FLUSH']);
 
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('ERR Function not found');

@@ -22,7 +22,7 @@ use Predis\Connection;
  */
 abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 {
-    protected $redisServerVersion = null;
+    protected $redisServerVersion;
     protected $redisJsonVersion;
 
     /**
@@ -73,7 +73,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return RedisCommandConstraint
      */
-    public function isRedisCommand($command = null, ?array $arguments = null): RedisCommandConstraint
+    public function isRedisCommand($command = null, array $arguments = null): RedisCommandConstraint
     {
         return new RedisCommandConstraint($command, $arguments);
     }
@@ -224,7 +224,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return Client
      */
-    protected function createClient(?array $parameters = null, ?array $options = null, ?bool $flushdb = true): Client
+    protected function createClient(array $parameters = null, array $options = null, ?bool $flushdb = true): Client
     {
         $parameters = array_merge(
             $this->getDefaultParametersArray(),
@@ -232,10 +232,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         );
 
         $options = array_merge(
-            [
-                'commands' => $this->getCommandFactory(),
-            ],
-            $options ?: []
+            ['commands' => $this->getCommandFactory()],
+            $options ?: [],
+            getenv('USE_RELAY') ? ['connections' => 'relay'] : []
         );
 
         $client = new Client($parameters, $options);
@@ -301,7 +300,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * the default connection parameters used by Predis or a set of connection
      * parameters specified in the optional second argument.
      *
-
      * @param array|string|null $parameters Optional connection parameters
      *
      * @return MockObject|Connection\NodeConnectionInterface
@@ -363,9 +361,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $this->getName(false)
         );
 
-        if (isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group']) &&
-            !empty($annotations['method']['requiresRedisVersion']) &&
-            in_array('connected', $annotations['method']['group'])
+        if (isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group'])
+            && !empty($annotations['method']['requiresRedisVersion'])
+            && in_array('connected', $annotations['method']['group'])
         ) {
             return $annotations['method']['requiresRedisVersion'][0];
         }
@@ -518,9 +516,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $this->getName(false)
         );
 
-        if (isset($annotations['method'][$moduleAnnotation], $annotations['method']['group']) &&
-            !empty($annotations['method'][$moduleAnnotation]) &&
-            in_array('connected', $annotations['method']['group'], true)
+        if (isset($annotations['method'][$moduleAnnotation], $annotations['method']['group'])
+            && !empty($annotations['method'][$moduleAnnotation])
+            && in_array('connected', $annotations['method']['group'], true)
         ) {
             return $annotations['method'][$moduleAnnotation][0];
         }

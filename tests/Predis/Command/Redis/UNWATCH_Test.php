@@ -75,6 +75,7 @@ class UNWATCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.2.0
      */
     public function testCanBeCalledInsideTransaction(): void
@@ -83,5 +84,18 @@ class UNWATCH_Test extends PredisCommandTestCase
 
         $redis->multi();
         $this->assertInstanceOf('Predis\Response\Status', $redis->unwatch());
+    }
+
+    /**
+     * @group connected
+     * @group ext-relay
+     * @requiresRedisVersion >= 2.2.0
+     */
+    public function testCanBeCalledInsideTransactionUsingRelay(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->multi();
+        $this->assertInstanceOf('Relay\Relay', $redis->unwatch());
     }
 }

@@ -63,8 +63,11 @@ class FTINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
+     *
+     * Prior to Redis 7.2 `-nan` is messing with Relay/hiredis.
      */
     public function testInfoReturnsInformationAboutGivenIndex(): void
     {

@@ -12,9 +12,6 @@ parameters:
     - message: "#^Cannot cast Predis\\\\Connection\\\\ConnectionInterface to string\\.$#"
       count: 1
       path: src/Client.php
-    # phpiredis extension is not installed
-    - "#^Function phpiredis_\\w+ not found\\.$#"
-    - "#^Constant PHPIREDIS_#"
     # "new static" in non-final classes
     - message: "#^Unsafe usage of new static\\(\\)\\.$#"
       count: 3
