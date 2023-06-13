@@ -56,6 +56,7 @@ class SPUBLISH_Test extends Redis\PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 7.0.0
      */
     public function testPublishesMessagesToChannel(): void
