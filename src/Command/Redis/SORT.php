@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see http://redis.io/commands/sort
@@ -60,9 +60,9 @@ class SORT extends RedisCommand
             }
         }
 
-        if (isset($sortParams['LIMIT']) &&
-            is_array($sortParams['LIMIT']) &&
-            count($sortParams['LIMIT']) == 2) {
+        if (isset($sortParams['LIMIT'])
+            && is_array($sortParams['LIMIT'])
+            && count($sortParams['LIMIT']) == 2) {
             $query[] = 'LIMIT';
             $query[] = $sortParams['LIMIT'][0];
             $query[] = $sortParams['LIMIT'][1];
@@ -82,5 +82,36 @@ class SORT extends RedisCommand
         }
 
         parent::setArguments($query);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        if ($arguments = $this->getArguments()) {
+            $arguments[0] = "$prefix{$arguments[0]}";
+
+            if (($count = count($arguments)) > 1) {
+                for ($i = 1; $i < $count; ++$i) {
+                    switch (strtoupper($arguments[$i])) {
+                        case 'BY':
+                        case 'STORE':
+                            $arguments[$i] = "$prefix{$arguments[++$i]}";
+                            break;
+
+                        case 'GET':
+                            $value = $arguments[++$i];
+                            if ($value !== '#') {
+                                $arguments[$i] = "$prefix$value";
+                            }
+                            break;
+
+                        case 'LIMIT':
+                            $i += 2;
+                            break;
+                    }
+                }
+            }
+
+            $this->setRawArguments($arguments);
+        }
     }
 }

@@ -509,13 +509,15 @@ class SentinelReplication implements ReplicationInterface
     /**
      * Returns a random slave.
      *
-     * @return NodeConnectionInterface|void
+     * @return NodeConnectionInterface|null
      */
     protected function pickSlave()
     {
-        if ($slaves = $this->getSlaves()) {
-            return $slaves[rand(1, count($slaves)) - 1];
-        }
+        $slaves = $this->getSlaves();
+
+        return $slaves
+            ? $slaves[rand(1, count($slaves)) - 1]
+            : null;
     }
 
     /**

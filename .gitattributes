@@ -1,8 +1,9 @@
 * text=auto
 
-/.github/ export-ignore
-/examples/ export-ignore
-/tests/ export-ignore
+/.github export-ignore
+/bin export-ignore
+/examples export-ignore
+/tests export-ignore
 /.codespellrc export-ignore linguist-language=INI
 /.editorconfig export-ignore
 /.gitattributes export-ignore
@@ -12,6 +13,7 @@
 /CONTRIBUTING.md export-ignore linguist-documentation
 /FAQ.md export-ignore linguist-documentation
 /VERSION export-ignore
+/phpunit.relay.xml export-ignore
 /phpunit.xml.dist export-ignore
 /phpstan.dist.neon export-ignore
 /phpstan-tests.dist.neon export-ignore

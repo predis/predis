@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-zset
@@ -57,6 +59,23 @@ class ZSCORE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsRank(): void
@@ -65,9 +84,9 @@ class ZSCORE_Test extends PredisCommandTestCase
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 
-        $this->assertSame('-10', $redis->zscore('letters', 'a'));
-        $this->assertSame('0', $redis->zscore('letters', 'b'));
-        $this->assertSame('20', $redis->zscore('letters', 'e'));
+        $this->assertEquals('-10', $redis->zscore('letters', 'a'));
+        $this->assertEquals('0', $redis->zscore('letters', 'b'));
+        $this->assertEquals('20', $redis->zscore('letters', 'e'));
 
         $this->assertNull($redis->zscore('unknown', 'a'));
     }

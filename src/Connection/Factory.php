@@ -30,7 +30,6 @@ class Factory implements FactoryInterface
         'tls' => 'Predis\Connection\StreamConnection',
         'redis' => 'Predis\Connection\StreamConnection',
         'rediss' => 'Predis\Connection\StreamConnection',
-        'http' => 'Predis\Connection\WebdisConnection',
     ];
 
     /**

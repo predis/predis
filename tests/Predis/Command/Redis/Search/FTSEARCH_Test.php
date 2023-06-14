@@ -76,13 +76,16 @@ class FTSEARCH_Test extends PredisCommandTestCase
 
         $schema = [new NumericField('$..arr', 'arr'), new TextField('$..val', 'val')];
 
-        $ftCreateResponse = $redis->ftcreate('idx', $schema, $createArguments);
+        $ftCreateResponse = $redis->ftcreate('idx_json', $schema, $createArguments);
         $this->assertEquals('OK', $ftCreateResponse);
+
+        // Timeout to make sure that index created before search performed.
+        usleep(2000);
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->addReturn(2, 'arr', 'val');
 
-        $actualResponse = $redis->ftsearch('idx', '*', $ftSearchArguments);
+        $actualResponse = $redis->ftsearch('idx_json', '*', $ftSearchArguments);
         $this->assertSame($expectedResponse, $actualResponse);
     }
 
@@ -107,13 +110,16 @@ class FTSEARCH_Test extends PredisCommandTestCase
             new TextField('field2', 'should_not_return'),
         ];
 
-        $ftCreateResponse = $redis->ftcreate('idx', $schema, $ftCreateArguments);
+        $ftCreateResponse = $redis->ftcreate('idx_hash', $schema, $ftCreateArguments);
         $this->assertEquals('OK', $ftCreateResponse);
+
+        // Timeout to make sure that index created before search performed.
+        usleep(2000);
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->addReturn(1, 'should_return');
 
-        $actualResponse = $redis->ftsearch('idx', '*', $ftSearchArguments);
+        $actualResponse = $redis->ftsearch('idx_hash', '*', $ftSearchArguments);
         $this->assertSame($expectedResponse, $actualResponse);
     }
 

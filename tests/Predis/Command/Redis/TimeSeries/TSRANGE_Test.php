@@ -17,6 +17,10 @@ use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
+/**
+ * @group commands
+ * @group realm-stack
+ */
 class TSRANGE_Test extends PredisCommandTestCase
 {
     /**

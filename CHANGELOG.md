@@ -1,15 +1,65 @@
 ## Changelog
 
+## Unreleased
+
+### Changed
+- Added `PrefixableCommandInterface` (#1262)
+
+### Removed
+- Removed Webdis and Phpiredis support (#1291)
+
+## v2.2.0-RC1 (2023-05-09)
+
+### Added
+- Added support for [Relay](https://github.com/predis/predis/wiki/Using-Relay) (#1263)
+- Added support for `FCALL_RO` command (#1191)
+- Added support for Redis `JSON`, `Bloom`, `Search` and `TimeSeries`  module (#1253)
+- Added support for `ACL SETUSER, GETUSER, DRYRUN` commands (#1193)
+
+### Fixed
+- Fixed prefixes for `XTRIM` and `XREVRANGE` commands (#1230)
+- Fix `fclose()` being called on invalid stream resource (#1199)
+- Fix `BitByte` and `ExpireOptions` traits skip processing on null values (#1169)
+- Fix missing `@return` annotations (#1265)
+
+## v2.1.2 (2023-03-02)
+
+### Added
+- Added stream commands to `KeyPrefixProcessor` (#1051)
+- Added `ReplicationStrategy::$loadBalancing` option to disable replica reads (#1168)
+- Added support for `FCALL` and `FUNCTIONS` commands (#1049)
+- Added support for `PEXPIRETIME` command (#1031)
+- Added support for `EXPIRETIME` command (#1029)
+- Added support for `EVAL_RO` command (#1032)
+- Added support for `LCS` command (#1035)
+- Added support for `SORT_RO` command (#1044)
+- Added support for `SINTERCARD` command (#1027)
+- Added support for `EVALSHA_RO` command (#1034)
+- Added support for new arguments for `BITPOS` and `BITCOUNT` commands (#1045)
+- Added support for new arguments for `EXPIRE` and `EXPIREAT` commands (#1046)
+
+### Bug Fixes
+- Fixed deprecated function call syntax
+
+### Deprecated
+- Further deprecated phpiredis and webdis integration (#1179)
+
+### Maintenance
+- Applied coding standards
+- Pass PHPStan level 2
+
 ## v2.1.1 (2023-01-17)
 
-## Bug Fixes
+### Bug Fixes
 - Fix `@template` in `Predis\Client` (#1017)
 - Fix support options array in `ZINTERSTORE` and `ZUNIONSTORE` (#1018)
 
+### Deprecated
+- Deprecated phpiredis and webdis connections
+
 ## v2.1.0 (2023-01-16)
 
-## New Features
-
+### New Features
 - Implemented `GETEX` command (#872)
 - Implemented `GETDEL` command (#869)
 - Implemented `COPY` command (#866)
@@ -35,10 +85,10 @@
 - Implemented `GEOSEARCH` command (#867)
 - Implemented `GEOSEARCHSTORE` command (#873)
 
-## Bug Fixes
+### Bug Fixes
 - Added annotations to suppress PHP 8.1 return type deprecation warning (#810)
 
-## Maintenance
+### Maintenance
 - Added mixin annotations for traits (#835)
 
 ## v2.0.3 (2022-10-11)

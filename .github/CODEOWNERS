@@ -1,0 +1,14 @@
+# Default
+*                                     @tillkruss
+
+# Redis commands
+src/Command/Redis/*                   @predis/team @tillkruss
+
+# Redis Stack
+src/Command/Redis/Json/*              @predis/team
+src/Command/Redis/Search/*            @predis/team
+src/Command/Redis/TopK/*              @predis/team
+src/Command/Redis/TDigest/*           @predis/team
+src/Command/Redis/BloomFilter/*       @predis/team
+src/Command/Redis/CuckooFilter/*      @predis/team
+src/Command/Redis/CountMinSketch/*    @predis/team

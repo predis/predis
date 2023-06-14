@@ -360,7 +360,7 @@ class PredisStrategyTest extends PredisTestCase
      *
      * @return array
      */
-    protected function getExpectedCommands(?string $type = null): array
+    protected function getExpectedCommands(string $type = null): array
     {
         $commands = [
             /* commands operating on the key space */

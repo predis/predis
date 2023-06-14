@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Response\ServerException;
 use UnexpectedValueException;
 
@@ -58,6 +59,23 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['dest', ['arg1', 'arg2', 'arg3', 'arg4']];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:dest', 4, 'prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @dataProvider sortedSetsProvider
      * @param  array  $firstSortedSet
@@ -92,7 +110,7 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
         );
 
         $this->assertSame($expectedResponse, $actualResponse);
-        $this->assertSame(
+        $this->assertEquals(
             $expectedResultSortedSet,
             $redis->zrange($destination, 0, -1, ['withscores' => true])
         );
@@ -115,9 +133,9 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
 
     /**
      * @dataProvider unexpectedValueProvider
-     * @param string $destination
-     * @param $keys
-     * @param $weights
+     * @param  string $destination
+     * @param  mixed  $keys
+     * @param  mixed  $weights
      * @param  string $aggregate
      * @param  string $expectedExceptionMessage
      * @return void
