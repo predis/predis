@@ -97,6 +97,42 @@ class CFLOADCHUNK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testLoadChunkSuccessfullyRestoresCuckooFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->cfadd('key', 'item1');
+
+        $chunks = [];
+        $iter = 0;
+
+        while (true) {
+            [$iter, $data] = $redis->cfscandump('key', $iter);
+
+            if ($iter === 0) {
+                break;
+            }
+
+            $chunks[] = [$iter, $data];
+        }
+
+        $redis->flushall();
+
+        foreach ($chunks as $chunk) {
+            [$iter, $data] = $chunk;
+            $actualResponse = $redis->cfloadchunk('key', $iter, $data);
+
+            $this->assertEquals('OK', $actualResponse);
+        }
+
+        $this->assertTrue($redis->cfexists('key', 'item1'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
