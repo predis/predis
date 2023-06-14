@@ -2,6 +2,8 @@
 
 ## v2.2.0 (2023-06-14)
 
+Predis v2.2.0 introduces official support for [Redis Stack](https://redis.io/docs/stack/) as well as a [Relay](https://github.com/cachewerk/relay) integration for substantially [faster read performance](https://github.com/predis/predis/wiki/Using-Relay).
+
 ### Added
 - Added support for [Relay](https://github.com/predis/predis/wiki/Using-Relay) (#1263)
 - Added support for `FCALL_RO` command (#1191)
@@ -9,7 +11,7 @@
 - Added support for `ACL SETUSER, GETUSER, DRYRUN` commands (#1193)
 
 ### Changed
-- Minor code style and typehint changes (#1311)
+- Minor code style and type-hint changes (#1311)
 
 ### Fixed
 - Fixed prefixes for `XTRIM` and `XREVRANGE` commands (#1230)
