@@ -54,6 +54,15 @@ class TOPKLIST extends RedisCommand
     }
 
     /**
+     * @param                          $data
+     * @return array|mixed|string|null
+     */
+    public function parseResp3Response($data)
+    {
+        return $this->parseResponse($data);
+    }
+
+    /**
      * Checks for the presence of the WITHCOUNT modifier.
      *
      * @return bool

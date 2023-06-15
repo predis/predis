@@ -83,6 +83,26 @@ class TOPKRESERVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReserveInitializeTopKStructureWithGivenConfigurationResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->topkreserve('key', 50);
+        $actualInfoResponse = $redis->topkinfo('key');
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSameWithPrecision(
+            ['k' => 50, 'width' => 8, 'depth' => 7, 'decay' => '0.90000000000000002'],
+            $actualInfoResponse,
+            1
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 2.0.0
      */
     public function testThrowsExceptionOnAlreadyExistingKey(): void

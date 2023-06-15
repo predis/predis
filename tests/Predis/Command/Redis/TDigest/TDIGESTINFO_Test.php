@@ -103,6 +103,31 @@ class TDIGESTINFO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testInfoReturnsInformationAboutGivenTDigestSketchResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = [
+            'Compression' => 100,
+            'Capacity' => 610,
+            'Merged nodes' => 0,
+            'Unmerged nodes' => 0,
+            'Merged weight' => 0,
+            'Unmerged weight' => 0,
+            'Observations' => 0,
+            'Total compressions' => 0,
+            'Memory usage' => 9768,
+        ];
+
+        $redis->tdigestcreate('key');
+
+        $this->assertSame($expectedResponse, $redis->tdigestinfo('key'));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
     public function testThrowsExceptionOnNonExistingTDigestSketch(): void

@@ -83,6 +83,22 @@ class TDIGESTCREATE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testCreateTDigestSketchWithGivenConfigurationResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->tdigestcreate('key');
+        $info = $redis->tdigestinfo('key');
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame(100, $info['Compression']);
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
     public function testThrowsExceptionOnAlreadyCreatedKey(): void
