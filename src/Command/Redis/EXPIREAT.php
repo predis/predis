@@ -12,7 +12,9 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\Clusterable;
 use Predis\Command\PrefixableCommand as RedisCommand;
+use Predis\Command\Traits\Contract\ClusterableContract;
 use Predis\Command\Traits\Expire\ExpireOptions;
 
 /**
@@ -21,9 +23,10 @@ use Predis\Command\Traits\Expire\ExpireOptions;
  * EXPIREAT has the same effect and semantic as EXPIRE, but instead of specifying
  * the number of seconds representing the TTL (time to live), it takes an absolute Unix timestamp
  */
-class EXPIREAT extends RedisCommand
+class EXPIREAT extends RedisCommand implements Clusterable
 {
     use ExpireOptions;
+    use ClusterableContract;
 
     /**
      * {@inheritdoc}
@@ -36,5 +39,10 @@ class EXPIREAT extends RedisCommand
     public function prefixKeys($prefix)
     {
         $this->applyPrefixForFirstArgument($prefix);
+    }
+
+    public function getKeys(): ?array
+    {
+        return [$this->getArgument(0)];
     }
 }

@@ -20,7 +20,9 @@ use Predis\ClientException;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
 use Predis\Cluster\SlotMap;
 use Predis\Cluster\StrategyInterface;
+use Predis\Command\Clusterable;
 use Predis\Command\CommandInterface;
+use Predis\Command\Exception\NotAllowedAgainstClusterException;
 use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
@@ -346,7 +348,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     /**
      * {@inheritdoc}
      */
-    public function getConnectionByCommand(CommandInterface $command)
+    public function getConnectionByCommand(Clusterable $command)
     {
         $slot = $this->strategy->getSlot($command);
 
@@ -508,12 +510,16 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      * throws the exception as the nodes participating in the cluster may still
      * have to agree that something changed in the configuration of the cluster.
      *
-     * @param CommandInterface $command Command instance.
-     * @param string           $method  Actual method.
+     * @param Clusterable $command Command instance.
+     * @param string      $method  Actual method.
      *
      * @return mixed
+     * @throws ConnectionException
+     * @throws NotSupportedException
+     * @throws ServerException
+     * @throws Throwable
      */
-    private function retryCommandOnFailure(CommandInterface $command, $method)
+    private function retryCommandOnFailure(Clusterable $command, $method)
     {
         $retries = 0;
         $retryAfter = $this->retryInterval;
@@ -580,6 +586,8 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function executeCommand(CommandInterface $command)
     {
+        $this->assertClusterable($command);
+
         $response = $this->retryCommandOnFailure($command, __FUNCTION__);
 
         if ($response instanceof ErrorResponseInterface) {
@@ -669,5 +677,19 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function useClusterSlots($value)
     {
         $this->useClusterSlots = (bool) $value;
+    }
+
+    /**
+     * Assert that given command could be executed against cluster.
+     *
+     * @param  CommandInterface                  $command
+     * @return void
+     * @throws NotAllowedAgainstClusterException
+     */
+    private function assertClusterable(CommandInterface $command): void
+    {
+        if (!$command instanceof Clusterable) {
+            throw new NotAllowedAgainstClusterException('Given command cannot be executed against cluster.');
+        }
     }
 }

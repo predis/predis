@@ -17,7 +17,6 @@ namespace Predis\Command;
  */
 abstract class Command implements CommandInterface
 {
-    private $slot;
     private $arguments = [];
 
     /**
@@ -26,7 +25,6 @@ abstract class Command implements CommandInterface
     public function setArguments(array $arguments)
     {
         $this->arguments = $arguments;
-        unset($this->slot);
     }
 
     /**
@@ -35,7 +33,6 @@ abstract class Command implements CommandInterface
     public function setRawArguments(array $arguments)
     {
         $this->arguments = $arguments;
-        unset($this->slot);
     }
 
     /**
@@ -54,22 +51,6 @@ abstract class Command implements CommandInterface
         if (isset($this->arguments[$index])) {
             return $this->arguments[$index];
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSlot($slot)
-    {
-        $this->slot = $slot;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSlot()
-    {
-        return $this->slot ?? null;
     }
 
     /**
@@ -122,5 +103,15 @@ abstract class Command implements CommandInterface
         $this->arguments = array_filter($this->arguments, static function ($argument) {
             return $argument !== false && $argument !== null;
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getKeys(): ?array
+    {
+        // TODO This method will become abstract if clusterable approach will be approved.
+        // TODO For now returns null by default to avoid changes to each command.
+        return null;
     }
 }

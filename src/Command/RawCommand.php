@@ -12,6 +12,8 @@
 
 namespace Predis\Command;
 
+use Predis\Command\Traits\Contract\ClusterableContract;
+
 /**
  * Class representing a generic Redis command.
  *
@@ -23,20 +25,24 @@ namespace Predis\Command;
  * are not potentially subject to hijacking from third party libraries when they
  * override command handlers for standard Redis commands.
  */
-final class RawCommand implements CommandInterface
+final class RawCommand implements CommandInterface, Clusterable
 {
-    private $slot;
+    use ClusterableContract;
+
     private $commandID;
     private $arguments;
+    private $keys;
 
     /**
-     * @param string $commandID Command ID
-     * @param array  $arguments Command arguments
+     * @param string     $commandID Command ID
+     * @param array      $arguments Command arguments
+     * @param array|null $keys      Keys arguments from given arguments set
      */
-    public function __construct($commandID, array $arguments = [])
+    public function __construct($commandID, array $arguments = [], array $keys = null)
     {
         $this->commandID = strtoupper($commandID);
         $this->setArguments($arguments);
+        $this->keys = $keys;
     }
 
     /**
@@ -100,24 +106,13 @@ final class RawCommand implements CommandInterface
     /**
      * {@inheritdoc}
      */
-    public function setSlot($slot)
-    {
-        $this->slot = $slot;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSlot()
-    {
-        return $this->slot ?? null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function parseResponse($data)
     {
         return $data;
+    }
+
+    public function getKeys(): ?array
+    {
+        return $this->keys;
     }
 }

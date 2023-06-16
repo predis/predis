@@ -12,7 +12,9 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\Clusterable;
 use Predis\Command\PrefixableCommand as RedisCommand;
+use Predis\Command\Traits\Contract\ClusterableContract;
 use Predis\Command\Traits\Expire\ExpireOptions;
 
 /**
@@ -22,9 +24,10 @@ use Predis\Command\Traits\Expire\ExpireOptions;
  * After the timeout has expired, the key will automatically be deleted.
  * A key with an associated timeout is often said to be volatile in Redis terminology.
  */
-class EXPIRE extends RedisCommand
+class EXPIRE extends RedisCommand implements Clusterable
 {
     use ExpireOptions;
+    use ClusterableContract;
 
     /**
      * {@inheritdoc}
@@ -37,5 +40,10 @@ class EXPIRE extends RedisCommand
     public function prefixKeys($prefix)
     {
         $this->applyPrefixForFirstArgument($prefix);
+    }
+
+    public function getKeys(): ?array
+    {
+        return [$this->getArgument(0)];
     }
 }

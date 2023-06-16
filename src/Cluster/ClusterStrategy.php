@@ -13,6 +13,7 @@
 namespace Predis\Cluster;
 
 use InvalidArgumentException;
+use Predis\Command\Clusterable;
 use Predis\Command\CommandInterface;
 use Predis\Command\ScriptCommand;
 
@@ -39,21 +40,6 @@ abstract class ClusterStrategy implements StrategyInterface
         $getKeyFromAllArguments = [$this, 'getKeyFromAllArguments'];
 
         return [
-            /* commands operating on the key space */
-            'EXISTS' => $getKeyFromAllArguments,
-            'DEL' => $getKeyFromAllArguments,
-            'TYPE' => $getKeyFromFirstArgument,
-            'EXPIRE' => $getKeyFromFirstArgument,
-            'EXPIREAT' => $getKeyFromFirstArgument,
-            'PERSIST' => $getKeyFromFirstArgument,
-            'PEXPIRE' => $getKeyFromFirstArgument,
-            'PEXPIREAT' => $getKeyFromFirstArgument,
-            'TTL' => $getKeyFromFirstArgument,
-            'PTTL' => $getKeyFromFirstArgument,
-            'SORT' => [$this, 'getKeyFromSortCommand'],
-            'DUMP' => $getKeyFromFirstArgument,
-            'RESTORE' => $getKeyFromFirstArgument,
-
             /* commands operating on string values */
             'APPEND' => $getKeyFromFirstArgument,
             'DECR' => $getKeyFromFirstArgument,
@@ -411,18 +397,33 @@ abstract class ClusterStrategy implements StrategyInterface
     /**
      * {@inheritdoc}
      */
-    public function getSlot(CommandInterface $command)
+    public function getSlot(Clusterable $command)
     {
-        $slot = $command->getSlot();
+        $keys = $command->getKeys();
 
-        if (!isset($slot) && isset($this->commands[$cmdID = $command->getId()])) {
-            $key = call_user_func($this->commands[$cmdID], $command);
-
-            if (isset($key)) {
-                $slot = $this->getSlotByKey($key);
-                $command->setSlot($slot);
-            }
+        // Generates random key for commands that can be executed against any node.
+        if (null === $keys) {
+            $randomBytes = random_bytes(5);
+            $keys = [bin2hex($randomBytes)];
         }
+
+        $isSameSlot = true;
+
+        if (count($keys) > 1) {
+            $isSameSlot = $this->checkSameSlotForKeys($keys);
+        }
+
+        if (!$isSameSlot) {
+            return null;
+        }
+
+        $slot = $this->getSlotByKey($keys[0]);
+
+        if (null === $slot) {
+            return null;
+        }
+
+        $command->setSlot($slot);
 
         return $slot;
     }

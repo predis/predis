@@ -62,9 +62,9 @@ abstract class ScriptCommand extends Command
     /**
      * Returns the elements from the arguments that are identified as keys.
      *
-     * @return array
+     * @return array|null
      */
-    public function getKeys()
+    public function getKeys(): ?array
     {
         return array_slice($this->getArguments(), 2, $this->getKeysCount());
     }

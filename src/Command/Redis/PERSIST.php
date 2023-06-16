@@ -12,13 +12,17 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\Clusterable;
 use Predis\Command\PrefixableCommand as RedisCommand;
+use Predis\Command\Traits\Contract\ClusterableContract;
 
 /**
  * @see http://redis.io/commands/persist
  */
-class PERSIST extends RedisCommand
+class PERSIST extends RedisCommand implements Clusterable
 {
+    use ClusterableContract;
+
     /**
      * {@inheritdoc}
      */
@@ -30,5 +34,10 @@ class PERSIST extends RedisCommand
     public function prefixKeys($prefix)
     {
         $this->applyPrefixForFirstArgument($prefix);
+    }
+
+    public function getKeys(): ?array
+    {
+        return [$this->getArgument(0)];
     }
 }

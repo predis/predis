@@ -12,6 +12,7 @@
 
 namespace Predis\Connection;
 
+use Predis\Command\Clusterable;
 use Predis\Command\CommandInterface;
 
 /**
@@ -39,11 +40,11 @@ interface AggregateConnectionInterface extends ConnectionInterface
     /**
      * Returns the connection instance in charge for the given command.
      *
-     * @param CommandInterface $command Command instance.
+     * @param Clusterable $command Command instance.
      *
      * @return NodeConnectionInterface
      */
-    public function getConnectionByCommand(CommandInterface $command);
+    public function getConnectionByCommand(Clusterable $command);
 
     /**
      * Returns a connection instance from the aggregate connection by its alias.

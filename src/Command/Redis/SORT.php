@@ -12,13 +12,17 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\Clusterable;
 use Predis\Command\PrefixableCommand as RedisCommand;
+use Predis\Command\Traits\Contract\ClusterableContract;
 
 /**
  * @see http://redis.io/commands/sort
  */
-class SORT extends RedisCommand
+class SORT extends RedisCommand implements Clusterable
 {
+    use ClusterableContract;
+
     /**
      * {@inheritdoc}
      */
@@ -113,5 +117,25 @@ class SORT extends RedisCommand
 
             $this->setRawArguments($arguments);
         }
+    }
+
+    public function getKeys(): ?array
+    {
+        $arguments = $this->getArguments();
+        $firstKey = $arguments[0];
+
+        if (1 === $argc = count($arguments)) {
+            return [$firstKey];
+        }
+
+        $keys = [$firstKey];
+
+        for ($i = 1; $i < $argc; ++$i) {
+            if (strtoupper($arguments[$i]) === 'STORE') {
+                $keys[] = $arguments[++$i];
+            }
+        }
+
+        return $keys;
     }
 }

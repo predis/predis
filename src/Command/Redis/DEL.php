@@ -41,4 +41,9 @@ class DEL extends RedisCommand
     {
         $this->applyPrefixForAllArguments($prefix);
     }
+
+    public function getKeys(): ?array
+    {
+        return $this->getArguments();
+    }
 }

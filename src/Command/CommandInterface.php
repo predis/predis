@@ -26,20 +26,6 @@ interface CommandInterface
     public function getId();
 
     /**
-     * Assign the specified slot to the command for clustering distribution.
-     *
-     * @param int $slot Slot ID.
-     */
-    public function setSlot($slot);
-
-    /**
-     * Returns the assigned slot of the command for clustering distribution.
-     *
-     * @return int|null
-     */
-    public function getSlot();
-
-    /**
      * Sets the arguments for the command.
      *
      * @param array $arguments List of arguments.
@@ -77,4 +63,11 @@ interface CommandInterface
      * @return mixed
      */
     public function parseResponse($data);
+
+    /**
+     * Returns key arguments if it exists.
+     *
+     * @return array|null
+     */
+    public function getKeys(): ?array;
 }
