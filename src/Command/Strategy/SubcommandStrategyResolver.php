@@ -36,7 +36,7 @@ class SubcommandStrategyResolver implements StrategyResolverInterface
         $subcommandStrategyClass = ucwords($subcommandId) . 'Strategy';
         $commandDirectoryName = ucwords($commandId);
 
-        if (! is_null($this->separator)) {
+        if (!is_null($this->separator)) {
             $subcommandStrategyClass = str_replace($this->separator, '', $subcommandStrategyClass);
             $commandDirectoryName = str_replace($this->separator, '', $commandDirectoryName);
         }
