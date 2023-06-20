@@ -280,6 +280,7 @@ use Predis\Response\Status;
  * @method int               xlen(string $key)
  * @method array             xrevrange(string $key, string $end, string $start, ?int $count = null)
  * @method array             xrange(string $key, string $start, string $end, ?int $count = null)
+ * @method array             xreadgroup(string $group, string $consumer, ?int $count = null, ?int $blockMs = null, bool $noAck = false, string ...$keyOrId)
  * @method string            xtrim(string $key, array|string $strategy, string $threshold, array $options = null)
  * @method int               zadd(string $key, array $membersAndScoresDictionary)
  * @method int               zcard(string $key)
