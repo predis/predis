@@ -56,7 +56,7 @@ class XAUTOCLAIM_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-incompatible
      * @return void
-     * @requiresRedisVersion >= 6.2.0
+     * @requiresRedisVersion >= 7.0.0
      */
     public function testTransferStreamOwnershipToGivenConsumerGroup(): void
     {
