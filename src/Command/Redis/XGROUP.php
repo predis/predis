@@ -25,13 +25,22 @@ use Predis\Command\Strategy\SubcommandStrategyResolver;
 class XGROUP extends RedisCommand
 {
     /**
+     * @var array
+     */
+    private $splitWordsDictionary = [
+        'CREATECONSUMER' => 'Create Consumer',
+        'DELCONSUMER' => 'Del Consumer',
+        'SETID' => 'Set Id',
+    ];
+
+    /**
      * @var StrategyResolverInterface
      */
     private $strategyResolver;
 
     public function __construct()
     {
-        $this->strategyResolver = new SubcommandStrategyResolver();
+        $this->strategyResolver = new SubcommandStrategyResolver(' ');
     }
 
     public function getId()
@@ -41,7 +50,13 @@ class XGROUP extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        $strategy = $this->strategyResolver->resolve('xgroup', $arguments[0]);
+        if (array_key_exists($arguments[0], $this->splitWordsDictionary)) {
+            $subcommandId = $this->splitWordsDictionary[$arguments[0]];
+        } else {
+            $subcommandId = $arguments[0];
+        }
+
+        $strategy = $this->strategyResolver->resolve('X Group', $subcommandId);
         $arguments = $strategy->processArguments($arguments);
 
         parent::setArguments($arguments);
