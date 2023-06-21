@@ -53,7 +53,7 @@ class XGROUP extends RedisCommand
         if (array_key_exists($arguments[0], $this->splitWordsDictionary)) {
             $subcommandId = $this->splitWordsDictionary[$arguments[0]];
         } else {
-            $subcommandId = $arguments[0];
+            $subcommandId = strtolower($arguments[0]);
         }
 
         $strategy = $this->strategyResolver->resolve('X Group', $subcommandId);
