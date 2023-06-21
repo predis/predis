@@ -41,7 +41,7 @@ class FUNCTIONS extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        $strategy = $this->strategyResolver->resolve('functions', $arguments[0]);
+        $strategy = $this->strategyResolver->resolve('functions', strtolower($arguments[0]));
         $arguments = $strategy->processArguments($arguments);
 
         parent::setArguments($arguments);

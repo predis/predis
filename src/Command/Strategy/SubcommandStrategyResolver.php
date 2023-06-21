@@ -19,12 +19,27 @@ class SubcommandStrategyResolver implements StrategyResolverInterface
     private const CONTAINER_COMMANDS_NAMESPACE = 'Predis\Command\Strategy\ContainerCommands';
 
     /**
+     * @var ?string
+     */
+    private $separator;
+
+    public function __construct(string $separator = null)
+    {
+        $this->separator = $separator;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function resolve(string $commandId, string $subcommandId): SubcommandStrategyInterface
     {
-        $subcommandStrategyClass = ucfirst(strtolower($subcommandId)) . 'Strategy';
-        $commandDirectoryName = ucfirst(strtolower($commandId));
+        $subcommandStrategyClass = ucwords($subcommandId) . 'Strategy';
+        $commandDirectoryName = ucwords($commandId);
+
+        if (!is_null($this->separator)) {
+            $subcommandStrategyClass = str_replace($this->separator, '', $subcommandStrategyClass);
+            $commandDirectoryName = str_replace($this->separator, '', $commandDirectoryName);
+        }
 
         if (class_exists(
             $containerCommandClass = self::CONTAINER_COMMANDS_NAMESPACE . '\\' . $commandDirectoryName . '\\' . $subcommandStrategyClass
