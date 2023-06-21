@@ -54,6 +54,7 @@ class XREADGROUP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 5.0.0
      */
