@@ -164,7 +164,7 @@ class XGROUP_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 5.0.0
+     * @requiresRedisVersion >= 6.2.0
      */
     public function testRemovesConsumerFromExistingConsumerGroup(): void
     {
