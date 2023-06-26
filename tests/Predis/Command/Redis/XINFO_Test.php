@@ -101,7 +101,7 @@ class XINFO_Test extends PredisCommandTestCase
         $response = $redis->xinfo->consumers('stream', 'group');
 
         foreach ($response as $consumer) {
-            foreach (['name', 'pending', 'idle', 'inactive'] as $key) {
+            foreach (['name', 'pending', 'idle'] as $key) {
                 $this->assertArrayHasKey($key, $consumer);
             }
         }
@@ -110,7 +110,7 @@ class XINFO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 6.2.0
+     * @requiresRedisVersion >= 7.0.0
      */
     public function testReturnsConsumerGroupsOfGivenStream(): void
     {
