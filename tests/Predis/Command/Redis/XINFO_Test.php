@@ -87,7 +87,7 @@ class XINFO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 5.0.0
+     * @requiresRedisVersion >= 6.2.0
      */
     public function testReturnsConsumersOfGivenGroup(): void
     {
@@ -110,7 +110,7 @@ class XINFO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 5.0.0
+     * @requiresRedisVersion >= 6.2.0
      */
     public function testReturnsConsumerGroupsOfGivenStream(): void
     {
@@ -137,7 +137,7 @@ class XINFO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 6.0.0
+     * @requiresRedisVersion >= 6.2.0
      */
     public function testReturnsInformationAboutGivenStream(): void
     {
