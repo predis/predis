@@ -26,7 +26,7 @@ class XInfoStreamOptions implements ArrayableArgument
      * The COUNT option can be used to limit the number of stream and PEL entries that are returned.
      *
      * @param  int|null $count
-     * @return void
+     * @return self
      */
     public function full(int $count = null): self
     {
