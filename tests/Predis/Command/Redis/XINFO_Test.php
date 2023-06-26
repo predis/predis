@@ -137,7 +137,7 @@ class XINFO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 6.2.0
+     * @requiresRedisVersion >= 7.0.0
      */
     public function testReturnsInformationAboutGivenStream(): void
     {
