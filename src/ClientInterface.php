@@ -45,6 +45,7 @@ use Predis\Command\Redis\Container\Json\JSONDEBUG;
 use Predis\Command\Redis\Container\Search\FTCONFIG;
 use Predis\Command\Redis\Container\Search\FTCURSOR;
 use Predis\Command\Redis\Container\XGROUP;
+use Predis\Command\Redis\Container\XINFO;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\Status;
@@ -363,6 +364,7 @@ use Predis\Response\Status;
  * @property JSONDEBUG         $jsondebug
  * @property ACL               $acl
  * @property XGROUP            $xgroup
+ * @property XINFO             $xinfo
  */
 interface ClientInterface
 {

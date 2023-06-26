@@ -44,6 +44,7 @@ use Predis\Command\Redis\Container\Json\JSONDEBUG;
 use Predis\Command\Redis\Container\Search\FTCONFIG;
 use Predis\Command\Redis\Container\Search\FTCURSOR;
 use Predis\Command\Redis\Container\XGROUP;
+use Predis\Command\Redis\Container\XINFO;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -345,6 +346,7 @@ use Predis\Command\Redis\Container\XGROUP;
  * @property JSONDEBUG         $jsondebug
  * @property ACL               $acl
  * @property XGROUP            $xgroup
+ * @property XINFO             $xinfo
  */
 interface ClientContextInterface
 {

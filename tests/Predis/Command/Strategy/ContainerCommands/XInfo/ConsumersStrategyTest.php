@@ -10,20 +10,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Strategy\ContainerCommands\Functions;
+namespace Predis\Command\Strategy\ContainerCommands\XInfo;
 
 use PredisTestCase;
 
-class DeleteStrategyTest extends PredisTestCase
+class ConsumersStrategyTest extends PredisTestCase
 {
     /**
-     * @var DeleteStrategy
+     * @var ConsumersStrategy
      */
     private $strategy;
 
     protected function setUp(): void
     {
-        $this->strategy = new DeleteStrategy();
+        $this->strategy = new ConsumersStrategy();
     }
 
     /**
@@ -41,6 +41,9 @@ class DeleteStrategyTest extends PredisTestCase
      */
     public function testParseResponse(): void
     {
-        $this->assertSame(['arg1', 'arg2'], $this->strategy->parseResponse(['arg1', 'arg2']));
+        $actualResponse = [['name', 'consumer', 'pending', 0, 'idle', 3, 'inactive', -1]];
+        $expectedResponse = [['name' => 'consumer', 'pending' => 0, 'idle' => 3, 'inactive' => -1]];
+
+        $this->assertSame($expectedResponse, $this->strategy->parseResponse($actualResponse));
     }
 }

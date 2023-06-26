@@ -26,8 +26,21 @@ class DestroyStrategyTest extends PredisTestCase
         $this->strategy = new DestroyStrategy();
     }
 
+    /**
+     * @group disconnected
+     * @return void
+     */
     public function testProcessArguments(): void
     {
         $this->assertSame(['arg1', 'arg2'], $this->strategy->processArguments(['arg1', 'arg2']));
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testParseResponse(): void
+    {
+        $this->assertSame(['arg1', 'arg2'], $this->strategy->parseResponse(['arg1', 'arg2']));
     }
 }

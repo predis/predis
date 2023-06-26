@@ -38,6 +38,15 @@ class CreateStrategyTest extends PredisTestCase
         $this->assertSame($expectedResponse, $this->strategy->processArguments($actualArguments));
     }
 
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testParseResponse(): void
+    {
+        $this->assertSame(['arg1', 'arg2'], $this->strategy->parseResponse(['arg1', 'arg2']));
+    }
+
     public function argumentsProvider(): array
     {
         return [

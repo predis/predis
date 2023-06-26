@@ -21,4 +21,12 @@ interface SubcommandStrategyInterface
      * @return array
      */
     public function processArguments(array $arguments): array;
+
+    /**
+     * Parse response for given subcommand.
+     *
+     * @param  mixed $data
+     * @return mixed
+     */
+    public function parseResponse($data);
 }
