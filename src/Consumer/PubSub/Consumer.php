@@ -10,15 +10,20 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\PubSub;
+namespace Predis\Consumer\PubSub;
 
-use Iterator;
-use ReturnTypeWillChange;
+use Predis\ClientException;
+use Predis\ClientInterface;
+use Predis\Command\Command;
+use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\NodeConnectionInterface;
+use Predis\Consumer\AbstractConsumer;
+use Predis\NotSupportedException;
 
 /**
- * Base implementation of a PUB/SUB consumer abstraction based on PHP iterators.
+ * PUB/SUB consumer abstraction.
  */
-abstract class AbstractConsumer implements Iterator
+class Consumer extends AbstractConsumer
 {
     public const SUBSCRIBE = 'subscribe';
     public const SSUBSCRIBE = 'ssubscribe';
@@ -35,8 +40,75 @@ abstract class AbstractConsumer implements Iterator
     public const STATUS_PSUBSCRIBED = 4; // 0b0100
     public const STATUS_SSUBSCRIBED = 8; // 0b1000
 
-    protected $position;
     protected $statusFlags = self::STATUS_VALID;
+
+    protected $options;
+
+    /**
+     * @param  ClientInterface       $client  Client instance used by the consumer.
+     * @param  array|null            $options Options for the consumer initialization.
+     * @throws NotSupportedException
+     */
+    public function __construct(ClientInterface $client, array $options = null)
+    {
+        parent::__construct($client);
+        $this->checkCapabilities($client);
+
+        $this->options = $options ?: [];
+        $this->client = $client;
+
+        $this->genericSubscribeInit('subscribe');
+        $this->genericSubscribeInit('psubscribe');
+    }
+
+    /**
+     * Checks if the client instance satisfies the required conditions needed to
+     * initialize a PUB/SUB consumer.
+     *
+     * @param ClientInterface $client Client instance used by the consumer.
+     *
+     * @throws NotSupportedException
+     */
+    private function checkCapabilities(ClientInterface $client)
+    {
+        if ($client->getConnection() instanceof ClusterInterface) {
+            throw new NotSupportedException(
+                'Cannot initialize a PUB/SUB consumer over cluster connections.'
+            );
+        }
+
+        $commands = ['publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe'];
+
+        if (!$client->getCommandFactory()->supports(...$commands)) {
+            throw new NotSupportedException(
+                'PUB/SUB commands are not supported by the current command factory.'
+            );
+        }
+    }
+
+    /**
+     * This method shares the logic to handle both SUBSCRIBE and PSUBSCRIBE.
+     *
+     * @param string $subscribeAction Type of subscription.
+     */
+    private function genericSubscribeInit($subscribeAction)
+    {
+        if (isset($this->options[$subscribeAction])) {
+            $this->$subscribeAction($this->options[$subscribeAction]);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function writeRequest($method, $arguments)
+    {
+        $this->client->getConnection()->writeRequest(
+            $this->client->createCommand($method,
+                Command::normalizeArguments($arguments)
+            )
+        );
+    }
 
     /**
      * Automatically stops the consumer when the garbage collector kicks in.
@@ -140,7 +212,7 @@ abstract class AbstractConsumer implements Iterator
      *
      * @return bool Returns false when there are no pending messages.
      */
-    public function stop($drop = false)
+    public function stop(bool $drop = false): bool
     {
         if (!$this->valid()) {
             return false;
@@ -165,67 +237,18 @@ abstract class AbstractConsumer implements Iterator
     }
 
     /**
-     * Closes the underlying connection when forcing a disconnection.
+     * {@inheritdoc}
      */
-    abstract protected function disconnect();
-
-    /**
-     * Writes a Redis command on the underlying connection.
-     *
-     * @param string $method    Command ID.
-     * @param array  $arguments Arguments for the command.
-     */
-    abstract protected function writeRequest($method, $arguments);
-
-    /**
-     * @return void
-     */
-    #[ReturnTypeWillChange]
-    public function rewind()
-    {
-        // NOOP
-    }
-
-    /**
-     * Returns the last message payload retrieved from the server and generated
-     * by one of the active subscriptions.
-     *
-     * @return array
-     */
-    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->getValue();
     }
 
     /**
-     * @return int|null
-     */
-    #[ReturnTypeWillChange]
-    public function key()
-    {
-        return $this->position;
-    }
-
-    /**
-     * @return int|null
-     */
-    #[ReturnTypeWillChange]
-    public function next()
-    {
-        if ($this->valid()) {
-            ++$this->position;
-        }
-
-        return $this->position;
-    }
-
-    /**
-     * Checks if the the consumer is still in a valid state to continue.
+     * Checks if the consumer is still in a valid state to continue.
      *
      * @return bool
      */
-    #[ReturnTypeWillChange]
     public function valid()
     {
         $isValid = $this->isFlagSet(self::STATUS_VALID);
@@ -244,10 +267,59 @@ abstract class AbstractConsumer implements Iterator
     }
 
     /**
-     * Waits for a new message from the server generated by one of the active
-     * subscriptions and returns it when available.
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    abstract protected function getValue();
+    protected function disconnect()
+    {
+        $this->client->disconnect();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getValue()
+    {
+        /** @var NodeConnectionInterface $connection */
+        $connection = $this->client->getConnection();
+        $response = $connection->read();
+
+        switch ($response[0]) {
+            case self::SUBSCRIBE:
+            case self::UNSUBSCRIBE:
+            case self::PSUBSCRIBE:
+            case self::PUNSUBSCRIBE:
+                if ($response[2] === 0) {
+                    $this->invalidate();
+                }
+                // The missing break here is intentional as we must process
+                // subscriptions and unsubscriptions as standard messages.
+                // no break
+
+            case self::MESSAGE:
+                return (object) [
+                    'kind' => $response[0],
+                    'channel' => $response[1],
+                    'payload' => $response[2],
+                ];
+
+            case self::PMESSAGE:
+                return (object) [
+                    'kind' => $response[0],
+                    'pattern' => $response[1],
+                    'channel' => $response[2],
+                    'payload' => $response[3],
+                ];
+
+            case self::PONG:
+                return (object) [
+                    'kind' => $response[0],
+                    'payload' => $response[1],
+                ];
+
+            default:
+                throw new ClientException(
+                    "Unknown message type '{$response[0]}' received in the PUB/SUB context."
+                );
+        }
+    }
 }

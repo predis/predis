@@ -14,6 +14,8 @@ namespace Predis\Connection;
 
 use InvalidArgumentException;
 use Predis\Command\CommandInterface;
+use Predis\Consumer\Push\PushNotificationException;
+use Predis\Consumer\Push\PushResponse;
 use Predis\Protocol\Parser\UnexpectedTypeException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -279,6 +281,7 @@ class StreamConnection extends AbstractConnection
 
     /**
      * {@inheritdoc}
+     * @throws PushNotificationException
      */
     public function read()
     {
@@ -303,6 +306,13 @@ class StreamConnection extends AbstractConnection
 
         switch ($parsedData['type']) {
             case 'push':
+                $data = [];
+
+                for ($i = 0; $i < $parsedData['value']; ++$i) {
+                    $data[$i] = $this->read();
+                }
+
+                return new PushResponse($data);
             case 'array':
                 $data = [];
 

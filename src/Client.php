@@ -26,14 +26,15 @@ use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\RelayConnection;
+use Predis\Consumer\PubSub\Consumer as PubSubConsumer;
+use Predis\Consumer\PubSub\RelayConsumer as RelayPubSubConsumer;
+use Predis\Consumer\Push\Consumer as PushConsumer;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use Predis\Pipeline\Atomic;
 use Predis\Pipeline\FireAndForget;
 use Predis\Pipeline\Pipeline;
 use Predis\Pipeline\RelayAtomic;
 use Predis\Pipeline\RelayPipeline;
-use Predis\PubSub\Consumer as PubSubConsumer;
-use Predis\PubSub\RelayConsumer as RelayPubSubConsumer;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
@@ -552,6 +553,17 @@ class Client implements ClientInterface, IteratorAggregate
     public function pubSubLoop(...$arguments)
     {
         return $this->sharedContextFactory('createPubSub', func_get_args());
+    }
+
+    /**
+     * Creates new push notifications consumer.
+     *
+     * @param  callable|null $preLoopCallback Callback that should be called on client before enter a loop.
+     * @return PushConsumer
+     */
+    public function push(callable $preLoopCallback = null): PushConsumer
+    {
+        return new PushConsumer($this, $preLoopCallback);
     }
 
     /**
