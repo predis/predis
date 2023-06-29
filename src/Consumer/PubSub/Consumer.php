@@ -15,7 +15,6 @@ namespace Predis\Consumer\PubSub;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\Command;
-use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Consumer\AbstractConsumer;
 use Predis\NotSupportedException;
