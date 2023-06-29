@@ -45,20 +45,43 @@ class Consumer extends AbstractConsumer
     protected $options;
 
     /**
+     * @var SubscriptionContext
+     */
+    private $subscriptionContext;
+
+    /**
      * @param  ClientInterface       $client  Client instance used by the consumer.
      * @param  array|null            $options Options for the consumer initialization.
      * @throws NotSupportedException
      */
     public function __construct(ClientInterface $client, array $options = null)
     {
+        $this->options = $options ?: [];
+
+        if (array_key_exists('context', $this->options)) {
+            $this->subscriptionContext = $this->options['context'];
+        } else {
+            $this->subscriptionContext = new SubscriptionContext();
+        }
+
         parent::__construct($client);
         $this->checkCapabilities($client);
 
-        $this->options = $options ?: [];
         $this->client = $client;
 
         $this->genericSubscribeInit('subscribe');
+        $this->genericSubscribeInit('ssubscribe');
         $this->genericSubscribeInit('psubscribe');
+    }
+
+    /**
+     * Returns subscription context for current instance.
+     *
+     * @return SubscriptionContext
+     */
+    public function getSubscriptionContext(): SubscriptionContext
+    {
+        return $this->subscriptionContext;
     }
 
     /**
@@ -71,13 +94,7 @@ class Consumer extends AbstractConsumer
      */
     private function checkCapabilities(ClientInterface $client)
     {
-        if ($client->getConnection() instanceof ClusterInterface) {
-            throw new NotSupportedException(
-                'Cannot initialize a PUB/SUB consumer over cluster connections.'
-            );
-        }
-
-        $commands = ['publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe'];
+        $commands = ['publish', 'spublish', 'subscribe', 'ssubscribe', 'unsubscribe', 'sunsubscribe', 'psubscribe', 'punsubscribe'];
 
         if (!$client->getCommandFactory()->supports(...$commands)) {
             throw new NotSupportedException(
@@ -87,7 +104,7 @@ class Consumer extends AbstractConsumer
     }
 
     /**
-     * This method shares the logic to handle both SUBSCRIBE and PSUBSCRIBE.
+     * This method shares the logic to handle SUBSCRIBE, SSUBSCRIBE, PSUBSCRIBE.
      *
      * @param string $subscribeAction Type of subscription.
      */
@@ -285,7 +302,9 @@ class Consumer extends AbstractConsumer
 
         switch ($response[0]) {
             case self::SUBSCRIBE:
+            case self::SSUBSCRIBE:
             case self::UNSUBSCRIBE:
+            case self::SUNSUBSCRIBE:
             case self::PSUBSCRIBE:
             case self::PUNSUBSCRIBE:
                 if ($response[2] === 0) {

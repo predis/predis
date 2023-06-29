@@ -11,7 +11,7 @@
  */
 
 use Predis\Client;
-use Predis\PubSub\SubscriptionContext;
+use Predis\Consumer\PubSub\SubscriptionContext;
 
 require __DIR__ . '/shared.php';
 
@@ -46,7 +46,7 @@ $context = new SubscriptionContext(SubscriptionContext::CONTEXT_SHARDED);
 $pubSub = $client->pubSubLoop(['context' => $context]);
 
 // 4. Create a dispatcher loop instance and attach a bunch of callbacks.
-$dispatcher = new Predis\PubSub\DispatcherLoop($pubSub);
+$dispatcher = new \Predis\Consumer\PubSub\DispatcherLoop($pubSub);
 
 // 5. Demonstrate how to use a callable class as a callback for the dispatcher loop.
 class EventsListener implements Countable
