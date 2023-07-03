@@ -15,6 +15,8 @@ namespace Predis\Consumer\PubSub;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\Command;
+use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\ConnectionInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Consumer\AbstractConsumer;
 use Predis\NotSupportedException;
@@ -56,12 +58,7 @@ class Consumer extends AbstractConsumer
     public function __construct(ClientInterface $client, array $options = null)
     {
         $this->options = $options ?: [];
-
-        if (array_key_exists('context', $this->options)) {
-            $this->subscriptionContext = $this->options['context'];
-        } else {
-            $this->subscriptionContext = new SubscriptionContext();
-        }
+        $this->setSubscriptionContext($client->getConnection());
 
         parent::__construct($client);
         $this->checkCapabilities($client);
@@ -338,6 +335,21 @@ class Consumer extends AbstractConsumer
                 throw new ClientException(
                     "Unknown message type '{$response[0]}' received in the PUB/SUB context."
                 );
+        }
+    }
+
+    /**
+     * Set subscription context depends on connection.
+     *
+     * @param  NodeConnectionInterface $connection
+     * @return void
+     */
+    private function setSubscriptionContext(ConnectionInterface $connection): void
+    {
+        if ($connection instanceof ClusterInterface) {
+            $this->subscriptionContext = new SubscriptionContext(SubscriptionContext::CONTEXT_SHARDED);
+        } else {
+            $this->subscriptionContext = new SubscriptionContext();
         }
     }
 }

@@ -39,16 +39,13 @@ $client = new Client(
     'cluster' => 'redis',
 ]);
 
-// 2. Create context object to run loop in sharded pub/sub context.
-$context = new SubscriptionContext(SubscriptionContext::CONTEXT_SHARDED);
+// 2. Run pub/sub loop.
+$pubSub = $client->pubSubLoop();
 
-// 3. Run pub/sub loop.
-$pubSub = $client->pubSubLoop(['context' => $context]);
-
-// 4. Create a dispatcher loop instance and attach a bunch of callbacks.
+// 3. Create a dispatcher loop instance and attach a bunch of callbacks.
 $dispatcher = new \Predis\Consumer\PubSub\DispatcherLoop($pubSub);
 
-// 5. Demonstrate how to use a callable class as a callback for the dispatcher loop.
+// 4. Demonstrate how to use a callable class as a callback for the dispatcher loop.
 class EventsListener implements Countable
 {
     private $events;
@@ -74,17 +71,17 @@ class EventsListener implements Countable
     }
 }
 
-// 6. Attach our callable class to the dispatcher.
+// 5. Attach our callable class to the dispatcher.
 $dispatcher->attachCallback('{channels}_events', $events = new EventsListener());
 
-// 7. Attach a function to control the dispatcher loop termination with a message.
+// 6. Attach a function to control the dispatcher loop termination with a message.
 $dispatcher->attachCallback('control', function ($payload, $dispatcher) {
     if ($payload === 'terminate_dispatcher') {
         $dispatcher->stop();
     }
 });
 
-// 8. Run the dispatcher loop until the callback attached to the 'control' channel
+// 7. Run the dispatcher loop until the callback attached to the 'control' channel
 // receives 'terminate_dispatcher' as a message.
 $dispatcher->run();
 

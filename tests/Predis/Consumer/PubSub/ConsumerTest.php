@@ -13,7 +13,10 @@
 namespace Predis\Consumer\PubSub;
 
 use Predis\Client;
+use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\NodeConnectionInterface;
 use Predis\Consumer\PubSub\Consumer as PubSubConsumer;
+use Predis\NotSupportedException;
 use PredisTestCase;
 
 /**
@@ -48,7 +51,7 @@ class ConsumerTest extends PredisTestCase
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
         $client = new Client($cluster);
 
-        new PubSubConsumer($client, ['context' => new SubscriptionContext(SubscriptionContext::CONTEXT_SHARDED)]);
+        new PubSubConsumer($client);
 
         $this->assertTrue(true);
     }
@@ -394,24 +397,29 @@ class ConsumerTest extends PredisTestCase
     }
 
     /**
-     * @dataProvider contextProvider
+     * @dataProvider connectionsProvider
      * @group disconnected
-     * @param  string $context
+     * @param  string                $connection
+     * @param  string                $context
      * @return void
+     * @throws NotSupportedException
      */
-    public function testGetSubscriptionContext(string $context): void
+    public function testGetSubscriptionContext(string $connection, string $context): void
     {
-        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection = $this->getMockBuilder($connection)->getMock();
 
         $client = new Client($connection);
-        $pubsub = new PubSubConsumer($client, ['context' => new SubscriptionContext($context)]);
+        $pubsub = new PubSubConsumer($client);
 
         $this->assertSame($context, $pubsub->getSubscriptionContext()->getContext());
     }
 
-    public function contextProvider(): array
+    public function connectionsProvider(): array
     {
-        return [[SubscriptionContext::CONTEXT_SHARDED], [SubscriptionContext::CONTEXT_NON_SHARDED]];
+        return [
+            [ClusterInterface::class, SubscriptionContext::CONTEXT_SHARDED],
+            [NodeConnectionInterface::class, SubscriptionContext::CONTEXT_NON_SHARDED],
+        ];
     }
 
     // ******************************************************************** //
