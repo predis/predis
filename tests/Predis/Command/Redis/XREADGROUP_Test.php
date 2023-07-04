@@ -90,6 +90,56 @@ class XREADGROUP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
+     * @return void
+     * @requiresRedisVersion >= 5.0.0
+     */
+    public function testReadsFromConsumerGroupFromMultipleStreams(): void
+    {
+        $redis = $this->getClient();
+
+        $streamInitId = $redis->xadd('stream', ['field' => 'value']);
+        $this->assertEquals('OK', $redis->xgroup->create('stream', 'group', $streamInitId));
+
+        $anotherStreamInitId = $redis->xadd('another_stream', ['field' => 'value']);
+        $this->assertEquals('OK', $redis->xgroup->create('another_stream', 'group', $anotherStreamInitId));
+
+        $nextId = $redis->xadd('stream', ['newField' => 'newValue']);
+        $anotherNextId = $redis->xadd('another_stream', ['newField' => 'newValue']);
+
+        $expectedResponse = [
+            [
+                'stream',
+                [
+                    [$nextId, ['newField', 'newValue']],
+                ],
+            ],
+            [
+                'another_stream',
+                [
+                    [$anotherNextId, ['newField', 'newValue']],
+                ],
+            ],
+        ];
+
+        $this->assertSame(
+            $expectedResponse,
+            $redis->xreadgroup(
+                'group',
+                'consumer',
+                null,
+                null,
+                false,
+                'stream',
+                'another_stream',
+                '>',
+                '>'
+            )
+        );
+    }
+
+    /**
+     * @group connected
      * @return void
      * @requiresRedisVersion >= 5.0.0
      */
