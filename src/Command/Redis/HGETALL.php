@@ -38,10 +38,11 @@ class HGETALL extends RedisCommand
 
         $result = [];
 
-        for ($i = 0; $i < count($data); ++$i) {
-            $result[$data[$i]] = $data[++$i];
+        if (is_countable($data)) {
+            for ($i = 0; $i < count($data); ++$i) {
+                $result[$data[$i]] = $data[++$i];
+            }
         }
-
         return $result;
     }
 }
