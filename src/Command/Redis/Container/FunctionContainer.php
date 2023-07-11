@@ -17,6 +17,9 @@ use Predis\Response\Status;
 /**
  * @method string load(string $functionCode, bool $replace = 'false')
  * @method Status delete(string $libraryName)
+ * @method string dump()
+ * @method Status flush(?string $mode = null)
+ * @method Status restore(string $value, ?string $policy = null)
  */
 class FunctionContainer extends AbstractContainer
 {
