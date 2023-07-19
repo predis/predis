@@ -563,10 +563,10 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $this->getName(false)
         );
 
-        return isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group']) &&
-            !empty($annotations['method']['requiresRedisVersion']) &&
-            in_array('connected', $annotations['method']['group'], true) &&
-            in_array('cluster', $annotations['method']['group'], true);
+        return isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group'])
+            && !empty($annotations['method']['requiresRedisVersion'])
+            && in_array('connected', $annotations['method']['group'], true)
+            && in_array('cluster', $annotations['method']['group'], true);
     }
 
     /**
