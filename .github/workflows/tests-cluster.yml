@@ -36,7 +36,6 @@ jobs:
         uses: isbang/compose-action@v1.4.1
         with:
           compose-file: "./docker/unstable_cluster/docker-compose.yml"
-          up-flags: "-d"
 
       - name: Setup PHP with Composer and extensions
         uses: shivammathur/setup-php@v2
