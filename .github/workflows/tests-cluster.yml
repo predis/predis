@@ -36,6 +36,8 @@ jobs:
         uses: isbang/compose-action@v1.4.1
         with:
           compose-file: "./docker/unstable_cluster/docker-compose.yml"
+        run: |
+          sleep 5 # Time to let it setup
 
       - name: Setup PHP with Composer and extensions
         uses: shivammathur/setup-php@v2
