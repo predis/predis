@@ -33,11 +33,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run redis cluster
-        run: |
-          docker run -d -v "$(pwd)"/docker/unstable_cluster/redis.conf:/redis.conf \
-          -p 6372:6372 -p 6373:6373 -p 6374:6374 -p 6375:6375 -p 6376:6376 -p 6377:6377 \
-          redisfab/redis-py-cluster:unstable
-          sleep 5 # Time to settle
+        uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: "./docker/unstable_cluster/docker-compose.yml"
+          up-flags: "-d"
 
       - name: Setup PHP with Composer and extensions
         uses: shivammathur/setup-php@v2
