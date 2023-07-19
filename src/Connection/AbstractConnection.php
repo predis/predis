@@ -82,6 +82,14 @@ abstract class AbstractConnection implements NodeConnectionInterface
     /**
      * {@inheritdoc}
      */
+    public function hasDataToRead(): bool
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function connect()
     {
         if (!$this->isConnected()) {

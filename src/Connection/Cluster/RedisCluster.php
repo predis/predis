@@ -57,6 +57,10 @@ use Traversable;
 class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 {
     private $useClusterSlots = true;
+
+    /**
+     * @var NodeConnectionInterface[]
+     */
     private $pool = [];
     private $slots = [];
     private $slotmap;
@@ -66,21 +70,34 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $retryInterval = 10;
 
     /**
+     * @var int
+     */
+    private $readTimeout = 1000;
+
+    /**
      * @var ParametersInterface
      */
     private $connectionParameters;
 
     /**
-     * @param FactoryInterface  $connections Optional connection factory.
-     * @param StrategyInterface $strategy    Optional cluster strategy.
+     * @param FactoryInterface       $connections Optional connection factory.
+     * @param StrategyInterface|null $strategy    Optional cluster strategy.
+     * @param int|null               $readTimeout Optional read timeout
      */
     public function __construct(
         FactoryInterface $connections,
-        StrategyInterface $strategy = null
+        ParametersInterface $parameters,
+        StrategyInterface $strategy = null,
+        int $readTimeout = null
     ) {
         $this->connections = $connections;
+        $this->connectionParameters = $parameters;
         $this->strategy = $strategy ?: new RedisClusterStrategy();
         $this->slotmap = new SlotMap();
+
+        if (!is_null($readTimeout)) {
+            $this->readTimeout = $readTimeout;
+        }
     }
 
     /**
@@ -156,10 +173,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function add(NodeConnectionInterface $connection)
     {
-        if (!isset($this->connectionParameters)) {
-            $this->connectionParameters = $connection->getParameters();
-        }
-
         $this->pool[(string) $connection] = $connection;
         $this->slotmap->reset();
     }
@@ -173,10 +186,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
             $this->slotmap->reset();
             $this->slots = array_diff($this->slots, [$connection]);
             unset($this->pool[$id]);
-
-            if (empty($this->pool) && isset($this->connectionParameters)) {
-                $this->connectionParameters = null;
-            }
 
             return true;
         }
@@ -691,5 +700,23 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function getParameters(): ?ParametersInterface
     {
         return $this->connectionParameters;
+    }
+
+    /**
+     * Loop over connections until there's data to read.
+     *
+     * @return mixed
+     */
+    public function read()
+    {
+        while (true) {
+            foreach ($this->pool as $connection) {
+                if ($connection->hasDataToRead()) {
+                    return $connection->read();
+                }
+            }
+
+            usleep($this->readTimeout);
+        }
     }
 }

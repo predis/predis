@@ -42,7 +42,12 @@ class DispatcherLoop extends AbstractDispatcherLoop
         $callbackName = $this->getPrefixKeys() . $messageType;
 
         $this->callbacksDictionary[$callbackName] = $callback;
-        $this->consumer->subscribe($messageType);
+
+        if ($this->consumer->getSubscriptionContext()->getContext() === SubscriptionContext::CONTEXT_SHARDED) {
+            $this->consumer->ssubscribe($messageType);
+        } else {
+            $this->consumer->subscribe($messageType);
+        }
     }
 
     /**
@@ -56,7 +61,12 @@ class DispatcherLoop extends AbstractDispatcherLoop
 
         if (isset($this->callbacksDictionary[$callbackName])) {
             unset($this->callbacksDictionary[$callbackName]);
-            $this->consumer->unsubscribe($messageType);
+
+            if ($this->consumer->getSubscriptionContext()->getContext() === SubscriptionContext::CONTEXT_SHARDED) {
+                $this->consumer->sunsubscribe($messageType);
+            } else {
+                $this->consumer->unsubscribe($messageType);
+            }
         }
     }
 

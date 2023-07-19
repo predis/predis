@@ -16,6 +16,7 @@ use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\Command;
 use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\ConnectionInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Consumer\AbstractConsumer;
 use Predis\NotSupportedException;
@@ -26,7 +27,9 @@ use Predis\NotSupportedException;
 class Consumer extends AbstractConsumer
 {
     public const SUBSCRIBE = 'subscribe';
+    public const SSUBSCRIBE = 'ssubscribe';
     public const UNSUBSCRIBE = 'unsubscribe';
+    public const SUNSUBSCRIBE = 'sunsubscribe';
     public const PSUBSCRIBE = 'psubscribe';
     public const PUNSUBSCRIBE = 'punsubscribe';
     public const MESSAGE = 'message';
@@ -36,10 +39,16 @@ class Consumer extends AbstractConsumer
     public const STATUS_VALID = 1;       // 0b0001
     public const STATUS_SUBSCRIBED = 2;  // 0b0010
     public const STATUS_PSUBSCRIBED = 4; // 0b0100
+    public const STATUS_SSUBSCRIBED = 8; // 0b1000
 
     protected $statusFlags = self::STATUS_VALID;
 
     protected $options;
+
+    /**
+     * @var SubscriptionContext
+     */
+    private $subscriptionContext;
 
     /**
      * @param  ClientInterface       $client  Client instance used by the consumer.
@@ -48,14 +57,27 @@ class Consumer extends AbstractConsumer
      */
     public function __construct(ClientInterface $client, array $options = null)
     {
+        $this->options = $options ?: [];
+        $this->setSubscriptionContext($client->getConnection());
+
         parent::__construct($client);
         $this->checkCapabilities($client);
 
-        $this->options = $options ?: [];
         $this->client = $client;
 
         $this->genericSubscribeInit('subscribe');
+        $this->genericSubscribeInit('ssubscribe');
         $this->genericSubscribeInit('psubscribe');
+    }
+
+    /**
+     * Returns subscription context for current instance.
+     *
+     * @return SubscriptionContext
+     */
+    public function getSubscriptionContext(): SubscriptionContext
+    {
+        return $this->subscriptionContext;
     }
 
     /**
@@ -68,13 +90,7 @@ class Consumer extends AbstractConsumer
      */
     private function checkCapabilities(ClientInterface $client)
     {
-        if ($client->getConnection() instanceof ClusterInterface) {
-            throw new NotSupportedException(
-                'Cannot initialize a PUB/SUB consumer over cluster connections.'
-            );
-        }
-
-        $commands = ['publish', 'subscribe', 'unsubscribe', 'psubscribe', 'punsubscribe'];
+        $commands = ['publish', 'spublish', 'subscribe', 'ssubscribe', 'unsubscribe', 'sunsubscribe', 'psubscribe', 'punsubscribe'];
 
         if (!$client->getCommandFactory()->supports(...$commands)) {
             throw new NotSupportedException(
@@ -84,7 +100,7 @@ class Consumer extends AbstractConsumer
     }
 
     /**
-     * This method shares the logic to handle both SUBSCRIBE and PSUBSCRIBE.
+     * This method shares the logic to handle SUBSCRIBE, SSUBSCRIBE, PSUBSCRIBE.
      *
      * @param string $subscribeAction Type of subscription.
      */
@@ -139,6 +155,17 @@ class Consumer extends AbstractConsumer
     }
 
     /**
+     * Subscribes to the specified shard channels.
+     *
+     * @param string ...$channels
+     */
+    public function ssubscribe(string ...$channels)
+    {
+        $this->writeRequest(self::SSUBSCRIBE, func_get_args());
+        $this->statusFlags |= self::STATUS_SSUBSCRIBED;
+    }
+
+    /**
      * Unsubscribes from the specified channels.
      *
      * @param string ...$channel One or more channel names.
@@ -146,6 +173,16 @@ class Consumer extends AbstractConsumer
     public function unsubscribe(...$channel)
     {
         $this->writeRequest(self::UNSUBSCRIBE, func_get_args());
+    }
+
+    /**
+     * Unsubscribes from the specified shard channels.
+     *
+     * @param string ...$channels
+     */
+    public function sunsubscribe(string ...$channels)
+    {
+        $this->writeRequest(self::SUNSUBSCRIBE, func_get_args());
     }
 
     /**
@@ -204,6 +241,9 @@ class Consumer extends AbstractConsumer
             if ($this->isFlagSet(self::STATUS_PSUBSCRIBED)) {
                 $this->punsubscribe();
             }
+            if ($this->isFlagSet(self::STATUS_SSUBSCRIBED)) {
+                $this->sunsubscribe();
+            }
         }
 
         return !$drop;
@@ -225,7 +265,7 @@ class Consumer extends AbstractConsumer
     public function valid()
     {
         $isValid = $this->isFlagSet(self::STATUS_VALID);
-        $subscriptionFlags = self::STATUS_SUBSCRIBED | self::STATUS_PSUBSCRIBED;
+        $subscriptionFlags = self::STATUS_SUBSCRIBED | self::STATUS_PSUBSCRIBED | self::STATUS_SSUBSCRIBED;
         $hasSubscriptions = ($this->statusFlags & $subscriptionFlags) > 0;
 
         return $isValid && $hasSubscriptions;
@@ -258,7 +298,9 @@ class Consumer extends AbstractConsumer
 
         switch ($response[0]) {
             case self::SUBSCRIBE:
+            case self::SSUBSCRIBE:
             case self::UNSUBSCRIBE:
+            case self::SUNSUBSCRIBE:
             case self::PSUBSCRIBE:
             case self::PUNSUBSCRIBE:
                 if ($response[2] === 0) {
@@ -293,6 +335,21 @@ class Consumer extends AbstractConsumer
                 throw new ClientException(
                     "Unknown message type '{$response[0]}' received in the PUB/SUB context."
                 );
+        }
+    }
+
+    /**
+     * Set subscription context depends on connection.
+     *
+     * @param  NodeConnectionInterface $connection
+     * @return void
+     */
+    private function setSubscriptionContext(ConnectionInterface $connection): void
+    {
+        if ($connection instanceof ClusterInterface) {
+            $this->subscriptionContext = new SubscriptionContext(SubscriptionContext::CONTEXT_SHARDED);
+        } else {
+            $this->subscriptionContext = new SubscriptionContext();
         }
     }
 }
