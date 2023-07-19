@@ -41,21 +41,16 @@ jobs:
         ports:
           - 6379:6379
 
-      redis-cluster:
-        image: redisfab/redis-py-cluster:unstable
-        options: -v /($pwd)/docker/unstable_cluster/redis.conf:/redis.conf
-        ports:
-          - 6372:6372
-          - 6373:6373
-          - 6374:6374
-          - 6375:6375
-          - 6376:6376
-          - 6377:6377
-
     steps:
 
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Run redis cluster
+        run: |
+          docker run -d -v "$(pwd)"/docker/unstable_cluster/redis.conf:/redis.conf \
+          -p 6372:6372 -p 6373:6373 -p 6374:6374 -p 6375:6375 -p 6376:6376 -p 6377:6377 \
+          redisfab/redis-py-cluster:unstable
 
       - name: Setup PHP with Composer and extensions
         uses: shivammathur/setup-php@v2
