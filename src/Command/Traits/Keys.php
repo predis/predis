@@ -25,8 +25,8 @@ trait Keys
         $argumentsLength = count($arguments);
 
         if (
-            static::$keysArgumentPositionOffset > $argumentsLength ||
-            !is_array($arguments[static::$keysArgumentPositionOffset])
+            static::$keysArgumentPositionOffset > $argumentsLength
+            || !is_array($arguments[static::$keysArgumentPositionOffset])
         ) {
             throw new UnexpectedValueException('Wrong keys argument type or position offset');
         }

@@ -147,14 +147,14 @@ class EXPIREAT_Test extends PredisCommandTestCase
                 ['noExpiry', time() + 10, 'XX'],
             ],
             'only if new expiry is greater then current one' => [
-                ['newExpiryLower', 'value', 'EXAT', time() + 1000],
-                ['newExpiryGreater', 'value', 'EXAT', time() + 10],
+                ['newExpiryLower', 'value', 'EX', 1000],
+                ['newExpiryGreater', 'value', 'EX', 10],
                 ['newExpiryGreater', time() + 20, 'GT'],
                 ['newExpiryLower', time() + 20, 'GT'],
             ],
             'only if new expiry is lower then current one' => [
-                ['newExpiryLower', 'value', 'EXAT', time() + 1000],
-                ['newExpiryGreater', 'value', 'EXAT', time() + 10],
+                ['newExpiryLower', 'value', 'EX', 1000],
+                ['newExpiryGreater', 'value', 'EX', 10],
                 ['newExpiryLower', time() + 20, 'LT'],
                 ['newExpiryGreater', time() + 20, 'LT'],
             ],

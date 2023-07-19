@@ -973,6 +973,11 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 ['key', 'MAXLEN', 100],
                 ['prefix:key', 'MAXLEN', 100],
             ],
+            /* ---------------- Redis 6.2 ---------------- */
+            ['GETDEL',
+                ['key'],
+                ['prefix:key'],
+            ],
         ];
     }
 }
