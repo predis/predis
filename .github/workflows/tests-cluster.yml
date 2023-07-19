@@ -36,8 +36,6 @@ jobs:
         uses: isbang/compose-action@v1.4.1
         with:
           compose-file: "./docker/unstable_cluster/docker-compose.yml"
-        run: |
-          sleep 5 # Time to let it setup
 
       - name: Setup PHP with Composer and extensions
         uses: shivammathur/setup-php@v2
@@ -53,6 +51,8 @@ jobs:
           composer-options: ${{ matrix.php == '8.0' && '--ignore-platform-reqs' || '' }}
 
       - name: Run tests against cluster
-        run: vendor/bin/phpunit --group cluster
+        run: |
+          sleep 5 # Timeout to make sure that docker image is setup
+          vendor/bin/phpunit --group cluster
 
 
