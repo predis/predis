@@ -1,0 +1,57 @@
+name: Cluster tests
+
+on:
+  push:
+    branches:
+      - main
+      - v2.**
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  predis:
+    name: PHP ${{ matrix.php }} Redis cluster:unstable
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - '7.2'
+          - '7.3'
+          - '7.4'
+          - '8.0'
+          - '8.1'
+          - '8.2'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run redis cluster
+        run: |
+          docker run -d -v "$(pwd)"/docker/unstable_cluster/redis.conf:/redis.conf \
+          -p 6372:6372 -p 6373:6373 -p 6374:6374 -p 6375:6375 -p 6376:6376 -p 6377:6377 \
+          redisfab/redis-py-cluster:unstable
+
+      - name: Setup PHP with Composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: relay
+          coverage: ${{ (matrix.php == '8.1') && 'xdebug' || 'none' }}
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: highest
+          composer-options: ${{ matrix.php == '8.0' && '--ignore-platform-reqs' || '' }}
+
+      - name: Run tests against cluster
+        run: vendor/bin/phpunit --group cluster
+
+
