@@ -133,7 +133,7 @@ jobs:
 
       - name: Check exported files
         run: |
-          EXPECTED="LICENSE,README.md,autoload.php,composer.json,docker/,docker/unstable_cluster/,docker/unstable_cluster/redis.conf"
+          EXPECTED="LICENSE,README.md,autoload.php,composer.json,docker/,docker/unstable_cluster/,docker/unstable_cluster/Dockerfile,docker/unstable_cluster/create_cluster.sh,docker/unstable_cluster/docker-compose.yml,docker/unstable_cluster/redis.conf"
           CURRENT="$(
               git archive HEAD \
                   | tar --list --exclude="src" --exclude="src/*" --exclude="bin" --exclude="bin/*" \
