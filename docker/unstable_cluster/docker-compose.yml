@@ -13,5 +13,5 @@ services:
       - "6376:6376"
       - "6377:6378"
     volumes:
-      - "${PWD}/redis.conf:/redis.conf:ro"
+      - "./redis.conf:/redis.conf:ro"
 
