@@ -81,7 +81,7 @@ jobs:
 
   predis-cluster:
 
-    name: PHP ${{ matrix.php }} (Redis latest)
+    name: PHP ${{ matrix.php }} (Redis Cluster latest)
     runs-on: ubuntu-latest
 
     strategy:
