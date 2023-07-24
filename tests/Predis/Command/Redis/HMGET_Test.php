@@ -136,6 +136,22 @@ class HMGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsValuesOfSpecifiedFieldsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
+
+        $this->assertSame(['bar', 'piyo', null], $redis->hmget('metavars', 'foo', 'hoge', 'unknown'));
+        $this->assertSame(['bar', 'bar'], $redis->hmget('metavars', 'foo', 'foo'));
+        $this->assertSame([null, null], $redis->hmget('metavars', 'unknown', 'unknown'));
+        $this->assertSame([null, null], $redis->hmget('unknown', 'foo', 'hoge'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

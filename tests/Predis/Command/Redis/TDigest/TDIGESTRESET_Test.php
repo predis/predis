@@ -90,6 +90,34 @@ class TDIGESTRESET_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testResetExistingSketchResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->tdigestcreate('key', 500);
+        $redis->tdigestadd('key', 1, 2, 2, 3, 3, 3);
+
+        $this->assertEquals(
+            ['1', '2', '2', '3', '3', '3'],
+            $redis->tdigestbyrank('key', 0, 1, 2, 3, 4, 5)
+        );
+
+        $actualResponse = $redis->tdigestreset('key');
+        $info = $redis->tdigestinfo('key');
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame(500, $info['Compression']);
+        $this->assertEquals(
+            [null, null, null, null, null, null],
+            $redis->tdigestbyrank('key', 0, 1, 2, 3, 4, 5)
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
     public function testThrowsExceptionOnNonExistingTDigestSketch(): void

@@ -82,6 +82,26 @@ class TDIGESTMIN_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsMinValueFromGivenSketchResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->tdigestcreate('key');
+        $redis->tdigestcreate('empty_key');
+
+        $redis->tdigestadd('key', 3, 2, 4, 5, 1);
+
+        $actualResponse = $redis->tdigestmin('key');
+
+        $this->assertEquals('1', $actualResponse);
+        $this->assertEquals(0, $redis->tdigestmin('empty_key'));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
     public function testThrowsExceptionOnNonExistingTDigestSketch(): void

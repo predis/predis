@@ -154,4 +154,13 @@ class INFO extends RedisCommand
 
         return $parsedData;
     }
+
+    /**
+     * @param                          $data
+     * @return array|mixed|string|null
+     */
+    public function parseResp3Response($data)
+    {
+        return $this->parseResponse($data);
+    }
 }

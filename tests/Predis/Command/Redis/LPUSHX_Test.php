@@ -91,6 +91,20 @@ class LPUSHX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testPushesElementsToHeadOfExistingListResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->lpush('metavars', 'foo');
+
+        $this->assertSame(2, $redis->lpushx('metavars', 'hoge'));
+        $this->assertSame(['hoge', 'foo'], $redis->lrange('metavars', 0, -1));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
     public function testDoesNotPushElementOnNonExistingKey(): void

@@ -19,6 +19,9 @@ use Predis\Response\Status as StatusResponse;
 
 class Resp2Strategy implements ParserStrategyInterface
 {
+    public const TYPE_ARRAY = 'array';
+    public const TYPE_BULK_STRING = 'bulkString';
+
     /**
      * Callbacks to process given RESP type.
      *
@@ -113,7 +116,7 @@ class Resp2Strategy implements ParserStrategyInterface
         }
 
         return [
-            'type' => 'array',
+            'type' => self::TYPE_ARRAY,
             'value' => $count,
         ];
     }
@@ -133,7 +136,7 @@ class Resp2Strategy implements ParserStrategyInterface
         }
 
         return [
-            'type' => 'bulkString',
+            'type' => self::TYPE_BULK_STRING,
             'value' => $size,
         ];
     }

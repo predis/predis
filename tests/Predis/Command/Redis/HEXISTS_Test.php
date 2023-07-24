@@ -95,6 +95,21 @@ class HEXISTS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsExistenceOfSpecifiedFieldResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo');
+
+        $this->assertSame(1, $redis->hexists('metavars', 'foo'));
+        $this->assertSame(0, $redis->hexists('metavars', 'lol'));
+        $this->assertSame(0, $redis->hexists('unknown', 'foo'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

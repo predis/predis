@@ -76,6 +76,20 @@ class RANDOMKEY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsZeroOnNonExpiringKeysResp3(): void
+    {
+        $keys = ['key:1' => 1, 'key:2' => 2, 'key:3' => 3];
+
+        $redis = $this->getResp3Client();
+        $redis->mset($keys);
+
+        $this->assertContains($redis->randomkey(), array_keys($keys));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsNullOnEmptyDatabase(): void
     {

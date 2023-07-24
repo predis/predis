@@ -125,6 +125,21 @@ class SSCAN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testScanWithoutMatchResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $redis->sadd('key', $members = ['member:one', 'member:two', 'member:three', 'member:four']);
+
+        $response = $redis->sscan('key', 0);
+
+        $this->assertSame('0', $response[0]);
+        $this->assertSameValues($members, $response[1]);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
     public function testScanWithMatchingMembers(): void

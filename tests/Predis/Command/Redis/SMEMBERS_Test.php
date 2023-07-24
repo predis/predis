@@ -95,6 +95,20 @@ class SMEMBERS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsEmptyArrayOnNonExistingSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->sadd('letters', 'a', 'b', 'c', 'd', 'e');
+
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e'], $redis->smembers('letters'));
+        $this->assertSame([], $redis->smembers('digits'));
+    }
+
+    /**
+     * @group connected
      */
     public function testThrowsExceptionOnWrongType(): void
     {

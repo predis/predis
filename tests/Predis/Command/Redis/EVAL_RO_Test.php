@@ -88,6 +88,20 @@ class EVAL_RO_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
+    public function testExecutesReadOnlyCommandsFromGivenLuaScriptResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->mset('key', 'value');
+
+        $this->assertSame('value', $redis->eval_ro("return redis.call('GET', KEYS[1])", ['key']));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
     public function testThrowsErrorOnWriteCommandProvided(): void
     {
         $redis = $this->getClient();

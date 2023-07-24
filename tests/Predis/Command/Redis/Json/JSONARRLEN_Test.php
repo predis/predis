@@ -81,6 +81,20 @@ class JSONARRLEN_Test extends PredisCommandTestCase
         $this->assertSame($expectedLength, $redis->jsonarrlen($key, $path));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
+    public function testReturnsCorrectJsonArrayLengthResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1","key2":["value1","value2"]}');
+
+        $this->assertSame([2], $redis->jsonarrlen('key', '$.key2'));
+    }
+
     public function jsonProvider(): array
     {
         return [

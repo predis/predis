@@ -90,4 +90,20 @@ class PUBLISH_Test extends PredisCommandTestCase
         $this->assertSame(1, $redis2->publish('channel:foo', 'bar'));
         $this->assertSame(0, $redis2->publish('channel:hoge', 'piyo'));
     }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testPublishesMessagesToChannelResp3(): void
+    {
+        $redis1 = $this->getResp3Client();
+        $redis2 = $this->getResp3Client();
+
+        $redis1->subscribe('channel:foo');
+
+        $this->assertSame(1, $redis2->publish('channel:foo', 'bar'));
+        $this->assertSame(0, $redis2->publish('channel:hoge', 'piyo'));
+    }
 }

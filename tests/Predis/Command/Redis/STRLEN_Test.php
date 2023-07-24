@@ -92,6 +92,21 @@ class STRLEN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsTheLengthOfStringResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('foo', 'bar');
+        $this->assertSame(3, $redis->strlen('foo'));
+
+        $redis->append('foo', 'bar');
+        $this->assertSame(6, $redis->strlen('foo'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
     public function testReturnsZeroOnNonExistingKeys(): void

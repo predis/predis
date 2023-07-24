@@ -135,6 +135,18 @@ class SORT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testBasicSortResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $redis->lpush('list:unordered', $unordered = [2, 100, 3, 1, 30, 10]);
+
+        $this->assertEquals([1, 2, 3, 10, 30, 100], $redis->sort('list:unordered'));
+    }
+
+    /**
+     * @group connected
      */
     public function testSortWithAscOrDescModifier(): void
     {

@@ -96,6 +96,23 @@ class SMOVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsMemberExistenceInSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->sadd('letters:source', 'a', 'b', 'c');
+
+        $this->assertSame(1, $redis->smove('letters:source', 'letters:destination', 'b'));
+        $this->assertSame(0, $redis->smove('letters:source', 'letters:destination', 'z'));
+
+        $this->assertSameValues(['a', 'c'], $redis->smembers('letters:source'));
+        $this->assertSameValues(['b'], $redis->smembers('letters:destination'));
+    }
+
+    /**
+     * @group connected
      */
     public function testThrowsExceptionOnWrongTypeOfSourceKey(): void
     {

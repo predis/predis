@@ -112,4 +112,18 @@ class PEXPIREAT_Test extends PredisCommandTestCase
         $this->assertSame(1, $redis->expireat('foo', time() - 100000));
         $this->assertSame(0, $redis->exists('foo'));
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testDeletesKeysOnPastUnixTimeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('foo', 'bar');
+
+        $this->assertSame(1, $redis->expireat('foo', time() - 100000));
+        $this->assertSame(0, $redis->exists('foo'));
+    }
 }

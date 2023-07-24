@@ -78,6 +78,23 @@ class CMSINITBYDIM_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testInitializeCountMinSketchWithGivenConfigurationResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->cmsinitbydim('key', 2000, 10);
+        $info = $redis->cmsinfo('key');
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame(2000, $info['width']);
+        $this->assertSame(10, $info['depth']);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisBfVersion >= 2.0.0
      */
     public function testThrowsExceptionOnAlreadyExistingKey(): void

@@ -72,4 +72,13 @@ class CLIENT extends RedisCommand
 
         return $clients;
     }
+
+    /**
+     * @param                          $data
+     * @return array|mixed|string|null
+     */
+    public function parseResp3Response($data)
+    {
+        return $this->parseResponse($data);
+    }
 }

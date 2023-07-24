@@ -85,6 +85,20 @@ class SMISMEMBER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsCorrectResponseIfMemberBelongsToSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->sadd('key', 'member1');
+
+        $this->assertSame([1], $redis->smismember('key', 'member1'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 6.2.0
      */
     public function testThrowsExceptionOnWrongType(): void

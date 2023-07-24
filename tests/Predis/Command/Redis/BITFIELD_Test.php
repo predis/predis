@@ -124,6 +124,21 @@ class BITFIELD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testBitfieldWithGetModifierResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->setbit('string', 0, 1);
+        $redis->setbit('string', 8, 1);
+
+        $this->assertSame([128], $redis->bitfield('string', 'GET', 'u8', 0));
+        $this->assertSame([128, 1, 128], $redis->bitfield('string', 'GET', 'u8', 0, 'GET', 'u8', 1, 'GET', 'u8', 8));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
     public function testBitfieldWithSetModifier(): void

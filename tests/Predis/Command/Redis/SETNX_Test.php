@@ -87,4 +87,17 @@ class SETNX_Test extends PredisCommandTestCase
         $this->assertSame(0, $redis->setnx('foo', 'barbar'));
         $this->assertEquals('bar', $redis->get('foo'));
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetStringValueResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(1, $redis->setnx('foo', 'bar'));
+        $this->assertSame(0, $redis->setnx('foo', 'barbar'));
+        $this->assertEquals('bar', $redis->get('foo'));
+    }
 }

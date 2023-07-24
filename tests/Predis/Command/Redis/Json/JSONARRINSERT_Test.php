@@ -90,6 +90,23 @@ class JSONARRINSERT_Test extends PredisCommandTestCase
         $this->assertSame($expectedModifiedArray, $redis->jsonget($key));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 2.6.1
+     */
+    public function testInsertElementIntoJsonArrayBeforeGivenIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1","key2":["value1","value3"]}');
+
+        $actualResponse = $redis->jsonarrinsert('key', '$.key2', 1, '"value2"');
+
+        $this->assertSame([3], $actualResponse);
+        $this->assertSame([['{"key1":"value1","key2":["value1","value2","value3"]}']], $redis->jsonget('key'));
+    }
+
     public function jsonProvider(): array
     {
         return [

@@ -82,6 +82,26 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testCreatesSynonymGroupWithinGivenIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals(
+            'OK',
+            $redis->ftcreate('index', [new TextField('text')])
+        );
+
+        $this->assertEquals(
+            'OK',
+            $redis->ftsynupdate('index', 'synonym1', null, 'term1', 'term2')
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRediSearchVersion >= 1.2.0
      */
     public function testUpdatesAlreadyExistingSynonymGroupWithinGivenIndex(): void

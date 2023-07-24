@@ -111,6 +111,21 @@ class BITOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCanPerformBitwiseANDResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('key:src:1', "h\x80");
+        $redis->set('key:src:2', 'R');
+
+        $this->assertSame(2, $redis->bitop('AND', 'key:dst', 'key:src:1', 'key:src:2'));
+        $this->assertSame("@\x00", $redis->get('key:dst'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testCanPerformBitwiseOR(): void

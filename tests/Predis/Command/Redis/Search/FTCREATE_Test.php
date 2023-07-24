@@ -85,6 +85,31 @@ class FTCREATE_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $actualResponse);
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testCreatesSearchIndexWithGivenArgumentsAndSchemaResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $schema = [
+            new TextField('first', 'fst', true, true),
+            new TextField('last'),
+            new NumericField('age'),
+        ];
+
+        $arguments = new CreateArguments();
+        $arguments->prefix(['prefix:', 'prefix1:']);
+        $arguments->filter('@age>16');
+        $arguments->stopWords(['hello', 'world']);
+
+        $actualResponse = $redis->ftcreate('index', $schema, $arguments);
+
+        $this->assertEquals('OK', $actualResponse);
+    }
+
     public function argumentsProvider(): array
     {
         return [

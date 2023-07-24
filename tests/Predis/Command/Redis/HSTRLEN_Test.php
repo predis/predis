@@ -102,6 +102,27 @@ class HSTRLEN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsStringLengthOfSpecifiedFieldResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo');
+
+        // Existing key and field
+        $this->assertSame(3, $redis->hstrlen('metavars', 'foo'));
+        $this->assertSame(4, $redis->hstrlen('metavars', 'hoge'));
+
+        // Existing key but non existing field
+        $this->assertSame(0, $redis->hstrlen('metavars', 'foofoo'));
+
+        // Non existing key
+        $this->assertSame(0, $redis->hstrlen('unknown', 'foo'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
     public function testThrowsExceptionOnWrongType(): void

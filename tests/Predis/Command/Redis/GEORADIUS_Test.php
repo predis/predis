@@ -160,6 +160,18 @@ class GEORADIUS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCommandReturnsGeoRadiusInfoWithNoOptionsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
+        $this->assertEquals(['Palermo', 'Catania'], $redis->georadius('Sicily', 15, 37, 200, 'km'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
     public function testCommandReturnsGeoRadiusInfoWithOptions(): void

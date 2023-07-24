@@ -107,6 +107,22 @@ class SCAN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testScanWithoutMatchResp3(): void
+    {
+        $kvs = ['key:one' => 'one', 'key:two' => 'two', 'key:three' => 'three', 'key:four' => 'four'];
+
+        $redis = $this->getResp3Client();
+        $redis->mset($kvs);
+
+        $response = $redis->scan(0);
+
+        $this->assertSameValues(array_keys($kvs), $response[1]);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
     public function testScanWithMatchingKeys(): void

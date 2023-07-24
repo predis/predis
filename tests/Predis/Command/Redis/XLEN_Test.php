@@ -93,6 +93,22 @@ class XLEN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsLengthOfListResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->xadd('stream', ['key' => 'val']);
+        $redis->xadd('stream', ['key' => 'val']);
+        $this->assertSame(2, $redis->xlen('stream'));
+
+        $redis->xadd('stream', ['key' => 'val']);
+        $this->assertSame(3, $redis->xlen('stream'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 5.0.0
      */
     public function testReturnsZeroLengthOnNonExistingList(): void

@@ -75,6 +75,20 @@ class CFADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testAddItemToCuckooFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->cfadd('key', 'item');
+        $this->assertTrue($actualResponse);
+        $this->assertTrue($redis->cfexists('key', 'item'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

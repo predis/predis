@@ -129,6 +129,25 @@ class ZSCAN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testScanWithoutMatchResp3(): void
+    {
+        $expectedMembers = ['member:one', 'member:two', 'member:three', 'member:four'];
+        $expectedScores = [1.0, 2.0, 3.0, 4.0];
+
+        $redis = $this->getResp3Client();
+        $redis->zadd('key', array_combine($expectedMembers, $expectedScores));
+
+        $response = $redis->zscan('key', 0);
+
+        $this->assertSame('0', $response[0]);
+        $this->assertSame($expectedMembers, array_keys($response[1]));
+        $this->assertSame($expectedScores, array_values($response[1]));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
     public function testScanWithMatchingMembers(): void

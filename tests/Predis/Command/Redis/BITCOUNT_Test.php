@@ -118,6 +118,24 @@ class BITCOUNT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsNumberOfBitsSetWithExplicitBitByteArgumentResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->setbit('key', 1, 1);
+        $redis->setbit('key', 10, 1);
+        $redis->setbit('key', 16, 1);
+        $redis->setbit('key', 22, 1);
+        $redis->setbit('key', 32, 1);
+
+        $this->assertSame(2, $redis->bitcount('key', 0, 10, 'bit'), 'Count bits set (without range)');
+        $this->assertSame(1, $redis->bitcount('key', 0, 4, 'bit'), 'Count bits set (with range)');
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testThrowsExceptionOnWrongType(): void
