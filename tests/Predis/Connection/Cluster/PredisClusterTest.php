@@ -13,7 +13,6 @@
 namespace Predis\Connection\Cluster;
 
 use Predis\Connection\Parameters;
-use Predis\Connection\ParametersInterface;
 use PredisTestCase;
 
 class PredisClusterTest extends PredisTestCase
@@ -23,7 +22,7 @@ class PredisClusterTest extends PredisTestCase
      */
     public function testExposesCommandHashStrategy(): void
     {
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
         $this->assertInstanceOf('Predis\Cluster\PredisStrategy', $cluster->getClusterStrategy());
     }
 
@@ -35,7 +34,7 @@ class PredisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -53,7 +52,7 @@ class PredisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001?alias=node01');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002?alias=node02');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -72,7 +71,7 @@ class PredisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:7003');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -83,24 +82,6 @@ class PredisClusterTest extends PredisTestCase
         $this->assertFalse($cluster->remove($connection3));
 
         $this->assertCount(1, $cluster);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testRemoveConnectionsUnsetParametersOnEmptyConnectionPool(): void
-    {
-        $connection = $this->getMockConnection('tcp://127.0.0.1:7001?alias=node01');
-
-        $cluster = new PredisCluster();
-
-        $cluster->add($connection);
-
-        $this->assertInstanceOf(ParametersInterface::class, $cluster->getParameters());
-
-        $cluster->remove($connection);
-
-        $this->assertNull($cluster->getParameters());
     }
 
     /**
@@ -118,7 +99,7 @@ class PredisClusterTest extends PredisTestCase
             ->expects($this->once())
             ->method('connect');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -141,7 +122,7 @@ class PredisClusterTest extends PredisTestCase
             ->expects($this->once())
             ->method('disconnect');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -166,7 +147,7 @@ class PredisClusterTest extends PredisTestCase
             ->method('isConnected')
             ->willReturn(true);
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -191,7 +172,7 @@ class PredisClusterTest extends PredisTestCase
             ->method('isConnected')
             ->willReturn(false);
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -207,7 +188,7 @@ class PredisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -229,7 +210,7 @@ class PredisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -246,7 +227,7 @@ class PredisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -267,7 +248,7 @@ class PredisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -303,7 +284,7 @@ class PredisClusterTest extends PredisTestCase
 
         $ping = $this->getCommandFactory()->create('ping');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($this->getMockConnection('tcp://127.0.0.1:6379'));
 
@@ -320,7 +301,7 @@ class PredisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -354,7 +335,7 @@ class PredisClusterTest extends PredisTestCase
             ->expects($this->never())
             ->method('writeRequest');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -380,7 +361,7 @@ class PredisClusterTest extends PredisTestCase
             ->method('readResponse')
             ->with($command);
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -406,7 +387,7 @@ class PredisClusterTest extends PredisTestCase
             ->expects($this->never())
             ->method('executeCommand');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -422,7 +403,7 @@ class PredisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001?alias=first');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002?alias=second');
 
-        $cluster = new PredisCluster();
+        $cluster = new PredisCluster(new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -447,8 +428,7 @@ class PredisClusterTest extends PredisTestCase
             'protocol' => '3',
         ]);
 
-        $cluster = new PredisCluster();
-        $cluster->add($connection);
+        $cluster = new PredisCluster($expectedParameters);
 
         $this->assertEquals($expectedParameters, $cluster->getParameters());
     }

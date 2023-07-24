@@ -16,6 +16,8 @@ use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\Parser\Strategy\Resp2Strategy;
 use Predis\Protocol\Parser\Strategy\Resp3Strategy;
+use Predis\Consumer\Push\PushNotificationException;
+use Predis\Consumer\Push\PushResponse;
 use Predis\Protocol\Parser\UnexpectedTypeException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -281,6 +283,7 @@ class StreamConnection extends AbstractConnection
 
     /**
      * {@inheritdoc}
+     * @throws PushNotificationException
      */
     public function read()
     {
@@ -305,6 +308,13 @@ class StreamConnection extends AbstractConnection
 
         switch ($parsedData['type']) {
             case Resp3Strategy::TYPE_PUSH:
+                $data = [];
+
+                for ($i = 0; $i < $parsedData['value']; ++$i) {
+                    $data[$i] = $this->read();
+                }
+
+                return new PushResponse($data);
             case Resp2Strategy::TYPE_ARRAY:
                 $data = [];
 
@@ -375,6 +385,25 @@ class StreamConnection extends AbstractConnection
         }
 
         $this->write($buffer);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function hasDataToRead(): bool
+    {
+        $resource = $this->getResource();
+
+        if ($resource) {
+            $resourceArray = [$resource];
+            $write = null;
+            $except = null;
+            $num = stream_select($resourceArray, $write, $except, 0);
+
+            return $num > 0;
+        }
+
+        return false;
     }
 
     /**

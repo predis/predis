@@ -209,7 +209,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithClusterArgument(): void
     {
-        $cluster = new Connection\Cluster\PredisCluster();
+        $cluster = new Connection\Cluster\PredisCluster(new Parameters());
 
         $factory = new Connection\Factory();
         $cluster->add($factory->create('tcp://localhost:7000'));
@@ -1048,7 +1048,7 @@ class ClientTest extends PredisTestCase
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\PubSub\Consumer', $client->pubSubLoop());
+        $this->assertInstanceOf('Predis\Consumer\PubSub\Consumer', $client->pubSubLoop());
     }
 
     /**
@@ -1061,7 +1061,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($connection);
 
-        $this->assertInstanceOf('Predis\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
+        $this->assertInstanceOf('Predis\Consumer\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
 
         $reflection = new ReflectionProperty($pubsub, 'options');
         $reflection->setAccessible(true);
@@ -1123,11 +1123,11 @@ class ClientTest extends PredisTestCase
             ->method('__invoke')
             ->withConsecutive(
                 [
-                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    $this->isInstanceOf('Predis\Consumer\PubSub\Consumer'),
                     (object) ['kind' => 'subscribe', 'channel' => 'channel', 'payload' => 1],
                 ],
                 [
-                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    $this->isInstanceOf('Predis\Consumer\PubSub\Consumer'),
                     (object) ['kind' => 'unsubscribe', 'channel' => 'channel', 'payload' => 0],
                 ]
             )
@@ -1264,7 +1264,7 @@ class ClientTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383');
 
-        $aggregate = new \Predis\Connection\Cluster\PredisCluster();
+        $aggregate = new \Predis\Connection\Cluster\PredisCluster(new Parameters());
 
         $aggregate->add($connection1);
         $aggregate->add($connection2);
