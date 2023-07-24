@@ -22,6 +22,7 @@
             <group>relay-incompatible</group>
             <group>realm-stack</group>
             <group>ext-curl</group>
+            <group>cluster</group>
         </exclude>
     </groups>
 
@@ -36,5 +37,9 @@
         <const name="REDIS_SERVER_PORT" value="6379" />
         <const name="REDIS_SERVER_DBNUM" value="0" />
         <env name="USE_RELAY" value="true" />
+
+        <!-- Redis Cluster -->
+        <!-- Only master nodes endpoints included -->
+        <const name="REDIS_CLUSTER_ENDPOINTS" value="127.0.0.1:6372,127.0.0.1:6373,127.0.0.1:6374" />
     </php>
 </phpunit>
