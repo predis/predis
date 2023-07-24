@@ -13,6 +13,7 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\PrefixableCommand;
+use Predis\Consumer\Push\PushResponse;
 
 /**
  * @group commands
@@ -114,8 +115,9 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
     public function testDoesNotSwitchToSubscribeModeResp3(): void
     {
         $redis = $this->getResp3Client();
+        $expectedResponse = new PushResponse(['unsubscribe', 'channel', 0]);
 
-        $this->assertSame(['unsubscribe', 'channel', 0], $redis->unsubscribe('channel'));
+        $this->assertEquals($expectedResponse, $redis->unsubscribe('channel'));
         $this->assertSame('echoed', $redis->echo('echoed'));
     }
 

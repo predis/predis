@@ -13,6 +13,7 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\PrefixableCommand;
+use Predis\Consumer\Push\PushResponse;
 
 /**
  * @group commands
@@ -113,8 +114,9 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
     public function testReturnsTheFirstSubscribedChannelDetailsResp3(): void
     {
         $redis = $this->getResp3Client();
+        $expectedResponse = new PushResponse(['subscribe', 'channel', 1]);
 
-        $this->assertSame(['subscribe', 'channel', 1], $redis->subscribe('channel'));
+        $this->assertEquals($expectedResponse, $redis->subscribe('channel'));
     }
 
     /**
