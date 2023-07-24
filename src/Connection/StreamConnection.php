@@ -14,10 +14,10 @@ namespace Predis\Connection;
 
 use InvalidArgumentException;
 use Predis\Command\CommandInterface;
-use Predis\Protocol\Parser\Strategy\Resp2Strategy;
-use Predis\Protocol\Parser\Strategy\Resp3Strategy;
 use Predis\Consumer\Push\PushNotificationException;
 use Predis\Consumer\Push\PushResponse;
+use Predis\Protocol\Parser\Strategy\Resp2Strategy;
+use Predis\Protocol\Parser\Strategy\Resp3Strategy;
 use Predis\Protocol\Parser\UnexpectedTypeException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
