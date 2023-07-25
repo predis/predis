@@ -231,4 +231,19 @@ class RelayConnectionTest extends PredisConnectionTestCase
         $this->assertArrayHasKey('tcp_nodelay', $options['socket']);
         $this->assertFalse($options['socket']['tcp_nodelay']);
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion < 7.0.0
+     */
+    public function testConnectDoNotThrowsExceptionOnClientCommandError(): void
+    {
+        $connection = $this->createConnectionWithParams([]);
+        $connection->addConnectCommand(
+            new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
+        );
+
+        $connection->connect();
+        $this->assertTrue(true);
+    }
 }

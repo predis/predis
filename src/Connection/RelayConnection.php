@@ -253,7 +253,9 @@ class RelayConnection extends StreamConnection
                 ? $this->client->{$name}(...$command->getArguments())
                 : $this->client->rawCommand($name, ...$command->getArguments());
         } catch (RelayException $ex) {
-            throw $this->onCommandError($ex, $command);
+            if ($command->getId() !== 'CLIENT') {
+                throw $this->onCommandError($ex, $command);
+            }
         }
     }
 
