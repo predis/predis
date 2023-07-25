@@ -29,7 +29,7 @@ abstract class AbstractContainer implements ContainerInterface
     /**
      * {@inheritDoc}
      */
-    public function __call($subcommandID, $arguments)
+    public function __call(string $subcommandID, array $arguments)
     {
         array_unshift($arguments, strtoupper($subcommandID));
 

@@ -109,6 +109,21 @@ class PredisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testFakeKeyCommandsWithOneKey(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = [];
+
+        foreach ($this->getExpectedCommands('keys-fake') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForSortCommand(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -342,6 +357,7 @@ class PredisStrategyTest extends PredisTestCase
             'SORT' => 'variable',
             'DUMP' => 'keys-first',
             'RESTORE' => 'keys-first',
+            'FLUSHDB' => 'keys-fake',
 
             /* commands operating on string values */
             'APPEND' => 'keys-first',
@@ -451,6 +467,9 @@ class PredisStrategyTest extends PredisTestCase
             /* scripting */
             'EVAL' => 'keys-script',
             'EVALSHA' => 'keys-script',
+
+            /* server */
+            'INFO' => 'keys-fake',
 
             /* commands performing geospatial operations */
             'GEOADD' => 'keys-first',
