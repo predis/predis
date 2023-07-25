@@ -555,6 +555,22 @@ class FactoryTest extends PredisTestCase
         $this->assertSame('HELLO', $initCommands[0]->getId());
     }
 
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testSetClientNameOnConnection(): void
+    {
+        $parameters = [];
+
+        $factory = new Factory();
+        $connection = $factory->create($parameters);
+        $initCommands = $connection->getInitCommands();
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
+        $this->assertSame('CLIENT', $initCommands[0]->getId());
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

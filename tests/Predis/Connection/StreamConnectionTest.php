@@ -78,6 +78,23 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $connection->writeRequest($cmdSelect);
     }
 
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testGetInitCommandsReturnsGivenInitCommands(): void
+    {
+        $command = new RawCommand('HELLO', [3]);
+
+        $connection = $this->createConnection();
+        $connection->addConnectCommand($command);
+
+        $initCommands = $connection->getInitCommands();
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
+        $this->assertSame('HELLO', $initCommands[0]->getId());
+    }
+
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //
@@ -197,19 +214,17 @@ class StreamConnectionTest extends PredisConnectionTestCase
     }
 
     /**
-     * @group disconnected
-     * @return void
+     * @group connected
+     * @requiresRedisVersion < 7.0.0
      */
-    public function testGetInitCommandsReturnsGivenInitCommands(): void
+    public function testConnectDoNotThrowsExceptionOnClientCommandError(): void
     {
-        $command = new RawCommand('HELLO', [3]);
+        $connection = $this->createConnectionWithParams([]);
+        $connection->addConnectCommand(
+            new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
+        );
 
-        $connection = $this->createConnection();
-        $connection->addConnectCommand($command);
-
-        $initCommands = $connection->getInitCommands();
-
-        $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
-        $this->assertSame('HELLO', $initCommands[0]->getId());
+        $connection->connect();
+        $this->assertTrue(true);
     }
 }
