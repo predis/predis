@@ -81,6 +81,20 @@ class JSONSTRLEN_Test extends PredisCommandTestCase
         $this->assertSame($expectedStringLength, $redis->jsonstrlen($key, $path));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
+    public function testReturnsLengthOfGivenJsonStringResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}');
+
+        $this->assertSame([6], $redis->jsonstrlen('key', '$.key2'));
+    }
+
     public function jsonProvider(): array
     {
         return [

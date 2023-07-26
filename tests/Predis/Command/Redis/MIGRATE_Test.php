@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-key
@@ -87,6 +89,23 @@ class MIGRATE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['arg1', 'arg2', 'prefix:arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @group relay-incompatible
      * @requiresRedisVersion >= 2.6.0
@@ -94,6 +113,19 @@ class MIGRATE_Test extends PredisCommandTestCase
     public function testReturnsStatusNOKEYOnNonExistingKey(): void
     {
         $redis = $this->getClient();
+
+        $this->assertEquals('NOKEY', $response = $redis->migrate('169.254.10.10', 16379, 'foo', 15, 1));
+        $this->assertInstanceOf('Predis\Response\Status', $response);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsStatusNOKEYOnNonExistingKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertEquals('NOKEY', $response = $redis->migrate('169.254.10.10', 16379, 'foo', 15, 1));
         $this->assertInstanceOf('Predis\Response\Status', $response);

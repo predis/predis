@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-string
@@ -57,12 +59,44 @@ class SETRANGE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
     public function testCreatesNewKeyOnNonExistingKey(): void
     {
         $redis = $this->getClient();
+
+        $this->assertSame(3, $redis->setrange('foo', 0, 'bar'));
+        $this->assertSame('bar', $redis->get('foo'));
+
+        $this->assertSame(8, $redis->setrange('hoge', 4, 'piyo'));
+        $this->assertSame("\x00\x00\x00\x00piyo", $redis->get('hoge'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCreatesNewKeyOnNonExistingKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertSame(3, $redis->setrange('foo', 0, 'bar'));
         $this->assertSame('bar', $redis->get('foo'));

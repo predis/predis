@@ -4,6 +4,8 @@
 
 Predis v2.2.0 introduces official support for [Redis Stack](https://redis.io/docs/stack/) as well as a [Relay](https://github.com/cachewerk/relay) integration for substantially [faster read performance](https://github.com/predis/predis/wiki/Using-Relay).
 
+## v2.2.0-RC1 (2023-05-09)
+
 ### Added
 - Added support for [Relay](https://github.com/predis/predis/wiki/Using-Relay) (#1263)
 - Added support for `FCALL_RO` command (#1191)

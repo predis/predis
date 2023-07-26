@@ -82,6 +82,21 @@ class ZINTERCARD_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
+    public function testReturnsIntersectionCardinalityOnSortedSetsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('test-zintercard1', 1, 'member1', 2, 'member2', 3, 'member3');
+        $redis->zadd('test-zintercard2', 1, 'member1', 2, 'member2', 3, 'member3');
+
+        $this->assertSame(3, $redis->zintercard(['test-zintercard1', 'test-zintercard2']));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
     public function testReturnsIntersectionCardinalityZeroOnEmptySortedSetGiven(): void
     {
         $redis = $this->getClient();
@@ -110,8 +125,8 @@ class ZINTERCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @dataProvider unexpectedValuesProvider
-     * @param         $keys
-     * @param         $limit
+     * @param  mixed  $keys
+     * @param  mixed  $limit
      * @param  string $expectedExceptionMessage
      * @return void
      * @requiresRedisVersion >= 7.0.0

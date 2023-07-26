@@ -30,7 +30,6 @@ class Factory implements FactoryInterface
         'tls' => 'Predis\Connection\StreamConnection',
         'redis' => 'Predis\Connection\StreamConnection',
         'rediss' => 'Predis\Connection\StreamConnection',
-        'http' => 'Predis\Connection\WebdisConnection',
     ];
 
     /**
@@ -171,6 +170,12 @@ class Factory implements FactoryInterface
 
             $connection->addConnectCommand(
                 new RawCommand('AUTH', $cmdAuthArgs)
+            );
+        }
+
+        if (isset($parameters->protocol) && (int) $parameters->protocol > 2) {
+            $connection->addConnectCommand(
+                new RawCommand('HELLO', [$parameters->protocol, 'SETNAME', 'predis'])
             );
         }
 

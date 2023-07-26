@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-zset
@@ -57,11 +59,42 @@ class ZCARD_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsSizeOfSortedSet(): void
     {
         $redis = $this->getClient();
+
+        $redis->zadd('letters', 1, 'a', 2, 'b', 3, 'c');
+        $this->assertSame(3, $redis->zcard('letters'));
+
+        $this->assertSame(0, $redis->zcard('unknown'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsSizeOfSortedSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->zadd('letters', 1, 'a', 2, 'b', 3, 'c');
         $this->assertSame(3, $redis->zcard('letters'));

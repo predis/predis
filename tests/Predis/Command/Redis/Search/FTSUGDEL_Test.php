@@ -74,6 +74,19 @@ class FTSUGDEL_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testRemovesSuggestionFromGivenSuggestionIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(1, $redis->ftsugadd('key', 'string', 1));
+        $this->assertSame(1, $redis->ftsugdel('key', 'string'));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
     public function testReturnsZeroOnNonExistingSuggestionIndex(): void

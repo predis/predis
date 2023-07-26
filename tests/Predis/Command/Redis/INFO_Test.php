@@ -315,6 +315,19 @@ BUFFER;
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsAnArrayOfInfoResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $command = $this->getCommand();
+
+        $this->assertIsArray($info = $redis->executeCommand($command));
+        $this->assertArrayHasKey('redis_version', $info['Server'] ?? $info);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion < 2.6.0
      */
     public function testReturnsAnArrayOfInfoOnOlderRedisVersions(): void

@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-list
@@ -57,11 +59,42 @@ class LREM_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testRemovesMatchingElementsFromHeadToTail(): void
     {
         $redis = $this->getClient();
+
+        $redis->rpush('letters', 'a', '_', 'b', '_', 'c', '_', 'd', '_');
+
+        $this->assertSame(2, $redis->lrem('letters', 2, '_'));
+        $this->assertSame(['a', 'b', 'c', '_', 'd', '_'], $redis->lrange('letters', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testRemovesMatchingElementsFromHeadToTailResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->rpush('letters', 'a', '_', 'b', '_', 'c', '_', 'd', '_');
 

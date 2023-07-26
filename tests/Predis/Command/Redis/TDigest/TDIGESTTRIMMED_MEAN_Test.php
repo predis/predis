@@ -88,6 +88,23 @@ class TDIGESTTRIMMED_MEAN_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsMeanValueWithinGivenQuantilesRangeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->tdigestcreate('key');
+        $redis->tdigestadd('key', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+        $actualResponse = $redis->tdigesttrimmed_mean('key', 0.1, 0.6);
+
+        $this->assertEquals(4.0, $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
     public function testReturnsNanOnEmptySketchKey(): void

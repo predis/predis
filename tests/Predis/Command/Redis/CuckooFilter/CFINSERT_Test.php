@@ -96,6 +96,24 @@ class CFINSERT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testInsertIgnoresCapacityModifierOnAlreadyExistingFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->cfadd('filter', 'item');
+
+        $actualResponse = $redis->cfinsert('filter', 500, false, 'item1');
+        $info = $redis->cfinfo('filter');
+
+        $this->assertSame([true], $actualResponse);
+        $this->assertSame(1080, $info['Size']);
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testInsertThrowsErrorOnInsertingIntoNonExistingFilterWithNoCreateModifier(): void

@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-string
@@ -58,11 +60,41 @@ class SETNX_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testSetStringValue(): void
     {
         $redis = $this->getClient();
+
+        $this->assertSame(1, $redis->setnx('foo', 'bar'));
+        $this->assertSame(0, $redis->setnx('foo', 'barbar'));
+        $this->assertEquals('bar', $redis->get('foo'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetStringValueResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertSame(1, $redis->setnx('foo', 'bar'));
         $this->assertSame(0, $redis->setnx('foo', 'barbar'));

@@ -81,6 +81,23 @@ class CMSINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsInfoAboutGivenCountMinSketchResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = ['width' => 2000, 'depth' => 10, 'count' => 0];
+
+        $redis->cmsinitbydim('key', 2000, 10);
+
+        $actualResponse = $redis->cmsinfo('key');
+
+        $this->assertSame($expectedResponse, $actualResponse);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisBfVersion >= 2.0.0
      */
     public function testThrowsExceptionOnNonExistingKey(): void

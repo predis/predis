@@ -81,6 +81,20 @@ class JSONOBJLEN_Test extends PredisCommandTestCase
         $this->assertSame($expectedObjectLength, $redis->jsonobjlen($key, $path));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
+    public function testReturnsLengthOfGivenJsonObjectResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}');
+
+        $this->assertSame(2, $redis->jsonobjlen('key'));
+    }
+
     public function jsonProvider(): array
     {
         return [

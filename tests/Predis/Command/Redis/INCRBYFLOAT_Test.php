@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-string
@@ -57,12 +59,41 @@ class INCRBYFLOAT_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testCreatesNewKeyOnNonExistingKey(): void
     {
         $redis = $this->getClient();
+
+        $this->assertEquals(10.5, $redis->incrbyfloat('foo', 10.5));
+        $this->assertEquals(10.5, $redis->get('foo'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCreatesNewKeyOnNonExistingKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertEquals(10.5, $redis->incrbyfloat('foo', 10.5));
         $this->assertEquals(10.5, $redis->get('foo'));

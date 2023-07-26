@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-transaction
@@ -72,6 +74,23 @@ class WATCH_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
@@ -79,6 +98,25 @@ class WATCH_Test extends PredisCommandTestCase
     {
         $redis1 = $this->getClient();
         $redis2 = $this->getClient();
+
+        $redis1->mset('foo', 'bar', 'hoge', 'piyo');
+
+        $this->assertEquals('OK', $redis1->watch('foo', 'hoge'));
+        $this->assertEquals('OK', $redis1->multi());
+        $this->assertEquals('QUEUED', $redis1->get('foo'));
+        $this->assertEquals('OK', $redis2->set('foo', 'hijacked'));
+        $this->assertNull($redis1->exec());
+        $this->assertSame('hijacked', $redis1->get('foo'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testAbortsTransactionOnExternalWriteOperationsResp3(): void
+    {
+        $redis1 = $this->getResp3Client();
+        $redis2 = $this->getResp3Client();
 
         $redis1->mset('foo', 'bar', 'hoge', 'piyo');
 

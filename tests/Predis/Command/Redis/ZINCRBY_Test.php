@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-zset
@@ -57,6 +59,23 @@ class ZINCRBY_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testIncrementsScoreOfMemberByFloat(): void
@@ -67,6 +86,20 @@ class ZINCRBY_Test extends PredisCommandTestCase
         $this->assertEquals('0', $redis->zincrby('letters', -1, 'member'));
         $this->assertEquals('0.5', $redis->zincrby('letters', 0.5, 'member'));
         $this->assertEquals('-10', $redis->zincrby('letters', -10.5, 'member'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testIncrementsScoreOfMemberByFloatResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(1.0, $redis->zincrby('letters', 1, 'member'));
+        $this->assertSame(0.0, $redis->zincrby('letters', -1, 'member'));
+        $this->assertSame(0.5, $redis->zincrby('letters', 0.5, 'member'));
+        $this->assertSame(-10.0, $redis->zincrby('letters', -10.5, 'member'));
     }
 
     /**

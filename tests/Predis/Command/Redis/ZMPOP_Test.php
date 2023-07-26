@@ -64,7 +64,7 @@ class ZMPOP_Test extends PredisCommandTestCase
      * @param  array  $expectedResponse
      * @param  array  $expectedModifiedSortedSet
      * @return void
-     * @requiresRedisVersion >= 7.0
+     * @requiresRedisVersion >= 7.0.0
      */
     public function testReturnsPoppedElementsFromGivenSortedSet(
         array $sortedSetDictionary,
@@ -86,7 +86,23 @@ class ZMPOP_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 7.0
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsPoppedElementsFromGivenSortedSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('test-zmpop', 1, 'member1', 2, 'member2', 3, 'member3');
+        $actualResponse = $redis->zmpop(['test-zmpop']);
+
+        $this->assertSame(['test-zmpop' => ['member1' => 1.0]], $actualResponse);
+        $this->assertSame(['member2', 'member3'], $redis->zrange('test-zmpop', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
      */
     public function testReturnsPoppedElementsFromFirstNonEmptySortedSet(): void
     {
@@ -110,7 +126,7 @@ class ZMPOP_Test extends PredisCommandTestCase
      * @param  int    $count
      * @param  string $expectedExceptionMessage
      * @return void
-     * @requiresRedisVersion >= 7.0
+     * @requiresRedisVersion >= 7.0.0
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(
         array $keys,
@@ -128,7 +144,7 @@ class ZMPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 7.0
+     * @requiresRedisVersion >= 7.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {

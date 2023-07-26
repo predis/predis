@@ -89,6 +89,20 @@ class JSONSET_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisJsonVersion >= 2.6.1
+     */
+    public function testSetCorrectJsonValueAndReturnsCorrespondingResponseResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}'));
+        $this->assertEquals('OK', $redis->jsonset('key', '$', '{"key3":"value3"}'));
+        $this->assertSame([['{"key3":"value3"}']], $redis->jsonget('key'));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(): void

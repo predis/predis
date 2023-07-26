@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-list
@@ -57,12 +59,44 @@ class LLEN_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
     public function testReturnsLengthOfList(): void
     {
         $redis = $this->getClient();
+
+        $redis->rpush('letters', 'a', 'b', 'c');
+        $this->assertSame(3, $redis->llen('letters'));
+
+        $redis->rpush('letters', 'd', 'e', 'f');
+        $this->assertSame(6, $redis->llen('letters'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsLengthOfListResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->rpush('letters', 'a', 'b', 'c');
         $this->assertSame(3, $redis->llen('letters'));

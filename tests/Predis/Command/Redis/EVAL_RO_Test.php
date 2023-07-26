@@ -65,7 +65,7 @@ class EVAL_RO_Test extends PredisCommandTestCase
      * @param  string $script
      * @param  array  $keys
      * @param  array  $arguments
-     * @param         $expectedResponse
+     * @param  mixed  $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -81,6 +81,20 @@ class EVAL_RO_Test extends PredisCommandTestCase
         $redis->mset(...$dictionary);
 
         $this->assertSame($expectedResponse, $redis->eval_ro($script, $keys, ...$arguments));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testExecutesReadOnlyCommandsFromGivenLuaScriptResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->mset('key', 'value');
+
+        $this->assertSame('value', $redis->eval_ro("return redis.call('GET', KEYS[1])", ['key']));
     }
 
     /**

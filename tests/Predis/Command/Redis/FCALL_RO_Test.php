@@ -86,6 +86,28 @@ class FCALL_RO_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
+    public function testInvokeGivenReadOnlyFunctionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->set('key', 'value'));
+
+        $this->assertSame(
+            self::LIB_NAME,
+            $redis->function->load(
+                "#!lua name=mylib\n redis.register_function{function_name='myfunc',callback=function(keys, args) return redis.call('GET', keys[1]) end,flags={'no-writes'}}"
+            )
+        );
+
+        $actualResponse = $redis->fcall_ro('myfunc', ['key']);
+        $this->assertSame('value', $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
     public function testThrowsExceptionOnWriteContextFunction(): void
     {
         $redis = $this->getClient();

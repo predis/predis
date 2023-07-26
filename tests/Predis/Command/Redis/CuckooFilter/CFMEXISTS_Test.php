@@ -61,7 +61,7 @@ class CFMEXISTS_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisBfVersion >= 1.0
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testExistsReturnsExistingItemsWithinCuckooFilter(): void
     {
@@ -73,5 +73,22 @@ class CFMEXISTS_Test extends PredisCommandTestCase
         $redis->cfadd('key', 'item2');
         $redis->cfadd('key', 'item3');
         $this->assertSame([1, 1, 1], $redis->cfmexists('key', 'item1', 'item2', 'item3'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testExistsReturnsExistingItemsWithinCuckooFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame([false, false, false], $redis->cfmexists('key', 'item1', 'item2', 'item3'));
+        $redis->cfadd('key', 'item1');
+        $this->assertSame([true, false, false], $redis->cfmexists('key', 'item1', 'item2', 'item3'));
+        $redis->cfadd('key', 'item2');
+        $redis->cfadd('key', 'item3');
+        $this->assertSame([true, true, true], $redis->cfmexists('key', 'item1', 'item2', 'item3'));
     }
 }

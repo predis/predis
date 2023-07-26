@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see http://redis.io/commands/type
@@ -47,5 +47,13 @@ class TYPE extends RedisCommand
             case 6: return 'stream';
             default: return $data;
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

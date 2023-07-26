@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-string
@@ -71,11 +73,41 @@ class SET_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testSetStringValue(): void
     {
         $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
+        $this->assertSame(1, $redis->exists('foo'));
+        $this->assertSame('bar', $redis->get('foo'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetStringValueResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertEquals('OK', $redis->set('foo', 'bar'));
         $this->assertSame(1, $redis->exists('foo'));
@@ -133,5 +165,18 @@ class SET_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $redis->set('foo', 'barbar', 'XX'));
         $this->assertNull($redis->set('foofoo', 'barbar', 'XX'));
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 3.0.0
+     * @return void
+     */
+    public function testSetStringValueInClusterMode(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
     }
 }

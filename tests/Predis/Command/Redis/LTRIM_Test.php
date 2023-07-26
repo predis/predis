@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-list
@@ -57,11 +59,48 @@ class LTRIM_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testTrimsListWithPositiveStartAndStop(): void
     {
         $redis = $this->getClient();
+
+        $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
+
+        $this->assertEquals('OK', $redis->ltrim('letters', 0, 2));
+        $this->assertSame(['a', 'b', 'c'], $redis->lrange('letters', 0, -1));
+
+        $redis->flushdb();
+        $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
+
+        $this->assertEquals('OK', $redis->ltrim('letters', 5, 9));
+        $this->assertSame(['f', 'g', 'h', 'i', 'l'], $redis->lrange('letters', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testTrimsListWithPositiveStartAndStopResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
 

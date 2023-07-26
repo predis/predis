@@ -81,6 +81,21 @@ class CMSQUERY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnCountValuesForGivenItemsWithinCountMinSketchResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->cmsinitbydim('key', 2000, 7);
+
+        $actualResponse = $redis->cmsquery('key', 'item1');
+        $this->assertSame([0], $actualResponse);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisBfVersion >= 2.0.0
      */
     public function testThrowsExceptionOnNonExistingKey(): void

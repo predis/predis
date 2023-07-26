@@ -93,6 +93,21 @@ class ZDIFF_test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsNoIntersectionOnNonExistingKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $membersDictionary = [1, 'member1', 2, 'member2', 3, 'member3'];
+        $expectedResponse = [['member1' => 1.0], ['member2' => 2.0], ['member3' => 3.0]];
+
+        $redis->zadd('test-zset-1', ...$membersDictionary);
+        $this->assertSame($expectedResponse, $redis->zdiff(['test-zset-1', 'test-zset-2'], true));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 6.2.0
      */
     public function testThrowsExceptionOnWrongType(): void
