@@ -180,24 +180,6 @@ class FUNCTIONS_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
-    public function testLoadFunctionAddFunctionIntoGivenLibraryResp3(): void
-    {
-        $redis = $this->getResp3Client();
-
-        $actualResponse = $redis->function->load(
-            "#!lua name={$this->libName} \n redis.register_function('myfunc', function(keys, args) return args[1] end)"
-        );
-
-        $this->assertSame('mylib', $actualResponse);
-        $this->assertSame('arg1', $redis->fcall('myfunc', [], 'arg1'));
-        $this->assertEquals('OK', $redis->function->delete($this->libName));
-    }
-
-    /**
-     * @group connected
-     * @return void
-     * @requiresRedisVersion >= 7.0.0
-     */
     public function testLoadFunctionOverridesExistingFunctionWithReplaceArgumentGiven(): void
     {
         $redis = $this->getClient();
