@@ -13,6 +13,7 @@
 namespace Predis\Connection;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Client;
 use Predis\Command\RawCommand;
 use Predis\Response\Error as ErrorResponse;
 
@@ -222,6 +223,9 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $connection = $this->createConnectionWithParams([]);
         $connection->addConnectCommand(
             new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
+        );
+        $connection->addConnectCommand(
+            new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])
         );
 
         $connection->connect();
