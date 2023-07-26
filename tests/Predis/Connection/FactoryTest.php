@@ -570,8 +570,8 @@ class FactoryTest extends PredisTestCase
         $connection = $factory->create($parameters);
         $initCommands = $connection->getInitCommands();
 
-        $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
-        $this->assertSame('HELLO', $initCommands[1]->getId());
+        $this->assertInstanceOf(RawCommand::class, $initCommands[2]);
+        $this->assertSame('HELLO', $initCommands[2]->getId());
     }
 
     /**
