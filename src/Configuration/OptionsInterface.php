@@ -22,6 +22,7 @@ use Predis\Command\Processor\ProcessorInterface;
  * @property ProcessorInterface                  $prefix      Key prefixing strategy using the supplied string as prefix
  * @property \Predis\Command\FactoryInterface    $commands    Command factory for creating Redis commands
  * @property callable                            $replication Aggregate connection initializer for replication
+ * @property int                                 $readTimeout Timeout in milliseconds between read operations on reading from multiple connections.
  */
 interface OptionsInterface
 {

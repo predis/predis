@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-set
@@ -71,11 +73,42 @@ class SUNIONSTORE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testStoresMembersOfSetOnSingleSet(): void
     {
         $redis = $this->getClient();
+
+        $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
+
+        $this->assertSame(7, $redis->sunionstore('letters:destination', 'letters:1st'));
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e', 'f', 'g'], $redis->smembers('letters:destination'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testStoresMembersOfSetOnSingleSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
 

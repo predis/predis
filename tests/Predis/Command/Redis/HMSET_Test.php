@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-hash
@@ -71,12 +73,44 @@ class HMSET_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testSetsSpecifiedFieldsOfHash(): void
     {
         $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo'));
+        $this->assertSame(['foo' => 'bar', 'hoge' => 'piyo'], $redis->hgetall('metavars'));
+
+        $this->assertEquals('OK', $redis->hmset('metavars', 'foo', 'barbar', 'lol', 'wut'));
+        $this->assertSame(['foo' => 'barbar', 'hoge' => 'piyo', 'lol' => 'wut'], $redis->hgetall('metavars'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetsSpecifiedFieldsOfHashResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertEquals('OK', $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo'));
         $this->assertSame(['foo' => 'bar', 'hoge' => 'piyo'], $redis->hgetall('metavars'));

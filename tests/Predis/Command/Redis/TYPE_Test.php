@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-key
@@ -57,11 +59,54 @@ class TYPE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsTypeOfKey(): void
     {
         $redis = $this->getClient();
+
+        $this->assertEquals('none', $redis->type('type:keydoesnotexist'));
+
+        $redis->set('type:string', 'foobar');
+        $this->assertEquals('string', $redis->type('type:string'));
+
+        $redis->lpush('type:list', 'foobar');
+        $this->assertEquals('list', $redis->type('type:list'));
+
+        $redis->sadd('type:set', 'foobar');
+        $this->assertEquals('set', $redis->type('type:set'));
+
+        $redis->zadd('type:zset', 0, 'foobar');
+        $this->assertEquals('zset', $redis->type('type:zset'));
+
+        $redis->hset('type:hash', 'foo', 'bar');
+        $this->assertEquals('hash', $redis->type('type:hash'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsTypeOfKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertEquals('none', $redis->type('type:keydoesnotexist'));
 

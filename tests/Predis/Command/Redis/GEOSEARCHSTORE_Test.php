@@ -141,6 +141,34 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testStoresInSortedSetWithStoreDistArgumentProvidedResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->geoadd('key', 1.1, 2, 'member1');
+        $redis->geoadd('key', 2.1, 3, 'member2');
+        $redis->geoadd('key', 3.1, 4, 'member3');
+
+        $actualResultingElements = $redis->geosearchstore(
+            'destination',
+            'key',
+            new FromLonLat(1, 4),
+            new ByRadius(9999, 'km'),
+            null,
+            2,
+            false,
+            true
+        );
+
+        $this->assertSame(2, $actualResultingElements);
+        $this->assertSame(['member2', 'member1'], $redis->zrange('destination', 0, -1));
+    }
+
+    /**
+     * @group connected
      * @dataProvider unexpectedValuesProvider
      * @param  array  $arguments
      * @param  string $expectedException

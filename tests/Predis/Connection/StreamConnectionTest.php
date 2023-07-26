@@ -195,4 +195,21 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $this->assertArrayHasKey('tcp_nodelay', $options['socket']);
         $this->assertFalse($options['socket']['tcp_nodelay']);
     }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testGetInitCommandsReturnsGivenInitCommands(): void
+    {
+        $command = new RawCommand('HELLO', [3]);
+
+        $connection = $this->createConnection();
+        $connection->addConnectCommand($command);
+
+        $initCommands = $connection->getInitCommands();
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
+        $this->assertSame('HELLO', $initCommands[0]->getId());
+    }
 }

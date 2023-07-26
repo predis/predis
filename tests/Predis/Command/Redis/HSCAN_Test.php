@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-hash
@@ -90,6 +92,23 @@ class HSCAN_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
@@ -99,6 +118,25 @@ class HSCAN_Test extends PredisCommandTestCase
         $expectedValues = ['one', 'two', 'three', 'four'];
 
         $redis = $this->getClient();
+        $redis->hmset('key', array_combine($expectedFields, $expectedValues));
+
+        $response = $redis->hscan('key', 0);
+
+        $this->assertSame('0', $response[0]);
+        $this->assertSame($expectedFields, array_keys($response[1]));
+        $this->assertSame($expectedValues, array_values($response[1]));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testScanWithoutMatchResp3(): void
+    {
+        $expectedFields = ['field:one', 'field:two', 'field:three', 'field:four'];
+        $expectedValues = ['one', 'two', 'three', 'four'];
+
+        $redis = $this->getResp3Client();
         $redis->hmset('key', array_combine($expectedFields, $expectedValues));
 
         $response = $redis->hscan('key', 0);

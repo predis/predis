@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-list
@@ -71,11 +73,42 @@ class LPUSH_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testPushesElementsToHeadOfList(): void
     {
         $redis = $this->getClient();
+
+        // NOTE: List push operations return the list length since Redis commit 520b5a3
+        $this->assertSame(1, $redis->lpush('metavars', 'foo'));
+        $this->assertSame(2, $redis->lpush('metavars', 'hoge'));
+        $this->assertSame(['hoge', 'foo'], $redis->lrange('metavars', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testPushesElementsToHeadOfListResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         // NOTE: List push operations return the list length since Redis commit 520b5a3
         $this->assertSame(1, $redis->lpush('metavars', 'foo'));

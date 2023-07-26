@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-set
@@ -60,11 +62,42 @@ class SISMEMBER_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsMemberExistenceInSet(): void
     {
         $redis = $this->getClient();
+
+        $redis->sadd('letters', 'a', 'b', 'c');
+
+        $this->assertSame(1, $redis->sismember('letters', 'a'));
+        $this->assertSame(0, $redis->sismember('letters', 'z'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsMemberExistenceInSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->sadd('letters', 'a', 'b', 'c');
 

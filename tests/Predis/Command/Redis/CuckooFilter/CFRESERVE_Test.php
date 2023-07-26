@@ -82,6 +82,26 @@ class CFRESERVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReserveCreatesCuckooFilterWithCorrectConfigurationResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->cfreserve('key', 500);
+        $this->assertEquals('OK', $actualResponse);
+
+        $info = $redis->cfinfo('key');
+
+        $this->assertSame(568, $info['Size']);
+        $this->assertSame(2, $info['Bucket size']);
+        $this->assertSame(20, $info['Max iterations']);
+        $this->assertSame(1, $info['Expansion rate']);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

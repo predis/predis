@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-string
@@ -57,11 +59,43 @@ class GETSET_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsPreviousValueOfKey(): void
     {
         $redis = $this->getClient();
+
+        $this->assertNull($redis->getset('foo', 'bar'));
+        $this->assertSame('bar', $redis->getset('foo', 'barbar'));
+
+        $redis->set('hoge', 'piyo');
+        $this->assertSame('piyo', $redis->getset('hoge', 'piyopiyo'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsPreviousValueOfKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertNull($redis->getset('foo', 'bar'));
         $this->assertSame('bar', $redis->getset('foo', 'barbar'));

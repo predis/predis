@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-scripting
@@ -66,12 +68,45 @@ class EVALSHA_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['script', 4, 'arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['script', 4, 'prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testExecutesSpecifiedLuaScript(): void
     {
         $redis = $this->getClient();
+
+        $lua = 'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}';
+        $sha1 = sha1($lua);
+        $result = ['foo', 'hoge', 'bar', 'piyo'];
+
+        $this->assertSame($result, $redis->eval($lua, 2, 'foo', 'hoge', 'bar', 'piyo'));
+        $this->assertSame($result, $redis->evalsha($sha1, 2, 'foo', 'hoge', 'bar', 'piyo'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testExecutesSpecifiedLuaScriptResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $lua = 'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}';
         $sha1 = sha1($lua);

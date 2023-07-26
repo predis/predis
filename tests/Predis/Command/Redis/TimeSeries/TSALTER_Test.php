@@ -93,6 +93,34 @@ class TSALTER_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
+    public function testAlterUpdatesExistingTimeSeriesConfigurationResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $arguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('sensor_id', 2, 'area_id', 32);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:32', $arguments)
+        );
+
+        $alterArguments = (new AlterArguments())
+            ->retentionMsecs(10000000);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tsalter('temperature:2:32', $alterArguments)
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
     public function testThrowsExceptionOnNonExistingKey(): void
     {
         $redis = $this->getClient();

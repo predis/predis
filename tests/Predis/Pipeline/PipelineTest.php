@@ -18,6 +18,7 @@ use Predis\Client;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
+use Predis\Connection\Parameters;
 use Predis\Response;
 use PredisTestCase;
 use stdClass;
@@ -87,6 +88,11 @@ class PipelineTest extends PredisTestCase
             ->method('readResponse')
             ->willReturn($object);
 
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $pipeline = new Pipeline(new Client($connection));
 
         $pipeline->ping();
@@ -110,6 +116,11 @@ class PipelineTest extends PredisTestCase
             ->method('readResponse')
             ->willReturn($error);
 
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $pipeline = new Pipeline(new Client($connection));
 
         $pipeline->ping();
@@ -130,6 +141,11 @@ class PipelineTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('readResponse')
             ->willReturn($error);
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $client = new Client($connection, ['exceptions' => false]);
 
@@ -208,6 +224,11 @@ class PipelineTest extends PredisTestCase
             ->method('readResponse')
             ->willReturnCallback($this->getReadCallback());
 
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $pipeline = new Pipeline(new Client($connection));
 
         $pipeline->echo('one');
@@ -249,6 +270,11 @@ class PipelineTest extends PredisTestCase
             ->method('readResponse')
             ->willReturnCallback($this->getReadCallback());
 
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $pipeline = new Pipeline(new Client($connection));
 
         $pipeline->echo('one');
@@ -278,6 +304,10 @@ class PipelineTest extends PredisTestCase
             ->expects($this->exactly(3))
             ->method('readResponse')
             ->willReturn($pong);
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -344,6 +374,10 @@ class PipelineTest extends PredisTestCase
             ->expects($this->exactly(4))
             ->method('readResponse')
             ->willReturnCallback($this->getReadCallback());
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Pipeline(new Client($connection));
 

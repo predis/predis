@@ -84,6 +84,27 @@ class ZMSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsScoresAssociatedWithMembersResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $notExpectedMember = 'not_expected';
+
+        /** @var string[] $members */
+        $members = array_filter([1, 'member1', 2, 'member2', 3, 'member3'], static function ($item) {
+            return is_string($item);
+        });
+
+        $redis->zadd('test-zscore', 1, 'member1', 2, 'member2', 3, 'member3');
+
+        $this->assertSame([1.0, 2.0, 3.0], $redis->zmscore('test-zscore', ...$members));
+        $this->assertNull($redis->zmscore('test-zscore', $notExpectedMember)[0]);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 6.2.0
      */
     public function testThrowsExceptionOnWrongType(): void

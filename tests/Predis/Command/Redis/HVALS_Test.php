@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-hash
@@ -62,12 +64,43 @@ class HVALS_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsValuesOfHash(): void
     {
         $redis = $this->getClient();
+
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
+
+        $this->assertSame(['bar', 'piyo', 'wut'], $redis->hvals('metavars'));
+        $this->assertSame([], $redis->hvals('unknown'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsValuesOfHashResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
 

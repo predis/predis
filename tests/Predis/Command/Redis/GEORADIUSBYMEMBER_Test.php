@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-geospatial
@@ -127,12 +129,40 @@ class GEORADIUSBYMEMBER_Test extends PredisCommandTestCase
     }
 
     /**
+     * @dataProvider prefixKeysProvider
+     * @group disconnected
+     */
+    public function testPrefixKeys(array $actualArguments, array $expectedArguments): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $prefix = 'prefix:';
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
     public function testCommandReturnsGeoRadiusInfoWithNoOptions(): void
     {
         $redis = $this->getClient();
+
+        $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania', '13.583333', '37.316667', 'Agrigento');
+        $this->assertEquals(['Agrigento', 'Palermo'], $redis->georadiusbymember('Sicily', 'Agrigento', 100, 'km'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCommandReturnsGeoRadiusInfoWithNoOptionsResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania', '13.583333', '37.316667', 'Agrigento');
         $this->assertEquals(['Agrigento', 'Palermo'], $redis->georadiusbymember('Sicily', 'Agrigento', 100, 'km'));
@@ -166,5 +196,27 @@ class GEORADIUSBYMEMBER_Test extends PredisCommandTestCase
 
         $redis->lpush('Sicily', 'Palermo');
         $redis->georadiusbymember('Sicily', 'Agrigento', 200, 'km');
+    }
+
+    public function prefixKeysProvider(): array
+    {
+        return [
+            'with empty arguments' => [
+                [],
+                [],
+            ],
+            'with key argument only' => [
+                ['key'],
+                ['prefix:key'],
+            ],
+            'with key and STORE arguments' => [
+                ['key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STORE', 'key'],
+                ['prefix:key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STORE', 'prefix:key'],
+            ],
+            'with key and STOREDIST arguments' => [
+                ['key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STOREDIST', 'key'],
+                ['prefix:key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STOREDIST', 'prefix:key'],
+            ],
+        ];
     }
 }

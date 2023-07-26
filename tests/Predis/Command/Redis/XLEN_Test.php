@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-stream
@@ -57,12 +59,45 @@ class XLEN_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 5.0.0
      */
     public function testReturnsLengthOfList(): void
     {
         $redis = $this->getClient();
+
+        $redis->xadd('stream', ['key' => 'val']);
+        $redis->xadd('stream', ['key' => 'val']);
+        $this->assertSame(2, $redis->xlen('stream'));
+
+        $redis->xadd('stream', ['key' => 'val']);
+        $this->assertSame(3, $redis->xlen('stream'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsLengthOfListResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->xadd('stream', ['key' => 'val']);
         $redis->xadd('stream', ['key' => 'val']);

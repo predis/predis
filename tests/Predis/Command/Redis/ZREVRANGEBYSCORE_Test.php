@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-zset
@@ -126,12 +128,47 @@ class ZREVRANGEBYSCORE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
     public function testReturnsElementsInScoreRange(): void
     {
         $redis = $this->getClient();
+
+        $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
+
+        $this->assertSame(['a'], $redis->zrevrangebyscore('letters', -10, -10));
+        $this->assertSame([], $redis->zrevrangebyscore('letters', 10, 30));
+        $this->assertSame(['e', 'd'], $redis->zrevrangebyscore('letters', 20, 20));
+        $this->assertSame(['f', 'e', 'd', 'c', 'b'], $redis->zrevrangebyscore('letters', 30, 0));
+
+        $this->assertSame([], $redis->zrevrangebyscore('unknown', 0, 30));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsElementsInScoreRangeResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
 

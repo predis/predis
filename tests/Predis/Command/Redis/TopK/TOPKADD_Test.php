@@ -84,6 +84,21 @@ class TOPKADD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testAddItemsIntoGivenTopKStructureResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->topkreserve('key', 2);
+
+        $actualResponse = $redis->topkadd('key', 0, 1, 2);
+        $this->assertEquals([null, null, '0'], $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 2.0.0
      */
     public function testThrowsExceptionOnNonExistingKey(): void

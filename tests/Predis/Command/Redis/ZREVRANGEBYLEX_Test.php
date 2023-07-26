@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-zset
@@ -80,12 +82,45 @@ class ZREVRANGEBYLEX_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
     public function testReturnsElementsInWholeRange(): void
     {
         $redis = $this->getClient();
+
+        $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
+
+        $this->assertSame(['g', 'f', 'e', 'd', 'c', 'b', 'a'], $redis->zrevrangebylex('letters', '+', '-'));
+        $this->assertSame([], $redis->zrevrangebylex('letters', '-', '+'));
+        $this->assertSame([], $redis->zrevrangebylex('unknown', '-', '+'));
+        $this->assertSame([], $redis->zrevrangebylex('unknown', '+', '-'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsElementsInWholeRangeResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 

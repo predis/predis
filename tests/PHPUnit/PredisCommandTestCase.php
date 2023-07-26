@@ -61,9 +61,32 @@ abstract class PredisCommandTestCase extends PredisTestCase
             );
         }
 
-        $client = $this->createClient(null, null, $flushdb);
+        if ($this->isClusterTest()) {
+            $client = $this->createClient(null, ['cluster' => 'redis'], $flushdb);
+        } else {
+            $client = $this->createClient(null, null, $flushdb);
+        }
 
         return $client;
+    }
+
+    /**
+     * Returns a new RESP3 client instance.
+     *
+     * @param  bool   $flushDb
+     * @return Client
+     */
+    public function getResp3Client(bool $flushDb = true): Client
+    {
+        $commands = $this->getCommandFactory();
+
+        if (!$commands->supports($id = $this->getExpectedId())) {
+            $this->markTestSkipped(
+                "The current command factory does not support command $id"
+            );
+        }
+
+        return $this->createClient(['protocol' => 3], null, $flushDb);
     }
 
     /**

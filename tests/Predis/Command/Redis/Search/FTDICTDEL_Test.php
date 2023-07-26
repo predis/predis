@@ -79,6 +79,20 @@ class FTDICTDEL_Test extends PredisCommandTestCase
         $this->assertSame($expectedResponse, $redis->ftdictdel(...$deleteArguments));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testRemovesTermsFromGivenDictionaryResp3(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->ftdictadd('dict', 'foo', 'bar');
+
+        $this->assertSame(1, $redis->ftdictdel('dict', 'foo'));
+    }
+
     public function dictionariesProvider(): array
     {
         return [

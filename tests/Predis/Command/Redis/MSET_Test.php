@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-string
@@ -71,11 +73,41 @@ class MSET_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'prefix:arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testCreatesMultipleKeys(): void
     {
         $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->mset('foo', 'bar', 'hoge', 'piyo'));
+        $this->assertSame('bar', $redis->get('foo'));
+        $this->assertSame('piyo', $redis->get('hoge'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCreatesMultipleKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertEquals('OK', $redis->mset('foo', 'bar', 'hoge', 'piyo'));
         $this->assertSame('bar', $redis->get('foo'));

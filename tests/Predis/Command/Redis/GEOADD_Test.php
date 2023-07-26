@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-geospatial
@@ -80,6 +82,23 @@ class GEOADD_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
@@ -89,6 +108,19 @@ class GEOADD_Test extends PredisCommandTestCase
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo');
         $this->assertEquals(['Palermo' => '3479099956230698'], $redis->zrange('Sicily', 0, -1, 'WITHSCORES'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCommandFillsSortedSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo');
+
+        $this->assertSame([['Palermo' => 3479099956230698.0]], $redis->zrange('Sicily', 0, -1, 'WITHSCORES'));
     }
 
     /**

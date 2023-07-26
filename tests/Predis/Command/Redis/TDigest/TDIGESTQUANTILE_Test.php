@@ -83,6 +83,27 @@ class TDIGESTQUANTILE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsValuesBelowGivenQuantileResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->tdigestcreate('key', 1000);
+
+        $addResponse = $redis->tdigestadd('key', 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5);
+        $quantileResponse = $redis->tdigestquantile('key', 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0);
+
+        $this->assertEquals('OK', $addResponse);
+        $this->assertEquals([1.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0, 5.0, 5.0, 5.0, 5.0], $quantileResponse);
+
+        $redis->tdigestcreate('empty_key');
+        $this->assertEquals([null, null], $redis->tdigestquantile('empty_key', 0.0, 0.1));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
     public function testThrowsExceptionOnNonExistingTDigestSketch(): void

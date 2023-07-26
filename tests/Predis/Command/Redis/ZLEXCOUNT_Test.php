@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-zset
@@ -57,12 +59,45 @@ class ZLEXCOUNT_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
     public function testExclusiveIntervalRange(): void
     {
         $redis = $this->getClient();
+
+        $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
+
+        $this->assertSame(3, $redis->zlexcount('letters', '(b', '(f'));
+        $this->assertSame(5, $redis->zlexcount('letters', '(b', '(z'));
+        $this->assertSame(4, $redis->zlexcount('letters', '(0', '(e'));
+        $this->assertSame(0, $redis->zlexcount('letters', '(f', '(b'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testExclusiveIntervalRangeResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 
