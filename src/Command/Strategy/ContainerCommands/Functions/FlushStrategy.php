@@ -29,4 +29,12 @@ class FlushStrategy implements SubcommandStrategyInterface
 
         return $processedArguments;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function parseResponse($data)
+    {
+        return $data;
+    }
 }

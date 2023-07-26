@@ -23,4 +23,12 @@ class StatsStrategy implements SubcommandStrategyInterface
     {
         return $arguments;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function parseResponse($data)
+    {
+        return $data;
+    }
 }
