@@ -87,6 +87,22 @@ class DISCARD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testAbortsTransactionAndRestoresNormalFlowResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->multi();
+
+        $this->assertEquals('QUEUED', $redis->set('foo', 'bar'));
+        $this->assertEquals('OK', $redis->discard());
+        $this->assertSame(0, $redis->exists('foo'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionWhenCallingOutsideTransaction(): void

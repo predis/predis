@@ -90,6 +90,31 @@ class BLMOVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsCorrectListElementResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->rpush('test-blmove1', ['element1', 'element2', 'element3']);
+        $redis->rpush('test-blmove2', ['element4', 'element5', 'element6']);
+
+        $actualResponse = $redis->blmove(
+            'test-blmove1',
+            'test-blmove2',
+            'LEFT',
+            'LEFT',
+            0
+        );
+
+        $this->assertSame('element1', $actualResponse);
+        $this->assertSame(['element2', 'element3'], $redis->lrange('test-blmove1', 0, -1));
+        $this->assertSame(['element1', 'element4', 'element5', 'element6'], $redis->lrange('test-blmove2', 0, -1));
+    }
+
+    /**
+     * @group connected
      * @dataProvider sameListProvider
      * @param  array  $list
      * @param  string $where

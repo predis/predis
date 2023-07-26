@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-string
@@ -89,12 +91,44 @@ class BITFIELD_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
     public function testBitfieldWithGetModifier(): void
     {
         $redis = $this->getClient();
+
+        $redis->setbit('string', 0, 1);
+        $redis->setbit('string', 8, 1);
+
+        $this->assertSame([128], $redis->bitfield('string', 'GET', 'u8', 0));
+        $this->assertSame([128, 1, 128], $redis->bitfield('string', 'GET', 'u8', 0, 'GET', 'u8', 1, 'GET', 'u8', 8));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testBitfieldWithGetModifierResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->setbit('string', 0, 1);
         $redis->setbit('string', 8, 1);

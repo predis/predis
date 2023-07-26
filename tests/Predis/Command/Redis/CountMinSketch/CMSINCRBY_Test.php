@@ -86,6 +86,24 @@ class CMSINCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testIncrementGivenItemsWithinCountMinSketchResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->cmsinitbydim('key', 2000, 7);
+
+        $actualResponse = $redis->cmsincrby('key', 'item1', 1);
+        $queryResponse = $redis->cmsquery('key', 'item1');
+
+        $this->assertSame([1], $actualResponse);
+        $this->assertSame([1], $queryResponse);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisBfVersion >= 2.0.0
      */
     public function testThrowsExceptionOnNonExistingKey(): void

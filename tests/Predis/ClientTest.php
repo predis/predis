@@ -17,6 +17,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\Factory as CommandFactory;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\Replication\MasterSlaveReplication;
 use PredisTestCase;
@@ -208,7 +209,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithClusterArgument(): void
     {
-        $cluster = new Connection\Cluster\PredisCluster();
+        $cluster = new Connection\Cluster\PredisCluster(new Parameters());
 
         $factory = new Connection\Factory();
         $cluster->add($factory->create('tcp://localhost:7000'));
@@ -548,10 +549,49 @@ class ClientTest extends PredisTestCase
                 ['foo', 'bar', 'hoge', 'piyo']
             );
 
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $client = new Client($connection);
 
         $this->assertEquals('PONG', $client->executeCommand($ping));
         $this->assertSame(['foo' => 'bar', 'hoge' => 'piyo'], $client->executeCommand($hgetall));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecuteCommandReturnsResp3ParsedResponses(): void
+    {
+        $commands = $this->getCommandFactory();
+
+        $ping = $commands->create('ping', []);
+        $get = $commands->create('get', []);
+
+        $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
+        $connection
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$ping],
+                [$get]
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('PONG'),
+                []
+            );
+
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 3]));
+
+        $client = new Client($connection);
+
+        $this->assertEquals('PONG', $client->executeCommand($ping));
+        $this->assertSame([], $client->executeCommand($get));
     }
 
     /**
@@ -608,6 +648,11 @@ class ClientTest extends PredisTestCase
             ->method('executeCommand')
             ->with($this->isInstanceOf('Predis\Command\Redis\PING'))
             ->willReturn('PONG');
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
@@ -1003,7 +1048,7 @@ class ClientTest extends PredisTestCase
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\PubSub\Consumer', $client->pubSubLoop());
+        $this->assertInstanceOf('Predis\Consumer\PubSub\Consumer', $client->pubSubLoop());
     }
 
     /**
@@ -1016,7 +1061,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($connection);
 
-        $this->assertInstanceOf('Predis\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
+        $this->assertInstanceOf('Predis\Consumer\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
 
         $reflection = new ReflectionProperty($pubsub, 'options');
         $reflection->setAccessible(true);
@@ -1078,11 +1123,11 @@ class ClientTest extends PredisTestCase
             ->method('__invoke')
             ->withConsecutive(
                 [
-                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    $this->isInstanceOf('Predis\Consumer\PubSub\Consumer'),
                     (object) ['kind' => 'subscribe', 'channel' => 'channel', 'payload' => 1],
                 ],
                 [
-                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    $this->isInstanceOf('Predis\Consumer\PubSub\Consumer'),
                     (object) ['kind' => 'unsubscribe', 'channel' => 'channel', 'payload' => 0],
                 ]
             )
@@ -1159,6 +1204,11 @@ class ClientTest extends PredisTestCase
     public function testMonitorReturnsMonitorConsumer(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $client = new Client($connection);
 
         $this->assertInstanceOf('Predis\Monitor\Consumer', $monitor = $client->monitor());
@@ -1195,6 +1245,11 @@ class ClientTest extends PredisTestCase
                 'OK'
             );
 
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $client = new Client($connection);
 
         $this->assertTrue($client->executeCommand($command));
@@ -1209,7 +1264,7 @@ class ClientTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383');
 
-        $aggregate = new \Predis\Connection\Cluster\PredisCluster();
+        $aggregate = new \Predis\Connection\Cluster\PredisCluster(new Parameters());
 
         $aggregate->add($connection1);
         $aggregate->add($connection2);

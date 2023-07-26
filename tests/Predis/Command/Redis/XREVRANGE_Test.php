@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-stream
@@ -89,6 +91,23 @@ class XREVRANGE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'COUNT', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 5.0.0
      */
@@ -130,6 +149,26 @@ class XREVRANGE_Test extends PredisCommandTestCase
     public function testMultipleKeys(): void
     {
         $redis = $this->getClient();
+
+        $redis->xadd('stream', ['key1' => 'val1', 'key2' => 'val2'], '0-1');
+        $redis->xadd('stream', ['key1' => 'val1', 'key2' => 'val2'], '1-1');
+
+        $this->assertSame(
+            [
+                '1-1' => ['key1' => 'val1', 'key2' => 'val2'],
+                '0-1' => ['key1' => 'val1', 'key2' => 'val2'],
+            ],
+            $redis->xrevrange('stream', '+', '-')
+        );
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testMultipleKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->xadd('stream', ['key1' => 'val1', 'key2' => 'val2'], '0-1');
         $redis->xadd('stream', ['key1' => 'val1', 'key2' => 'val2'], '1-1');

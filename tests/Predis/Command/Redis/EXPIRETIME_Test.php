@@ -74,4 +74,23 @@ class EXPIRETIME_Test extends PredisCommandTestCase
         $this->assertSame(-1, $redis->expiretime('key1'));
         $this->assertSame(-2, $redis->expiretime('non-existing key'));
     }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsCorrectKeyExpirationTimeResp3(): void
+    {
+        $expirationTime = (int) microtime(true) + 100000;
+        $redis = $this->getResp3Client();
+
+        $redis->set('key', 'value');
+        $redis->set('key1', 'value');
+        $redis->expireat('key', $expirationTime);
+
+        $this->assertSame($expirationTime, $redis->expiretime('key'));
+        $this->assertSame(-1, $redis->expiretime('key1'));
+        $this->assertSame(-2, $redis->expiretime('non-existing key'));
+    }
 }

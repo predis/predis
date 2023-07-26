@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-hash
@@ -71,12 +73,44 @@ class HDEL_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testDeletesSpecifiedFieldsFromHash(): void
     {
         $redis = $this->getClient();
+
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
+
+        $this->assertSame(2, $redis->hdel('metavars', 'foo', 'hoge'));
+        $this->assertSame(0, $redis->hdel('metavars', 'foofoo'));
+        $this->assertSame(0, $redis->hdel('unknown', 'foo'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testDeletesSpecifiedFieldsFromHashResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
 

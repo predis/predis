@@ -39,8 +39,8 @@ class CLIENT_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsOfClientKill(): void
     {
-        $arguments = ['kill', '127.0.0.1:45393'];
-        $expected = ['kill', '127.0.0.1:45393'];
+        $arguments = ['KILL', '127.0.0.1:45393'];
+        $expected = ['KILL', '127.0.0.1:45393'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -49,17 +49,15 @@ class CLIENT_Test extends PredisCommandTestCase
     }
 
     /**
+     * @dataProvider listArgumentsProvider
      * @group disconnected
      */
-    public function testFilterArgumentsOfClientList(): void
+    public function testFilterArgumentsOfClientList(array $actualArguments, array $expectedArguments): void
     {
-        $arguments = ['list'];
-        $expected = ['list'];
-
         $command = $this->getCommand();
-        $command->setArguments($arguments);
+        $command->setArguments($actualArguments);
 
-        $this->assertSame($expected, $command->getArguments());
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**
@@ -67,7 +65,7 @@ class CLIENT_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsOfClientGetname(): void
     {
-        $arguments = $expected = ['getname'];
+        $arguments = $expected = ['GETNAME'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -80,12 +78,36 @@ class CLIENT_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsOfClientSetname(): void
     {
-        $arguments = $expected = ['setname', 'connection-a'];
+        $arguments = $expected = ['SETNAME', 'connection-a'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
 
         $this->assertSame($expected, $command->getArguments());
+    }
+
+    /**
+     * @dataProvider noTouchArgumentsProvider
+     * @group disconnected
+     */
+    public function testFilterArgumentsNoTouch(array $actualArguments, array $expectedArguments): void
+    {
+        $command = $this->getCommand();
+        $command->setArguments($actualArguments);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
+     * @dataProvider setInfoArgumentsProvider
+     * @group disconnected
+     */
+    public function testFilterArgumentsSetInfo(array $actualArguments, array $expectedArguments): void
+    {
+        $command = $this->getCommand();
+        $command->setArguments($actualArguments);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**
@@ -131,6 +153,26 @@ BUFFER;
     {
         $redis = $this->getClient();
 
+        $this->assertIsArray($clients = $redis->client->list());
+        $this->assertGreaterThanOrEqual(1, count($clients));
+        $this->assertIsArray($clients[0]);
+        $this->assertArrayHasKey('addr', $clients[0]);
+        $this->assertArrayHasKey('fd', $clients[0]);
+        $this->assertArrayHasKey('idle', $clients[0]);
+        $this->assertArrayHasKey('flags', $clients[0]);
+        $this->assertArrayHasKey('db', $clients[0]);
+        $this->assertArrayHasKey('sub', $clients[0]);
+        $this->assertArrayHasKey('psub', $clients[0]);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsListOfConnectedClientsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
         $this->assertIsArray($clients = $redis->client('LIST'));
         $this->assertGreaterThanOrEqual(1, count($clients));
         $this->assertIsArray($clients[0]);
@@ -151,8 +193,23 @@ BUFFER;
     public function testGetsNameOfConnection(): void
     {
         $redis = $this->getClient();
-        $clientName = $redis->client('GETNAME');
+        $clientName = $redis->client->getName();
         $this->assertNull($clientName);
+
+        $expectedConnectionName = 'foo-bar';
+        $this->assertEquals('OK', $redis->client->setName($expectedConnectionName));
+        $this->assertEquals($expectedConnectionName, $redis->client->getName());
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testGetsNameOfConnectionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $clientName = $redis->client('GETNAME');
+        $this->assertSame('predis', $clientName);
 
         $expectedConnectionName = 'foo-bar';
         $this->assertEquals('OK', $redis->client('SETNAME', $expectedConnectionName));
@@ -168,8 +225,44 @@ BUFFER;
         $redis = $this->getClient();
 
         $expectedConnectionName = 'foo-baz';
-        $this->assertEquals('OK', $redis->client('SETNAME', $expectedConnectionName));
-        $this->assertEquals($expectedConnectionName, $redis->client('GETNAME'));
+        $this->assertEquals('OK', $redis->client->setName($expectedConnectionName));
+        $this->assertEquals($expectedConnectionName, $redis->client->getName());
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testNoEvictTurnEnableEvictionMode(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->client->noEvict(true));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.2.0
+     */
+    public function testNoTouchTurnOnControlOnKeys(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->client->noTouch(true));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.2.0
+     */
+    public function testSetInfoToCurrentClientConnection(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->client->setInfo('LIB-NAME', 'lib'));
+        $this->assertEquals('OK', $redis->client->setInfo('LIB-VER', '1.0.0'));
+        $this->assertSame('lib', $redis->client->list()[0]['lib-name']);
+        $this->assertSame('1.0.0', $redis->client->list()[0]['lib-ver']);
     }
 
     /**
@@ -196,20 +289,7 @@ BUFFER;
         $this->expectException('Predis\Response\ServerException');
 
         $redis = $this->getClient();
-        $redis->client('SETNAME', $invalidConnectionName);
-    }
-
-    /**
-     * @group connected
-     * @requiresRedisVersion >= 2.4.0
-     */
-    public function testThrowsExceptioOnWrongModifier(): void
-    {
-        $this->expectException('Predis\Response\ServerException');
-
-        $redis = $this->getClient();
-
-        $redis->client('FOO');
+        $redis->client->setName($invalidConnectionName);
     }
 
     /**
@@ -223,6 +303,64 @@ BUFFER;
 
         $redis = $this->getClient();
 
-        $redis->client('KILL', '127.0.0.1:65535');
+        $redis->client->kill('127.0.0.1:65535');
+    }
+
+    public function listArgumentsProvider(): array
+    {
+        return [
+            'with default arguments' => [
+                ['LIST'],
+                ['LIST'],
+            ],
+            'with TYPE modifier' => [
+                ['LIST', 'MASTER'],
+                ['LIST', 'TYPE', 'MASTER'],
+            ],
+            'with ID modifier' => [
+                ['LIST', null, 1, 2, 3],
+                ['LIST', 'ID', 1, 2, 3],
+            ],
+        ];
+    }
+
+    public function noTouchArgumentsProvider(): array
+    {
+        return [
+            'with default arguments' => [
+                ['NOTOUCH'],
+                ['NO-TOUCH'],
+            ],
+            'with enabled modifier' => [
+                ['NOTOUCH', true],
+                ['NO-TOUCH', 'ON'],
+            ],
+            'with disabled modifier' => [
+                ['NOTOUCH', false],
+                ['NO-TOUCH', 'OFF'],
+            ],
+        ];
+    }
+
+    public function setInfoArgumentsProvider(): array
+    {
+        return [
+            'with default arguments' => [
+                ['SETINFO'],
+                ['SETINFO'],
+            ],
+            'with LIB-NAME modifier' => [
+                ['SETINFO', 'LIB-NAME', 'lib'],
+                ['SETINFO', 'LIB-NAME', 'lib'],
+            ],
+            'with LIB-VER modifier' => [
+                ['SETINFO', 'LIB-VER', '1.0.0'],
+                ['SETINFO', 'LIB-VER', '1.0.0'],
+            ],
+            'with only modifier given' => [
+                ['SETINFO', 'LIB-VER'],
+                ['SETINFO'],
+            ],
+        ];
     }
 }

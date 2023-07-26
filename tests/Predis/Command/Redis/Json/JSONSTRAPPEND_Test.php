@@ -87,6 +87,22 @@ class JSONSTRAPPEND_Test extends PredisCommandTestCase
         $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 2.6.1
+     */
+    public function testAppendStringToExistingJsonStringResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}');
+        $actualResponse = $redis->jsonstrappend('key', '$.key2', '"foo"');
+
+        $this->assertSame([9], $actualResponse);
+        $this->assertSame([['{"key1":"value1","key2":"value2foo"}']], $redis->jsonget('key'));
+    }
+
     public function jsonProvider(): array
     {
         return [

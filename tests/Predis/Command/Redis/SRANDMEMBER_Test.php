@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-set
@@ -57,11 +59,44 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsRandomMemberFromSet(): void
     {
         $redis = $this->getClient();
+
+        $redis->sadd('letters', 'a', 'b');
+
+        $this->assertContains($redis->srandmember('letters'), ['a', 'b']);
+        $this->assertContains($redis->srandmember('letters'), ['a', 'b']);
+
+        $this->assertSame(2, $redis->scard('letters'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsRandomMemberFromSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->sadd('letters', 'a', 'b');
 

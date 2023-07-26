@@ -84,6 +84,21 @@ class JSONMGET_Test extends PredisCommandTestCase
         $this->assertSame($expectedResponse, $redis->jsonmget($keys, $path));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
+    public function testMGetReturnsMultipleKeysArgumentsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key1', '$', '{"key1":"value1","key2":"value2"}');
+        $redis->jsonset('key2', '$', '{"key1":"value3","key2":"value2"}');
+
+        $this->assertSame(['["value1"]', '["value3"]'], $redis->jsonmget(['key1', 'key2'], '$.key1'));
+    }
+
     public function jsonProvider(): array
     {
         return [

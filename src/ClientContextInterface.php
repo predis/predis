@@ -38,12 +38,13 @@ use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
-use Predis\Command\Redis\Container\ACL;
-use Predis\Command\Redis\Container\FunctionContainer;
-use Predis\Command\Redis\Container\Json\JSONDEBUG;
-use Predis\Command\Redis\Container\Search\FTCONFIG;
-use Predis\Command\Redis\Container\Search\FTCURSOR;
-use Predis\Command\Redis\Container\XGROUP;
+use Predis\Command\Container\ACL;
+use Predis\Command\Container\CLIENT;
+use Predis\Command\Container\FUNCTIONS;
+use Predis\Command\Container\Json\JSONDEBUG;
+use Predis\Command\Container\Search\FTCONFIG;
+use Predis\Command\Container\Search\FTCURSOR;
+use Predis\Command\Container\XGROUP;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -59,8 +60,8 @@ use Predis\Command\Redis\Container\XGROUP;
  * @method $this move($key, $db)
  * @method $this object($subcommand, $key)
  * @method $this persist($key)
- * @method $this pexpire($key, $milliseconds)
- * @method $this pexpireat($key, $timestamp)
+ * @method $this pexpire($key, $milliseconds, string $option = null)
+ * @method $this pexpireat($key, $timestamp, string $option = null)
  * @method $this pttl($key)
  * @method $this randomkey()
  * @method $this rename($key, $target)
@@ -226,6 +227,9 @@ use Predis\Command\Redis\Container\XGROUP;
  * @method $this srandmember($key, $count = null)
  * @method $this srem($key, $member)
  * @method $this sscan($key, $cursor, array $options = null)
+ * @method $this ssubscribe(string ...$shardChannels)
+ * @method $this subscribe(string ...$channels)
+ * @method $this sunsubscribe(?string ...$shardChannels = null)
  * @method $this sunion(array|string $keys)
  * @method $this sunionstore($destination, array|string $keys)
  * @method $this tdigestadd(string $key, float ...$value)
@@ -305,6 +309,7 @@ use Predis\Command\Redis\Container\XGROUP;
  * @method $this exec()
  * @method $this multi()
  * @method $this unwatch()
+ * @method $this unsubscribe(string ...$channels)
  * @method $this watch($key)
  * @method $this eval($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this eval_ro(string $script, array $keys, ...$argument)
@@ -317,18 +322,18 @@ use Predis\Command\Redis\Container\XGROUP;
  * @method $this select($database)
  * @method $this bgrewriteaof()
  * @method $this bgsave()
- * @method $this client($subcommand, $argument = null)
  * @method $this config($subcommand, $argument = null)
  * @method $this dbsize()
  * @method $this flushall()
  * @method $this flushdb()
- * @method $this info($section = null)
+ * @method $this info(string ...$section = null)
  * @method $this lastsave()
  * @method $this save()
  * @method $this slaveof($host, $port)
  * @method $this slowlog($subcommand, $argument = null)
+ * @method $this spublish(string $shardChannel, string $message)
  * @method $this time()
- * @method $this command()
+ * @method $this command($subcommand, $argument = null)
  * @method $this geoadd($key, $longitude, $latitude, $member)
  * @method $this geohash($key, array $members)
  * @method $this geopos($key, array $members)
@@ -339,12 +344,13 @@ use Predis\Command\Redis\Container\XGROUP;
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
- * @property FunctionContainer $function
- * @property FTCONFIG          $ftconfig
- * @property FTCURSOR          $ftcursor
- * @property JSONDEBUG         $jsondebug
- * @property ACL               $acl
- * @property XGROUP            $xgroup
+ * @property CLIENT    $client
+ * @property FUNCTIONS $function
+ * @property FTCONFIG  $ftconfig
+ * @property FTCURSOR  $ftcursor
+ * @property JSONDEBUG $jsondebug
+ * @property ACL       $acl
+ * @property XGROUP    $xgroup
  */
 interface ClientContextInterface
 {

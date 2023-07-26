@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-key
@@ -60,6 +62,23 @@ class KEYS_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsArrayOfMatchingKeys(): void
@@ -69,6 +88,25 @@ class KEYS_Test extends PredisCommandTestCase
         $keysAll = array_merge($keys, $keysNS);
 
         $redis = $this->getClient();
+        $redis->mset($keysAll);
+
+        $this->assertSame([], $redis->keys('nomatch:*'));
+        $this->assertSameValues(array_keys($keysNS), $redis->keys('metavar:*'));
+        $this->assertSameValues(array_keys($keysAll), $redis->keys('*'));
+        $this->assertSameValues(array_keys($keys), $redis->keys('a?a'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsArrayOfMatchingKeysResp3(): void
+    {
+        $keys = ['aaa' => 1, 'aba' => 2, 'aca' => 3];
+        $keysNS = ['metavar:foo' => 'bar', 'metavar:hoge' => 'piyo'];
+        $keysAll = array_merge($keys, $keysNS);
+
+        $redis = $this->getResp3Client();
         $redis->mset($keysAll);
 
         $this->assertSame([], $redis->keys('nomatch:*'));

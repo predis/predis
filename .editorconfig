@@ -14,7 +14,7 @@ block_comment_end = */
 [*.php]
 max_line_length = 150
 
-[*.{md,yml,yaml,neon}]
+[*.{md,yml,yaml,neon,sh}]
 indent_size = 2
 
 [tests/**.php]

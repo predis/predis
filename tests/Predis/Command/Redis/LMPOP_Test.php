@@ -88,6 +88,22 @@ class LMPOP_Test extends PredisCommandTestCase
         $this->assertSame($expectedModifiedList, $redis->lrange($key, 0, -1));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testPopElementsFromGivenListResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->lpush('key', 'elem1', 'elem2', 'elem3');
+        $actualResponse = $redis->lmpop(['key1', 'key']);
+
+        $this->assertSame(['key' => ['elem3']], $actualResponse);
+        $this->assertSame(['elem2', 'elem1'], $redis->lrange('key', 0, -1));
+    }
+
     public function argumentsProvider(): array
     {
         return [

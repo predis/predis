@@ -108,6 +108,29 @@ class GEOSEARCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsSearchedGeospatialCoordinatesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->geoadd('key', 1.1, 2, 'member1');
+        $redis->geoadd('key', 2.1, 3, 'member2');
+        $redis->geoadd('key', 3.1, 4, 'member3');
+
+        $this->assertSame(
+            ['member1', 'member2', 'member3'],
+            $redis->geosearch(
+                'key',
+                new FromLonLat(1, 4),
+                new ByRadius(9999, 'km')
+            )
+        );
+    }
+
+    /**
+     * @group connected
      * @dataProvider unexpectedValuesProvider
      * @param  array  $arguments
      * @param  string $expectedException

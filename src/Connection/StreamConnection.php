@@ -14,9 +14,13 @@ namespace Predis\Connection;
 
 use InvalidArgumentException;
 use Predis\Command\CommandInterface;
-use Predis\Response\Error as ErrorResponse;
+use Predis\Consumer\Push\PushNotificationException;
+use Predis\Consumer\Push\PushResponse;
+use Predis\Protocol\Parser\Strategy\Resp2Strategy;
+use Predis\Protocol\Parser\Strategy\Resp3Strategy;
+use Predis\Protocol\Parser\UnexpectedTypeException;
+use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
-use Predis\Response\Status as StatusResponse;
 
 /**
  * Standard connection to Redis servers implemented on top of PHP's streams.
@@ -279,6 +283,7 @@ class StreamConnection extends AbstractConnection
 
     /**
      * {@inheritdoc}
+     * @throws PushNotificationException
      */
     public function read()
     {
@@ -289,64 +294,76 @@ class StreamConnection extends AbstractConnection
             $this->onConnectionError('Error while reading line from the server.');
         }
 
-        $prefix = $chunk[0];
-        $payload = substr($chunk, 1, -2);
+        try {
+            $parsedData = $this->parserStrategy->parseData($chunk);
+        } catch (UnexpectedTypeException $e) {
+            $this->onProtocolError("Unknown response prefix: '{$e->getType()}'.");
 
-        switch ($prefix) {
-            case '+':
-                return StatusResponse::get($payload);
+            return;
+        }
 
-            case '$':
-                $size = (int) $payload;
+        if (!is_array($parsedData)) {
+            return $parsedData;
+        }
 
-                if ($size === -1) {
-                    return;
+        switch ($parsedData['type']) {
+            case Resp3Strategy::TYPE_PUSH:
+                $data = [];
+
+                for ($i = 0; $i < $parsedData['value']; ++$i) {
+                    $data[$i] = $this->read();
                 }
 
-                $bulkData = '';
-                $bytesLeft = ($size += 2);
+                return new PushResponse($data);
+            case Resp2Strategy::TYPE_ARRAY:
+                $data = [];
 
-                do {
-                    $chunk = is_resource($socket) ? fread($socket, min($bytesLeft, 4096)) : false;
+                for ($i = 0; $i < $parsedData['value']; ++$i) {
+                    $data[$i] = $this->read();
+                }
 
-                    if ($chunk === false || $chunk === '') {
-                        $this->onConnectionError('Error while reading bytes from the server.');
-                    }
+                return $data;
 
-                    $bulkData .= $chunk;
-                    $bytesLeft = $size - strlen($bulkData);
-                } while ($bytesLeft > 0);
+            case Resp2Strategy::TYPE_BULK_STRING:
+                $bulkData = $this->readByChunks($socket, $parsedData['value']);
 
                 return substr($bulkData, 0, -2);
 
-            case '*':
-                $count = (int) $payload;
+            case Resp3Strategy::TYPE_VERBATIM_STRING:
+                $bulkData = $this->readByChunks($socket, $parsedData['value']);
 
-                if ($count === -1) {
-                    return;
+                return substr($bulkData, $parsedData['offset'], -2);
+
+            case Resp3Strategy::TYPE_BLOB_ERROR:
+                $errorMessage = $this->readByChunks($socket, $parsedData['value']);
+
+                return new Error(substr($errorMessage, 0, -2));
+
+            case Resp3Strategy::TYPE_MAP:
+                $data = [];
+
+                for ($i = 0; $i < $parsedData['value']; ++$i) {
+                    $key = $this->read();
+                    $data[$key] = $this->read();
                 }
 
-                $multibulk = [];
+                return $data;
 
-                for ($i = 0; $i < $count; ++$i) {
-                    $multibulk[$i] = $this->read();
+            case Resp3Strategy::TYPE_SET:
+                $data = [];
+
+                for ($i = 0; $i < $parsedData['value']; ++$i) {
+                    $element = $this->read();
+
+                    if (!in_array($element, $data, true)) {
+                        $data[] = $element;
+                    }
                 }
 
-                return $multibulk;
-
-            case ':':
-                $integer = (int) $payload;
-
-                return $integer == $payload ? $integer : $payload;
-
-            case '-':
-                return new ErrorResponse($payload);
-
-            default:
-                $this->onProtocolError("Unknown response prefix: '$prefix'.");
-
-                return;
+                return $data;
         }
+
+        return $parsedData;
     }
 
     /**
@@ -368,5 +385,50 @@ class StreamConnection extends AbstractConnection
         }
 
         $this->write($buffer);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function hasDataToRead(): bool
+    {
+        $resource = $this->getResource();
+
+        if ($resource) {
+            $resourceArray = [$resource];
+            $write = null;
+            $except = null;
+            $num = stream_select($resourceArray, $write, $except, 0);
+
+            return $num > 0;
+        }
+
+        return false;
+    }
+
+    /**
+     * Reads given resource split on chunks with given size.
+     *
+     * @param         $resource
+     * @param  int    $chunkSize
+     * @return string
+     */
+    private function readByChunks($resource, int $chunkSize): string
+    {
+        $string = '';
+        $bytesLeft = ($chunkSize += 2);
+
+        do {
+            $chunk = is_resource($resource) ? fread($resource, min($bytesLeft, 4096)) : false;
+
+            if ($chunk === false || $chunk === '') {
+                $this->onConnectionError('Error while reading bytes from the server.');
+            }
+
+            $string .= $chunk;
+            $bytesLeft = $chunkSize - strlen($string);
+        } while ($bytesLeft > 0);
+
+        return $string;
     }
 }

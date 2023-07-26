@@ -81,6 +81,20 @@ class GETEX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsValueAndSetExpirationTimeForGivenKeyResp3(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->set('key', 'value');
+
+        $this->assertSame('value', $redis->getex('key', '', false));
+    }
+
+    /**
+     * @group connected
      * @dataProvider unexpectedValuesProvider
      * @param  array  $arguments
      * @param  string $expectedExceptionMessage

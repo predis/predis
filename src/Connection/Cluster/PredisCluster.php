@@ -19,6 +19,7 @@ use Predis\Cluster\PredisStrategy;
 use Predis\Cluster\StrategyInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
 use ReturnTypeWillChange;
 use Traversable;
@@ -50,10 +51,17 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $distributor;
 
     /**
-     * @param StrategyInterface $strategy Optional cluster strategy.
+     * @var ParametersInterface
      */
-    public function __construct(StrategyInterface $strategy = null)
+    private $connectionParameters;
+
+    /**
+     * @param ParametersInterface    $parameters
+     * @param StrategyInterface|null $strategy   Optional cluster strategy.
+     */
+    public function __construct(ParametersInterface $parameters, StrategyInterface $strategy = null)
     {
+        $this->connectionParameters = $parameters;
         $this->strategy = $strategy ?: new PredisStrategy();
         $this->distributor = $this->strategy->getDistributor();
     }
@@ -240,5 +248,13 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function executeCommand(CommandInterface $command)
     {
         return $this->getConnectionByCommand($command)->executeCommand($command);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): ParametersInterface
+    {
+        return $this->connectionParameters;
     }
 }

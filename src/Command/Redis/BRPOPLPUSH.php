@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see http://redis.io/commands/brpoplpush
@@ -25,5 +25,10 @@ class BRPOPLPUSH extends RedisCommand
     public function getId()
     {
         return 'BRPOPLPUSH';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixSkippingLastArgument($prefix);
     }
 }

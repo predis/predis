@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-zset
@@ -85,11 +87,43 @@ class ZADD_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testAddsOrUpdatesMembersOrderingByScore(): void
     {
         $redis = $this->getClient();
+
+        $this->assertSame(5, $redis->zadd('letters', 1, 'a', 2, 'b', 3, 'c', 4, 'd', 5, 'e'));
+        $this->assertSame(['a', 'b', 'c', 'd', 'e'], $redis->zrange('letters', 0, -1));
+
+        $this->assertSame(1, $redis->zadd('letters', 1, 'e', 8, 'c', 6, 'f'));
+        $this->assertSame(['a', 'e', 'b', 'd', 'f', 'c'], $redis->zrange('letters', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testAddsOrUpdatesMembersOrderingByScoreResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertSame(5, $redis->zadd('letters', 1, 'a', 2, 'b', 3, 'c', 4, 'd', 5, 'e'));
         $this->assertSame(['a', 'b', 'c', 'd', 'e'], $redis->zrange('letters', 0, -1));
