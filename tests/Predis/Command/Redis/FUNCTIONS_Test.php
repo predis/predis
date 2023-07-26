@@ -175,7 +175,6 @@ class FUNCTIONS_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->function->delete($this->libName));
     }
 
-
     /**
      * @group connected
      * @return void
