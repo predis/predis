@@ -231,6 +231,17 @@ BUFFER;
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testNoEvictTurnEnableEvictionMode(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->client->noEvict(true));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 7.2.0
      */
     public function testNoTouchTurnOnControlOnKeys(): void
