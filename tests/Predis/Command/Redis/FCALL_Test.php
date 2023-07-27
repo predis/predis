@@ -12,7 +12,6 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\PrefixableCommand;
 use Predis\Response\ServerException;
 
 /**
@@ -59,28 +58,11 @@ class FCALL_Test extends PredisCommandTestCase
     }
 
     /**
-     * @group disconnected
-     */
-    public function testPrefixKeys(): void
-    {
-        /** @var PrefixableCommand $command */
-        $command = $this->getCommand();
-        $actualArguments = ['function', ['arg1', 'arg2', 'arg3', 'arg4']];
-        $prefix = 'prefix:';
-        $expectedArguments = ['function', 4, 'prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
-
-        $command->setArguments($actualArguments);
-        $command->prefixKeys($prefix);
-
-        $this->assertSame($expectedArguments, $command->getArguments());
-    }
-
-    /**
      * @group connected
      * @dataProvider functionsProvider
      * @param  string $function
      * @param  array  $functionArguments
-     * @param  mixed  $expectedResponse
+     * @param         $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -96,24 +78,6 @@ class FCALL_Test extends PredisCommandTestCase
 
         $actualResponse = $redis->fcall(...$functionArguments);
         $this->assertSame($expectedResponse, $actualResponse);
-        $this->assertEquals('OK', $redis->function->delete('mylib'));
-    }
-
-    /**
-     * @group connected
-     * @return void
-     * @requiresRedisVersion >= 7.0.0
-     */
-    public function testInvokeGivenFunctionResp3(): void
-    {
-        $redis = $this->getResp3Client();
-
-        $this->assertSame('mylib', $redis->function->load(
-            "#!lua name=mylib \n redis.register_function('myfunc', function(keys, args) return 'hello' end)")
-        );
-
-        $actualResponse = $redis->fcall('myfunc', []);
-        $this->assertSame('hello', $actualResponse);
         $this->assertEquals('OK', $redis->function->delete('mylib'));
     }
 

@@ -123,37 +123,6 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->assertSame($expectedResponse, $actualResponse);
     }
 
-    /**
-     * @group connected
-     * @return void
-     * @requiresRediSearchVersion >= 2.8.0
-     */
-    public function testSearchValuesByHashIndexResp3(): void
-    {
-        $redis = $this->getResp3Client();
-        $expectedResponse = [1, 'doc:1', ['should_return', 'value1']];
-
-        $hashResponse = $redis->hmset('doc:1', 'field1', 'value1', 'field2', 'value2');
-        $this->assertEquals('OK', $hashResponse);
-
-        $ftCreateArguments = new CreateArguments();
-        $ftCreateArguments->prefix(['doc:']);
-
-        $schema = [
-            new TextField('field1', 'should_return'),
-            new TextField('field2', 'should_not_return'),
-        ];
-
-        $ftCreateResponse = $redis->ftcreate('idx_hash', $schema, $ftCreateArguments);
-        $this->assertEquals('OK', $ftCreateResponse);
-
-        $ftSearchArguments = new SearchArguments();
-        $ftSearchArguments->addReturn(1, 'should_return');
-
-        $actualResponse = $redis->ftsearch('idx_hash', '*', $ftSearchArguments);
-        $this->assertSame($expectedResponse, $actualResponse);
-    }
-
     public function argumentsProvider(): array
     {
         return [

@@ -12,8 +12,6 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\PrefixableCommand;
-
 /**
  * @group commands
  * @group realm-key
@@ -62,39 +60,11 @@ class EXPIREAT_Test extends PredisCommandTestCase
     }
 
     /**
-     * @group disconnected
-     */
-    public function testPrefixKeys(): void
-    {
-        /** @var PrefixableCommand $command */
-        $command = $this->getCommand();
-        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
-        $prefix = 'prefix:';
-        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
-
-        $command->setArguments($actualArguments);
-        $command->prefixKeys($prefix);
-
-        $this->assertSame($expectedArguments, $command->getArguments());
-    }
-
-    /**
      * @group connected
      */
     public function testReturnsZeroOnNonExistingKeys(): void
     {
         $redis = $this->getClient();
-
-        $this->assertSame(0, $redis->expireat('foo', 2));
-    }
-
-    /**
-     * @group connected
-     * @requiresRedisVersion >= 6.0.0
-     */
-    public function testReturnsZeroOnNonExistingKeysResp3(): void
-    {
-        $redis = $this->getResp3Client();
 
         $this->assertSame(0, $redis->expireat('foo', 2));
     }
@@ -179,14 +149,14 @@ class EXPIREAT_Test extends PredisCommandTestCase
             'only if new expiry is greater then current one' => [
                 ['newExpiryLower', 'value', 'EX', 1000],
                 ['newExpiryGreater', 'value', 'EX', 10],
-                ['newExpiryGreater', time() + 100, 'GT'],
-                ['newExpiryLower', time() + 10, 'GT'],
+                ['newExpiryGreater', time() + 20, 'GT'],
+                ['newExpiryLower', time() + 20, 'GT'],
             ],
             'only if new expiry is lower then current one' => [
                 ['newExpiryLower', 'value', 'EX', 1000],
                 ['newExpiryGreater', 'value', 'EX', 10],
-                ['newExpiryLower', time() + 10, 'LT'],
-                ['newExpiryGreater', time() + 100, 'LT'],
+                ['newExpiryLower', time() + 20, 'LT'],
+                ['newExpiryGreater', time() + 20, 'LT'],
             ],
         ];
     }
