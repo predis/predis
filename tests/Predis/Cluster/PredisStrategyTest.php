@@ -13,10 +13,21 @@
 namespace Predis\Cluster;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Command\CommandInterface;
 use PredisTestCase;
 
 class PredisStrategyTest extends PredisTestCase
 {
+    /**
+     * @var MockObject|CommandInterface
+     */
+    private $mockCommand;
+
+    protected function setUp(): void
+    {
+        $this->mockCommand = $this->createMock(CommandInterface::class);
+    }
+
     /**
      * @group disconnected
      */
@@ -67,12 +78,18 @@ class PredisStrategyTest extends PredisTestCase
     public function testFirstKeyCommands(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['key'];
+
+        $this->mockCommand
+            ->method('getArgument')
+            ->with(0)
+            ->willReturn('key');
 
         foreach ($this->getExpectedCommands('keys-first') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
@@ -82,12 +99,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testAllKeysCommands(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['{key}:1', '{key}:2', '{key}:3', '{key}:4'];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', '{key}:2', '{key}:3', '{key}:4']);
 
         foreach ($this->getExpectedCommands('keys-all') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
@@ -97,12 +119,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testInterleavedKeysCommands(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['{key}:1', 'value1', '{key}:2', 'value2'];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', 'value1', '{key}:2', 'value2']);
 
         foreach ($this->getExpectedCommands('keys-interleaved') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
@@ -127,16 +154,16 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForSortCommand(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['{key}:1', 'value1', '{key}:2', 'value2'];
 
-        $commandID = 'SORT';
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', 'value1', '{key}:2', 'value2']);
 
-        $command = $commands->create($commandID, ['{key}:1']);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->mockCommand
+            ->method('getId')
+            ->willReturn('SORT');
 
-        $command = $commands->create($commandID, ['{key}:1', ['STORE' => '{key}:2']]);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->assertNotNull($strategy->getSlot($this->mockCommand));
     }
 
     /**
@@ -145,12 +172,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForBlockingListCommands(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['{key}:1', '{key}:2', 10];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', '{key}:2', 10]);
 
         foreach ($this->getExpectedCommands('keys-blockinglist') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand));
         }
     }
 
@@ -160,12 +192,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForZsetAggregationCommands(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['{key}:destination', ['{key}:1', '{key}:1'], [], 'sum'];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:destination', 2, '{key}:1', '{key}:1', 'AGGREGATE', 'SUM']);
 
         foreach ($this->getExpectedCommands('keys-zaggregated') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
@@ -175,12 +212,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForBitOpCommand(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['AND', '{key}:destination', '{key}:src:1', '{key}:src:2'];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['AND', '{key}:destination', '{key}:src:1', '{key}:src:2']);
 
         foreach ($this->getExpectedCommands('keys-bitop') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
@@ -190,14 +232,15 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForGeoradiusCommand(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $commandID = 'GEORADIUS';
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', 10, 10, 1, 'km']);
 
-        $command = $commands->create($commandID, ['{key}:1', 10, 10, 1, 'km']);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->mockCommand
+            ->method('getId')
+            ->willReturn('GEORADIUS');
 
-        $command = $commands->create($commandID, ['{key}:1', 10, 10, 1, 'km', 'store', '{key}:2', 'storedist', '{key}:3']);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->assertNotNull($strategy->getSlot($this->mockCommand));
     }
 
     /**
@@ -206,14 +249,16 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForGeoradiusByMemberCommand(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $commandID = 'GEORADIUSBYMEMBER';
 
-        $command = $commands->create($commandID, ['{key}:1', 'member', 1, 'km']);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['{key}:1', 'member', 1, 'km']);
 
-        $command = $commands->create($commandID, ['{key}:1', 'member', 1, 'km', 'store', '{key}:2', 'storedist', '{key}:3']);
-        $this->assertNotNull($strategy->getSlot($command), $commandID);
+        $this->mockCommand
+            ->method('getId')
+            ->willReturn('GEORADIUSBYMEMBER');
+
+        $this->assertNotNull($strategy->getSlot($this->mockCommand));
     }
 
     /**
@@ -222,12 +267,17 @@ class PredisStrategyTest extends PredisTestCase
     public function testKeysForEvalCommand(): void
     {
         $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-        $arguments = ['%SCRIPT%', 2, '{key}:1', '{key}:2', 'value1', 'value2'];
+
+        $this->mockCommand
+            ->method('getArguments')
+            ->willReturn(['%SCRIPT%', 2, '{key}:1', '{key}:2', 'value1', 'value2']);
 
         foreach ($this->getExpectedCommands('keys-script') as $commandID) {
-            $command = $commands->create($commandID, $arguments);
-            $this->assertNotNull($strategy->getSlot($command), $commandID);
+            $this->mockCommand
+                ->method('getId')
+                ->willReturn($commandID);
+
+            $this->assertNotNull($strategy->getSlot($this->mockCommand), $commandID);
         }
     }
 
@@ -463,6 +513,112 @@ class PredisStrategyTest extends PredisTestCase
             'GEODIST' => 'keys-first',
             'GEORADIUS' => 'keys-georadius',
             'GEORADIUSBYMEMBER' => 'keys-georadius',
+
+            /* commands operating on streams */
+            'XREVRANGE' => 'keys-first',
+            'XTRIM' => 'keys-first',
+
+            /* RedisJSON */
+            'JSON.ARRAPPEND' => 'keys-first',
+            'JSON.ARRINDEX' => 'keys-first',
+            'JSON.ARRINSERT' => 'keys-first',
+            'JSON.ARRLEN' => 'keys-first',
+            'JSON.ARRPOP' => 'keys-first',
+            'JSON.ARRTRIM' => 'keys-first',
+            'JSON.CLEAR' => 'keys-first',
+            'JSON.DEBUG' => 'keys-first',
+            'JSON.DEL' => 'keys-first',
+            'JSON.FORGET' => 'keys-first',
+            'JSON.GET' => 'keys-first',
+            'JSON.MGET' => 'keys-all',
+            'JSON.NUMINCRBY' => 'keys-first',
+            'JSON.OBJKEYS' => 'keys-first',
+            'JSON.OBJLEN' => 'keys-first',
+            'JSON.RESP' => 'keys-first',
+            'JSON.SET' => 'keys-first',
+            'JSON.STRAPPEND' => 'keys-first',
+            'JSON.STRLEN' => 'keys-first',
+            'JSON.TOGGLE' => 'keys-first',
+            'JSON.TYPE' => 'keys-first',
+
+            /* RedisBloom */
+            'BF.ADD' => 'keys-first',
+            'BF.EXISTS' => 'keys-first',
+            'BF.INFO' => 'keys-first',
+            'BF.INSERT' => 'keys-first',
+            'BF.LOADCHUNK' => 'keys-first',
+            'BF.MADD' => 'keys-first',
+            'BF.MEXISTS' => 'keys-first',
+            'BF.RESERVE' => 'keys-first',
+            'BF.SCANDUMP' => 'keys-first',
+            'CF.ADD' => 'keys-first',
+            'CF.ADDNX' => 'keys-first',
+            'CF.COUNT' => 'keys-first',
+            'CF.DEL' => 'keys-first',
+            'CF.EXISTS' => 'keys-first',
+            'CF.INFO' => 'keys-first',
+            'CF.INSERT' => 'keys-first',
+            'CF.INSERTNX' => 'keys-first',
+            'CF.LOADCHUNK' => 'keys-first',
+            'CF.MEXISTS' => 'keys-first',
+            'CF.RESERVE' => 'keys-first',
+            'CF.SCANDUMP' => 'keys-first',
+            'CMS.INCRBY' => 'keys-first',
+            'CMS.INFO' => 'keys-first',
+            'CMS.INITBYDIM' => 'keys-first',
+            'CMS.INITBYPROB' => 'keys-first',
+            'CMS.QUERY' => 'keys-first',
+            'TDIGEST.ADD' => 'keys-first',
+            'TDIGEST.BYRANK' => 'keys-first',
+            'TDIGEST.BYREVRANK' => 'keys-first',
+            'TDIGEST.CDF' => 'keys-first',
+            'TDIGEST.CREATE' => 'keys-first',
+            'TDIGEST.INFO' => 'keys-first',
+            'TDIGEST.MAX' => 'keys-first',
+            'TDIGEST.MIN' => 'keys-first',
+            'TDIGEST.QUANTILE' => 'keys-first',
+            'TDIGEST.RANK' => 'keys-first',
+            'TDIGEST.RESET' => 'keys-first',
+            'TDIGEST.REVRANK' => 'keys-first',
+            'TDIGEST.TRIMMED_MEAN' => 'keys-first',
+            'TOPK.ADD' => 'keys-first',
+            'TOPK.INCRBY' => 'keys-first',
+            'TOPK.INFO' => 'keys-first',
+            'TOPK.LIST' => 'keys-first',
+            'TOPK.QUERY' => 'keys-first',
+            'TOPK.RESERVE' => 'keys-first',
+
+            /* RediSearch */
+            'FT.AGGREGATE' => 'keys-first',
+            'FT.ALTER' => 'keys-first',
+            'FT.CREATE' => 'keys-first',
+            'FT.CURSOR DEL' => 'keys-first',
+            'FT.CURSOR READ' => 'keys-first',
+            'FT.DROPINDEX' => 'keys-first',
+            'FT.EXPLAIN' => 'keys-first',
+            'FT.INFO' => 'keys-first',
+            'FT.PROFILE' => 'keys-first',
+            'FT.SEARCH' => 'keys-first',
+            'FT.SPELLCHECK' => 'keys-first',
+            'FT.SYNDUMP' => 'keys-first',
+            'FT.SYNUPDATE' => 'keys-first',
+            'FT.TAGVALS' => 'keys-first',
+
+            /* Redis TimeSeries */
+            'TS.ADD' => 'keys-first',
+            'TS.ALTER' => 'keys-first',
+            'TS.CREATE' => 'keys-first',
+            'TS.DECRBY' => 'keys-first',
+            'TS.DEL' => 'keys-first',
+            'TS.GET' => 'keys-first',
+            'TS.INCRBY' => 'keys-first',
+            'TS.INFO' => 'keys-first',
+            'TS.MGET' => 'keys-first',
+            'TS.MRANGE' => 'keys-first',
+            'TS.MREVRANGE' => 'keys-first',
+            'TS.QUERYINDEX' => 'keys-first',
+            'TS.RANGE' => 'keys-first',
+            'TS.REVRANGE' => 'keys-first',
         ];
 
         if (isset($type)) {
