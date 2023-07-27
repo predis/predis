@@ -280,6 +280,7 @@ use Predis\Response\Status;
  * @method array             tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method array             tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
+ * @method array             xautoclaim(string $key, string $group, string $consumer, int $minIdleTime, string $start, ?int $count = null, bool $justId = false)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)
  * @method array             xrevrange(string $key, string $end, string $start, ?int $count = null)
