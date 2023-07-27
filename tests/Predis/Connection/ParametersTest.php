@@ -418,6 +418,7 @@ class ParametersTest extends PredisTestCase
             'scheme' => 'tcp',
             'host' => '127.0.0.1',
             'port' => 6379,
+            'protocol' => 2,
         ];
     }
 

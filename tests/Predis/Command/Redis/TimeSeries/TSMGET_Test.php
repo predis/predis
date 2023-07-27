@@ -96,6 +96,43 @@ class TSMGET_Test extends PredisCommandTestCase
         );
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.10.0
+     */
+    public function testGetSampleFromMultipleTimeSeriesMatchingGivenPatternResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = [
+            'temperature:2:32' => [['type' => 'temp'], [123123123123, 27]],
+            'temperature:2:33' => [['type' => 'temp'], [123123123124, 27]],
+        ];
+
+        $createArguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('type', 'temp', 'sensor_id', 2, 'area_id', 32);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:32', $createArguments)
+        );
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:33', $createArguments)
+        );
+
+        $redis->tsadd('temperature:2:32', 123123123123, 27);
+        $redis->tsadd('temperature:2:33', 123123123124, 27);
+
+        $this->assertEquals(
+            $expectedResponse,
+            $redis->tsmget((new MGetArguments())->selectedLabels('type'), 'type=temp')
+        );
+    }
+
     public function argumentsProvider(): array
     {
         return [

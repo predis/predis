@@ -12,6 +12,9 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+use Predis\Consumer\Push\PushResponse;
+
 /**
  * @group commands
  * @group realm-pubsub
@@ -77,6 +80,23 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
@@ -85,6 +105,19 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertSame(['unsubscribe', 'channel', 0], $redis->unsubscribe('channel'));
+        $this->assertSame('echoed', $redis->echo('echoed'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testDoesNotSwitchToSubscribeModeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = new PushResponse(['unsubscribe', 'channel', 0]);
+
+        $this->assertEquals($expectedResponse, $redis->unsubscribe('channel'));
         $this->assertSame('echoed', $redis->echo('echoed'));
     }
 

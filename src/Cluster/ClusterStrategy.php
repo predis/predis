@@ -53,6 +53,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'SORT' => [$this, 'getKeyFromSortCommand'],
             'DUMP' => $getKeyFromFirstArgument,
             'RESTORE' => $getKeyFromFirstArgument,
+            'FLUSHDB' => [$this, 'getFakeKey'],
 
             /* commands operating on string values */
             'APPEND' => $getKeyFromFirstArgument,
@@ -163,6 +164,9 @@ abstract class ClusterStrategy implements StrategyInterface
             'EVAL' => [$this, 'getKeyFromScriptingCommands'],
             'EVALSHA' => [$this, 'getKeyFromScriptingCommands'],
 
+            /* server */
+            'INFO' => [$this, 'getFakeKey'],
+
             /* commands performing geospatial operations */
             'GEOADD' => $getKeyFromFirstArgument,
             'GEOHASH' => $getKeyFromFirstArgument,
@@ -170,6 +174,11 @@ abstract class ClusterStrategy implements StrategyInterface
             'GEODIST' => $getKeyFromFirstArgument,
             'GEORADIUS' => [$this, 'getKeyFromGeoradiusCommands'],
             'GEORADIUSBYMEMBER' => [$this, 'getKeyFromGeoradiusCommands'],
+
+            /* sharded pubsub */
+            'SSUBSCRIBE' => $getKeyFromAllArguments,
+            'SUNSUBSCRIBE' => [$this, 'getKeyFromSUnsubscribeCommand'],
+            'SPUBLISH' => $getKeyFromFirstArgument,
         ];
     }
 
@@ -214,6 +223,16 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         $this->commands[$commandID] = $callback;
+    }
+
+    /**
+     * Get fake key for commands with no key argument.
+     *
+     * @return string
+     */
+    protected function getFakeKey(): string
+    {
+        return 'key';
     }
 
     /**
@@ -386,6 +405,24 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         return $arguments[0];
+    }
+
+    /**
+     * Extracts key from SUNSUBSCRIBE command if it's given.
+     *
+     * @param  CommandInterface $command
+     * @return string
+     */
+    protected function getKeyFromSUnsubscribeCommand(CommandInterface $command): ?string
+    {
+        $arguments = $command->getArguments();
+
+        // SUNSUBSCRIBE command could be called without arguments, so it doesn't matter on each node it will be called.
+        if (empty($arguments)) {
+            return 'fake';
+        }
+
+        return $this->getKeyFromAllArguments($command);
     }
 
     /**

@@ -84,6 +84,20 @@ class BFRESERVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReserveCreatesBloomFilterWithCorrectConfigurationResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->bfreserve('key', 0.01, 100);
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame(['Capacity' => 100], $redis->bfinfo('key', 'capacity'));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion 1.0.0
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(): void

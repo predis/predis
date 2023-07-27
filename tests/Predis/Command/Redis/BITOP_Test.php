@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-string
@@ -76,12 +78,44 @@ class BITOP_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testCanPerformBitwiseAND(): void
     {
         $redis = $this->getClient();
+
+        $redis->set('key:src:1', "h\x80");
+        $redis->set('key:src:2', 'R');
+
+        $this->assertSame(2, $redis->bitop('AND', 'key:dst', 'key:src:1', 'key:src:2'));
+        $this->assertSame("@\x00", $redis->get('key:dst'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCanPerformBitwiseANDResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->set('key:src:1', "h\x80");
         $redis->set('key:src:2', 'R');

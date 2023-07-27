@@ -64,7 +64,7 @@ class EVALSHA_RO_Test extends PredisCommandTestCase
      * @param  string $script
      * @param  array  $keys
      * @param  array  $arguments
-     * @param         $expectedResponse
+     * @param  mixed  $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -79,6 +79,20 @@ class EVALSHA_RO_Test extends PredisCommandTestCase
         $sha1 = $redis->script('LOAD', $script);
 
         $this->assertSame($expectedResponse, $redis->evalsha_ro($sha1, $keys, ...$arguments));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testExecutesReadOnlyCachedScriptsResp3(): void
+    {
+        $redis = $this->getClient();
+
+        $sha1 = $redis->script('LOAD', "return 'test'");
+
+        $this->assertSame('test', $redis->evalsha_ro($sha1, []));
     }
 
     /**

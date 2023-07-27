@@ -137,6 +137,21 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testFakeKeyCommandsWithOneKey(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = [];
+
+        foreach ($this->getExpectedCommands('keys-fake') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForSortCommand(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -226,6 +241,21 @@ class RedisStrategyTest extends PredisTestCase
         $arguments = ['%SCRIPT%', 1, 'key:1', 'value1'];
 
         foreach ($this->getExpectedCommands('keys-script') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testKeysForSUnsubscribeCommand(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = [];
+
+        foreach ($this->getExpectedCommands('keys-sunsubscribe') as $commandID) {
             $command = $commands->create($commandID, $arguments);
             $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
@@ -350,6 +380,7 @@ class RedisStrategyTest extends PredisTestCase
             'SORT' => 'keys-first', // TODO
             'DUMP' => 'keys-first',
             'RESTORE' => 'keys-first',
+            'FLUSHDB' => 'keys-fake',
 
             /* commands operating on string values */
             'APPEND' => 'keys-first',
@@ -460,6 +491,9 @@ class RedisStrategyTest extends PredisTestCase
             'EVAL' => 'keys-script',
             'EVALSHA' => 'keys-script',
 
+            /* server */
+            'INFO' => 'keys-fake',
+
             /* commands performing geospatial operations */
             'GEOADD' => 'keys-first',
             'GEOHASH' => 'keys-first',
@@ -467,6 +501,11 @@ class RedisStrategyTest extends PredisTestCase
             'GEODIST' => 'keys-first',
             'GEORADIUS' => 'keys-georadius',
             'GEORADIUSBYMEMBER' => 'keys-georadius',
+
+            /* sharded pubsub */
+            'SSUBSCRIBE' => 'keys-all',
+            'SUNSUBSCRIBE' => 'keys-sunsubscribe',
+            'SPUBLISH' => 'keys-first',
         ];
 
         if (isset($type)) {

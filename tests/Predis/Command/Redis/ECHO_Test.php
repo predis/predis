@@ -72,4 +72,17 @@ class ECHO_Test extends PredisCommandTestCase
 
         $this->assertSame($message, $redis->echo($message));
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testAlwaysReturnsThePassedMessageResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $message = 'Can you hear me?';
+
+        $this->assertSame($message, $redis->echo($message));
+    }
 }

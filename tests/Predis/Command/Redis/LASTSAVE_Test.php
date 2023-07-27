@@ -62,4 +62,15 @@ class LASTSAVE_Test extends PredisCommandTestCase
 
         $this->assertIsInt($redis->lastsave());
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsIntegerValueResp3(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertIsInt($redis->lastsave());
+    }
 }

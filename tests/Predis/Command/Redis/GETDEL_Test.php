@@ -70,4 +70,23 @@ class GETDEL_Test extends PredisCommandTestCase
         $this->assertSame($expectedValue, $actualResponse);
         $this->assertNull($redis->get($expectedKey));
     }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsValueForGivenKeyAndDeleteItResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedKey = 'key';
+        $expectedValue = 'value';
+
+        $redis->set($expectedKey, $expectedValue);
+
+        $actualResponse = $redis->getdel($expectedKey);
+
+        $this->assertSame($expectedValue, $actualResponse);
+        $this->assertNull($redis->get($expectedKey));
+    }
 }

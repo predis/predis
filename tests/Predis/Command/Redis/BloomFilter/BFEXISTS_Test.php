@@ -61,7 +61,7 @@ class BFEXISTS_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisBfVersion >= 1.0
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testExistsReturnsExistingItemWithinBloomFilter(): void
     {
@@ -71,5 +71,20 @@ class BFEXISTS_Test extends PredisCommandTestCase
 
         $this->assertSame(1, $redis->bfexists('key', 'item'));
         $this->assertSame(0, $redis->bfexists('key', 'non-existing'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testExistsReturnsExistingItemWithinBloomFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->bfadd('key', 'item');
+
+        $this->assertTrue($redis->bfexists('key', 'item'));
+        $this->assertFalse($redis->bfexists('key', 'non-existing'));
     }
 }

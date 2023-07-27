@@ -62,4 +62,11 @@ interface ConnectionInterface
      * @return mixed
      */
     public function executeCommand(CommandInterface $command);
+
+    /**
+     * Returns the parameters used to initialize the connection.
+     *
+     * @return ParametersInterface
+     */
+    public function getParameters();
 }

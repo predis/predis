@@ -229,9 +229,6 @@ class ConnectionsTest extends PredisTestCase
     public function provideSupportedStringValuesForOption()
     {
         return [
-            ['phpiredis-stream', 'Predis\Connection\PhpiredisStreamConnection'],
-            ['phpiredis-socket', 'Predis\Connection\PhpiredisSocketConnection'],
-            ['phpiredis', 'Predis\Connection\PhpiredisStreamConnection'],
             ['relay', \Predis\Connection\RelayConnection::class],
         ];
     }

@@ -88,6 +88,23 @@ class JSONARRAPPEND_Test extends PredisCommandTestCase
         $this->assertSame($expectedModifiedJson, $redis->jsonget($key));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 2.6.1
+     */
+    public function testAppendItemsToGivenJsonArrayResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1","key2":["value1","value2"]}');
+
+        $actualResponse = $redis->jsonarrappend('key', '$.key2', '"value3"');
+
+        $this->assertSame([3], $actualResponse);
+        $this->assertSame([['{"key1":"value1","key2":["value1","value2","value3"]}']], $redis->jsonget('key'));
+    }
+
     public function jsonProvider(): array
     {
         return [

@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-zset
@@ -80,12 +82,29 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
     }
 
     /**
-     * @group connected
-     * @requiresRedisVersion >= 2.8.9
+     * @group disconnected
      */
-    public function testReturnsElementsInWholeRange(): void
+    public function testPrefixKeys(): void
     {
-        $redis = $this->getClient();
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsElementsInWholeRangeResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 

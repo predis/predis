@@ -79,6 +79,24 @@ class CFADDNX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testAddItemToCuckooFilterWhenExistsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->cfaddnx('key', 'item');
+        $this->assertTrue($actualResponse);
+        $this->assertTrue($redis->cfexists('key', 'item'));
+
+        $actualResponse = $redis->cfaddnx('key', 'item');
+        $this->assertFalse($actualResponse);
+        $this->assertTrue($redis->cfexists('key', 'item'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

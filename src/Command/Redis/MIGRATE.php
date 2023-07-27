@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see http://redis.io/commands/migrate
@@ -47,5 +47,13 @@ class MIGRATE extends RedisCommand
         }
 
         parent::setArguments($arguments);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        if ($arguments = $this->getArguments()) {
+            $arguments[2] = "$prefix{$arguments[2]}";
+            $this->setRawArguments($arguments);
+        }
     }
 }

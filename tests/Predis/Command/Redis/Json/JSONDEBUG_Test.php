@@ -80,6 +80,20 @@ class JSONDEBUG_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
+    public function testMemoryReturnsCorrectMemoryUsageAboutJsonResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}');
+
+        $this->assertGreaterThan(0, $redis->jsondebug->memory('key', '$'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
     public function testHelpReturnsInformationAboutContainerCommands(): void
     {
         $redis = $this->getClient();

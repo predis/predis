@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-set
@@ -57,11 +59,44 @@ class SPOP_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testPopsRandomMemberFromSet(): void
     {
         $redis = $this->getClient();
+
+        $redis->sadd('letters', 'a', 'b');
+
+        $this->assertContains($redis->spop('letters'), ['a', 'b']);
+        $this->assertContains($redis->spop('letters'), ['a', 'b']);
+
+        $this->assertNull($redis->spop('letters'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testPopsRandomMemberFromSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->sadd('letters', 'a', 'b');
 

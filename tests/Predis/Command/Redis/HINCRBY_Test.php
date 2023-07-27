@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-hash
@@ -57,12 +59,43 @@ class HINCRBY_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testIncrementsValueOfFieldByInteger(): void
     {
         $redis = $this->getClient();
+
+        $this->assertSame(10, $redis->hincrby('metavars', 'foo', 10));
+        $this->assertSame(5, $redis->hincrby('metavars', 'hoge', 5));
+        $this->assertSame(15, $redis->hincrby('metavars', 'hoge', 10));
+        $this->assertSame(['foo' => '10', 'hoge' => '15'], $redis->hgetall('metavars'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testIncrementsValueOfFieldByIntegerResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertSame(10, $redis->hincrby('metavars', 'foo', 10));
         $this->assertSame(5, $redis->hincrby('metavars', 'hoge', 5));

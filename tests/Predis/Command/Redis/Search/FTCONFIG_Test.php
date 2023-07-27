@@ -102,11 +102,36 @@ class FTCONFIG_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testSetGivenRediSearchConfigurationParameterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->ftconfig->set('TIMEOUT', 42));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
     public function testGetReturnsGivenRediSearchConfigurationParameter(): void
     {
         $redis = $this->getClient();
+
+        $this->assertEquals([['MAXEXPANSIONS', '200']], $redis->ftconfig->get('MAXEXPANSIONS'));
+        $this->assertEmpty($redis->ftconfig->get('foobar'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testGetReturnsGivenRediSearchConfigurationParameterResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertEquals([['MAXEXPANSIONS', '200']], $redis->ftconfig->get('MAXEXPANSIONS'));
         $this->assertEmpty($redis->ftconfig->get('foobar'));

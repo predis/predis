@@ -54,6 +54,24 @@ class BZPOPMAX_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsPoppedMaxElementFromGivenNonEmptySortedSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $sortedSetDictionary = [1, 'member1', 2, 'member2', 3, 'member3'];
+        $expectedResponse = ['test-bzpopmax' => ['member3' => 3.0]];
+        $expectedModifiedSortedSet = ['member1', 'member2'];
+
+        $redis->zadd('test-bzpopmax', ...$sortedSetDictionary);
+
+        $this->assertSame($expectedResponse, $redis->bzpopmax(['empty sorted set', 'test-bzpopmax'], 0));
+        $this->assertSame($expectedModifiedSortedSet, $redis->zrange('test-bzpopmax', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisVersion >= 5.0.0
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(): void

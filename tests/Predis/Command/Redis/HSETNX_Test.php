@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-hash
@@ -60,12 +62,44 @@ class HSETNX_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testSetsNewFieldsAndPreserversExistingOnes(): void
     {
         $redis = $this->getClient();
+
+        $this->assertSame(1, $redis->hsetnx('metavars', 'foo', 'bar'));
+        $this->assertSame(1, $redis->hsetnx('metavars', 'hoge', 'piyo'));
+        $this->assertSame(0, $redis->hsetnx('metavars', 'foo', 'barbar'));
+
+        $this->assertSame(['bar', 'piyo'], $redis->hmget('metavars', 'foo', 'hoge'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetsNewFieldsAndPreserversExistingOnesResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertSame(1, $redis->hsetnx('metavars', 'foo', 'bar'));
         $this->assertSame(1, $redis->hsetnx('metavars', 'hoge', 'piyo'));

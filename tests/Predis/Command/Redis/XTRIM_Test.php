@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-stream
@@ -44,6 +46,23 @@ class XTRIM_Test extends PredisCommandTestCase
         $command->setArguments($arguments);
 
         $this->assertSame($expected, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     public function dataFilterArguments(): array
@@ -83,6 +102,24 @@ class XTRIM_Test extends PredisCommandTestCase
     public function testTrimOnMaxlenExact(): void
     {
         $redis = $this->getClient();
+
+        $redis->xadd('stream', ['key' => 'val']);
+        $redis->xadd('stream', ['key' => 'val']);
+        $redis->xadd('stream', ['key' => 'val']);
+
+        $res = $redis->xtrim('stream', 'MAXLEN', 2);
+
+        $this->assertSame(1, $res);
+        $this->assertSame(2, $redis->xlen('stream'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testTrimOnMaxlenExactResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->xadd('stream', ['key' => 'val']);
         $redis->xadd('stream', ['key' => 'val']);

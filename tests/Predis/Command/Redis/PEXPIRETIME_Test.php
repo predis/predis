@@ -72,6 +72,25 @@ class PEXPIRETIME_Test extends PredisCommandTestCase
 
         $this->assertSame($expirationTime, $redis->pexpiretime('key'));
         $this->assertSame(-1, $redis->pexpiretime('key1'));
-        $this->assertSame(-2, $redis->pexpiretime('non-existing key'));
+        $this->assertSame(-2, $redis->pexpiretime('pexpire_non-existing-key'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsCorrectExpirationTimeForGivenKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expirationTime = time() * 1000 + 1000;
+
+        $redis->set('key', 'value');
+        $redis->set('key1', 'value');
+        $redis->pexpireat('key', $expirationTime);
+
+        $this->assertSame($expirationTime, $redis->pexpiretime('key'));
+        $this->assertSame(-1, $redis->pexpiretime('key1'));
+        $this->assertSame(-2, $redis->pexpiretime('pexpire_non-existing-key'));
     }
 }

@@ -83,6 +83,27 @@ class TDIGESTBYRANK_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsValuesEstimatedForGivenRanksResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = [1.0, 2.0, 2.0, 3.0, 3.0, 3.0, INF];
+
+        $redis->tdigestcreate('key');
+        $redis->tdigestcreate('empty_key');
+
+        $redis->tdigestadd('key', 1, 2, 2, 3, 3, 3);
+
+        $actualResponse = $redis->tdigestbyrank('key', 0, 1, 2, 3, 4, 5, 6);
+
+        $this->assertEquals($expectedResponse, $actualResponse);
+        $this->assertEquals([null, null], $redis->tdigestbyrank('empty_key', 0, 1));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
     public function testThrowsExceptionOnNonExistingTDigestSketch(): void

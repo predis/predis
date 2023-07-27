@@ -85,6 +85,21 @@ class SINTERCARD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsCorrectCardinalityOfGivenSetIntersectionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->sadd('key1', 'member1', 'member2', 'member3');
+        $redis->sadd('key2', 'member1', 'member2', 'member3');
+
+        $this->assertSame(3, $redis->sintercard(['key1', 'key2']));
+    }
+
+    /**
+     * @group connected
      * @dataProvider unexpectedValuesProvider
      * @param  array  $arguments
      * @param  string $expectedExceptionMessage

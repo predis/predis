@@ -111,6 +111,55 @@ EOT;
     /**
      * @group connected
      * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testExplainReturnsExecutionPlanForGivenQueryResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = <<<EOT
+INTERSECT {
+  UNION {
+    INTERSECT {
+      UNION {
+        foo
+        +foo(expanded)
+      }
+      UNION {
+        bar
+        +bar(expanded)
+      }
+    }
+    INTERSECT {
+      UNION {
+        hello
+        +hello(expanded)
+      }
+      UNION {
+        world
+        +world(expanded)
+      }
+    }
+  }
+  UNION {
+    NUMERIC {100.000000 <= @date <= 200.000000}
+    NUMERIC {500.000000 <= @date <= inf}
+  }
+}
+
+EOT;
+
+        $schema = [new TextField('text_field')];
+
+        $this->assertEquals('OK', $redis->ftcreate('index', $schema));
+        $this->assertEquals(
+            $expectedResponse,
+            $redis->ftexplain('index', '(foo bar)|(hello world) @date:[100 200]|@date:[500 +inf]')
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
     public function testThrowsExceptionOnNonExistingIndex(): void

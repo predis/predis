@@ -72,11 +72,39 @@ class SCRIPT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testExistsReturnsAnArrayOfValuesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->eval($lua = 'return true', 0);
+        $sha1 = sha1($lua);
+
+        $this->assertSame([1, 0], $redis->script('EXISTS', $sha1, 'ffffffffffffffffffffffffffffffffffffffff'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testLoadReturnsHashOfScripts(): void
     {
         $redis = $this->getClient();
+
+        $lua = 'return true';
+        $sha1 = sha1($lua);
+
+        $this->assertSame($sha1, $redis->script('LOAD', $lua));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testLoadReturnsHashOfScriptsResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $lua = 'return true';
         $sha1 = sha1($lua);

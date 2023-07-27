@@ -13,8 +13,6 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
-use Predis\Command\Strategy\StrategyResolverInterface;
-use Predis\Command\Strategy\SubcommandStrategyResolver;
 
 /**
  * @see https://redis.io/commands/?name=xgroup
@@ -24,25 +22,6 @@ use Predis\Command\Strategy\SubcommandStrategyResolver;
  */
 class XGROUP extends RedisCommand
 {
-    /**
-     * @var array
-     */
-    private $splitWordsDictionary = [
-        'CREATECONSUMER' => 'Create Consumer',
-        'DELCONSUMER' => 'Del Consumer',
-        'SETID' => 'Set Id',
-    ];
-
-    /**
-     * @var StrategyResolverInterface
-     */
-    private $strategyResolver;
-
-    public function __construct()
-    {
-        $this->strategyResolver = new SubcommandStrategyResolver(' ');
-    }
-
     public function getId()
     {
         return 'XGROUP';
@@ -50,15 +29,53 @@ class XGROUP extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        if (array_key_exists($arguments[0], $this->splitWordsDictionary)) {
-            $subcommandId = $this->splitWordsDictionary[$arguments[0]];
-        } else {
-            $subcommandId = strtolower($arguments[0]);
+        switch ($arguments[0]) {
+            case 'CREATE':
+                $this->setCreateArguments($arguments);
+
+                return;
+
+            case 'SETID':
+                $this->setSetIdArguments($arguments);
+
+                return;
+
+            default:
+                parent::setArguments($arguments);
+        }
+    }
+
+    /**
+     * @param  array $arguments
+     * @return void
+     */
+    private function setCreateArguments(array $arguments): void
+    {
+        $processedArguments = [$arguments[0], $arguments[1], $arguments[2], $arguments[3]];
+
+        if (array_key_exists(4, $arguments) && true === $arguments[4]) {
+            $processedArguments[] = 'MKSTREAM';
         }
 
-        $strategy = $this->strategyResolver->resolve('X Group', $subcommandId);
-        $arguments = $strategy->processArguments($arguments);
+        if (array_key_exists(5, $arguments)) {
+            array_push($processedArguments, 'ENTRIESREAD', $arguments[5]);
+        }
 
-        parent::setArguments($arguments);
+        parent::setArguments($processedArguments);
+    }
+
+    /**
+     * @param  array $arguments
+     * @return void
+     */
+    private function setSetIdArguments(array $arguments): void
+    {
+        $processedArguments = [$arguments[0], $arguments[1], $arguments[2], $arguments[3]];
+
+        if (array_key_exists(4, $arguments)) {
+            array_push($processedArguments, 'ENTRIESREAD', $arguments[4]);
+        }
+
+        parent::setArguments($processedArguments);
     }
 }

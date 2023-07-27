@@ -81,4 +81,28 @@ class CFCOUNT_Test extends PredisCommandTestCase
         $nonExistingItemResponse = $redis->cfcount('non_existing_key', 'item');
         $this->assertSame(0, $nonExistingItemResponse);
     }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsCountOfItemsWithinCuckooFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->cfadd('key', 'item');
+
+        $singleItemResponse = $redis->cfcount('key', 'item');
+        $this->assertSame(1, $singleItemResponse);
+
+        $redis->cfadd('key', 'item');
+        $redis->cfadd('key', 'item');
+
+        $multipleItemsResponse = $redis->cfcount('key', 'item');
+        $this->assertSame(3, $multipleItemsResponse);
+
+        $nonExistingItemResponse = $redis->cfcount('non_existing_key', 'item');
+        $this->assertSame(0, $nonExistingItemResponse);
+    }
 }

@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-list
@@ -57,11 +59,42 @@ class LSET_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testSetsElementAtSpecifiedIndex(): void
     {
         $redis = $this->getClient();
+
+        $redis->rpush('letters', 'a', 'b', 'c');
+
+        $this->assertEquals('OK', $redis->lset('letters', 1, 'B'));
+        $this->assertSame(['a', 'B', 'c'], $redis->lrange('letters', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetsElementAtSpecifiedIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->rpush('letters', 'a', 'b', 'c');
 

@@ -38,13 +38,14 @@ use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
+use Predis\Command\Container\ACL;
+use Predis\Command\Container\CLIENT;
+use Predis\Command\Container\FUNCTIONS;
+use Predis\Command\Container\Json\JSONDEBUG;
+use Predis\Command\Container\Search\FTCONFIG;
+use Predis\Command\Container\Search\FTCURSOR;
+use Predis\Command\Container\XGROUP;
 use Predis\Command\FactoryInterface;
-use Predis\Command\Redis\Container\ACL;
-use Predis\Command\Redis\Container\FunctionContainer;
-use Predis\Command\Redis\Container\Json\JSONDEBUG;
-use Predis\Command\Redis\Container\Search\FTCONFIG;
-use Predis\Command\Redis\Container\Search\FTCURSOR;
-use Predis\Command\Redis\Container\XGROUP;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\Status;
@@ -68,8 +69,8 @@ use Predis\Response\Status;
  * @method int               move(string $key, int $db)
  * @method mixed             object($subcommand, string $key)
  * @method int               persist(string $key)
- * @method int               pexpire(string $key, int $milliseconds)
- * @method int               pexpireat(string $key, int $timestamp)
+ * @method int               pexpire(string $key, int $milliseconds, string $option = null)
+ * @method int               pexpireat(string $key, int $timestamp, string $option = null)
  * @method int               pttl(string $key)
  * @method string|null       randomkey()
  * @method mixed             rename(string $key, string $target)
@@ -80,8 +81,8 @@ use Predis\Response\Status;
  * @method int               ttl(string $key)
  * @method mixed             type(string $key)
  * @method int               append(string $key, $value)
- * @method int               bfadd(string $key, $item)
- * @method int               bfexists(string $key, $item)
+ * @method mixed             bfadd(string $key, $item)
+ * @method mixed             bfexists(string $key, $item)
  * @method array             bfinfo(string $key, string $modifier = '')
  * @method array             bfinsert(string $key, int $capacity = -1, float $error = -1, int $expansion = -1, bool $noCreate = false, bool $nonScaling = false, string ...$item)
  * @method Status            bfloadchunk(string $key, int $iterator, $data)
@@ -97,11 +98,11 @@ use Predis\Response\Status;
  * @method array             bzpopmax(array $keys, int $timeout)
  * @method array             bzpopmin(array $keys, int $timeout)
  * @method array             bzmpop(int $timeout, array $keys, string $modifier = 'min', int $count = 1)
- * @method int               cfadd(string $key, $item)
- * @method int               cfaddnx(string $key, $item)
+ * @method mixed             cfadd(string $key, $item)
+ * @method mixed             cfaddnx(string $key, $item)
  * @method int               cfcount(string $key, $item)
- * @method int               cfdel(string $key, $item)
- * @method int               cfexists(string $key, $item)
+ * @method mixed             cfdel(string $key, $item)
+ * @method mixed             cfexists(string $key, $item)
  * @method Status            cfloadchunk(string $key, int $iterator, $data)
  * @method int               cfmexists(string $key, ...$item)
  * @method array             cfinfo(string $key)
@@ -186,8 +187,8 @@ use Predis\Response\Status;
  * @method array             jsonarrtrim(string $key, string $path, int $start, int $stop)
  * @method int               jsondel(string $key, string $path = '$')
  * @method int               jsonforget(string $key, string $path = '$')
- * @method string            jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
- * @method string            jsonnumincrby(string $key, string $path, int $value)
+ * @method mixed             jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
+ * @method mixed             jsonnumincrby(string $key, string $path, int $value)
  * @method Status            jsonmerge(string $key, string $path, string $value)
  * @method array             jsonmget(array $keys, string $path)
  * @method Status            jsonmset(string ...$keyPathValue)
@@ -235,8 +236,11 @@ use Predis\Response\Status;
  * @method string|null       srandmember(string $key, int $count = null)
  * @method int               srem(string $key, array|string $member)
  * @method array             sscan(string $key, int $cursor, array $options = null)
+ * @method array             ssubscribe(string ...$shardChannels)
+ * @method array             subscribe(string ...$channels)
  * @method string[]          sunion(array|string $keys)
  * @method int               sunionstore(string $destination, array|string $keys)
+ * @method array             sunsubscribe(?string ...$shardChannels = null)
  * @method int               touch(string[]|string $keyOrKeys, string ...$keys = null)
  * @method Status            tdigestadd(string $key, float ...$value)
  * @method array             tdigestbyrank(string $key, int ...$rank)
@@ -244,10 +248,10 @@ use Predis\Response\Status;
  * @method array             tdigestcdf(string $key, int ...$value)
  * @method Status            tdigestcreate(string $key, int $compression = 0)
  * @method array             tdigestinfo(string $key)
- * @method string            tdigestmax(string $key)
+ * @method mixed             tdigestmax(string $key)
  * @method Status            tdigestmerge(string $destinationKey, array $sourceKeys, int $compression = 0, bool $override = false)
  * @method string[]          tdigestquantile(string $key, float ...$quantile)
- * @method string            tdigestmin(string $key)
+ * @method mixed             tdigestmin(string $key)
  * @method array             tdigestrank(string $key, float ...$value)
  * @method Status            tdigestreset(string $key)
  * @method array             tdigestrevrank(string $key, float ...$value)
@@ -325,6 +329,7 @@ use Predis\Response\Status;
  * @method array|null        exec()
  * @method mixed             multi()
  * @method mixed             unwatch()
+ * @method array             unsubscribe(string ...$channels)
  * @method mixed             watch(string $key)
  * @method mixed             eval(string $script, int $numkeys, string ...$keyOrArg = null)
  * @method mixed             eval_ro(string $script, array $keys, ...$argument)
@@ -337,18 +342,18 @@ use Predis\Response\Status;
  * @method mixed             select(int $database)
  * @method mixed             bgrewriteaof()
  * @method mixed             bgsave()
- * @method mixed             client($subcommand, $argument = null)
  * @method mixed             config($subcommand, $argument = null)
  * @method int               dbsize()
  * @method mixed             flushall()
  * @method mixed             flushdb()
- * @method array             info($section = null)
+ * @method array             info(string ...$section = null)
  * @method int               lastsave()
  * @method mixed             save()
  * @method mixed             slaveof(string $host, int $port)
  * @method mixed             slowlog($subcommand, $argument = null)
+ * @method int               spublish(string $shardChannel, string $message)
  * @method array             time()
- * @method array             command()
+ * @method array             command($subcommand, $argument = null)
  * @method int               geoadd(string $key, $longitude, $latitude, $member)
  * @method array             geohash(string $key, array $members)
  * @method array             geopos(string $key, array $members)
@@ -359,12 +364,13 @@ use Predis\Response\Status;
  * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
- * @property FunctionContainer $function
- * @property FTCONFIG          $ftconfig
- * @property FTCURSOR          $ftcursor
- * @property JSONDEBUG         $jsondebug
- * @property ACL               $acl
- * @property XGROUP            $xgroup
+ * @property CLIENT    $client
+ * @property FUNCTIONS $function
+ * @property FTCONFIG  $ftconfig
+ * @property FTCURSOR  $ftcursor
+ * @property JSONDEBUG $jsondebug
+ * @property ACL       $acl
+ * @property XGROUP    $xgroup
  */
 interface ClientInterface
 {

@@ -120,4 +120,12 @@ final class RawCommand implements CommandInterface
     {
         return $data;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResp3Response($data)
+    {
+        return $data;
+    }
 }

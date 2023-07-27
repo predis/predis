@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-zset
@@ -90,6 +92,23 @@ class ZSCAN_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
@@ -99,6 +118,25 @@ class ZSCAN_Test extends PredisCommandTestCase
         $expectedScores = [1.0, 2.0, 3.0, 4.0];
 
         $redis = $this->getClient();
+        $redis->zadd('key', array_combine($expectedMembers, $expectedScores));
+
+        $response = $redis->zscan('key', 0);
+
+        $this->assertSame('0', $response[0]);
+        $this->assertSame($expectedMembers, array_keys($response[1]));
+        $this->assertSame($expectedScores, array_values($response[1]));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testScanWithoutMatchResp3(): void
+    {
+        $expectedMembers = ['member:one', 'member:two', 'member:three', 'member:four'];
+        $expectedScores = [1.0, 2.0, 3.0, 4.0];
+
+        $redis = $this->getResp3Client();
         $redis->zadd('key', array_combine($expectedMembers, $expectedScores));
 
         $response = $redis->zscan('key', 0);

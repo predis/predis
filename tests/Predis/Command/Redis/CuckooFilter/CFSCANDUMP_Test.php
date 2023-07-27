@@ -78,6 +78,23 @@ class CFSCANDUMP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testScanDumpReturnsNotEmptyDataChunkResp3(): void
+    {
+        $expectedIterator = 1;
+        $redis = $this->getResp3Client();
+
+        $redis->cfadd('key', 'item1');
+        [$iterator, $dataChunk] = $redis->cfscandump('key', 0);
+
+        $this->assertSame($expectedIterator, $iterator);
+        $this->assertNotEmpty($dataChunk);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
