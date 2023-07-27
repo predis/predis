@@ -12,27 +12,11 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\Argument\ArrayableArgument;
 use Predis\Command\Command as RedisCommand;
-use Predis\Command\Strategy\SubcommandStrategyInterface;
-use Predis\Command\Strategy\SubcommandStrategyResolver;
 
 class XINFO extends RedisCommand
 {
-    /**
-     * @var SubcommandStrategyResolver
-     */
-    private $strategyResolver;
-
-    /**
-     * @var SubcommandStrategyInterface
-     */
-    private $strategy;
-
-    public function __construct()
-    {
-        $this->strategyResolver = new SubcommandStrategyResolver(' ');
-    }
-
     public function getId()
     {
         return 'XINFO';
@@ -40,13 +24,46 @@ class XINFO extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        $this->strategy = $this->strategyResolver->resolve('X Info', strtolower($arguments[0]));
+        if ($arguments[0] === 'STREAM') {
+            $this->setStreamArguments($arguments);
+        } else {
+            parent::setArguments($arguments);
+        }
+    }
 
-        parent::setArguments($this->strategy->processArguments($arguments));
+    /**
+     * @param  array $arguments
+     * @return void
+     */
+    private function setStreamArguments(array $arguments): void
+    {
+        $processedArguments = [$arguments[0], $arguments[1]];
+
+        if (array_key_exists(2, $arguments) && $arguments[2] instanceof ArrayableArgument) {
+            $processedArguments = array_merge($processedArguments, $arguments[2]->toArray());
+        }
+
+        parent::setArguments($processedArguments);
     }
 
     public function parseResponse($data)
     {
-        return (null !== $this->strategy) ? $this->strategy->parseResponse($data) : $data;
+        $result = [];
+
+        for ($i = 0, $iMax = count($data); $i < $iMax; $i++) {
+            if (is_array($data[$i])) {
+                $result[$i] = $this->parseResponse($data[$i]);
+            }
+
+            if (array_key_exists($i + 1, $data)) {
+                if (is_array($data[$i + 1])) {
+                    $result[$data[$i]] = $this->parseResponse($data[++$i]);
+                } else {
+                    $result[$data[$i]] = $data[++$i];
+                }
+            }
+        }
+
+        return $result;
     }
 }

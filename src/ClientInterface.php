@@ -44,6 +44,8 @@ use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
 use Predis\Command\Container\Search\FTCURSOR;
+use Predis\Command\Container\XGROUP;
+use Predis\Command\Container\XINFO;
 use Predis\Command\FactoryInterface;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
@@ -279,10 +281,12 @@ use Predis\Response\Status;
  * @method array             tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method array             tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
+ * @method array             xautoclaim(string $key, string $group, string $consumer, int $minIdleTime, string $start, ?int $count = null, bool $justId = false)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)
  * @method array             xrevrange(string $key, string $end, string $start, ?int $count = null)
  * @method array             xrange(string $key, string $start, string $end, ?int $count = null)
+ * @method array             xreadgroup(string $group, string $consumer, ?int $count = null, ?int $blockMs = null, bool $noAck = false, string ...$keyOrId)
  * @method string            xtrim(string $key, array|string $strategy, string $threshold, array $options = null)
  * @method int               zadd(string $key, array $membersAndScoresDictionary)
  * @method int               zcard(string $key)
@@ -367,6 +371,8 @@ use Predis\Response\Status;
  * @property FTCURSOR  $ftcursor
  * @property JSONDEBUG $jsondebug
  * @property ACL       $acl
+ * @property XGROUP    $xgroup
+ * @property XINFO     $xinfo
  */
 interface ClientInterface
 {

@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Redis\Container;
+namespace Predis\Command\Container;
 
 use Predis\Command\Argument\Stream\XInfoStreamOptions;
 
