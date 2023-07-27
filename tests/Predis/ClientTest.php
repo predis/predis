@@ -1308,6 +1308,20 @@ class ClientTest extends PredisTestCase
         $this->assertSame('127.0.0.1:6381', $iterator->key());
     }
 
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.2.0
+     */
+    public function testSetClientInfoOnConnection(): void
+    {
+        $client = new Client($this->getParameters());
+        $libName = $client->client('LIST')[0]['lib-name'];
+        $libVer = $client->client('LIST')[0]['lib-ver'];
+
+        $this->assertSame('predis', $libName);
+        $this->assertSame(Client::VERSION, $libVer);
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

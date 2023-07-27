@@ -14,6 +14,7 @@ namespace Predis\Connection;
 
 use InvalidArgumentException;
 use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
 use Predis\CommunicationException;
 use Predis\Protocol\Parser\ParserStrategyResolver;
 use Predis\Protocol\Parser\Strategy\ParserStrategyInterface;
@@ -34,6 +35,10 @@ abstract class AbstractConnection implements NodeConnectionInterface
     private $cachedId;
 
     protected $parameters;
+
+    /**
+     * @var RawCommand[]
+     */
     protected $initCommands = [];
 
     /**
