@@ -258,6 +258,24 @@ class RelayConnection extends StreamConnection
     }
 
     /**
+     * @throws ConnectionException
+     * @throws ClientException
+     * @throws ServerException
+     */
+    public function connect()
+    {
+        foreach ($this->initCommands as $command) {
+            try {
+                $this->executeCommand($command);
+            } catch (ServerException $ex) {
+                if ($command->getId() !== 'CLIENT') {
+                    throw $ex;
+                }
+            }
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function onCommandError(RelayException $exception, CommandInterface $command)
