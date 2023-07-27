@@ -36,6 +36,10 @@ class CLIENT extends RedisCommand
             case 'LIST':
                 $this->setListArguments($arguments);
                 break;
+            case 'NOEVICT':
+                $arguments[0] = 'NO-EVICT';
+                $this->setNoTouchArguments($arguments);
+                break;
             case 'NOTOUCH':
                 $arguments[0] = 'NO-TOUCH';
                 $this->setNoTouchArguments($arguments);
