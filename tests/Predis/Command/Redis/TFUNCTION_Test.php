@@ -76,6 +76,22 @@ class TFUNCTION_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     * @dataProvider responseProvider
+     * @param  array $arguments
+     * @param  array $actualData
+     * @param  array $expectedData
+     * @return void
+     */
+    public function testParseResponse(array $arguments, array $actualData, array $expectedData): void
+    {
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
+
+        $this->assertEquals($expectedData, $command->parseResponse($actualData));
+    }
+
+    /**
      * @group connected
      * @group gears
      * @requiresRedisGearsVersion >= 2.0.0
@@ -154,6 +170,22 @@ class TFUNCTION_Test extends PredisCommandTestCase
             'with all arguments' => [
                 ['LIST', true, 2, 'libname'],
                 ['LIST', 'WITHCODE', 'v', 'v', 'LIBRARY', 'libname'],
+            ],
+        ];
+    }
+
+    public function responseProvider(): array
+    {
+        return [
+            'with non-LIST subcommand' => [
+                ['LOAD', 'lib'],
+                [['key', 'value']],
+                [['key', 'value']],
+            ],
+            'with LIST subcommand' => [
+                ['LIST'],
+                [['key', 'value', ['key1', 'value1']]],
+                [['key' => 'value', 2 => ['key1' => 'value1']]],
             ],
         ];
     }
