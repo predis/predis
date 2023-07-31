@@ -23,6 +23,7 @@
             <group>realm-stack</group>
             <group>ext-curl</group>
             <group>cluster</group>
+            <group>gears</group>
         </exclude>
     </groups>
 
