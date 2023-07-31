@@ -32,6 +32,7 @@
             <group>ext-relay</group>
             <group>ext-curl</group>
             <group>cluster</group>
+            <group>gears</group>
             <!-- <group>connected</group> -->
             <!-- <group>disconnected</group> -->
             <!-- <group>commands</group> -->
@@ -48,6 +49,7 @@
     <php>
         <const name="REDIS_SERVER_HOST" value="127.0.0.1" />
         <const name="REDIS_SERVER_PORT" value="6379" />
+        <const name="REDIS_SERVER_GEARS_PORT" value="6380" />
         <const name="REDIS_SERVER_DBNUM" value="0" />
         <env name="USE_RELAY" value="false" />
 

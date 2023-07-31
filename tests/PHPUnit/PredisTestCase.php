@@ -34,6 +34,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         'bloomFilter' => ['annotation' => 'requiresRedisBfVersion', 'name' => 'bf'],
         'search' => ['annotation' => 'requiresRediSearchVersion', 'name' => 'search'],
         'timeSeries' => ['annotation' => 'requiresRedisTimeSeriesVersion', 'name' => 'timeseries'],
+        'gears' => ['annotation' => 'requiresRedisGearsVersion', 'name' => 'redisgears_2'],
     ];
 
     /**
@@ -175,7 +176,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         return [
             'scheme' => 'tcp',
             'host' => constant('REDIS_SERVER_HOST'),
-            'port' => constant('REDIS_SERVER_PORT'),
+            'port' => ($this->isRedisGearsTest())
+                ? constant('REDIS_SERVER_GEARS_PORT')
+                : constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
         ];
     }
@@ -477,8 +480,8 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         }
 
         if (!$this->isSatisfiedRedisModuleVersion($reqVersion, $module)) {
-            $redisModuleVersion = $this->getRedisModuleVersion($module);
-            $module = strtoupper($module);
+            $redisModuleVersion = $this->getRedisModuleVersion($this->modulesMapping[$module]['name']);
+            $redisModuleVersion = str_replace('0', '.', $redisModuleVersion);
 
             $this->markTestSkipped(
                 "Test requires a Redis $module module >= $reqVersion but target module is $redisModuleVersion"
@@ -515,13 +518,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $this->info = $info;
         }
 
-        if (isset($info['modules'][$module]['ver'])) {
-            $this->redisJsonVersion = $info['modules'][$module]['ver'];
-
-            return $info['modules'][$module]['ver'];
-        }
-
-        return '0';
+        return $info['modules'][$module]['ver'] ?? '0';
     }
 
     /**
@@ -582,6 +579,24 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             && !empty($annotations['method']['requiresRedisVersion'])
             && in_array('connected', $annotations['method']['group'], true)
             && in_array('cluster', $annotations['method']['group'], true);
+    }
+
+    /**
+     * Check annotations if it's matches to cluster test scenario.
+     *
+     * @return bool
+     */
+    protected function isRedisGearsTest(): bool
+    {
+        $annotations = TestUtil::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
+
+        return isset($annotations['method']['requiresRedisGearsVersion'], $annotations['method']['group'])
+            && !empty($annotations['method']['requiresRedisGearsVersion'])
+            && in_array('connected', $annotations['method']['group'], true)
+            && in_array('gears', $annotations['method']['group'], true);
     }
 
     /**

@@ -21,6 +21,11 @@ jobs:
         ports:
           - 6379:6379
 
+      redis-gears:
+        image: redislabs/redisgears:edge
+        ports:
+          - 6380:6379
+
     strategy:
       fail-fast: false
       matrix:
@@ -62,6 +67,9 @@ jobs:
 
       - name: Run tests
         run: vendor/bin/phpunit --group realm-stack
+
+      - name: Run redis gears tests
+        run: vendor/bin/phpunit --group gears
 
       - name: Run tests using Relay
         run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml
