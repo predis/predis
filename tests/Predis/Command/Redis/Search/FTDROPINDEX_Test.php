@@ -61,6 +61,7 @@ class FTDROPINDEX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 2.0.0
      */
@@ -91,6 +92,7 @@ class FTDROPINDEX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 2.0.0
      */

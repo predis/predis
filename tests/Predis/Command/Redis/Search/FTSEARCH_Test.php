@@ -54,6 +54,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      * @requiresRedisJsonVersion >= 1.0.0
@@ -80,7 +81,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $ftCreateResponse);
 
         // Timeout to make sure that index created before search performed.
-        usleep(2000);
+        usleep(4000);
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->addReturn(2, 'arr', 'val');
@@ -91,6 +92,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -114,7 +116,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $ftCreateResponse);
 
         // Timeout to make sure that index created before search performed.
-        usleep(2000);
+        usleep(4000);
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->addReturn(1, 'should_return');
@@ -156,7 +158,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $ftCreateResponse);
 
         // Timeout to make sure that index created before search performed.
-        usleep(2000);
+        usleep(4000);
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->addReturn(1, 'should_return');

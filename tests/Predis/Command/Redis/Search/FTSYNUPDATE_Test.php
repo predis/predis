@@ -61,6 +61,7 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.2.0
      */
@@ -101,6 +102,7 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.2.0
      */
@@ -126,6 +128,7 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.2.0
      */

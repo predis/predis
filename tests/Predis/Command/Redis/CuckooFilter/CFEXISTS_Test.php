@@ -60,6 +60,7 @@ class CFEXISTS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */

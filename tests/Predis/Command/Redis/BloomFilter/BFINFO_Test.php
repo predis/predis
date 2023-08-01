@@ -61,6 +61,7 @@ class BFINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @dataProvider filtersProvider
      * @param  array  $filter
      * @param  string $key
@@ -101,6 +102,7 @@ class BFINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRedisBfVersion 1.0.0
      */
@@ -116,6 +118,7 @@ class BFINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

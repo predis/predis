@@ -63,6 +63,7 @@ class TSMADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -123,6 +124,7 @@ class TSMADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */

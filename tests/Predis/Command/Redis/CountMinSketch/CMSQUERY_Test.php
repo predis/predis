@@ -61,6 +61,7 @@ class CMSQUERY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @dataProvider sketchesProvider
      * @param  array $queryArguments
      * @param  array $expectedResponse
@@ -96,6 +97,7 @@ class CMSQUERY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisBfVersion >= 2.0.0
      */
     public function testThrowsExceptionOnNonExistingKey(): void

@@ -59,6 +59,7 @@ class FTSUGADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
