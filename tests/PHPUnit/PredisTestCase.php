@@ -176,9 +176,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         return [
             'scheme' => 'tcp',
             'host' => constant('REDIS_SERVER_HOST'),
-            'port' => ($this->isRedisGearsTest())
-                ? constant('REDIS_SERVER_GEARS_PORT')
-                : constant('REDIS_SERVER_PORT'),
+            'port' => constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
         ];
     }
@@ -579,24 +577,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             && !empty($annotations['method']['requiresRedisVersion'])
             && in_array('connected', $annotations['method']['group'], true)
             && in_array('cluster', $annotations['method']['group'], true);
-    }
-
-    /**
-     * Check annotations if it's matches to redis gears test scenario.
-     *
-     * @return bool
-     */
-    protected function isRedisGearsTest(): bool
-    {
-        $annotations = TestUtil::parseTestMethodAnnotations(
-            get_class($this),
-            $this->getName(false)
-        );
-
-        return isset($annotations['method']['requiresRedisGearsVersion'], $annotations['method']['group'])
-            && !empty($annotations['method']['requiresRedisGearsVersion'])
-            && in_array('connected', $annotations['method']['group'], true)
-            && in_array('gears', $annotations['method']['group'], true);
     }
 
     /**
