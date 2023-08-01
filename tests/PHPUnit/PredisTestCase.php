@@ -582,7 +582,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Check annotations if it's matches to cluster test scenario.
+     * Check annotations if it's matches to redis gears test scenario.
      *
      * @return bool
      */
