@@ -174,13 +174,15 @@ class Factory implements FactoryInterface
             );
         }
 
-        $connection->addConnectCommand(
-            new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
-        );
+        if (!$connection instanceof RelayConnection) {
+            $connection->addConnectCommand(
+                new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
+            );
 
-        $connection->addConnectCommand(
-            new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])
-        );
+            $connection->addConnectCommand(
+                new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])
+            );
+        }
 
         if (isset($parameters->protocol) && (int) $parameters->protocol > 2) {
             $connection->addConnectCommand(
