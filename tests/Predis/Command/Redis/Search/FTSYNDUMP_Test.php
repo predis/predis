@@ -91,7 +91,7 @@ class FTSYNDUMP_Test extends PredisCommandTestCase
     public function testDumpReturnsContentOfSynonymGroupFromGivenIndexResp3(): void
     {
         $redis = $this->getResp3Client();
-        $expectedResponse = ['term1', ['synonym1'], 'term2', ['synonym1']];
+        $expectedResponse = ['term1' => ['synonym1'], 'term2' => ['synonym1']];
 
         $this->assertEquals(
             'OK',

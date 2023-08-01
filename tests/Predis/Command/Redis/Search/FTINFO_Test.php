@@ -105,7 +105,7 @@ class FTINFO_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $createResponse);
 
         $actualResponse = $redis->ftinfo('index');
-        $this->assertEquals('index', $actualResponse[1]);
+        $this->assertEquals('index', $actualResponse['index_name']);
     }
 
     /**

@@ -92,7 +92,7 @@ class JSONOBJLEN_Test extends PredisCommandTestCase
 
         $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}');
 
-        $this->assertSame(2, $redis->jsonobjlen('key'));
+        $this->assertSame([2], $redis->jsonobjlen('key'));
     }
 
     public function jsonProvider(): array

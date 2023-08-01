@@ -100,7 +100,7 @@ class JSONARRPOP_Test extends PredisCommandTestCase
         $actualResponse = $redis->jsonarrpop('key', '$.key2', -1);
 
         $this->assertSame(['"value2"'], $actualResponse);
-        $this->assertSame([['{"key1":"value1","key2":["value1"]}']], $redis->jsonget('key'));
+        $this->assertSame('[{"key1":"value1","key2":["value1"]}]', $redis->jsonget('key'));
     }
 
     public function jsonProvider(): array

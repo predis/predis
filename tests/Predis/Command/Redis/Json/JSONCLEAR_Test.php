@@ -98,7 +98,7 @@ class JSONCLEAR_Test extends PredisCommandTestCase
         $actualResponse = $redis->jsonclear('key', '$.key2');
 
         $this->assertSame(1, $actualResponse);
-        $this->assertSame([['{"key1":"value1","key2":[]}']], $redis->jsonget('key'));
+        $this->assertSame('[{"key1":"value1","key2":[]}]', $redis->jsonget('key'));
     }
 
     public function jsonProvider(): array

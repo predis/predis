@@ -131,7 +131,15 @@ class FTSEARCH_Test extends PredisCommandTestCase
     public function testSearchValuesByHashIndexResp3(): void
     {
         $redis = $this->getResp3Client();
-        $expectedResponse = [1, 'doc:1', ['should_return', 'value1']];
+        $expectedResponse = [
+            'attributes' => [],
+            'error' => [],
+            'total_results' => 1,
+            'format' => 'STRING',
+            'results' => [
+                ['id' => 'doc:1', 'extra_attributes' => ['should_return' => 'value1'], 'values' => []],
+            ],
+        ];
 
         $hashResponse = $redis->hmset('doc:1', 'field1', 'value1', 'field2', 'value2');
         $this->assertEquals('OK', $hashResponse);

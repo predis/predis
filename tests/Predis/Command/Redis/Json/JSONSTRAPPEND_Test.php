@@ -100,7 +100,7 @@ class JSONSTRAPPEND_Test extends PredisCommandTestCase
         $actualResponse = $redis->jsonstrappend('key', '$.key2', '"foo"');
 
         $this->assertSame([9], $actualResponse);
-        $this->assertSame([['{"key1":"value1","key2":"value2foo"}']], $redis->jsonget('key'));
+        $this->assertSame('[{"key1":"value1","key2":"value2foo"}]', $redis->jsonget('key'));
     }
 
     public function jsonProvider(): array
