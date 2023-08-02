@@ -19,7 +19,6 @@ use Predis\Replication;
 use Predis\Response;
 use PredisTestCase;
 use ReflectionProperty;
-use RuntimeException;
 
 class SentinelReplicationTest extends PredisTestCase
 {
