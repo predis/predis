@@ -573,7 +573,18 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $this->getName(false)
         );
 
-        return (isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group']))
+        $annotationExists = isset($annotations['method']['requiresRedisVersion']);
+
+        if (!$annotationExists) {
+            foreach ($this->modulesMapping as $module => $configuration) {
+                if (isset($annotations['method'][$configuration['annotation']])) {
+                    $annotationExists = true;
+                }
+            }
+        }
+
+        return $annotationExists
+            && isset($annotations['method']['group'])
             && in_array('connected', $annotations['method']['group'], true)
             && in_array('cluster', $annotations['method']['group'], true);
     }

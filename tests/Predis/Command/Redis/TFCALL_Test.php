@@ -65,8 +65,7 @@ class TFCALL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group gears
-     * @group cluster
+     * @group gears-cluster
      * @requiresRedisGearsVersion >= 2.0.0
      * @return void
      */
