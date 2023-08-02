@@ -12,6 +12,7 @@
 
 namespace Predis\Connection;
 
+use Predis\Client;
 use Predis\Command\RawCommand;
 use PredisTestCase;
 use ReflectionObject;
@@ -303,10 +304,12 @@ class FactoryTest extends PredisTestCase
             ->method('getParameters')
             ->willReturn($parameters);
         $connection
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(4))
             ->method('addConnectCommand')
             ->withConsecutive(
                 [$this->isRedisCommand('AUTH', ['foobar'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])],
                 [$this->isRedisCommand('SELECT', ['0'])]
             );
 
@@ -332,9 +335,13 @@ class FactoryTest extends PredisTestCase
         $connection->expects($this->once())
             ->method('getParameters')
             ->will($this->returnValue($parameters));
-        $connection->expects($this->once())
+        $connection->expects($this->exactly(3))
             ->method('addConnectCommand')
-            ->with($this->isRedisCommand('AUTH', ['foobar']));
+            ->withConsecutive(
+                [$this->isRedisCommand('AUTH', ['foobar'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])]
+            );
 
         $factory = new Factory();
 
@@ -359,9 +366,13 @@ class FactoryTest extends PredisTestCase
         $connection->expects($this->once())
             ->method('getParameters')
             ->will($this->returnValue($parameters));
-        $connection->expects($this->once())
+        $connection->expects($this->exactly(3))
             ->method('addConnectCommand')
-            ->with($this->isRedisCommand('AUTH', ['myusername', 'foobar']));
+            ->withConsecutive(
+                [$this->isRedisCommand('AUTH', ['myusername', 'foobar'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])]
+            );
 
         $factory = new Factory();
 
@@ -385,8 +396,12 @@ class FactoryTest extends PredisTestCase
         $connection->expects($this->once())
             ->method('getParameters')
             ->will($this->returnValue($parameters));
-        $connection->expects($this->never())
-            ->method('addConnectCommand');
+        $connection->expects($this->exactly(2))
+            ->method('addConnectCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])]
+            );
 
         $factory = new Factory();
 
@@ -411,8 +426,12 @@ class FactoryTest extends PredisTestCase
         $connection->expects($this->once())
             ->method('getParameters')
             ->will($this->returnValue($parameters));
-        $connection->expects($this->never())
-            ->method('addConnectCommand');
+        $connection->expects($this->exactly(2))
+            ->method('addConnectCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])]
+            );
 
         $factory = new Factory();
 
@@ -543,6 +562,27 @@ class FactoryTest extends PredisTestCase
      * @group disconnected
      * @return void
      */
+    public function testSetClientNameAndVersionOnConnection(): void
+    {
+        $parameters = [];
+
+        $factory = new Factory();
+        $connection = $factory->create($parameters);
+        $initCommands = $connection->getInitCommands();
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
+        $this->assertSame('CLIENT', $initCommands[0]->getId());
+        $this->assertSame(['SETINFO', 'LIB-NAME', 'predis'], $initCommands[0]->getArguments());
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[1]);
+        $this->assertSame('CLIENT', $initCommands[1]->getId());
+        $this->assertSame(['SETINFO', 'LIB-VER', Client::VERSION], $initCommands[1]->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
     public function testCreatesResp3ConnectionOnProtocolParameterGiven(): void
     {
         $parameters = ['protocol' => 3];
@@ -552,7 +592,7 @@ class FactoryTest extends PredisTestCase
         $initCommands = $connection->getInitCommands();
 
         $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
-        $this->assertSame('HELLO', $initCommands[0]->getId());
+        $this->assertSame('HELLO', $initCommands[2]->getId());
     }
 
     // ******************************************************************** //
