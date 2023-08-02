@@ -109,6 +109,22 @@ class TFUNCTION_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group gears
+     * @group cluster
+     * @requiresRedisGearsVersion >= 2.0.0
+     * @return void
+     */
+    public function testLoadAndDeletesGivenLibraryFromRedisGearsClusterMode(): void
+    {
+        $redis = $this->getClient();
+        $libCode = "#!js api_version=1.0 name=lib\n redis.registerFunction('foo', ()=>{return 'bar'})";
+
+        $this->assertEquals('OK', $redis->tfunction->load($libCode));
+        $this->assertEquals('OK', $redis->tfunction->delete('lib'));
+    }
+
+    /**
+     * @group connected
+     * @group gears
      * @requiresRedisGearsVersion >= 2.0.0
      * @return void
      */

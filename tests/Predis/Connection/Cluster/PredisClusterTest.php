@@ -12,6 +12,7 @@
 
 namespace Predis\Connection\Cluster;
 
+use Predis\Command\RawCommand;
 use Predis\Connection\Parameters;
 use PredisTestCase;
 
@@ -431,5 +432,40 @@ class PredisClusterTest extends PredisTestCase
         $cluster = new PredisCluster($expectedParameters);
 
         $this->assertEquals($expectedParameters, $cluster->getParameters());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAddConnectCommand(): void
+    {
+        $connectCommand = new RawCommand('REDISGEARS_2.REFRESHCLUSTER');
+        $connection = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection
+            ->expects($this->once())
+            ->method('addConnectCommand')
+            ->with($connectCommand);
+
+        $cluster = new PredisCluster(new Parameters());
+
+        $cluster->add($connection);
+        $cluster->addConnectCommand($connectCommand);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAddConnectCommandDoNothingOnEmptyConnectionPool(): void
+    {
+        $connectCommand = new RawCommand('REDISGEARS_2.REFRESHCLUSTER');
+        $connection = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection
+            ->expects($this->never())
+            ->method('addConnectCommand')
+            ->withAnyParameters();
+
+        $cluster = new PredisCluster(new Parameters());
+
+        $cluster->addConnectCommand($connectCommand);
     }
 }

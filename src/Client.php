@@ -22,6 +22,7 @@ use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
 use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;
+use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
@@ -133,7 +134,13 @@ class Client implements ClientInterface, IteratorAggregate
             if (!isset($parameters[0])) {
                 return $options->connections->create($parameters);
             } elseif ($options->defined('cluster') && $initializer = $options->cluster) {
-                return $initializer($parameters, true);
+                /** @var ClusterInterface $cluster */
+                $cluster = $initializer($parameters, true);
+                $cluster->addConnectCommand(
+                    new RawCommand('REDISGEARS_2.REFRESHCLUSTER')
+                );
+
+                return $cluster;
             } elseif ($options->defined('replication') && $initializer = $options->replication) {
                 return $initializer($parameters, true);
             } elseif ($options->defined('aggregate') && $initializer = $options->aggregate) {

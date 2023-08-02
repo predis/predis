@@ -66,6 +66,23 @@ class TFCALLASYNC_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group gears
+     * @group cluster
+     * @requiresRedisGearsVersion >= 2.0.0
+     * @return void
+     */
+    public function testCallLoadedFunctionFromRedisGearsLibraryClusterMode(): void
+    {
+        $redis = $this->getClient();
+        $libCode = "#!js api_version=1.0 name=lib\n redis.registerFunction('foo', ()=>{return 'bar'})";
+
+        $this->assertEquals('OK', $redis->tfunction->load($libCode));
+        $this->assertEquals('bar', $redis->tfcallasync('lib', 'foo'));
+        $this->assertEquals('OK', $redis->tfunction->delete('lib'));
+    }
+
+    /**
+     * @group connected
+     * @group gears
      * @requiresRedisGearsVersion >= 2.0.0
      * @return void
      */

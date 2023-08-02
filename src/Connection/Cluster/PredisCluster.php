@@ -93,6 +93,30 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     /**
      * {@inheritdoc}
      */
+    public function addConnectCommand(CommandInterface $command): void
+    {
+        foreach ($this->pool as $connection) {
+            $connection->addConnectCommand($command);
+        }
+    }
+
+    /**
+     * Returns a random connection from the pool.
+     *
+     * @return NodeConnectionInterface|null
+     */
+    protected function getRandomConnection()
+    {
+        if (!$this->pool) {
+            return null;
+        }
+
+        return $this->pool[array_rand($this->pool)];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function disconnect()
     {
         foreach ($this->pool as $connection) {

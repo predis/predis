@@ -153,8 +153,18 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function connect()
     {
-        if ($connection = $this->getRandomConnection()) {
+        foreach ($this->pool as $connection) {
             $connection->connect();
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addConnectCommand(CommandInterface $command): void
+    {
+        foreach ($this->pool as $connection) {
+            $connection->addConnectCommand($command);
         }
     }
 

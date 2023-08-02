@@ -137,14 +137,14 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testConnectPicksRandomConnection(): void
+    public function testConnectToEachNode(): void
     {
         $connect1 = false;
         $connect2 = false;
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1
-            ->expects($this->any())
+            ->expects($this->once())
             ->method('connect')
             ->willReturnCallback(function () use (&$connect1) {
                 $connect1 = true;
@@ -158,7 +158,7 @@ class RedisClusterTest extends PredisTestCase
 
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection2
-            ->expects($this->any())
+            ->expects($this->once())
             ->method('connect')
             ->willReturnCallback(function () use (&$connect2) {
                 $connect2 = true;
@@ -178,14 +178,8 @@ class RedisClusterTest extends PredisTestCase
         $cluster->connect();
 
         $this->assertTrue($cluster->isConnected());
-
-        if ($connect1) {
-            $this->assertTrue($connect1);
-            $this->assertFalse($connect2);
-        } else {
-            $this->assertFalse($connect1);
-            $this->assertTrue($connect2);
-        }
+        $this->assertTrue($connect1);
+        $this->assertTrue($connect2);
     }
 
     /**
@@ -1459,5 +1453,40 @@ class RedisClusterTest extends PredisTestCase
         $cluster = new RedisCluster($factory, $expectedParameters);
 
         $this->assertEquals($expectedParameters, $cluster->getParameters());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAddConnectCommand(): void
+    {
+        $connectCommand = new Command\RawCommand('REDISGEARS_2.REFRESHCLUSTER');
+        $connection = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection
+            ->expects($this->once())
+            ->method('addConnectCommand')
+            ->with($connectCommand);
+
+        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+
+        $cluster->add($connection);
+        $cluster->addConnectCommand($connectCommand);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAddConnectCommandDoNothingOnEmptyConnectionPool(): void
+    {
+        $connectCommand = new Command\RawCommand('REDISGEARS_2.REFRESHCLUSTER');
+        $connection = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection
+            ->expects($this->never())
+            ->method('addConnectCommand')
+            ->withAnyParameters();
+
+        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+
+        $cluster->addConnectCommand($connectCommand);
     }
 }
