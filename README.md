@@ -82,7 +82,7 @@ $client = new Predis\Client([
 $client = new Predis\Client('tcp://10.0.0.1:6379');
 ```
 
-These same parameters, can be extended to add support for the RESP 3 protocol:
+These same parameters, can be extended to add support for the RESP 3 protocol, which helps provide more exact response types in some cases. Examples include maps, lists, and floats that are now available, in addition to new response types for json, and probabilistic data types.
 
 ```php
 // Parameters passed using a named array:
