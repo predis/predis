@@ -12,6 +12,13 @@
 
 namespace Predis\Command\Redis;
 
+/**
+ * Same as TFCALL command but executes in async mode.
+ * @see TFCALL
+ *
+ * In order to be used in cluster mode
+ * @see https://github.com/predis/predis#redis-gears-with-cluster
+ */
 class TFCALLASYNC extends TFCALL
 {
     public function getId()

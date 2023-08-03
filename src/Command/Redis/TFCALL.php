@@ -14,6 +14,12 @@ namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
 
+/**
+ * Invokes given function from loaded Redis Gears library.
+ *
+ * In order to be used in cluster mode
+ * @see https://github.com/predis/predis#redis-gears-with-cluster
+ */
 class TFCALL extends RedisCommand
 {
     public function getId()

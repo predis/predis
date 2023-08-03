@@ -124,6 +124,7 @@ class TFUNCTION_Test extends PredisCommandTestCase
         /** @var ClusterInterface $connection */
         $connection = $redis->getConnection();
 
+        // https://github.com/predis/predis#redis-gears-with-cluster
         $connection->executeCommandOnEachNode(
             new RawCommand('REDISGEARS_2.REFRESHCLUSTER')
         );

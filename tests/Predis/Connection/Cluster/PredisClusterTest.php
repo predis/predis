@@ -13,8 +13,6 @@
 namespace Predis\Connection\Cluster;
 
 use Predis\Command\CommandInterface;
-use Predis\Command\RawCommand;
-use Predis\Connection\FactoryInterface;
 use Predis\Connection\Parameters;
 use PredisTestCase;
 

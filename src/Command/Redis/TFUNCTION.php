@@ -14,6 +14,12 @@ namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
 
+/**
+ * Load a new library to RedisGears.
+ *
+ * In order to be used in cluster mode
+ * @see https://github.com/predis/predis#redis-gears-with-cluster
+ */
 class TFUNCTION extends RedisCommand
 {
     /**

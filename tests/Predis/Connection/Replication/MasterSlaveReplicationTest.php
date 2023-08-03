@@ -18,7 +18,6 @@ use Predis\Connection;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
 use PredisTestCase;
-use RuntimeException;
 
 class MasterSlaveReplicationTest extends PredisTestCase
 {
