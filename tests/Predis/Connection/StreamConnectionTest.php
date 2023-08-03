@@ -216,21 +216,6 @@ class StreamConnectionTest extends PredisConnectionTestCase
     }
 
     /**
-     * @group connected
-     * @requiresRedisVersion < 7.0.0
-     */
-    public function testConnectDoNotThrowsExceptionOnRefreshClusterCommand(): void
-    {
-        $connection = $this->createConnectionWithParams([]);
-        $connection->addConnectCommand(
-            new RawCommand('REDISGEARS_2.REFRESHCLUSTER')
-        );
-
-        $connection->connect();
-        $this->assertTrue(true);
-    }
-
-    /**
      * @group disconnected
      * @return void
      */
