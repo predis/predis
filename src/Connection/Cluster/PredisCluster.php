@@ -91,16 +91,6 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function addConnectCommand(CommandInterface $command): void
-    {
-        foreach ($this->pool as $connection) {
-            $connection->addConnectCommand($command);
-        }
-    }
-
-    /**
      * Returns a random connection from the pool.
      *
      * @return NodeConnectionInterface|null
@@ -280,5 +270,19 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function getParameters(): ParametersInterface
     {
         return $this->connectionParameters;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeCommandOnEachNode(CommandInterface $command): array
+    {
+        $responses = [];
+
+        foreach ($this->pool as $connection) {
+            $responses[] = $connection->executeCommand($command);
+        }
+
+        return $responses;
     }
 }

@@ -23,7 +23,6 @@ use Predis\Connection\ParametersInterface;
 use Predis\Replication\MissingMasterException;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response\ErrorInterface as ResponseErrorInterface;
-use RuntimeException;
 
 /**
  * Aggregate connection handling replication of Redis nodes configured in a
@@ -569,13 +568,5 @@ class MasterSlaveReplication implements ReplicationInterface
         }
 
         return null;
-    }
-
-    /**
-     * @throws RuntimeException
-     */
-    public function addConnectCommand(CommandInterface $command): void
-    {
-        throw new RuntimeException('Not implemented.');
     }
 }

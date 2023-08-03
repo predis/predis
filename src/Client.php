@@ -134,13 +134,7 @@ class Client implements ClientInterface, IteratorAggregate
             if (!isset($parameters[0])) {
                 return $options->connections->create($parameters);
             } elseif ($options->defined('cluster') && $initializer = $options->cluster) {
-                /** @var ClusterInterface $cluster */
-                $cluster = $initializer($parameters, true);
-                $cluster->addConnectCommand(
-                    new RawCommand('REDISGEARS_2.REFRESHCLUSTER')
-                );
-
-                return $cluster;
+                return $initializer($parameters, true);
             } elseif ($options->defined('replication') && $initializer = $options->replication) {
                 return $initializer($parameters, true);
             } elseif ($options->defined('aggregate') && $initializer = $options->aggregate) {

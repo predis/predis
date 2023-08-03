@@ -1324,38 +1324,6 @@ class ClientTest extends PredisTestCase
         $this->assertSame(Client::VERSION, $libVer);
     }
 
-    /**
-     * @group connected
-     * @group cluster
-     * @requiresRedisVersion >= 6.0.0
-     * @return void
-     */
-    public function testAddRefreshClusterCommandOnClusterConnectionInitialization(): void
-    {
-        $connectionStrings = $this->getDefaultParametersArray();
-        $client = new Client($connectionStrings, ['cluster' => 'redis']);
-
-        /** @var ClusterInterface $clusterConnection */
-        $clusterConnection = $client->getConnection();
-        $refreshCommandId = '';
-
-        foreach ($connectionStrings as $string) {
-            [$_, $connectionId] = explode('//', $string);
-
-            /** @var StreamConnection $connection */
-            $connection = $clusterConnection->getConnectionById($connectionId);
-            $initCommands = $connection->getInitCommands();
-
-            foreach ($initCommands as $command) {
-                if ($command->getId() === 'REDISGEARS_2.REFRESHCLUSTER') {
-                    $refreshCommandId = $command->getId();
-                }
-            }
-        }
-
-        $this->assertEquals('REDISGEARS_2.REFRESHCLUSTER', $refreshCommandId);
-    }
-
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

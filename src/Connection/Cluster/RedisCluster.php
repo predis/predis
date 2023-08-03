@@ -161,16 +161,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     /**
      * {@inheritdoc}
      */
-    public function addConnectCommand(CommandInterface $command): void
-    {
-        foreach ($this->pool as $connection) {
-            $connection->addConnectCommand($command);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function disconnect()
     {
         foreach ($this->pool as $connection) {
@@ -620,6 +610,20 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         }
 
         return $response;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeCommandOnEachNode(CommandInterface $command): array
+    {
+        $responses = [];
+
+        foreach ($this->pool as $connection) {
+            $responses[] = $connection->executeCommand($command);
+        }
+
+        return $responses;
     }
 
     /**

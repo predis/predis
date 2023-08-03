@@ -1452,19 +1452,6 @@ repl_backlog_histlen:12978
         $this->assertSame($connection->getParameters(), $replication->getParameters());
     }
 
-    /**
-     * @group disconnected
-     */
-    public function testAddConnectCommand(): void
-    {
-        $replication = new MasterSlaveReplication();
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Not implemented.');
-
-        $replication->addConnectCommand(new Command\RawCommand('Test'));
-    }
-
     public function connectionsProvider(): array
     {
         return [

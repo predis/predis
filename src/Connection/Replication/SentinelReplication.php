@@ -26,7 +26,6 @@ use Predis\Replication\RoleException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
-use RuntimeException;
 
 /**
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -792,13 +791,5 @@ class SentinelReplication implements ReplicationInterface
         }
 
         return null;
-    }
-
-    /**
-     * @throws RuntimeException
-     */
-    public function addConnectCommand(CommandInterface $command): void
-    {
-        throw new RuntimeException('Not implemented.');
     }
 }

@@ -12,7 +12,9 @@
 
 namespace Predis\Connection\Cluster;
 
+use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\Connection\FactoryInterface;
 use Predis\Connection\Parameters;
 use PredisTestCase;
 
@@ -437,35 +439,38 @@ class PredisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testAddConnectCommand(): void
+    public function testExecuteCommandOnEachNode(): void
     {
-        $connectCommand = new RawCommand('REDISGEARS_2.REFRESHCLUSTER');
-        $connection = $this->getMockConnection('tcp://127.0.0.1:6379');
-        $connection
+        $mockCommand = $this->getMockBuilder(CommandInterface::class)->getMock();
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:7003');
+
+        $connection1
             ->expects($this->once())
-            ->method('addConnectCommand')
-            ->with($connectCommand);
+            ->method('executeCommand')
+            ->with($mockCommand)
+            ->willReturn('response1');
+
+        $connection2
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($mockCommand)
+            ->willReturn('response2');
+
+        $connection3
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($mockCommand)
+            ->willReturn('response3');
 
         $cluster = new PredisCluster(new Parameters());
 
-        $cluster->add($connection);
-        $cluster->addConnectCommand($connectCommand);
-    }
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
 
-    /**
-     * @group disconnected
-     */
-    public function testAddConnectCommandDoNothingOnEmptyConnectionPool(): void
-    {
-        $connectCommand = new RawCommand('REDISGEARS_2.REFRESHCLUSTER');
-        $connection = $this->getMockConnection('tcp://127.0.0.1:6379');
-        $connection
-            ->expects($this->never())
-            ->method('addConnectCommand')
-            ->withAnyParameters();
-
-        $cluster = new PredisCluster(new Parameters());
-
-        $cluster->addConnectCommand($connectCommand);
+        $this->assertEquals(['response1', 'response2', 'response3'], $cluster->executeCommandOnEachNode($mockCommand));
     }
 }

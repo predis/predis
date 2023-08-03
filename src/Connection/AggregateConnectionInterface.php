@@ -53,12 +53,4 @@ interface AggregateConnectionInterface extends ConnectionInterface
      * @return NodeConnectionInterface|null
      */
     public function getConnectionById($connectionID);
-
-    /**
-     * Add a command that should be executed when connection established on each node.
-     *
-     * @param  CommandInterface $command
-     * @return void
-     */
-    public function addConnectCommand(CommandInterface $command): void;
 }

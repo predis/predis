@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\RawCommand;
+use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Response\ServerException;
 
 class TFCALL_Test extends PredisCommandTestCase
@@ -68,11 +70,20 @@ class TFCALL_Test extends PredisCommandTestCase
      * @group cluster
      * @group gears-cluster
      * @requiresRedisGearsVersion >= 2.0.0
+     * @requiresRedisVersion >= 7.1.0
      * @return void
      */
     public function testCallLoadedFunctionFromRedisGearsLibraryClusterMode(): void
     {
         $redis = $this->getClient();
+
+        /** @var ClusterInterface $connection */
+        $connection = $redis->getConnection();
+
+        $connection->executeCommandOnEachNode(
+            new RawCommand('REDISGEARS_2.REFRESHCLUSTER')
+        );
+
         $libCode = "#!js api_version=1.0 name=lib\n redis.registerFunction('foo', ()=>{return 'bar'})";
 
         $this->assertEquals('OK', $redis->tfunction->load($libCode));
