@@ -82,6 +82,21 @@ $client = new Predis\Client([
 $client = new Predis\Client('tcp://10.0.0.1:6379');
 ```
 
+These same parameters, can be extended to add support for the RESP 3 protocol, which helps provide more exact response types in some cases. Examples include maps, lists, and floats that are now available, in addition to new response types for json, and probabilistic data types.
+
+```php
+// Parameters passed using a named array:
+$client = new Predis\Client([
+    'scheme'   => 'tcp',
+    'host'     => '10.0.0.1',
+    'port'     => 6379,
+    'protocol' => 3,
+]);
+
+// Same set of parameters, passed using an URI string:
+$client = new Predis\Client('tcp://10.0.0.1:6379?protocol=3');
+```
+
 Password protected servers can be accessed by adding `password` to the parameters set. When ACLs are
 enabled on Redis >= 6.0, both `username` and `password` are required for user authentication.
 
