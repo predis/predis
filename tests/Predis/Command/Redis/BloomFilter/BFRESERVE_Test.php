@@ -60,7 +60,6 @@ class BFRESERVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @dataProvider filtersProvider
      * @param  array  $filter
      * @param  string $key
@@ -98,7 +97,6 @@ class BFRESERVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisBfVersion 1.0.0
      */
@@ -114,8 +112,7 @@ class BFRESERVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
-     * @requiresRedisBfVersion >= 1.0.0
+     * @requiresRedisBfVersion >= 1.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {

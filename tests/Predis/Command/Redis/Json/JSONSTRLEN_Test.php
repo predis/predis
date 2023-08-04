@@ -60,7 +60,6 @@ class JSONSTRLEN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @dataProvider jsonProvider
      * @param  array  $jsonArguments
      * @param  string $key

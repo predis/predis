@@ -61,7 +61,6 @@ class FTPROFILE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @dataProvider queryProvider
      * @param  array $createArguments
      * @param  array $profileArguments
@@ -93,7 +92,6 @@ class FTPROFILE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 2.2.0
      */

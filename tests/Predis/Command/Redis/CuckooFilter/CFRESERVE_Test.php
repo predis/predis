@@ -51,7 +51,6 @@ class CFRESERVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @dataProvider filtersProvider
      * @param  array $filterArguments
      * @param  int   $expectedCapacity
@@ -103,7 +102,6 @@ class CFRESERVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

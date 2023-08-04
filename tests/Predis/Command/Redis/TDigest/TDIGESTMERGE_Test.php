@@ -51,7 +51,6 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @dataProvider sketchesProvider
      * @param  string $sourceKey1
      * @param  string $sourceKey2
@@ -93,7 +92,6 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
@@ -146,7 +144,6 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
@@ -185,7 +182,6 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
@@ -214,7 +210,6 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */

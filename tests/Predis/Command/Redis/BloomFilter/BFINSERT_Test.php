@@ -60,7 +60,6 @@ class BFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @dataProvider filtersProvider
      * @param  array  $arguments
      * @param  string $key
@@ -117,7 +116,6 @@ class BFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
@@ -133,7 +131,6 @@ class BFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
@@ -167,7 +164,6 @@ class BFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @dataProvider unexpectedValuesProvider
      * @param  array  $arguments
      * @param  string $expectedExceptionMessage
