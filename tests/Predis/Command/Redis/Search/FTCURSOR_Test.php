@@ -145,28 +145,10 @@ class FTCURSOR_Test extends PredisCommandTestCase
 
         $expectedResponse = [
             [
-                'attributes' => [],
-                'error' => [],
-                'total_results' => 2,
-                'format' => 'STRING',
-                'results' => [
-                    [
-                        'extra_attributes' => ['country' => 'Ukraine', 'birth' => '1995', 'country_birth_Vlad_count' => '2'],
-                        'values' => [],
-                    ],
-                ],
+                'country', 'Ukraine', 'birth', '1995', 'country_birth_Vlad_count', '2',
             ],
             [
-                'attributes' => [],
-                'error' => [],
-                'total_results' => 0,
-                'format' => 'STRING',
-                'results' => [
-                    [
-                        'extra_attributes' => ['country' => 'Israel', 'birth' => '1994', 'country_birth_Vlad_count' => '1'],
-                        'values' => [],
-                    ],
-                ],
+                'country', 'Israel', 'birth', '1994', 'country_birth_Vlad_count', '1',
             ],
         ];
 
@@ -202,7 +184,7 @@ class FTCURSOR_Test extends PredisCommandTestCase
         $actualResponse = [];
 
         while ($cursor) {
-            $actualResponse[] = $response;
+            $actualResponse[] = $response[1];
             [$response, $cursor] = $redis->ftcursor->read('idx', $cursor);
         }
 
