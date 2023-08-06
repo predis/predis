@@ -1,1 +1,17 @@
     171     171    1541
+ACLs
+behaviour
+CAS
+de
+ElastiCache
+FPM
+namespace
+Packagist
+PhpRedis
+pluggable
+PSR
+README
+SHA
+TCP
+TLS
+variadic
