@@ -24,5 +24,6 @@ matrix:
       - blockquote
       - img
   sources:
-  - '*.md'
+  - 'README.md'
+  - 'FAQ.md'
   - 'docs/**'

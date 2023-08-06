@@ -398,7 +398,7 @@ $response = $client->lpushrand('random_values', $seed = mt_rand());
 
 Predis can use different connection backends to connect to Redis. The builtin Relay integration
 leverages the [Relay](https://github.com/cachewerk/relay) extension for PHP for major performance
-gains, by caching a partial replica of the Redis dataset in PHP shared runtime memory.
+gains, by caching a partial replica of the Redis data set in PHP shared runtime memory.
 
 ```php
 $client = new Predis\Client('tcp://127.0.0.1', [
