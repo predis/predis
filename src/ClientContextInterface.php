@@ -310,6 +310,7 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this evalsha($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this evalsha_ro(string $sha1, array $keys, ...$argument)
  * @method $this script($subcommand, $argument = null)
+ * @method $this shutdown(bool $noSave = null, bool $now = false, bool $force = false, bool $abort = false)
  * @method $this auth($password)
  * @method $this echo($message)
  * @method $this ping($message = null)

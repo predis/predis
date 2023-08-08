@@ -328,6 +328,7 @@ use Predis\Response\Status;
  * @method mixed             evalsha(string $script, int $numkeys, string ...$keyOrArg = null)
  * @method mixed             evalsha_ro(string $sha1, array $keys, ...$argument)
  * @method mixed             script($subcommand, $argument = null)
+ * @method Status            shutdown(bool $noSave = null, bool $now = false, bool $force = false, bool $abort = false)
  * @method mixed             auth(string $password)
  * @method string            echo(string $message)
  * @method mixed             ping(string $message = null)
