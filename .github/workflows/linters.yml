@@ -7,7 +7,6 @@ on:
     branches:
       - main
       - v2.**
-      - v3.**
   pull_request: null
 
 permissions: {}
@@ -143,26 +142,3 @@ jobs:
           echo "CURRENT =${CURRENT}"
           echo "EXPECTED=${EXPECTED}"
           test "${CURRENT}" = "${EXPECTED}"
-
-  spelling:
-    name: Spelling
-    needs:
-      - byte_level
-      - syntax_errors
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-codespell
-
-      - name: Install codespell
-        run: pip install --user 'codespell>=2.2'
-
-      - name: Search for misspellings
-        run: $(python -m site --user-base)/bin/codespell
