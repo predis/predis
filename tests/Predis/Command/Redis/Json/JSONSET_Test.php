@@ -97,7 +97,7 @@ class JSONSET_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}'));
         $this->assertEquals('OK', $redis->jsonset('key', '$', '{"key3":"value3"}'));
-        $this->assertSame([['{"key3":"value3"}']], $redis->jsonget('key'));
+        $this->assertSame('[{"key3":"value3"}]', $redis->jsonget('key'));
     }
 
     /**

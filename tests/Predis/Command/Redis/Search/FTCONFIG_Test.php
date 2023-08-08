@@ -133,7 +133,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
     {
         $redis = $this->getResp3Client();
 
-        $this->assertEquals([['MAXEXPANSIONS', '200']], $redis->ftconfig->get('MAXEXPANSIONS'));
+        $this->assertEquals(['MAXEXPANSIONS' => '200'], $redis->ftconfig->get('MAXEXPANSIONS'));
         $this->assertEmpty($redis->ftconfig->get('foobar'));
     }
 
