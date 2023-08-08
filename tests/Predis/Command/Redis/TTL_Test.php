@@ -87,7 +87,7 @@ class TTL_Test extends PredisCommandTestCase
      */
     public function testReturnsLessThanZeroOnNonExistingKeys(): void
     {
-        if ($this->isRedisServerVersion([['operator' => '<', 'version' => '2.8.0']])) {
+        if ($this->isRedisServerVersion('<', '2.8.0')) {
             $this->assertSame(-1, $this->getClient()->ttl('foo'));
         } else {
             $this->assertSame(-2, $this->getClient()->ttl('foo'));
