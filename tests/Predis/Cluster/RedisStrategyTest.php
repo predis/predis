@@ -486,6 +486,9 @@ class RedisStrategyTest extends PredisTestCase
             'GEODIST' => 'keys-first',
             'GEORADIUS' => 'keys-georadius',
             'GEORADIUSBYMEMBER' => 'keys-georadius',
+
+            /* cluster */
+            'CLUSTER' => 'keys-fake',
         ];
 
         if (isset($type)) {
