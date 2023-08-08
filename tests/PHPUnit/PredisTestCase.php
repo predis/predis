@@ -22,7 +22,7 @@ use Predis\Connection;
  */
 abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
 {
-    protected $redisServerVersion = null;
+    protected $redisServerVersion;
     protected $redisJsonVersion;
 
     /**
@@ -73,7 +73,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return RedisCommandConstraint
      */
-    public function isRedisCommand($command = null, ?array $arguments = null): RedisCommandConstraint
+    public function isRedisCommand($command = null, array $arguments = null): RedisCommandConstraint
     {
         return new RedisCommandConstraint($command, $arguments);
     }
@@ -153,6 +153,10 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getDefaultParametersArray(): array
     {
+        if ($this->isClusterTest()) {
+            return $this->prepareClusterEndpoints();
+        }
+
         return [
             'scheme' => 'tcp',
             'host' => constant('REDIS_SERVER_HOST'),
@@ -224,7 +228,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return Client
      */
-    protected function createClient(?array $parameters = null, ?array $options = null, ?bool $flushdb = true): Client
+    protected function createClient(array $parameters = null, array $options = null, ?bool $flushdb = true): Client
     {
         $parameters = array_merge(
             $this->getDefaultParametersArray(),
@@ -232,11 +236,19 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         );
 
         $options = array_merge(
-            [
-                'commands' => $this->getCommandFactory(),
-            ],
-            $options ?: []
+            ['commands' => $this->getCommandFactory()],
+            $options ?: [],
+            getenv('USE_RELAY') ? ['connections' => 'relay'] : []
         );
+
+        if ($this->isClusterTest()) {
+            $options = array_merge(
+                [
+                    'cluster' => 'redis',
+                ],
+                $options
+            );
+        }
 
         $client = new Client($parameters, $options);
         $client->connect();
@@ -301,7 +313,6 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * the default connection parameters used by Predis or a set of connection
      * parameters specified in the optional second argument.
      *
-
      * @param array|string|null $parameters Optional connection parameters
      *
      * @return MockObject|Connection\NodeConnectionInterface
@@ -363,9 +374,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $this->getName(false)
         );
 
-        if (isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group']) &&
-            !empty($annotations['method']['requiresRedisVersion']) &&
-            in_array('connected', $annotations['method']['group'])
+        if (isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group'])
+            && !empty($annotations['method']['requiresRedisVersion'])
+            && in_array('connected', $annotations['method']['group'])
         ) {
             return $annotations['method']['requiresRedisVersion'][0];
         }
@@ -377,20 +388,17 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * Compares the specified version string against the Redis server version in
      * use for integration tests.
      *
-     * @param  array $requirements
+     * @param string $operator Comparison operator
+     * @param string $version  Version to compare
+     *
      * @return bool
      */
-    public function isRedisServerVersion(array $requirements): bool
+    public function isRedisServerVersion(string $operator, string $version): bool
     {
         $serverVersion = $this->getRedisServerVersion();
-        $comparison = true;
+        $comparison = version_compare($serverVersion, $version);
 
-        foreach ($requirements as $requirement) {
-            $comparison = $comparison &&
-                version_compare($serverVersion, $requirement['version'], $requirement['operator']);
-        }
-
-        return $comparison;
+        return (bool) eval("return $comparison $operator 0;");
     }
 
     /**
@@ -408,13 +416,21 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             return;
         }
 
-        $requirements = $this->parseVersionRequirements($requiredVersion);
+        $requiredVersion = explode(' ', $requiredVersion, 2);
 
-        if (!$this->isRedisServerVersion($requirements)) {
+        if (count($requiredVersion) === 1) {
+            $reqOperator = '>=';
+            $reqVersion = $requiredVersion[0];
+        } else {
+            $reqOperator = $requiredVersion[0];
+            $reqVersion = $requiredVersion[1];
+        }
+
+        if (!$this->isRedisServerVersion($reqOperator, $reqVersion)) {
             $serverVersion = $this->getRedisServerVersion();
 
             $this->markTestSkipped(
-                "Test requires a Redis server instance {$requiredVersion} but target server is $serverVersion"
+                "Test requires a Redis server instance $reqOperator $reqVersion but target server is $serverVersion"
             );
         }
     }
@@ -513,9 +529,9 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $this->getName(false)
         );
 
-        if (isset($annotations['method'][$moduleAnnotation], $annotations['method']['group']) &&
-            !empty($annotations['method'][$moduleAnnotation]) &&
-            in_array('connected', $annotations['method']['group'], true)
+        if (isset($annotations['method'][$moduleAnnotation], $annotations['method']['group'])
+            && !empty($annotations['method'][$moduleAnnotation])
+            && in_array('connected', $annotations['method']['group'], true)
         ) {
             return $annotations['method'][$moduleAnnotation][0];
         }
@@ -536,32 +552,34 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Parse requirements from annotation value.
+     * Check annotations if it's matches to cluster test scenario.
      *
-     * @param  string $requirementsString
+     * @return bool
+     */
+    protected function isClusterTest(): bool
+    {
+        $annotations = TestUtil::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
+
+        return isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group'])
+            && !empty($annotations['method']['requiresRedisVersion'])
+            && in_array('connected', $annotations['method']['group'], true)
+            && in_array('cluster', $annotations['method']['group'], true);
+    }
+
+    /**
+     * Parse comma-separated cluster endpoints and convert them into tcp strings.
+     *
      * @return array
      */
-    protected function parseVersionRequirements(string $requirementsString): array
+    protected function prepareClusterEndpoints(): array
     {
-        $requirements = explode(' ', $requirementsString);
+        $endpoints = explode(',', constant('REDIS_CLUSTER_ENDPOINTS'));
 
-        if (count($requirements) === 1) {
-            return [['operator' => '>=', 'version' => $requirements[0]]];
-        }
-
-        $processedRequirements = [];
-
-        for ($i = 0, $iMax = count($requirements); $i < $iMax; $i++) {
-            if (isset($requirements[$i + 1])) {
-                $processedRequirements[] = [
-                    'operator' => $requirements[$i],
-                    'version' => $requirements[$i + 1],
-                ];
-
-                $i++;
-            }
-        }
-
-        return $processedRequirements;
+        return array_map(static function (string $elem) {
+            return 'tcp://' . $elem;
+        }, $endpoints);
     }
 }

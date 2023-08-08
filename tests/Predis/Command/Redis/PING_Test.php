@@ -58,6 +58,7 @@ class PING_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      */
     public function testAlwaysReturnsStatusResponse(): void
     {
@@ -66,5 +67,20 @@ class PING_Test extends PredisCommandTestCase
 
         $this->assertInstanceOf('Predis\Response\Status', $response);
         $this->assertEquals('PONG', $response);
+    }
+
+    /**
+     * @group connected
+     * @group ext-relay
+     */
+    public function testAlwaysReturnsResponseUsingRelay(): void
+    {
+        $redis = $this->getClient();
+
+        $response = $redis->ping();
+        $this->assertEquals('PONG', $response);
+
+        $response = $redis->ping('HELLO');
+        $this->assertSame('HELLO', $response);
     }
 }

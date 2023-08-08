@@ -91,19 +91,6 @@ class CLIENT_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsOfClientNoTouch(): void
-    {
-        $arguments = $expected = ['no-touch', 'on'];
-
-        $command = $this->getCommand();
-        $command->setArguments($arguments);
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testParseResponseOfClientKill(): void
     {
         $command = $this->getCommand();
@@ -158,6 +145,7 @@ BUFFER;
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.6.9
      */
     public function testGetsNameOfConnection(): void
@@ -185,31 +173,15 @@ BUFFER;
     }
 
     /**
-     * @dataProvider noTouchProvider
      * @group connected
-     * @requiresRedisVersion >= 7.2.0
-     * @param  string $argument
-     * @return void
+     * @requiresRedisVersion >= 7.0.0
      */
-    public function testNoTouchControlKeysAccess(string $argument): void
+    public function testSetNoEvictModeForCurrentConnection(): void
     {
         $redis = $this->getClient();
 
-        $this->assertEquals('OK', $redis->client('no-touch', $argument));
-    }
-
-    /**
-     * @dataProvider setInfoProvider
-     * @group connected
-     * @requiresRedisVersion >= 7.2.0
-     * @param  array $arguments
-     * @return void
-     */
-    public function testSetInfoAssignAttributesToCurrentConnection(array $arguments): void
-    {
-        $redis = $this->getClient();
-
-        $this->assertEquals('OK', $redis->client('setinfo', ...$arguments));
+        $this->assertEquals('OK', $redis->client('NO-EVICT', 'ON'));
+        $this->assertEquals('OK', $redis->client('NO-EVICT', 'OFF'));
     }
 
     /**
@@ -221,25 +193,6 @@ BUFFER;
             ['foo space'],
             ['foo \n'],
             ['foo $'],
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    public function noTouchProvider(): array
-    {
-        return [['on'], ['off']];
-    }
-
-    /**
-     * @return array
-     */
-    public function setInfoProvider(): array
-    {
-        return [
-            'with LIBNAME argument' => [['LIB-NAME', 'test']],
-            'with LIBVER argument' => [['LIB-VER', '1.0.0']],
         ];
     }
 

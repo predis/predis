@@ -38,11 +38,11 @@ use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
-use Predis\Command\Container\ACL;
-use Predis\Command\Container\FUNCTIONS;
-use Predis\Command\Container\Json\JSONDEBUG;
-use Predis\Command\Container\Search\FTCONFIG;
-use Predis\Command\Container\Search\FTCURSOR;
+use Predis\Command\Redis\Container\ACL;
+use Predis\Command\Redis\Container\FunctionContainer;
+use Predis\Command\Redis\Container\Json\JSONDEBUG;
+use Predis\Command\Redis\Container\Search\FTCONFIG;
+use Predis\Command\Redis\Container\Search\FTCURSOR;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -178,7 +178,9 @@ use Predis\Command\Container\Search\FTCURSOR;
  * @method $this jsonforget(string $key, string $path = '$')
  * @method $this jsonget(string $key, string $indent = '', string $newline = '', string $space = '', string ...$paths)
  * @method $this jsonnumincrby(string $key, string $path, int $value)
+ * @method $this jsonmerge(string $key, string $path, string $value)
  * @method $this jsonmget(array $keys, string $path)
+ * @method $this jsonmset(string ...$keyPathValue)
  * @method $this jsonobjkeys(string $key, string $path = '$')
  * @method $this jsonobjlen(string $key, string $path = '$')
  * @method $this jsonresp(string $key, string $path = '$')
@@ -302,7 +304,6 @@ use Predis\Command\Container\Search\FTCURSOR;
  * @method $this exec()
  * @method $this multi()
  * @method $this unwatch()
- * @method $this waitaof(int $numLocal, int $numReplicas, int $timeout)
  * @method $this watch($key)
  * @method $this eval($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this eval_ro(string $script, array $keys, ...$argument)
@@ -337,11 +338,11 @@ use Predis\Command\Container\Search\FTCURSOR;
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
- * @property FUNCTIONS $function
- * @property FTCONFIG  $ftconfig
- * @property FTCURSOR  $ftcursor
- * @property JSONDEBUG $jsondebug
- * @property ACL       $acl
+ * @property FunctionContainer $function
+ * @property FTCONFIG          $ftconfig
+ * @property FTCURSOR          $ftcursor
+ * @property JSONDEBUG         $jsondebug
+ * @property ACL               $acl
  */
 interface ClientContextInterface
 {

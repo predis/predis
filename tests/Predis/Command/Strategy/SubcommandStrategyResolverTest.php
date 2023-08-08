@@ -19,23 +19,27 @@ use Predis\Command\Strategy\ContainerCommands\Functions\LoadStrategy;
 class SubcommandStrategyResolverTest extends TestCase
 {
     /**
-     * @var StrategyResolverInterface
-     */
-    private $resolver;
-
-    protected function setUp(): void
-    {
-        $this->resolver = new SubcommandStrategyResolver();
-    }
-
-    /**
+     * @group disconnected
      * @return void
      */
     public function testResolveCorrectStrategy(): void
     {
+        $resolver = new SubcommandStrategyResolver();
         $expectedStrategy = new LoadStrategy();
 
-        $this->assertEquals($expectedStrategy, $this->resolver->resolve('functions', 'load'));
+        $this->assertEquals($expectedStrategy, $resolver->resolve('functions', 'load'));
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testResolveCorrectlyResolvesStrategyWithGivenWordSeparator(): void
+    {
+        $resolver = new SubcommandStrategyResolver('_');
+        $expectedStrategy = new LoadStrategy();
+
+        $this->assertEquals($expectedStrategy, $resolver->resolve('functions_', 'load_'));
     }
 
     /**
@@ -43,9 +47,11 @@ class SubcommandStrategyResolverTest extends TestCase
      */
     public function testResolveThrowsExceptionOnNonExistingStrategy(): void
     {
+        $resolver = new SubcommandStrategyResolver();
+
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Non-existing container command given');
 
-        $this->resolver->resolve('foo', 'bar');
+        $resolver->resolve('foo', 'bar');
     }
 }

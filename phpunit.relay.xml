@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    bootstrap="tests/bootstrap.php"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    processIsolation="false"
+    stopOnError="false"
+    stopOnFailure="false"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+>
+
+    <testsuites>
+        <testsuite name="Predis Test Suite">
+            <directory phpVersion="7.4">tests/Predis/</directory>
+        </testsuite>
+    </testsuites>
+
+    <groups>
+        <exclude>
+            <group>relay-incompatible</group>
+            <group>realm-webdis</group>
+            <group>realm-stack</group>
+            <group>ext-curl</group>
+            <group>ext-phpiredis</group>
+            <group>cluster</group>
+        </exclude>
+    </groups>
+
+    <filter>
+        <whitelist>
+            <directory suffix=".php">src/</directory>
+        </whitelist>
+    </filter>
+
+    <php>
+        <const name="REDIS_SERVER_HOST" value="127.0.0.1" />
+        <const name="REDIS_SERVER_PORT" value="6379" />
+        <const name="REDIS_SERVER_DBNUM" value="0" />
+        <env name="USE_RELAY" value="true" />
+
+        <!-- Redis Cluster -->
+        <!-- Only master nodes endpoints included -->
+        <const name="REDIS_CLUSTER_ENDPOINTS" value="127.0.0.1:6372,127.0.0.1:6373,127.0.0.1:6374" />
+    </php>
+</phpunit>

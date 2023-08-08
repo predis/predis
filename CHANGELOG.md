@@ -1,13 +1,24 @@
 ## Changelog
 
-## Unreleased
+## v2.2.0 (2023-06-14)
+
+Predis v2.2.0 introduces official support for [Redis Stack](https://redis.io/docs/stack/) as well as a [Relay](https://github.com/cachewerk/relay) integration for substantially [faster read performance](https://github.com/predis/predis/wiki/Using-Relay).
 
 ### Added
-- Added support for `ACL SETUSER, GETUSER, DRYRUN` commands
-- Added support for `FCALL_RO` command
+- Added support for [Relay](https://github.com/predis/predis/wiki/Using-Relay) (#1263)
+- Added support for `FCALL_RO` command (#1191)
+- Added support for Redis `JSON`, `Bloom`, `Search` and `TimeSeries`  module (#1253)
+- Added support for `ACL SETUSER, GETUSER, DRYRUN` commands (#1193)
+
+### Changed
+- Minor code style and type-hint changes (#1311)
 
 ### Fixed
-- Fixed prefixes for `XTRIM` and `XREVRANGE` commands
+- Fixed prefixes for `XTRIM` and `XREVRANGE` commands (#1230)
+- Fixed `fclose()` being called on invalid stream resource (#1199)
+- Fixed `BitByte` and `ExpireOptions` traits skip processing on null values (#1169)
+- Fixed missing `@return` annotations (#1265)
+- Fixed `GETDEL` prefixing (#1306)
 
 ## v2.1.2 (2023-03-02)
 

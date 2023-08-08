@@ -14,7 +14,7 @@ concurrency:
 jobs:
 
   predis:
-    name: PHP ${{ matrix.php }} Redis ${{ matrix.redis }}
+    name: PHP ${{ matrix.php }} (Redis ${{ matrix.redis }})
     runs-on: ubuntu-latest
 
     strategy:
@@ -28,12 +28,11 @@ jobs:
           - '8.1'
           - '8.2'
         redis:
-          - '3'
-          - '4'
-          - '5'
-          - '6'
-          - '7'
-          - '7.2-rc'
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
 
     services:
       redis:
@@ -51,6 +50,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
+          extensions: relay
           coverage: ${{ (matrix.php == '8.1' && matrix.redis == '7') && 'xdebug' || 'none' }}
 
       - name: Install Composer dependencies
@@ -59,13 +59,17 @@ jobs:
           dependency-versions: highest
           composer-options: ${{ matrix.php == '8.0' && '--ignore-platform-reqs' || '' }}
 
-      - name: Run PHPUnit tests
+      - name: Run tests
         if: ${{ matrix.php != '8.1' || matrix.redis != '7' }}
-        run: vendor/bin/phpunit --verbose
+        run: vendor/bin/phpunit
 
-      - name: Run PHPUnit tests with coverage
+      - name: Run tests with coverage
         if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
-        run: vendor/bin/phpunit --verbose --coverage-clover build/logs/clover.xml --coverage-filter ./src
+        run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml --coverage-filter ./src
+
+      - name: Run tests using Relay
+        if: ${{ matrix.redis >= '6' }}
+        run: vendor/bin/phpunit -c phpunit.relay.xml
 
       - name: Send coverage to Coveralls
         env:
@@ -74,3 +78,46 @@ jobs:
         run: |
           wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.3/php-coveralls.phar"
           php ./php-coveralls.phar -v
+
+  predis-cluster:
+
+    name: PHP ${{ matrix.php }} (Redis Cluster latest)
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - '7.2'
+          - '7.3'
+          - '7.4'
+          - '8.0'
+          - '8.1'
+          - '8.2'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run redis cluster
+        uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: "./docker/unstable_cluster/docker-compose.yml"
+
+      - name: Setup PHP with Composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: relay
+          coverage: ${{ (matrix.php == '8.1') && 'xdebug' || 'none' }}
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v2
+        with:
+          dependency-versions: highest
+          composer-options: ${{ matrix.php == '8.0' && '--ignore-platform-reqs' || '' }}
+
+      - name: Run tests against cluster
+        run: |
+          sleep 5 # Timeout to make sure that docker image is setup
+          vendor/bin/phpunit --group cluster

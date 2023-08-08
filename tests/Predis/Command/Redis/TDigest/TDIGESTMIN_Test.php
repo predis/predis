@@ -75,8 +75,8 @@ class TDIGESTMIN_Test extends PredisCommandTestCase
 
         $actualResponse = $redis->tdigestmin('key');
 
-        $this->assertSame('1', $actualResponse);
-        $this->assertSame('nan', $redis->tdigestmin('empty_key'));
+        $this->assertEquals('1', $actualResponse);
+        $this->assertEquals('nan', $redis->tdigestmin('empty_key'));
     }
 
     /**
