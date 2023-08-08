@@ -57,6 +57,7 @@ class JSONMERGE_Test extends PredisCommandTestCase
     /**
      * @dataProvider jsonProvider
      * @group connected
+     * @group relay-incompatible
      * @param  array  $setArguments
      * @param  array  $mergeArguments
      * @param  string $expectedResponse

@@ -79,6 +79,7 @@ class FTCURSOR_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.1.0
      */
@@ -211,6 +212,7 @@ class FTCURSOR_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.1.0
      */
@@ -253,6 +255,7 @@ class FTCURSOR_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.1.0
      */
@@ -268,6 +271,7 @@ class FTCURSOR_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.1.0
      */

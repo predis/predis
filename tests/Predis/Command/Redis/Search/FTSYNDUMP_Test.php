@@ -62,6 +62,7 @@ class FTSYNDUMP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.2.0
      */
@@ -108,6 +109,7 @@ class FTSYNDUMP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.2.0
      */
