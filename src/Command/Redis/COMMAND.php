@@ -30,6 +30,37 @@ class COMMAND extends BaseCommand
     /**
      * {@inheritdoc}
      */
+    public function setArguments(array $arguments)
+    {
+        if (array_key_exists(0, $arguments) && $arguments[0] === 'LIST') {
+            $this->setListArguments($arguments);
+        } else {
+            parent::setArguments($arguments);
+        }
+    }
+
+    /**
+     * @param  array $arguments
+     * @return void
+     */
+    private function setListArguments(array $arguments): void
+    {
+        $processedArguments = [$arguments[0]];
+        $filterArguments = [];
+
+        if (array_key_exists(1, $arguments) && null !== $arguments[1]) {
+            $filterArguments = $arguments[1]->toArray();
+        }
+
+        parent::setArguments(array_merge(
+            $processedArguments,
+            $filterArguments
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function parseResponse($data)
     {
         // Relay (RESP3) uses maps and it might be good

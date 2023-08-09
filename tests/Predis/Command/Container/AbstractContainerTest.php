@@ -59,6 +59,7 @@ class AbstractContainerTest extends TestCase
     }
 
     /**
+     * @group disconnected
      * @return void
      */
     public function testGetContainerId(): void
@@ -67,6 +68,7 @@ class AbstractContainerTest extends TestCase
     }
 
     /**
+     * @group disconnected
      * @return void
      */
     public function testCallReturnsValidCommandResponse(): void
@@ -86,5 +88,26 @@ class AbstractContainerTest extends TestCase
             ->willReturn($this->expectedValue);
 
         $this->assertSame($this->expectedValue, $this->testClass->test($this->arguments));
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testInvokeCallsCommandWithContainerCommandId(): void
+    {
+        $this->mockClient
+            ->expects($this->once())
+            ->method('createCommand')
+            ->with($this->equalTo('test'))
+            ->willReturn($this->mockCommand);
+
+        $this->mockClient
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->mockCommand)
+            ->willReturn($this->expectedValue);
+
+        $this->assertSame($this->expectedValue, call_user_func($this->testClass));
     }
 }

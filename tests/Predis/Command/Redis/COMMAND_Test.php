@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\Argument\CommandListFilter;
 use Predis\Response\Status;
 
 /**
@@ -48,6 +49,32 @@ class COMMAND_Test extends PredisCommandTestCase
         $command->setArguments($arguments);
 
         $this->assertSame($expected, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testFilterGetKeysAndFlagsArguments(): void
+    {
+        $arguments = ['GETKEYSANDFLAGS', 'DEL', 'arg1', 'arg2'];
+        $expected = ['GETKEYSANDFLAGS', 'DEL', 'arg1', 'arg2'];
+
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
+
+        $this->assertSame($expected, $command->getArguments());
+    }
+
+    /**
+     * @dataProvider listArgumentsProvider
+     * @group disconnected
+     */
+    public function testFilterListArguments(array $actualArguments, array $expectedArguments): void
+    {
+        $command = $this->getCommand();
+        $command->setArguments($actualArguments);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**
@@ -91,7 +118,7 @@ class COMMAND_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertCount(1, $response = $redis->command('INFO', 'FOOBAR'));
+        $this->assertCount(1, $response = $redis->command->info('FOOBAR'));
         $this->assertSame([null], $response);
     }
 
@@ -103,7 +130,7 @@ class COMMAND_Test extends PredisCommandTestCase
     {
         $redis = $this->getResp3Client();
 
-        $this->assertCount(1, $response = $redis->command('INFO', 'FOOBAR'));
+        $this->assertCount(1, $response = $redis->command->info('FOOBAR'));
         $this->assertSame([null], $response);
     }
 
@@ -151,7 +178,7 @@ class COMMAND_Test extends PredisCommandTestCase
             $expected[0][] = [];
         }
 
-        $this->assertCount(1, $response = $redis->command('INFO', 'GET'));
+        $this->assertCount(1, $response = $redis->command->info('GET'));
 
         // NOTE: we use assertEquals instead of assertSame because Redis returns
         // flags as +STATUS responses, represented by Predis with instances of
@@ -169,6 +196,56 @@ class COMMAND_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertGreaterThan(100, count($response = $redis->command()));
+        $this->assertGreaterThan(100, count(call_user_func($redis->command)));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsCommandKeysAndFlags(): void
+    {
+        $redis = $this->getClient();
+        $expectedResponse = [
+            [
+                'key',
+                ['RO', 'access'],
+            ],
+        ];
+
+        $this->assertEquals($expectedResponse, $redis->command->getKeysAndFlags('GET', 'key'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsListOfCommands(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertNotEmpty($redis->command->list());
+    }
+
+    public function listArgumentsProvider(): array
+    {
+        return [
+            'with default arguments' => [
+                ['LIST'],
+                ['LIST'],
+            ],
+            'with FILTERBY MODULE' => [
+                ['LIST', (new CommandListFilter())->filterByModule('module')],
+                ['LIST', 'FILTERBY', 'MODULE', 'module'],
+            ],
+            'with FILTERBY ACLCAT' => [
+                ['LIST', (new CommandListFilter())->filterByACLCategory('category')],
+                ['LIST', 'FILTERBY', 'ACLCAT', 'category'],
+            ],
+            'with FILTERBY PATTERN' => [
+                ['LIST', (new CommandListFilter())->filterByPattern('pattern')],
+                ['LIST', 'FILTERBY', 'PATTERN', 'pattern'],
+            ],
+        ];
     }
 }

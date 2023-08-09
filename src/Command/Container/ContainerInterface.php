@@ -25,6 +25,13 @@ interface ContainerInterface
     public function __call(string $subcommandID, array $arguments);
 
     /**
+     * Calls current container command without subcommand.
+     *
+     * @return mixed
+     */
+    public function __invoke();
+
+    /**
      * Returns containerCommandId of specific container command.
      *
      * @return string

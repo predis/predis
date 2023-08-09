@@ -40,6 +40,7 @@ use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\ACL;
 use Predis\Command\Container\CLIENT;
+use Predis\Command\Container\COMMAND;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
@@ -344,6 +345,7 @@ use Predis\Command\Container\XGROUP;
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
+ * @property COMMAND   $command
  * @property CLIENT    $client
  * @property FUNCTIONS $function
  * @property FTCONFIG  $ftconfig

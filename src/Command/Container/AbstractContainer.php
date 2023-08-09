@@ -38,5 +38,15 @@ abstract class AbstractContainer implements ContainerInterface
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function __invoke()
+    {
+        return $this->client->executeCommand(
+            $this->client->createCommand($this->getContainerCommandId())
+        );
+    }
+
     abstract public function getContainerCommandId(): string;
 }
