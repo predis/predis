@@ -23,7 +23,7 @@ class CommandListFilter implements ArrayableArgument
      * Get the commands that belong to the module specified by module-name.
      *
      * @param  string $moduleName
-     * @return void
+     * @return self
      */
     public function filterByModule(string $moduleName): self
     {
@@ -36,7 +36,7 @@ class CommandListFilter implements ArrayableArgument
      * Get the commands in the ACL category specified by category.
      *
      * @param  string $category
-     * @return void
+     * @return self
      */
     public function filterByACLCategory(string $category): self
     {
@@ -49,7 +49,7 @@ class CommandListFilter implements ArrayableArgument
      * Get the commands that match the given glob-like pattern.
      *
      * @param  string $pattern
-     * @return void
+     * @return self
      */
     public function filterByPattern(string $pattern): self
     {
