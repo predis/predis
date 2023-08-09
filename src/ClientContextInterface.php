@@ -334,7 +334,6 @@ use Predis\Command\Container\XGROUP;
  * @method $this slowlog($subcommand, $argument = null)
  * @method $this spublish(string $shardChannel, string $message)
  * @method $this time()
- * @method $this command($subcommand, $argument = null)
  * @method $this geoadd($key, $longitude, $latitude, $member)
  * @method $this geohash($key, array $members)
  * @method $this geopos($key, array $members)
