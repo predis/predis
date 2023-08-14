@@ -61,7 +61,7 @@ class TSREVRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -110,7 +110,7 @@ class TSREVRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */

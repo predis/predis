@@ -57,7 +57,7 @@ class JSONMSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
+     * @group relay-resp3
      * @return void
      * @requiresRedisJsonVersion >= 2.6.0
      */
@@ -71,7 +71,7 @@ class JSONMSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
+     * @group relay-resp3
      * @return void
      * @requiresRedisJsonVersion >= 2.6.0
      */

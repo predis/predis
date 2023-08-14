@@ -64,7 +64,7 @@ class TOPKINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.0.0
      */
@@ -101,7 +101,7 @@ class TOPKINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.0.0
      */

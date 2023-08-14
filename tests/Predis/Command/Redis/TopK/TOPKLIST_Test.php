@@ -63,7 +63,7 @@ class TOPKLIST_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
+     * @group relay-resp3
      * @dataProvider structureProvider
      * @param  array $reserveArguments
      * @param  array $addArguments

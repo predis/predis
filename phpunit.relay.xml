@@ -20,6 +20,7 @@
     <groups>
         <exclude>
             <group>relay-incompatible</group>
+            <group>relay-resp3</group>
             <group>realm-stack</group>
             <group>ext-curl</group>
             <group>cluster</group>
