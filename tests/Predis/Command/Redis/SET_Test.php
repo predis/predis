@@ -55,8 +55,8 @@ class SET_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsRedisWithModifiers(): void
     {
-        $arguments = ['foo', 'bar', true, 'EX', '10', 'NX'];
-        $expected = ['foo', 'bar', 'GET', 'EX', '10', 'NX'];
+        $arguments = ['foo', 'bar', 'EX', '10', 'NX', true];
+        $expected = ['foo', 'bar', 'EX', '10', 'NX', 'GET'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -122,7 +122,7 @@ class SET_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertEquals('OK', $redis->set('foo', 'bar', false, 'ex', 1));
+        $this->assertEquals('OK', $redis->set('foo', 'bar', 'ex', 1));
         $this->assertSame(1, $redis->ttl('foo'));
     }
 
@@ -134,7 +134,7 @@ class SET_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertEquals('OK', $redis->set('foo', 'bar', false, 'px', 1000));
+        $this->assertEquals('OK', $redis->set('foo', 'bar', 'px', 1000));
 
         $pttl = $redis->pttl('foo');
         $this->assertGreaterThan(0, $pttl);
@@ -149,7 +149,7 @@ class SET_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertEquals('OK', $redis->set('foo', 'bar', false, 'NX'));
+        $this->assertEquals('OK', $redis->set('foo', 'bar', 'NX'));
         $this->assertNull($redis->set('foo', 'bar', 'NX'));
     }
 
@@ -175,11 +175,11 @@ class SET_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $redis->set('foo', 'bar', false, 'EX', 100);
+        $redis->set('foo', 'bar', 'EX', 100);
         $this->assertGreaterThanOrEqual(99, $redis->ttl('foo'));
         $this->assertLessThanOrEqual(100, $redis->ttl('foo'));
 
-        $this->assertEquals('OK', $redis->set('foo', 'barbar', false, 'KEEPTTL'));
+        $this->assertEquals('OK', $redis->set('foo', 'barbar', 'KEEPTTL'));
         $this->assertGreaterThanOrEqual(99, $redis->ttl('foo'));
         $this->assertLessThanOrEqual(100, $redis->ttl('foo'));
     }
@@ -194,7 +194,7 @@ class SET_Test extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
 
-        $this->assertSame('bar', $redis->set('foo', 'foobar', true));
+        $this->assertSame('bar', $redis->set('foo', 'foobar', null, null, null, true));
     }
 
     /**
@@ -205,7 +205,7 @@ class SET_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertNull($redis->set('foo', 'foobar', true));
+        $this->assertNull($redis->set('foo', 'foobar', null, null, null, true));
     }
 
     /**
@@ -216,7 +216,7 @@ class SET_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $this->assertNull($redis->set('foo', 'foobar', true, 'NX'));
+        $this->assertNull($redis->set('foo', 'foobar', 'NX', null, null, true));
     }
 
     /**

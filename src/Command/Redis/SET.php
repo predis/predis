@@ -29,8 +29,8 @@ class SET extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        if (isset($arguments[2]) && true === $arguments[2]) {
-            $arguments[2] = 'GET';
+        if (isset($arguments[5]) && true === $arguments[5]) {
+            $arguments[5] = 'GET';
         }
 
         parent::setArguments($arguments);
