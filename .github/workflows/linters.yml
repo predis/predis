@@ -136,7 +136,7 @@ jobs:
           EXPECTED="LICENSE,README.md,autoload.php,composer.json"
           CURRENT="$(
               git archive HEAD \
-                  | tar --list --exclude="src" --exclude="src/*" --exclude="bin" --exclude="bin/*" \
+                  | tar --list --exclude="src" --exclude="src/*" --exclude="bin" --exclude="bin/*" --exclude="docker" --exclude="docker/*" \
                   | paste --serial --delimiters=","
           )"
           echo "CURRENT =${CURRENT}"

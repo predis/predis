@@ -153,4 +153,17 @@ class SET_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->set('foo', 'barbar', 'XX'));
         $this->assertNull($redis->set('foofoo', 'barbar', 'XX'));
     }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 3.0.0
+     * @return void
+     */
+    public function testSetStringValueInClusterMode(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
+    }
 }
