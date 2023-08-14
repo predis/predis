@@ -414,10 +414,9 @@ abstract class ClusterStrategy implements StrategyInterface
     {
         $keys = $command->getKeys();
 
-        // Generates random key for commands that can be executed against any node.
+        // Generates fake key for commands that can be executed against any node.
         if (null === $keys) {
-            $randomBytes = random_bytes(5);
-            $keys = [bin2hex($randomBytes)];
+            $keys = [$this->getFakeKey()];
         }
 
         $isSameSlot = true;
