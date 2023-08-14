@@ -61,8 +61,9 @@ class BFADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
-     * @requiresRedisBfVersion >= 1.0
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testAddGivenItemIntoBloomFilter(): void
     {
@@ -75,7 +76,22 @@ class BFADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisBfVersion >= 1.0
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testAddGivenItemIntoBloomFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->bfadd('key', 'item');
+        $this->assertTrue($actualResponse);
+        $this->assertTrue($redis->bfexists('key', 'item'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {

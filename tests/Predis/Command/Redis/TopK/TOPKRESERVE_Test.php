@@ -59,6 +59,7 @@ class TOPKRESERVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider structureProvider
      * @param  array  $topKArguments
      * @param  string $key
