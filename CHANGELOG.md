@@ -5,6 +5,7 @@
 ### Added
 - Added support for `WAITAOF` command (#1357)
 - Added support for `SHUTDOWN` command (#1359)
+- Added support for `FUNCTION` command (#1332)
 - Added support for new optional `PEXPIRE`, `PEXPIREAT` and `COMMAND`
 - Added missing Redis Stack commands to `KeyPrefixProcessor` (#1358)
 
