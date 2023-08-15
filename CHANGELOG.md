@@ -3,14 +3,14 @@
 ## v2.2.1 (2023-08-15)
 
 ### Added
-- Added support for new optional arguments: `PEXPIRE`, `PEXPIREAT`, `INFO`, `COMMAND` (Redis 6.2, 7) (#1330)
-- Client set client name and version as a part of connection establishing process. (Redis 7.2) (#1347)
 - Added support for `WAITAOF` command (#1357)
-- Added missing redis-stack commands to `KeyPrefix processor` (#1358)
-- Added support Redis 7.0 arguments for `SHUTDOWN command` (#1359)
+- Added support for `SHUTDOWN` command (#1359)
+- Added support for `FUNCTION` command (#1332)
+- Added support for new optional `PEXPIRE`, `PEXPIREAT` and `COMMAND`
+- Added missing Redis Stack commands to `KeyPrefixProcessor` (#1358)
 
 ### Changed
-- Changed interface of `CLIENT` command to more descriptive for each subcommand. (#1337)
+- Set client name and version when establishing a connection (#1347)
 
 ## v2.2.0 (2023-06-14)
 
