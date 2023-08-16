@@ -61,6 +61,7 @@ class FTDICTDUMP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.4.0
      */

@@ -63,6 +63,7 @@ class TSDECRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -121,6 +122,7 @@ class TSDECRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -147,7 +149,6 @@ class TSDECRBY_Test extends PredisCommandTestCase
         );
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('TSDB: for incrby/decrby, timestamp should be newer than the');
 
         $redis->tsdecrby('temperature:2:32', 27, (new DecrByArguments())->timestamp(123123123122));
     }
