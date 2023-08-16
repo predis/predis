@@ -102,6 +102,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-rep3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
