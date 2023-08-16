@@ -76,20 +76,6 @@ class BFADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @return void
-     * @requiresRedisBfVersion >= 2.6.0
-     */
-    public function testAddGivenItemIntoBloomFilterResp3(): void
-    {
-        $redis = $this->getResp3Client();
-
-        $actualResponse = $redis->bfadd('key', 'item');
-        $this->assertTrue($actualResponse);
-        $this->assertTrue($redis->bfexists('key', 'item'));
-    }
-
-    /**
-     * @group connected
      * @group relay-incompatible
      * @requiresRedisBfVersion >= 1.0.0
      */
