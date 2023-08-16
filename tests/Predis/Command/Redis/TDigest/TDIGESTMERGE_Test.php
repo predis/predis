@@ -120,7 +120,7 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-rep3
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
