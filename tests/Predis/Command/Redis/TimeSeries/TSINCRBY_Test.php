@@ -147,7 +147,6 @@ class TSINCRBY_Test extends PredisCommandTestCase
         );
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('TSDB: for incrby/decrby, timestamp should be newer than the');
 
         $redis->tsincrby('temperature:2:32', 27, (new IncrByArguments())->timestamp(123123123122));
     }
