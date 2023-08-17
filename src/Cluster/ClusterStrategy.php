@@ -174,6 +174,9 @@ abstract class ClusterStrategy implements StrategyInterface
             'GEODIST' => $getKeyFromFirstArgument,
             'GEORADIUS' => [$this, 'getKeyFromGeoradiusCommands'],
             'GEORADIUSBYMEMBER' => [$this, 'getKeyFromGeoradiusCommands'],
+
+            /* cluster */
+            'CLUSTER' => [$this, 'getFakeKey'],
         ];
     }
 

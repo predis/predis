@@ -40,6 +40,7 @@ use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;
 use Predis\Command\Redis\Container\ACL;
+use Predis\Command\Redis\Container\CLUSTER;
 use Predis\Command\Redis\Container\FunctionContainer;
 use Predis\Command\Redis\Container\Json\JSONDEBUG;
 use Predis\Command\Redis\Container\Search\FTCONFIG;
@@ -358,6 +359,7 @@ use Predis\Response\Status;
  * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
+ * @property CLUSTER           $cluster
  * @property FunctionContainer $function
  * @property FTCONFIG          $ftconfig
  * @property FTCURSOR          $ftcursor
