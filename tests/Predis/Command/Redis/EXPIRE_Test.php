@@ -89,6 +89,17 @@ class EXPIRE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsZeroOnNonExistingKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(0, $redis->expire('foo', 2));
+    }
+
+    /**
      * @medium
      * @group connected
      * @group slow
@@ -165,13 +176,13 @@ class EXPIRE_Test extends PredisCommandTestCase
                 ['newExpiryLower', 'value', 'EX', 1000],
                 ['newExpiryGreater', 'value', 'EX', 10],
                 ['newExpiryGreater', 100, 'GT'],
-                ['newExpiryLower', 20, 'GT'],
+                ['newExpiryLower', 10, 'GT'],
             ],
             'only if new expiry is lower then current one' => [
                 ['newExpiryLower', 'value', 'EX', 1000],
                 ['newExpiryGreater', 'value', 'EX', 10],
-                ['newExpiryLower', 20, 'LT'],
-                ['newExpiryGreater', 20, 'LT'],
+                ['newExpiryLower', 10, 'LT'],
+                ['newExpiryGreater', 100, 'LT'],
             ],
         ];
     }

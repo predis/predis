@@ -80,6 +80,21 @@ class ZRANDMEMBER_test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsRandomMembersFromSortedSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $notExpectedKey = 'not_expected';
+
+        $redis->zadd('test-zset', 1, 'member1');
+        $this->assertSame('member1', $redis->zrandmember('test-zset'));
+        $this->assertNull($redis->zrandmember($notExpectedKey));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 6.2.0
      */
     public function testThrowsExceptionOnWrongType(): void

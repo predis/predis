@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\PubSub;
+namespace Predis\Consumer\PubSub;
 
 use Predis\NotSupportedException;
 
@@ -99,16 +99,8 @@ class RelayConsumer extends Consumer
     /**
      * {@inheritDoc}
      */
-    public function stop($drop = false)
+    public function stop($drop = false): bool
     {
         return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function __destruct()
-    {
-        // NOOP
     }
 }

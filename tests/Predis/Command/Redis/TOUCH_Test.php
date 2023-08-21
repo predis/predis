@@ -96,4 +96,24 @@ class TOUCH_Test extends PredisCommandTestCase
         $this->assertSame(1, $redis->touch('foo'));
         $this->assertSame(2, $redis->touch('foo', 'hoge'));
     }
+
+    /**
+     * @requiresRedisVersion >= 6.0.0
+     *
+     * @group connected
+     */
+    public function testReturnsNumberOfDeletedKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(0, $redis->touch('foo'));
+
+        $redis->set('foo', 'bar');
+        $this->assertSame(1, $redis->touch('foo'));
+        $this->assertSame(1, $redis->touch('foo', 'hoge'));
+
+        $redis->set('hoge', 'piyo');
+        $this->assertSame(1, $redis->touch('foo'));
+        $this->assertSame(2, $redis->touch('foo', 'hoge'));
+    }
 }

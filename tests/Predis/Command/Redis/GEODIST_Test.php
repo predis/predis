@@ -94,6 +94,18 @@ class GEODIST_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCommandReturnsGeoDistanceResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
+        $this->assertSame('166.2742', $redis->geodist('Sicily', 'Palermo', 'Catania', 'km'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
     public function testThrowsExceptionOnWrongType(): void

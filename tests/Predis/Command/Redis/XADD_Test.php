@@ -146,6 +146,19 @@ class XADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testAddsToStreamWithDefaultsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->xadd('stream', ['key' => 'val']);
+
+        $this->assertSame(1, $redis->xlen('stream'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 5.0.0
      */
     public function testAddsToStreamWithSpecificId(): void

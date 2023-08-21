@@ -106,6 +106,18 @@ class EXISTS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnValueWhenKeyExistsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('foo', 'bar');
+        $this->assertSame(1, $redis->exists('foo'));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnValueWhenKeyDoesNotExist(): void
     {

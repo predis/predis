@@ -96,6 +96,25 @@ class GETRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsSubstringResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('string', 'this is a string');
+
+        $this->assertSame('this', $redis->getrange('string', 0, 3));
+        $this->assertSame('ing', $redis->getrange('string', -3, -1));
+        $this->assertSame('this is a string', $redis->getrange('string', 0, -1));
+        $this->assertSame('string', $redis->getrange('string', 10, 100));
+
+        $this->assertSame('t', $redis->getrange('string', 0, 0));
+        $this->assertSame('', $redis->getrange('string', -1, 0));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.4.0
      */
     public function testReturnsEmptyStringOnNonExistingKey(): void

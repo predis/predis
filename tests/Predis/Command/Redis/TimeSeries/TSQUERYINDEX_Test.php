@@ -79,6 +79,28 @@ class TSQUERYINDEX_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
+    public function testQueryReturnsKeysMatchingGivenFilterExpressionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $arguments = (new CreateArguments())
+            ->labels('type', 'temp', 'location', 'TLV');
+
+        $this->assertEquals('OK', $redis->tscreate('temp:TLV', $arguments));
+
+        $anotherArguments = (new CreateArguments())
+            ->labels('type', 'temp', 'location', 'JER');
+
+        $this->assertEquals('OK', $redis->tscreate('temp:JER', $anotherArguments));
+
+        $this->assertSame(['temp:TLV'], $redis->tsqueryindex('location=TLV'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
     public function testThrowsExceptionOnInvalidFilterExpression(): void
     {
         $redis = $this->getClient();

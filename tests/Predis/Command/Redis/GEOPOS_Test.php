@@ -118,6 +118,21 @@ class GEOPOS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCommandReturnsGeoPositionsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
+        $this->assertEquals([
+            ['13.36138933897018433', '38.11555639549629859'],
+            ['15.08726745843887329', '37.50266842333162032'],
+        ], $redis->geopos('Sicily', 'Palermo', 'Catania'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
     public function testThrowsExceptionOnWrongType(): void

@@ -71,4 +71,23 @@ class MONITOR_Test extends PredisCommandTestCase
             $this->assertMatchesRegularExpression('/\d+.\d+(\s?\(db \d+\))? "MONITOR"/', $connection->read());
         }
     }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsStatusResponseAndReadsEventsFromTheConnectionResp3(): void
+    {
+        $connection = $this->getResp3Client()->getConnection();
+        $command = $this->getCommand();
+
+        $this->assertEquals('OK', $connection->executeCommand($command));
+
+        // NOTE: Starting with 2.6 Redis does not return the "MONITOR" message after
+        // +OK to the client that issued the MONITOR command.
+        if ($this->isRedisServerVersion('<=', '2.4.0')) {
+            $this->assertMatchesRegularExpression('/\d+.\d+(\s?\(db \d+\))? "MONITOR"/', $connection->read());
+        }
+    }
 }

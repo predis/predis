@@ -167,6 +167,26 @@ BUFFER;
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsListOfConnectedClientsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertIsArray($clients = $redis->client('LIST'));
+        $this->assertGreaterThanOrEqual(1, count($clients));
+        $this->assertIsArray($clients[0]);
+        $this->assertArrayHasKey('addr', $clients[0]);
+        $this->assertArrayHasKey('fd', $clients[0]);
+        $this->assertArrayHasKey('idle', $clients[0]);
+        $this->assertArrayHasKey('flags', $clients[0]);
+        $this->assertArrayHasKey('db', $clients[0]);
+        $this->assertArrayHasKey('sub', $clients[0]);
+        $this->assertArrayHasKey('psub', $clients[0]);
+    }
+
+    /**
+     * @group connected
      * @group relay-incompatible
      * @requiresRedisVersion >= 2.6.9
      */
@@ -183,6 +203,21 @@ BUFFER;
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testGetsNameOfConnectionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $clientName = $redis->client('GETNAME');
+        $this->assertSame('predis', $clientName);
+
+        $expectedConnectionName = 'foo-bar';
+        $this->assertEquals('OK', $redis->client('SETNAME', $expectedConnectionName));
+        $this->assertEquals($expectedConnectionName, $redis->client('GETNAME'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.9
      */
     public function testSetsNameOfConnection(): void
@@ -192,6 +227,17 @@ BUFFER;
         $expectedConnectionName = 'foo-baz';
         $this->assertEquals('OK', $redis->client->setName($expectedConnectionName));
         $this->assertEquals($expectedConnectionName, $redis->client->getName());
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testNoEvictTurnEnableEvictionMode(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->client->noEvict(true));
     }
 
     /**
@@ -217,18 +263,6 @@ BUFFER;
         $this->assertEquals('OK', $redis->client->setInfo('LIB-VER', '1.0.0'));
         $this->assertSame('lib', $redis->client->list()[0]['lib-name']);
         $this->assertSame('1.0.0', $redis->client->list()[0]['lib-ver']);
-    }
-
-    /**
-     * @group connected
-     * @requiresRedisVersion >= 7.0.0
-     */
-    public function testSetNoEvictModeForCurrentConnection(): void
-    {
-        $redis = $this->getClient();
-
-        $this->assertEquals('OK', $redis->client('NO-EVICT', 'ON'));
-        $this->assertEquals('OK', $redis->client('NO-EVICT', 'OFF'));
     }
 
     /**

@@ -108,6 +108,19 @@ class SINTER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsMembersOfSetOnSingleKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
+
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e', 'f', 'g'], $redis->sinter('letters:1st'));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsEmptyArrayOnNonExistingSetForIntersection(): void
     {

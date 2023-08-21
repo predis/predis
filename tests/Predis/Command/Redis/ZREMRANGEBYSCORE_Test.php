@@ -92,6 +92,22 @@ class ZREMRANGEBYSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testRemovesRangeByScoreResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
+
+        $this->assertSame(3, $redis->zremrangebyscore('letters', 5, 20));
+        $this->assertSame(['a', 'b', 'f'], $redis->zrange('letters', 0, -1));
+
+        $this->assertSame(0, $redis->zremrangebyscore('unknown', 0, 30));
+    }
+
+    /**
+     * @group connected
      */
     public function testRemovesRangeByExclusiveScore(): void
     {

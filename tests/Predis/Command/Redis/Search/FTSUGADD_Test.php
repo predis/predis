@@ -69,6 +69,18 @@ class FTSUGADD_Test extends PredisCommandTestCase
         $this->assertSame(1, $redis->ftsugadd('key', 'string', 1));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testAddSuggestionStringIntoAutoCompleteDictionaryResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(1, $redis->ftsugadd('key', 'string', 1));
+    }
+
     public function argumentsProvider(): array
     {
         return [

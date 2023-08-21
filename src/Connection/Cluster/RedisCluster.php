@@ -27,6 +27,7 @@ use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -58,6 +59,10 @@ use Traversable;
 class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 {
     private $useClusterSlots = true;
+
+    /**
+     * @var NodeConnectionInterface[]
+     */
     private $pool = [];
     private $slots = [];
     private $slotmap;
@@ -67,16 +72,34 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $retryInterval = 10;
 
     /**
-     * @param FactoryInterface  $connections Optional connection factory.
-     * @param StrategyInterface $strategy    Optional cluster strategy.
+     * @var int
+     */
+    private $readTimeout = 1000;
+
+    /**
+     * @var ParametersInterface
+     */
+    private $connectionParameters;
+
+    /**
+     * @param FactoryInterface       $connections Optional connection factory.
+     * @param StrategyInterface|null $strategy    Optional cluster strategy.
+     * @param int|null               $readTimeout Optional read timeout
      */
     public function __construct(
         FactoryInterface $connections,
-        StrategyInterface $strategy = null
+        ParametersInterface $parameters,
+        StrategyInterface $strategy = null,
+        int $readTimeout = null
     ) {
         $this->connections = $connections;
+        $this->connectionParameters = $parameters;
         $this->strategy = $strategy ?: new RedisClusterStrategy();
         $this->slotmap = new SlotMap();
+
+        if (!is_null($readTimeout)) {
+            $this->readTimeout = $readTimeout;
+        }
     }
 
     /**
@@ -677,6 +700,32 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function useClusterSlots($value)
     {
         $this->useClusterSlots = (bool) $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): ?ParametersInterface
+    {
+        return $this->connectionParameters;
+    }
+
+    /**
+     * Loop over connections until there's data to read.
+     *
+     * @return mixed
+     */
+    public function read()
+    {
+        while (true) {
+            foreach ($this->pool as $connection) {
+                if ($connection->hasDataToRead()) {
+                    return $connection->read();
+                }
+            }
+
+            usleep($this->readTimeout);
+        }
     }
 
     /**

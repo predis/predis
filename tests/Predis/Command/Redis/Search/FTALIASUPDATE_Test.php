@@ -81,6 +81,24 @@ class FTALIASUPDATE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testUpdateAliasAddAliasToGivenIndexIfAliasNotExistsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $schema = [new TextField('text_field')];
+
+        $createResponse = $redis->ftcreate('index', $schema);
+        $this->assertEquals('OK', $createResponse);
+
+        $actualResponse = $redis->ftaliasupdate('alias', 'index');
+        $this->assertEquals('OK', $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
     public function testUpdateRemovesAliasAssociationFromAlreadyExistingAlias(): void

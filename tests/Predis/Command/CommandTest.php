@@ -95,6 +95,17 @@ class CommandTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testParseResp3Response(): void
+    {
+        $response = 'response-buffer';
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
+
+        $this->assertEquals($response, $command->parseResp3Response($response));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testSetAndGetSlot(): void
     {
         $slot = 1024;

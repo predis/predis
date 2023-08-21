@@ -115,4 +115,12 @@ final class RawCommand implements CommandInterface, Clusterable
     {
         return $this->keys;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResp3Response($data)
+    {
+        return $data;
+    }
 }

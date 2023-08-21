@@ -96,6 +96,26 @@ class LTRIM_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testTrimsListWithPositiveStartAndStopResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
+
+        $this->assertEquals('OK', $redis->ltrim('letters', 0, 2));
+        $this->assertSame(['a', 'b', 'c'], $redis->lrange('letters', 0, -1));
+
+        $redis->flushdb();
+        $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
+
+        $this->assertEquals('OK', $redis->ltrim('letters', 5, 9));
+        $this->assertSame(['f', 'g', 'h', 'i', 'l'], $redis->lrange('letters', 0, -1));
+    }
+
+    /**
+     * @group connected
      */
     public function testTrimsListWithPositiveStartAndNegativeStop(): void
     {

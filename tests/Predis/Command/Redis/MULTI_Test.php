@@ -68,6 +68,20 @@ class MULTI_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testInitializesNewTransactionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->multi());
+        $this->assertEquals('QUEUED', $redis->echo('tx1'));
+        $this->assertEquals('QUEUED', $redis->echo('tx2'));
+    }
+
+    /**
+     * @group connected
      * @group ext-relay
      */
     public function testInitializesNewTransactionUsingRelay(): void

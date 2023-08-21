@@ -87,6 +87,30 @@ class CFINFO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testInfoReturnsInformationAboutGivenCuckooFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = [
+            'Size' => 1080,
+            'Number of buckets' => 512,
+            'Number of filters' => 1,
+            'Number of items inserted' => 1,
+            'Number of items deleted' => 0,
+            'Bucket size' => 2,
+            'Expansion rate' => 1,
+            'Max iterations' => 20,
+        ];
+
+        $redis->cfadd('key', 'item');
+
+        $this->assertSame($expectedResponse, $redis->cfinfo('key'));
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testInfoThrowsExceptionOnNonExistingFilterKeyGiven(): void

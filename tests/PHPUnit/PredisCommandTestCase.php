@@ -71,6 +71,25 @@ abstract class PredisCommandTestCase extends PredisTestCase
     }
 
     /**
+     * Returns a new RESP3 client instance.
+     *
+     * @param  bool   $flushDb
+     * @return Client
+     */
+    public function getResp3Client(bool $flushDb = true): Client
+    {
+        $commands = $this->getCommandFactory();
+
+        if (!$commands->supports($id = $this->getExpectedId())) {
+            $this->markTestSkipped(
+                "The current command factory does not support command $id"
+            );
+        }
+
+        return $this->createClient(['protocol' => 3], null, $flushDb);
+    }
+
+    /**
      * Verifies if the command implements the prefixable interface.
      *
      * @return bool

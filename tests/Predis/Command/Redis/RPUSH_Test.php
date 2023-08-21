@@ -104,6 +104,20 @@ class RPUSH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testPushesElementsToHeadOfListResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        // NOTE: List push operations return the list length since Redis commit 520b5a3
+        $this->assertSame(1, $redis->rpush('metavars', 'foo'));
+        $this->assertSame(2, $redis->rpush('metavars', 'hoge'));
+        $this->assertSame(['foo', 'hoge'], $redis->lrange('metavars', 0, -1));
+    }
+
+    /**
+     * @group connected
      */
     public function testThrowsExceptionOnWrongType(): void
     {

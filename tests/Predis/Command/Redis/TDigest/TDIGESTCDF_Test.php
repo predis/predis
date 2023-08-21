@@ -76,8 +76,29 @@ class TDIGESTCDF_Test extends PredisCommandTestCase
 
         $actualResponse = $redis->tdigestcdf('key', 0, 1, 2, 3, 4);
 
-        $this->assertEquals($expectedResponse, $actualResponse);
-        $this->assertEquals(['nan', 'nan'], $redis->tdigestcdf('empty_key', 0, 1));
+        $this->assertSameWithPrecision($expectedResponse, $actualResponse, 5);
+        $this->assertSame(['nan', 'nan'], $redis->tdigestcdf('empty_key', 0, 1));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsValuesEstimatedForGivenRanksResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = [0.0, 0.083333333333333329, 0.33333333333333331, 0.75, 1.0];
+
+        $redis->tdigestcreate('key');
+        $redis->tdigestcreate('empty_key');
+
+        $redis->tdigestadd('key', 1, 2, 2, 3, 3, 3);
+
+        $actualResponse = $redis->tdigestcdf('key', 0, 1, 2, 3, 4);
+
+        $this->assertSameWithPrecision($expectedResponse, $actualResponse, 5);
+        $this->assertSame([0.0, 0.0], $redis->tdigestcdf('empty_key', 0, 1));
     }
 
     /**

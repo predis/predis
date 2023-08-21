@@ -13,6 +13,7 @@
 namespace Predis\Pipeline;
 
 use Predis\Client;
+use Predis\Connection\Parameters;
 use Predis\Response;
 use PredisTestCase;
 
@@ -54,6 +55,11 @@ class AtomicTest extends PredisTestCase
                 $queued,
                 $queued
             );
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -240,6 +246,11 @@ class AtomicTest extends PredisTestCase
                 $queued,
                 $queued
             );
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Atomic(new Client($connection, ['exceptions' => false]));
 

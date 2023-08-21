@@ -78,6 +78,23 @@ class CMSINITBYPROB_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testInitializeCountMinSketchWithDesiredErrorRateAndProbabilityResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->cmsinitbyprob('key', 0.001, 0.01);
+        $info = $redis->cmsinfo('key');
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame(2000, $info['width']);
+        $this->assertSame(7, $info['depth']);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisBfVersion >= 2.0.0
      */
     public function testThrowsExceptionOnAlreadyExistingKey(): void

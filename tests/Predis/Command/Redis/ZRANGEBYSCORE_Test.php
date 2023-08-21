@@ -163,6 +163,24 @@ class ZRANGEBYSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsElementsInScoreRangeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
+
+        $this->assertSame(['a'], $redis->zrangebyscore('letters', -10, -10));
+        $this->assertSame(['c', 'd', 'e', 'f'], $redis->zrangebyscore('letters', 10, 30));
+        $this->assertSame(['d', 'e'], $redis->zrangebyscore('letters', 20, 20));
+        $this->assertSame([], $redis->zrangebyscore('letters', 30, 0));
+
+        $this->assertSame([], $redis->zrangebyscore('unknown', 0, 30));
+    }
+
+    /**
+     * @group connected
      */
     public function testInfinityScoreIntervals(): void
     {

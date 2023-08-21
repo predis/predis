@@ -10,15 +10,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\Command\Strategy;
+namespace Predis\Protocol\Parser\Strategy;
 
-interface SubcommandStrategyInterface
+interface ParserStrategyInterface
 {
     /**
-     * Process arguments for given subcommand.
+     * Parse given line of RESP protocol string.
      *
-     * @param  array $arguments
-     * @return array
+     * @param  string $data
+     * @return mixed
      */
-    public function processArguments(array $arguments): array;
+    public function parseData(string $data);
 }

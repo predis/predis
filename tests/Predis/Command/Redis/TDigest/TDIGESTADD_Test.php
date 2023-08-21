@@ -80,6 +80,24 @@ class TDIGESTADD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testAddObservationsIntoGivenTDigestSketchResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->tdigestcreate('key');
+
+        $actualResponse = $redis->tdigestadd('key', 1, 2, 3);
+        $info = $redis->tdigestinfo('key');
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame(3, $info['Observations']);
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
     public function testThrowsExceptionOnNonExistingTDigestSketch(): void

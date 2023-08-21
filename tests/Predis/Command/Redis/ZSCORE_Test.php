@@ -93,6 +93,23 @@ class ZSCORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsRankResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('letters', -10, 'a', 0, 'b', 10, 'c', 20, 'd', 20, 'e', 30, 'f');
+
+        $this->assertSame(-10.0, $redis->zscore('letters', 'a'));
+        $this->assertSame(0.0, $redis->zscore('letters', 'b'));
+        $this->assertSame(20.0, $redis->zscore('letters', 'e'));
+
+        $this->assertNull($redis->zscore('unknown', 'a'));
+    }
+
+    /**
+     * @group connected
      */
     public function testThrowsExceptionOnWrongType(): void
     {

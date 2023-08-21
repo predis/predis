@@ -93,6 +93,20 @@ class PTTL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsTTLResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('foo', 'bar');
+        $redis->expire('foo', 10);
+
+        $this->assertLessThanOrEqual(10000, $redis->pttl('foo'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testReturnsLessThanZeroOnNonExpiringKeys(): void

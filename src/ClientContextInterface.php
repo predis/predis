@@ -44,6 +44,7 @@ use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
 use Predis\Command\Container\Search\FTCURSOR;
+use Predis\Command\Container\XGROUP;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -226,6 +227,9 @@ use Predis\Command\Container\Search\FTCURSOR;
  * @method $this srandmember($key, $count = null)
  * @method $this srem($key, $member)
  * @method $this sscan($key, $cursor, array $options = null)
+ * @method $this ssubscribe(string ...$shardChannels)
+ * @method $this subscribe(string ...$channels)
+ * @method $this sunsubscribe(?string ...$shardChannels = null)
  * @method $this sunion(array|string $keys)
  * @method $this sunionstore($destination, array|string $keys)
  * @method $this tdigestadd(string $key, float ...$value)
@@ -305,6 +309,7 @@ use Predis\Command\Container\Search\FTCURSOR;
  * @method $this exec()
  * @method $this multi()
  * @method $this unwatch()
+ * @method $this unsubscribe(string ...$channels)
  * @method $this watch($key)
  * @method $this eval($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this eval_ro(string $script, array $keys, ...$argument)
@@ -326,6 +331,7 @@ use Predis\Command\Container\Search\FTCURSOR;
  * @method $this save()
  * @method $this slaveof($host, $port)
  * @method $this slowlog($subcommand, $argument = null)
+ * @method $this spublish(string $shardChannel, string $message)
  * @method $this time()
  * @method $this command($subcommand, $argument = null)
  * @method $this geoadd($key, $longitude, $latitude, $member)
@@ -344,6 +350,7 @@ use Predis\Command\Container\Search\FTCURSOR;
  * @property FTCURSOR  $ftcursor
  * @property JSONDEBUG $jsondebug
  * @property ACL       $acl
+ * @property XGROUP    $xgroup
  */
 interface ClientContextInterface
 {

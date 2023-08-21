@@ -109,6 +109,20 @@ class SUNION_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsMembersOnSingleKeyOrNonExistingSetForUnionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->sadd('letters:1st', 'a', 'b', 'c', 'd', 'e', 'f', 'g');
+
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e', 'f', 'g'], $redis->sunion('letters:1st'));
+        $this->assertSameValues(['a', 'b', 'c', 'd', 'e', 'f', 'g'], $redis->sunion('letters:1st', 'letters:2nd'));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsMembersFromDifferenceAmongSets(): void
     {

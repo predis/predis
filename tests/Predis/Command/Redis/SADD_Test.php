@@ -103,6 +103,19 @@ class SADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testAddsMembersToSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(1, $redis->sadd('letters', 'a'));
+        $this->assertSame(2, $redis->sadd('letters', 'b', 'c'));
+        $this->assertSame(0, $redis->sadd('letters', 'b'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.4.0
      */
     public function c()

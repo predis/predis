@@ -62,6 +62,14 @@ abstract class Command implements CommandInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function parseResp3Response($data)
+    {
+        return $data;
+    }
+
+    /**
      * Normalizes the arguments array passed to a Redis command.
      *
      * @param array $arguments Arguments for a command.

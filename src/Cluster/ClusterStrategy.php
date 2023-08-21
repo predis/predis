@@ -159,6 +159,11 @@ abstract class ClusterStrategy implements StrategyInterface
             'GEODIST' => $getKeyFromFirstArgument,
             'GEORADIUS' => [$this, 'getKeyFromGeoradiusCommands'],
             'GEORADIUSBYMEMBER' => [$this, 'getKeyFromGeoradiusCommands'],
+
+            /* sharded pubsub */
+            'SSUBSCRIBE' => $getKeyFromAllArguments,
+            'SUNSUBSCRIBE' => [$this, 'getKeyFromSUnsubscribeCommand'],
+            'SPUBLISH' => $getKeyFromFirstArgument,
         ];
     }
 
@@ -385,6 +390,24 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         return $arguments[0];
+    }
+
+    /**
+     * Extracts key from SUNSUBSCRIBE command if it's given.
+     *
+     * @param  CommandInterface $command
+     * @return string
+     */
+    protected function getKeyFromSUnsubscribeCommand(CommandInterface $command): ?string
+    {
+        $arguments = $command->getArguments();
+
+        // SUNSUBSCRIBE command could be called without arguments, so it doesn't matter on each node it will be called.
+        if (empty($arguments)) {
+            return 'fake';
+        }
+
+        return $this->getKeyFromAllArguments($command);
     }
 
     /**

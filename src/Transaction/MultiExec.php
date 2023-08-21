@@ -417,6 +417,7 @@ class MultiExec implements ClientContextInterface
         $response = [];
         $commands = $this->commands;
         $size = count($execResponse);
+        $protocolVersion = $this->client->getConnection()->getParameters()->protocol;
 
         if ($size !== count($commands)) {
             $this->onProtocolError('EXEC returned an unexpected number of response items.');
@@ -439,7 +440,11 @@ class MultiExec implements ClientContextInterface
                 continue;
             }
 
-            $response[$i] = $commands->dequeue()->parseResponse($cmdResponse);
+            if ($protocolVersion === 2) {
+                $response[$i] = $commands->dequeue()->parseResponse($cmdResponse);
+            } else {
+                $response[$i] = $commands->dequeue()->parseResp3Response($cmdResponse);
+            }
         }
 
         return $response;

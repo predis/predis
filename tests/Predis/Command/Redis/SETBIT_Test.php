@@ -94,6 +94,21 @@ class SETBIT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCanSetBitsOfStringsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('key:binary', "\x80\x00\00\x01");
+
+        $this->assertEquals(1, $redis->setbit('key:binary', 0, 0));
+        $this->assertEquals(0, $redis->setbit('key:binary', 0, 0));
+        $this->assertEquals("\x00\x00\00\x01", $redis->get('key:binary'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
     public function testCreatesNewKeyOnNonExistingKey(): void

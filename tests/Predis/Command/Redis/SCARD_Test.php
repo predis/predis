@@ -89,6 +89,19 @@ class SCARD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsNumberOfMembersResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->sadd('letters', 'a', 'b', 'c', 'd');
+
+        $this->assertSame(4, $redis->scard('letters'));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsZeroOnEmptySet(): void
     {

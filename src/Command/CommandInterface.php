@@ -65,6 +65,14 @@ interface CommandInterface
     public function parseResponse($data);
 
     /**
+     * Parses RESP3 protocol response and returns a PHP object.
+     *
+     * @param  mixed $data
+     * @return mixed
+     */
+    public function parseResp3Response($data);
+
+    /**
      * Returns key arguments if it exists.
      *
      * @return array|null

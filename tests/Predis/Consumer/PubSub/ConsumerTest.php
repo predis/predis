@@ -10,10 +10,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Predis\PubSub;
+namespace Predis\Consumer\PubSub;
 
 use Predis\Client;
-use Predis\PubSub\Consumer as PubSubConsumer;
+use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\NodeConnectionInterface;
+use Predis\Consumer\PubSub\Consumer as PubSubConsumer;
+use Predis\NotSupportedException;
 use PredisTestCase;
 
 /**
@@ -43,15 +46,14 @@ class ConsumerTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPubSubConsumerDoesNotWorkOnClusters(): void
+    public function testPubSubConsumerAllowsClusterConnectionOnShardedContext(): void
     {
-        $this->expectException('Predis\NotSupportedException');
-        $this->expectExceptionMessage('Cannot initialize a PUB/SUB consumer over cluster connections');
-
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
         $client = new Client($cluster);
 
         new PubSubConsumer($client);
+
+        $this->assertTrue(true);
     }
 
     /**
@@ -81,7 +83,7 @@ class ConsumerTest extends PredisTestCase
         $commands = $this->getCommandFactory();
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
-        $connection->expects($this->exactly(2))->method('writeRequest');
+        $connection->expects($this->exactly(3))->method('writeRequest');
 
         /** @var Client */
         $client = $this->getMockBuilder('Predis\Client')
@@ -90,14 +92,18 @@ class ConsumerTest extends PredisTestCase
             ->setConstructorArgs([$connection])
             ->getMock();
         $client
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method('createCommand')
-            ->with($this->logicalOr($this->equalTo('subscribe'), $this->equalTo('psubscribe')))
+            ->with($this->logicalOr(
+                $this->equalTo('subscribe'),
+                $this->equalTo('psubscribe'),
+                $this->equalTo('ssubscribe')
+            ))
             ->willReturnCallback(function ($id, $args) use ($commands) {
                 return $commands->create($id, $args);
             });
 
-        $options = ['subscribe' => 'channel:foo', 'psubscribe' => 'channels:*'];
+        $options = ['subscribe' => 'channel:foo', 'ssubscribe' => 'channel:bar', 'psubscribe' => 'channels:*'];
 
         new PubSubConsumer($client, $options);
     }
@@ -133,6 +139,7 @@ class ConsumerTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $classUnsubscribe = $commands->getCommandClass('unsubscribe');
         $classPunsubscribe = $commands->getCommandClass('punsubscribe');
+        $classSunsubscribe = $commands->getCommandClass('sunsubscribe');
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
@@ -142,15 +149,16 @@ class ConsumerTest extends PredisTestCase
             ->setConstructorArgs([$connection])
             ->getMock();
 
-        $options = ['subscribe' => 'channel:foo', 'psubscribe' => 'channels:*'];
+        $options = ['subscribe' => 'channel:foo', 'ssubscribe' => 'channel:bar', 'psubscribe' => 'channels:*'];
         $pubsub = new PubSubConsumer($client, $options);
 
         $connection
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method('writeRequest')
             ->with($this->logicalOr(
                 $this->isInstanceOf($classUnsubscribe),
-                $this->isInstanceOf($classPunsubscribe)
+                $this->isInstanceOf($classPunsubscribe),
+                $this->isInstanceOf($classSunsubscribe)
             ));
 
         $pubsub->stop(false);
@@ -172,7 +180,6 @@ class ConsumerTest extends PredisTestCase
         $pubsub = new PubSubConsumer($client);
 
         $this->assertFalse($pubsub->valid());
-        $this->assertNull($pubsub->next());
     }
 
     /**
@@ -287,6 +294,28 @@ class ConsumerTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testReadsSSubscriptionMessageFromConnection(): void
+    {
+        $rawmessage = ['ssubscribe', 'channel:foo', 1];
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($rawmessage);
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, ['ssubscribe' => 'channel:foo']);
+
+        $message = $pubsub->current();
+        $this->assertSame('ssubscribe', $message->kind);
+        $this->assertSame('channel:foo', $message->channel);
+        $this->assertSame(1, $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testReadsUnsubscriptionMessageFromConnection(): void
     {
         $rawmessage = ['unsubscribe', 'channel:foo', 1];
@@ -302,6 +331,28 @@ class ConsumerTest extends PredisTestCase
 
         $message = $pubsub->current();
         $this->assertSame('unsubscribe', $message->kind);
+        $this->assertSame('channel:foo', $message->channel);
+        $this->assertSame(1, $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReadsSUnsubscriptionMessageFromConnection(): void
+    {
+        $rawmessage = ['sunsubscribe', 'channel:foo', 1];
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($rawmessage);
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, ['ssubscribe' => 'channel:foo']);
+
+        $message = $pubsub->current();
+        $this->assertSame('sunsubscribe', $message->kind);
         $this->assertSame('channel:foo', $message->channel);
         $this->assertSame(1, $message->payload);
     }
@@ -343,6 +394,32 @@ class ConsumerTest extends PredisTestCase
         $pubsub = new PubSubConsumer($client);
 
         $this->assertSame($client, $pubsub->getClient());
+    }
+
+    /**
+     * @dataProvider connectionsProvider
+     * @group disconnected
+     * @param  string                $connection
+     * @param  string                $context
+     * @return void
+     * @throws NotSupportedException
+     */
+    public function testGetSubscriptionContext(string $connection, string $context): void
+    {
+        $connection = $this->getMockBuilder($connection)->getMock();
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client);
+
+        $this->assertSame($context, $pubsub->getSubscriptionContext()->getContext());
+    }
+
+    public function connectionsProvider(): array
+    {
+        return [
+            [ClusterInterface::class, SubscriptionContext::CONTEXT_SHARDED],
+            [NodeConnectionInterface::class, SubscriptionContext::CONTEXT_NON_SHARDED],
+        ];
     }
 
     // ******************************************************************** //
