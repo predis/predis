@@ -180,7 +180,6 @@ class Factory implements FactoryInterface
                 $connection->addConnectCommand(
                     new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
                 );
-                
                 $connection->addConnectCommand(
                     new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])
                 );
