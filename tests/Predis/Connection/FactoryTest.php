@@ -325,6 +325,39 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testCreateConnectionWithSkippedSetInfo(): void
+    {
+        $parameters = new Parameters([
+            'database' => '0',
+            'password' => 'foobar',
+            'set_client_info' => false,
+        ]);
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn($parameters);
+        $connection
+            ->expects($this->exactly(2))
+            ->method('addConnectCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('AUTH', ['foobar'])],
+                [$this->isRedisCommand('SELECT', ['0'])]
+            );
+
+        $factory = new Factory();
+
+        // TODO: using reflection to make a protected method accessible :facepalm:
+        $reflection = new ReflectionObject($factory);
+        $prepareConnection = $reflection->getMethod('prepareConnection');
+        $prepareConnection->setAccessible(true);
+        $prepareConnection->invoke($factory, $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testCreateConnectionWithPasswordAndNoUsernameAddsInitializationCommandAuthWithOneArgument()
     {
         $parameters = new Parameters([
