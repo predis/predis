@@ -86,10 +86,16 @@ class OBJECT_Test extends PredisCommandTestCase
      */
     public function testObjectEncoding(): void
     {
+        $version = (int) getenv('REDIS_VERSION');
+        $type = $version < 7
+            ? 'quicklist'
+            : 'listpack';
+
         $redis = $this->getClient();
 
         $redis->lpush('list:metavars', 'foo', 'bar');
-        $this->assertMatchesRegularExpression('/[zip|quick]list/', $redis->object('ENCODING', 'list:metavars'));
+
+        $this->assertSame($type, $redis->object('ENCODING', 'list:metavars'));
     }
 
     /**

@@ -93,6 +93,11 @@ class ACL_Test extends PredisCommandTestCase
      */
     public function testDryRunSimulateExecutionOfGivenCommandByUser(): void
     {
+        $version = (int) getenv('REDIS_VERSION');
+        $message = $version < 7
+            ? "This user has no permissions to run the 'get' command"
+            : "User Test has no permissions to run the 'get' command";
+
         $redis = $this->getClient();
 
         $this->assertEquals('OK', $redis->acl->setUser('Test', '+SET', '~*'));
@@ -101,7 +106,7 @@ class ACL_Test extends PredisCommandTestCase
             $redis->acl->dryRun('Test', 'SET', 'foo', 'bar')
         );
         $this->assertEquals(
-            "This user has no permissions to run the 'get' command",
+            $message,
             $redis->acl->dryRun('Test', 'GET', 'foo')
         );
     }
