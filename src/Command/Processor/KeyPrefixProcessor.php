@@ -190,6 +190,9 @@ class KeyPrefixProcessor implements ProcessorInterface
             /* ---------------- Redis 6.2 ---------------- */
             'GETDEL' => $prefixFirst,
 
+            /* ---------------- Redis 7.0 ---------------- */
+            'EXPIRETIME' => $prefixFirst,
+
             /* RedisJSON */
             'JSON.ARRAPPEND' => $prefixFirst,
             'JSON.ARRINDEX' => $prefixFirst,
