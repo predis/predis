@@ -612,6 +612,41 @@ class FactoryTest extends PredisTestCase
         $this->assertSame(['SETINFO', 'LIB-VER', Client::VERSION], $initCommands[1]->getArguments());
     }
 
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testDoNotSetClientNameAndVersionOnConnection(): void
+    {
+        $parameters = ['set_client_info' => false];
+
+        $factory = new Factory();
+        $connection = $factory->create($parameters);
+
+        $this->assertEmpty($connection->getInitCommands());
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testOverridesDefaultNameAndVersionOnConnection(): void
+    {
+        $parameters = ['client_name' => 'test', 'client_version' => '1.0.0'];
+
+        $factory = new Factory();
+        $connection = $factory->create($parameters);
+        $initCommands = $connection->getInitCommands();
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
+        $this->assertSame('CLIENT', $initCommands[0]->getId());
+        $this->assertSame(['SETINFO', 'LIB-NAME', 'test'], $initCommands[0]->getArguments());
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[1]);
+        $this->assertSame('CLIENT', $initCommands[1]->getId());
+        $this->assertSame(['SETINFO', 'LIB-VER', '1.0.0'], $initCommands[1]->getArguments());
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

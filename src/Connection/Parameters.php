@@ -13,6 +13,7 @@
 namespace Predis\Connection;
 
 use InvalidArgumentException;
+use Predis\Client;
 
 /**
  * Container for connection parameters used to initialize connections to Redis.
@@ -25,6 +26,9 @@ class Parameters implements ParametersInterface
         'scheme' => 'tcp',
         'host' => '127.0.0.1',
         'port' => 6379,
+        'set_client_info' => true,
+        'client_name' => 'predis',
+        'client_version' => Client::VERSION,
     ];
 
     /**
@@ -41,6 +45,7 @@ class Parameters implements ParametersInterface
     public function __construct(array $parameters = [])
     {
         $this->parameters = $this->filter($parameters + static::$defaults);
+        $this->assertCorrectVersion($this->parameters['client_version']);
     }
 
     /**
@@ -145,6 +150,19 @@ class Parameters implements ParametersInterface
         }
 
         return $parsed;
+    }
+
+    /**
+     * Asserts that version matches correct version pattern.
+     *
+     * @param  string $version
+     * @return void
+     */
+    private function assertCorrectVersion(string $version): void
+    {
+        if (!preg_match('/^(\d+\.?)/', $version)) {
+            throw new InvalidArgumentException('Given version doesnt not match version pattern - xx.xx');
+        }
     }
 
     /**
