@@ -12,6 +12,8 @@
 
 namespace Predis\Connection;
 
+use InvalidArgumentException;
+use Predis\Client;
 use PredisTestCase;
 
 class ParametersTest extends PredisTestCase
@@ -27,6 +29,9 @@ class ParametersTest extends PredisTestCase
         $this->assertEquals($defaults['scheme'], $parameters->scheme);
         $this->assertEquals($defaults['host'], $parameters->host);
         $this->assertEquals($defaults['port'], $parameters->port);
+        $this->assertEquals($defaults['set_client_info'], $parameters->set_client_info);
+        $this->assertEquals($defaults['client_name'], $parameters->client_name);
+        $this->assertEquals($defaults['client_version'], $parameters->client_version);
     }
 
     /**
@@ -403,6 +408,19 @@ class ParametersTest extends PredisTestCase
         $this->assertSame($expected, Parameters::parse($uri));
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testThrowsExceptionOnIncorrectVersionPattern(): void
+    {
+        $parameters = ['client_version' => 'v2.0.0'];
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Given version does not not match version pattern - xx.xx');
+
+        new Parameters($parameters);
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
@@ -418,6 +436,9 @@ class ParametersTest extends PredisTestCase
             'scheme' => 'tcp',
             'host' => '127.0.0.1',
             'port' => 6379,
+            'set_client_info' => true,
+            'client_name' => 'predis',
+            'client_version' => Client::VERSION,
         ];
     }
 

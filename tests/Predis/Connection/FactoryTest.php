@@ -325,6 +325,39 @@ class FactoryTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testCreateConnectionWithSkippedSetInfo(): void
+    {
+        $parameters = new Parameters([
+            'database' => '0',
+            'password' => 'foobar',
+            'set_client_info' => false,
+        ]);
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn($parameters);
+        $connection
+            ->expects($this->exactly(2))
+            ->method('addConnectCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('AUTH', ['foobar'])],
+                [$this->isRedisCommand('SELECT', ['0'])]
+            );
+
+        $factory = new Factory();
+
+        // TODO: using reflection to make a protected method accessible :facepalm:
+        $reflection = new ReflectionObject($factory);
+        $prepareConnection = $reflection->getMethod('prepareConnection');
+        $prepareConnection->setAccessible(true);
+        $prepareConnection->invoke($factory, $connection);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testCreateConnectionWithPasswordAndNoUsernameAddsInitializationCommandAuthWithOneArgument()
     {
         $parameters = new Parameters([
@@ -577,6 +610,41 @@ class FactoryTest extends PredisTestCase
         $this->assertInstanceOf(RawCommand::class, $initCommands[1]);
         $this->assertSame('CLIENT', $initCommands[1]->getId());
         $this->assertSame(['SETINFO', 'LIB-VER', Client::VERSION], $initCommands[1]->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testDoNotSetClientNameAndVersionOnConnection(): void
+    {
+        $parameters = ['set_client_info' => false];
+
+        $factory = new Factory();
+        $connection = $factory->create($parameters);
+
+        $this->assertEmpty($connection->getInitCommands());
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testOverridesDefaultNameAndVersionOnConnection(): void
+    {
+        $parameters = ['client_name' => 'test', 'client_version' => '1.0.0'];
+
+        $factory = new Factory();
+        $connection = $factory->create($parameters);
+        $initCommands = $connection->getInitCommands();
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
+        $this->assertSame('CLIENT', $initCommands[0]->getId());
+        $this->assertSame(['SETINFO', 'LIB-NAME', 'test'], $initCommands[0]->getArguments());
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[1]);
+        $this->assertSame('CLIENT', $initCommands[1]->getId());
+        $this->assertSame(['SETINFO', 'LIB-VER', '1.0.0'], $initCommands[1]->getArguments());
     }
 
     // ******************************************************************** //

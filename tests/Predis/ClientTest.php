@@ -12,6 +12,7 @@
 
 namespace Predis;
 
+use InvalidArgumentException;
 use Iterator;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\Factory as CommandFactory;
@@ -1266,6 +1267,48 @@ class ClientTest extends PredisTestCase
 
         $this->assertSame('predis', $libName);
         $this->assertSame(Client::VERSION, $libVer);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.2.0
+     */
+    public function testDoNotSetClientInfoOnConnection(): void
+    {
+        $client = new Client($this->getParameters(['set_client_info' => false]));
+        $libName = $client->client('LIST')[0]['lib-name'];
+        $libVer = $client->client('LIST')[0]['lib-ver'];
+
+        $this->assertEmpty($libName);
+        $this->assertEmpty($libVer);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.2.0
+     */
+    public function testOverridesDefaultClientInfoOnConnection(): void
+    {
+        $client = new Client($this->getParameters(['client_name' => 'test', 'client_version' => '1.0.0']));
+        $libName = $client->client('LIST')[0]['lib-name'];
+        $libVer = $client->client('LIST')[0]['lib-ver'];
+
+        $this->assertSame('test', $libName);
+        $this->assertSame('1.0.0', $libVer);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.2.0
+     */
+    public function testThrowsExceptionOnIncorrectClientVersionPattern(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Given version does not not match version pattern - xx.xx');
+
+        new Client($this->getParameters(['client_name' => 'test', 'client_version' => 'v1.0.0']));
     }
 
     // ******************************************************************** //

@@ -31,6 +31,9 @@ namespace Predis\Connection;
  * @property string $database           Database index (see the SELECT command).
  * @property bool   $async_connect      Performs the connect() operation asynchronously.
  * @property bool   $tcp_nodelay        Toggles the Nagle's algorithm for coalescing.
+ * @property bool   $set_client_info    Sends the CLIENT SETINFO on connect. (Default: true)
+ * @property string $client_name        Overrides default client name to be sent over CLIENT SETINFO.
+ * @property string $client_version     Overrides default client version to be sent over CLIENT SETINFO.
  * @property bool   $cache              (Relay only) Whether to use in-memory caching.
  * @property string $serializer         (Relay only) Serializer used for data serialization.
  * @property string $compression        (Relay only) Algorithm used for data compression.
