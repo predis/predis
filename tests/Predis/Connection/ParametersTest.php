@@ -416,7 +416,7 @@ class ParametersTest extends PredisTestCase
         $parameters = ['client_version' => 'v2.0.0'];
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Given version doesnt not match version pattern - xx.xx');
+        $this->expectExceptionMessage('Given version does not not match version pattern - xx.xx');
 
         new Parameters($parameters);
     }

@@ -161,7 +161,7 @@ class Parameters implements ParametersInterface
     private function assertCorrectVersion(string $version): void
     {
         if (!preg_match('/^(\d+\.?)/', $version)) {
-            throw new InvalidArgumentException('Given version doesnt not match version pattern - xx.xx');
+            throw new InvalidArgumentException('Given version does not not match version pattern - xx.xx');
         }
     }
 

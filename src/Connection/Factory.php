@@ -13,7 +13,6 @@
 namespace Predis\Connection;
 
 use InvalidArgumentException;
-use Predis\Client;
 use Predis\Command\RawCommand;
 use ReflectionClass;
 use UnexpectedValueException;

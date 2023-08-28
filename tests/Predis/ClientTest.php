@@ -1303,7 +1303,7 @@ class ClientTest extends PredisTestCase
     public function testThrowsExceptionOnIncorrectClientVersionPattern(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Given version doesnt not match version pattern - xx.xx');
+        $this->expectExceptionMessage('Given version does not not match version pattern - xx.xx');
 
         new Client($this->getParameters(['client_name' => 'test', 'client_version' => 'v1.0.0']));
     }
