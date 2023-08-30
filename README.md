@@ -426,7 +426,141 @@ $client = new Predis\Client('tcp://127.0.0.1', [
 For a more in-depth insight on how to create new connection backends you can refer to the actual
 implementation of the standard connection classes available in the `Predis\Connection` namespace.
 
+## RESP3 ##
 
+### Connection ###
+To establish the connection using RESP3 protocol, you need to set parameter `protocol => 3`. Default protocol is still RESP2.
+
+```php
+  $client = new \Predis\Client(['protocol' => 3]);
+
+  // ["proto" => "3"]
+  $client->executeRaw(['HELLO']);
+```
+
+### Command responses ###
+RESP3 protocol introduce a variety of new [response types](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md#resp3-types),
+so on the client-side we have more explicit understanding on data types we retrieve from server. Here's some examples to show the difference
+between RESP2 and RESP3 responses.
+
+#### Float responses ####
+``` php
+// RESP2 connection
+$client = new \Predis\Client();
+
+$client->geoadd('my_geo', 11.111, 22.222, 'member1');
+
+// [[0 => string(20) "11.11099988222122192", 1 => string(20) "22.22200052541037252"]]
+// RESP2 returns float values as simple strings.
+var_dump($client->geopos('my_geo', ['member1']));
+
+// RESP3 connection
+$client = new \Predis\Client(['protocol' => 3]);
+
+// [[0 => float(11.110999882221222), 1 => float(22.222000525410373)]]
+// RESP3 introduces new double type, that corresponds to PHP float.
+var_dump($client->geopos('my_geo', ['member1']));
+```
+#### Aggregate types ####
+In RESP3 new aggregate type [Map](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md#map-type)
+was introduced, that represents the sequence of field-value pairs. So it simplifies parsing, since we don't need to specify
+parsing strategy per command (RESP2) and instead relies on the type defined by protocol (RESP3).
+
+In most cases RESP2 responses shouldn't differ from RESP3, since we added additional parsing for those
+command that return field-value pairs. However, since RESP2 requires additional parsing, it could be that some commands
+had lack of it and return unhandled responses. In this case there would be difference like this:
+```php
+$client = new \Predis\Client();
+
+// RESP2: ['field', 'value]
+$client->commandThatReturnsFieldValuePair('key');
+
+$client = new \Predis\Client(['protocol' => 3]);
+
+// RESP3: ['field' => 'value]
+$client->commandThatReturnsFieldValuePair('key');
+```
+
+Feel free to open PR or GitHub issue if you face those protocol mismatching.
+
+### Push notifications ###
+RESP3 introduce a concept of [push connection](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md#push-type),
+is the one where server could send asynchronous data to client which was not explicitly requested. Predis 3.0 provides
+an API to establish this kind of connection as separate blocking process (worker) and invoke callbacks depends on push
+notification message type.
+
+#### Consumer ####
+First of all, you need to set up a consumer connection and provide an optional callback that will be executed before
+event loop will be started. It allows you to subscribe on channels, enable keys invalidations tracking or enable monitor
+connection, any Redis command to let server know that you want to receive push notification within this connection.
+
+```php
+// Make sure that RESP3 protocol enabled and read_write_timeout set 0,
+// so connection won't be killed by timeout.
+$client = new Predis\Client(['read_write_timeout' => 0, 'protocol' => 3]);
+
+// Create push notifications consumer.
+// Provides callback where current consumer subscribes to few channels before
+// enter the loop.
+$push = $client->push(static function (ClientInterface $client) {
+    $response = $client->subscribe('channel', 'control');
+    $status = ($response[2] === 1) ? 'OK' : 'FAILED';
+    echo "Channel subscription status: {$status}\n";
+});
+```
+
+#### Dispatcher loop ####
+Dispatcher object allows you to attach a callback to given push notification type and run the actual worker process that
+listen for incoming push notifications. To be able to stop blocking process in runtime you can specify a condition and
+call `$dispatcher->stop()` method from given callback. In this example we're waiting for specific message `terminate`
+within `control` channel that we subscribed to before entering the loop.
+
+```php
+// Storage for incoming notifications.
+$messages = [];
+
+// Create dispatcher for push notifications.
+$dispatcher = new Predis\Consumer\Push\DispatcherLoop($push);
+
+$dispatcher->attachCallback(
+    PushResponseInterface::MESSAGE_DATA_TYPE,
+    static function (array $payload, DispatcherLoopInterface $dispatcher) {
+        global $messages;
+        [$channel, $message] = $payload;
+
+        if ($channel === 'control' && $message === 'terminate') {
+            echo "Terminating notification consumer.\n";
+            $dispatcher->stop();
+
+            return;
+        }
+
+        $messages[] = $message;
+        echo "Received message: {$message}\n";
+    }
+);
+
+// Run consumer loop with attached callbacks.
+$dispatcher->run();
+
+// Count all messages that were received during consumer loop.
+$messagesCount = count($messages);
+echo "We received: {$messagesCount} messages\n";
+```
+
+This example shows a simple script to count all incoming messages from push notifications that we receive from
+subscribed channels until stop condition will be met. Examples available in `examples/` folder.
+
+### Sharded pub/sub ###
+From Redis 7.0, sharded Pub/Sub is introduced in which shard channels are assigned to slots by the same algorithm used
+to assign keys to slots.
+
+Predis 3.0 provides an API that allows to use pub/sub for Cluster connections using sharded pub/sub from Redis.
+You don't need to specify any additional configuration to enable sharded pub/sub, it will be automatically enabled if
+Cluster connection is using.
+
+Implementation looks pretty much the same as Push notification, so you need to set up consumer
+and run it over Dispatcher loop object. All examples available in `examples/` folder.
 ## Development ##
 
 
