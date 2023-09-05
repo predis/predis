@@ -155,7 +155,7 @@ use Predis\Response\Status;
  * @method mixed             mset(array $dictionary)
  * @method int               msetnx(array $dictionary)
  * @method Status            psetex(string $key, $milliseconds, $value)
- * @method Status            set(string $key, $value, $expireResolution = null, $expireTTL = null, $flag = null)
+ * @method Status|null       set(string $key, $value, $expireResolution = null, $expireTTL = null, $flag = null)
  * @method int               setbit(string $key, $offset, $value)
  * @method Status            setex(string $key, $seconds, $value)
  * @method int               setnx(string $key, $value)
