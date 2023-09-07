@@ -16,6 +16,7 @@ use InvalidArgumentException;
 use Predis\ClientException;
 use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
+use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Relay\Exception as RelayException;
 use Relay\Relay;
@@ -200,6 +201,10 @@ class RelayConnection extends StreamConnection
      */
     protected function getIdentifier()
     {
+        if (!$this->client->isConnected()) {
+            $this->getResource();
+        }
+
         return $this->client->endpointId();
     }
 
@@ -253,7 +258,13 @@ class RelayConnection extends StreamConnection
                 ? $this->client->{$name}(...$command->getArguments())
                 : $this->client->rawCommand($name, ...$command->getArguments());
         } catch (RelayException $ex) {
-            throw $this->onCommandError($ex, $command);
+            $exception = $this->onCommandError($ex, $command);
+
+            if ($exception instanceof ErrorResponseInterface) {
+                return $exception;
+            }
+
+            throw $exception;
         }
     }
 
