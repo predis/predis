@@ -25,7 +25,6 @@
             <group>realm-stack</group>
             <group>ext-curl</group>
             <group>ext-phpiredis</group>
-            <group>cluster</group>
         </exclude>
     </groups>
 
