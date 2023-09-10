@@ -202,7 +202,7 @@ class RelayConnection extends StreamConnection
     protected function getIdentifier()
     {
         // Workaround until Relay::endpointId() stops throwing "Not Connected" error when not yet connected
-        return spl_object_id($this->client);
+        return (string) spl_object_id($this->client);
     }
 
     /**

@@ -96,7 +96,8 @@ class CLUSTER_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        [$startSlot, $endSlot] = $redis->cluster->shards()[0]['slots'];
+        $shards = $redis->cluster->shards();
+        [$startSlot, $endSlot] = $shards[0][1] ?? $shards[0]['slots'];
 
         $this->assertEquals('OK', $redis->cluster->delSlotsRange($startSlot, $endSlot));
         $this->assertEquals('OK', $redis->cluster->addSlotsRange($startSlot, $endSlot));
