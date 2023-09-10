@@ -251,11 +251,9 @@ class RelayConnection extends StreamConnection
             // When using compression or a serializer, we'll need a dedicated
             // handler for `Predis\Command\RawCommand` calls, currently both
             // parameters are unsupported until a future Relay release
-            $x = in_array($name, $this->atypicalCommands)
+            return in_array($name, $this->atypicalCommands)
                 ? $this->client->{$name}(...$command->getArguments())
                 : $this->client->rawCommand($name, ...$command->getArguments());
-
-            return $x;
         } catch (RelayException $ex) {
             $exception = $this->onCommandError($ex, $command);
 

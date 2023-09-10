@@ -96,8 +96,19 @@ class CLUSTER_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
+        // Sometimes the cluster can be in a state where slots are missing on some shards (they are being rebalanced, etc..)
         $shards = $redis->cluster->shards();
-        [$startSlot, $endSlot] = $shards[0][1] ?? $shards[0]['slots'];
+        $slots = $shards[0][1] ?? $shards[0]['slots'];
+
+        if (empty($slots)) {
+            $slots = $shards[1][1] ?? $shards[1]['slots'];
+        }
+
+        if (empty($slots)) {
+            $slots = $shards[2][1] ?? $shards[2]['slots'];
+        }
+
+        [$startSlot, $endSlot] = $slots;
 
         $this->assertEquals('OK', $redis->cluster->delSlotsRange($startSlot, $endSlot));
         $this->assertEquals('OK', $redis->cluster->addSlotsRange($startSlot, $endSlot));

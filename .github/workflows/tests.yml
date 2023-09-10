@@ -65,11 +65,15 @@ jobs:
 
       - name: Run tests with coverage
         if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
-        run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml --coverage-filter ./src
+        run: vendor/bin/phpunit --coverage-clover build/logs/clover-default.xml --coverage-filter ./src
 
       - name: Run tests using Relay
         if: ${{ matrix.redis >= '6' }}
         run: vendor/bin/phpunit -c phpunit.relay.xml
+
+      - name: Run tests using Relay with coverage
+        if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
+        run: vendor/bin/phpunit -c phpunit.relay.xml --coverage-clover build/logs/clover-relay.xml --coverage-filter ./src
 
       - name: Send coverage to Coveralls
         env:
