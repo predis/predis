@@ -199,7 +199,7 @@ class RelayConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
-    protected function getIdentifier()
+    public function getIdentifier()
     {
         // Workaround until Relay::endpointId() stops throwing "Not Connected" error when not yet connected
         return (string) spl_object_id($this->client);
@@ -251,9 +251,11 @@ class RelayConnection extends StreamConnection
             // When using compression or a serializer, we'll need a dedicated
             // handler for `Predis\Command\RawCommand` calls, currently both
             // parameters are unsupported until a future Relay release
-            return in_array($name, $this->atypicalCommands)
+            $x = in_array($name, $this->atypicalCommands)
                 ? $this->client->{$name}(...$command->getArguments())
                 : $this->client->rawCommand($name, ...$command->getArguments());
+
+            return $x;
         } catch (RelayException $ex) {
             $exception = $this->onCommandError($ex, $command);
 
@@ -273,15 +275,15 @@ class RelayConnection extends StreamConnection
         $code = $exception->getCode();
         $message = $exception->getMessage();
 
-        if (strpos($message, 'RELAY_ERR_IO')) {
+        if (strpos($message, 'RELAY_ERR_IO') !== false) {
             return new ConnectionException($this, $message, $code, $exception);
         }
 
-        if (strpos($message, 'RELAY_ERR_REDIS')) {
+        if (strpos($message, 'RELAY_ERR_REDIS') !== false) {
             return new ServerException($message, $code, $exception);
         }
 
-        if (strpos($message, 'RELAY_ERR_WRONGTYPE') && strpos($message, "Got reply-type 'status'")) {
+        if (strpos($message, 'RELAY_ERR_WRONGTYPE') !== false && strpos($message, "Got reply-type 'status'") !== false) {
             $message = 'Operation against a key holding the wrong kind of value';
         }
 
