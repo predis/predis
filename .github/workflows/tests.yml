@@ -121,3 +121,8 @@ jobs:
         run: |
           sleep 5 # Timeout to make sure that docker image is setup
           vendor/bin/phpunit --group cluster
+
+      - name: Run tests against cluster using Relay
+        run: |
+          sleep 5 # Extra sleep to make sure nodes are stable and fully joined
+          vendor/bin/phpunit -c phpunit.relay.xml --group cluster
