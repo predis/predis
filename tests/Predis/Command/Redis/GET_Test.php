@@ -69,6 +69,16 @@ class GET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsStringValueUsingCluster(): void
+    {
+        $this->testReturnsStringValue();
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsEmptyStringOnEmptyStrings(): void
     {
@@ -78,6 +88,16 @@ class GET_Test extends PredisCommandTestCase
 
         $this->assertSame(1, $redis->exists('foo'));
         $this->assertSame('', $redis->get('foo'));
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsEmptyStringOnEmptyStringsUsingCluster(): void
+    {
+        $this->testReturnsEmptyStringOnEmptyStrings();
     }
 
     /**
@@ -93,6 +113,16 @@ class GET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsNullOnNonExistingKeysUsingCluster(): void
+    {
+        $this->testReturnsNullOnNonExistingKeys();
+    }
+
+    /**
+     * @group connected
      */
     public function testThrowsExceptionOnWrongType(): void
     {
@@ -103,5 +133,15 @@ class GET_Test extends PredisCommandTestCase
 
         $redis->rpush('metavars', 'foo');
         $redis->get('metavars');
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testThrowsExceptionOnWrongTypeUsingCluster(): void
+    {
+        $this->testThrowsExceptionOnWrongType();
     }
 }
