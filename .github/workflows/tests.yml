@@ -106,7 +106,7 @@ jobs:
       - name: Run Redis cluster
         uses: isbang/compose-action@v1.4.1
         with:
-          compose-file: "./.github/workflows/unstable-cluster/docker-compose.yml"
+          compose-file: .github/workflows/cluster/docker-compose.yml
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
