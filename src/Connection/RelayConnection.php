@@ -201,9 +201,11 @@ class RelayConnection extends StreamConnection
      */
     public function getIdentifier()
     {
-        // Using `spl_object_id()` workaround until `Relay::endpointId()`
-        // works without requiring a connection
-        return (string) spl_object_id($this->client);
+        try {
+            return $this->client->endpointId();
+        } catch (RelayException $ex) {
+            return parent::getIdentifier();
+        }
     }
 
     /**

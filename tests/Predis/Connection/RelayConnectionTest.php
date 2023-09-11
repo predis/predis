@@ -67,13 +67,65 @@ class RelayConnectionTest extends PredisConnectionTestCase
     /**
      * @group connected
      */
-    public function testGetIdentifier(): void
+    public function testGetIdentifierUsesParentGetIdentifier(): void
     {
-        /** @var RelayConnection $connection */
-        $connection = $this->createConnection();
-        $identifier = (string) spl_object_id($connection->getClient());
+        $relayMock = $this
+            ->getMockBuilder(Relay::class)
+            ->onlyMethods(['endpointId'])
+            ->getMock();
 
-        $this->assertEquals($identifier, $connection->getIdentifier());
+        $relayMock->method('endpointId')
+            ->willThrowException(
+                new RelayException('Not Connected')
+            );
+
+        /** @var RelayConnection&MockObject $connection */
+        $connection = $this
+            ->getMockBuilder($this->getConnectionClass())
+            ->onlyMethods(['createResource'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $reflection = new ReflectionClass($connection);
+        $propertyClient = $reflection->getProperty('client');
+        $propertyClient->setAccessible(true);
+        $propertyClient->setValue($connection, $relayMock);
+        $propertyParameters = $reflection->getProperty('parameters');
+        $propertyParameters->setAccessible(true);
+        $propertyParameters->setValue($connection, new Parameters([
+            'host' => '127.0.0.1',
+            'port' => 6379,
+        ]));
+
+        $this->assertEquals('127.0.0.1:6379', $connection->getIdentifier());
+    }
+
+    /**
+     * @group connected
+     */
+    public function testGetIdentifierUsesClientEndpointId(): void
+    {
+        $relayMock = $this
+            ->getMockBuilder(Relay::class)
+            ->onlyMethods(['endpointId'])
+            ->getMock();
+
+        $relayMock->method('endpointId')
+            ->willReturn('127.0.0.1:6379');
+
+        /** @var RelayConnection&MockObject $connection */
+        $connection = $this
+            ->getMockBuilder($this->getConnectionClass())
+            ->onlyMethods(['createResource'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $reflection = new ReflectionClass($connection);
+        $propertyClient = $reflection->getProperty('client');
+        $propertyClient->setAccessible(true);
+        $propertyClient->setValue($connection, $relayMock);
+
+        $this->assertEquals('127.0.0.1:6379', $connection->getIdentifier());
     }
 
     /**
