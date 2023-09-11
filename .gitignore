@@ -1,5 +1,6 @@
 /build
 /vendor
+.coveralls.yml
 .php-version
 .php_cs.cache
 .phpunit.result.cache

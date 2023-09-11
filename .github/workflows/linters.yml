@@ -133,7 +133,7 @@ jobs:
 
       - name: Check exported files
         run: |
-          EXPECTED=".coveralls.yml,LICENSE,README.md,autoload.php,composer.json"
+          EXPECTED="LICENSE,README.md,autoload.php,composer.json"
           CURRENT="$(
               git archive HEAD \
                   | tar --list --exclude="src" --exclude="src/*" --exclude="bin" --exclude="bin/*" --exclude="docker" --exclude="docker/*" \
