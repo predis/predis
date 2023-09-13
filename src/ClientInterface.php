@@ -109,7 +109,7 @@ use Predis\Response\Status;
  * @method array             cfinsertnx(string $key, int $capacity = -1, bool $noCreate = false, string ...$item)
  * @method Status            cfreserve(string $key, int $capacity, int $bucketSize = -1, int $maxIterations = -1, int $expansion = -1)
  * @method array             cfscandump(string $key, int $iterator)
- * @method array             cmsincrby(string $key, string|int...$itemIncrementDictionary)
+ * @method array             cmsincrby(string $key, string|int ...$itemIncrementDictionary)
  * @method array             cmsinfo(string $key)
  * @method Status            cmsinitbydim(string $key, int $width, int $depth)
  * @method Status            cmsinitbyprob(string $key, float $errorRate, float $probability)
