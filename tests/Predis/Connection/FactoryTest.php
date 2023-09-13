@@ -12,6 +12,8 @@
 
 namespace Predis\Connection;
 
+use Predis\Client;
+use Predis\Command\RawCommand;
 use PredisTestCase;
 use ReflectionObject;
 use stdClass;
