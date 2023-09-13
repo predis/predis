@@ -16,6 +16,7 @@ use InvalidArgumentException;
 use Predis\ClientException;
 use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
+use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Relay\Exception as RelayException;
 use Relay\Relay;
@@ -198,9 +199,13 @@ class RelayConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
-    protected function getIdentifier()
+    public function getIdentifier()
     {
-        return $this->client->endpointId();
+        try {
+            return $this->client->endpointId();
+        } catch (RelayException $ex) {
+            return parent::getIdentifier();
+        }
     }
 
     /**
@@ -253,7 +258,13 @@ class RelayConnection extends StreamConnection
                 ? $this->client->{$name}(...$command->getArguments())
                 : $this->client->rawCommand($name, ...$command->getArguments());
         } catch (RelayException $ex) {
-            throw $this->onCommandError($ex, $command);
+            $exception = $this->onCommandError($ex, $command);
+
+            if ($exception instanceof ErrorResponseInterface) {
+                return $exception;
+            }
+
+            throw $exception;
         }
     }
 
@@ -265,15 +276,15 @@ class RelayConnection extends StreamConnection
         $code = $exception->getCode();
         $message = $exception->getMessage();
 
-        if (strpos($message, 'RELAY_ERR_IO')) {
+        if (strpos($message, 'RELAY_ERR_IO') !== false) {
             return new ConnectionException($this, $message, $code, $exception);
         }
 
-        if (strpos($message, 'RELAY_ERR_REDIS')) {
+        if (strpos($message, 'RELAY_ERR_REDIS') !== false) {
             return new ServerException($message, $code, $exception);
         }
 
-        if (strpos($message, 'RELAY_ERR_WRONGTYPE') && strpos($message, "Got reply-type 'status'")) {
+        if (strpos($message, 'RELAY_ERR_WRONGTYPE') !== false && strpos($message, "Got reply-type 'status'") !== false) {
             $message = 'Operation against a key holding the wrong kind of value';
         }
 

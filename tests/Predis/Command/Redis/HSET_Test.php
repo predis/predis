@@ -75,16 +75,40 @@ class HSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetsValueOfSpecifiedFieldUsingCluster(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->del('metavars');
+
+        $this->testSetsValueOfSpecifiedField();
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
+        $this->expectExceptionMessageMatches('/.*Operation against a key holding the wrong kind of value.*/');
 
         $redis = $this->getClient();
 
         $redis->set('metavars', 'foo');
         $redis->hset('metavars', 'foo', 'bar');
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testThrowsExceptionOnWrongTypeUsingCluster(): void
+    {
+        $this->testThrowsExceptionOnWrongType();
     }
 }
