@@ -1,5 +1,15 @@
 ## Changelog
 
+## v2.2.2 (2023-09-13)
+
+### Added
+- Added `client_info` client parameter
+- Added support for `CLUSTER` container command
+
+### Fixed
+- Fixed `EXPIRETIME` not using `prefix`
+- Disabled `CLIENT SETINFO` calls by default
+
 ## v2.2.1 (2023-08-15)
 
 ### Added
