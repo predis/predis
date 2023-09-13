@@ -116,6 +116,16 @@ class SET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetStringValueUsingCluster(): void
+    {
+        $this->testSetStringValue();
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.12
      */
     public function testSetStringValueWithModifierEX(): void
@@ -124,6 +134,16 @@ class SET_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $redis->set('foo', 'bar', 'ex', 1));
         $this->assertSame(1, $redis->ttl('foo'));
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetStringValueWithModifierEXUsingCluster(): void
+    {
+        $this->testSetStringValueWithModifierEX();
     }
 
     /**
@@ -143,6 +163,16 @@ class SET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetStringValueWithModifierPXUsingCluster(): void
+    {
+        $this->testSetStringValueWithModifierPX();
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.12
      */
     public function testSetStringValueWithModifierNX(): void
@@ -151,6 +181,16 @@ class SET_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $redis->set('foo', 'bar', 'NX'));
         $this->assertNull($redis->set('foo', 'bar', 'NX'));
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetStringValueWithModifierNXUsingCluster(): void
+    {
+        $this->testSetStringValueWithModifierNX();
     }
 
     /**
@@ -170,8 +210,17 @@ class SET_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group cluster
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetStringValueWithModifierXXUsingCluster(): void
+    {
+        $this->testSetStringValueWithModifierXX();
+    }
+
+    /**
+     * @group connected
+     * @group cluster
      * @requiresRedisVersion >= 3.0.0
-     * @return void
      */
     public function testSetStringValueInClusterMode(): void
     {
