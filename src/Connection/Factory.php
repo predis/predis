@@ -175,7 +175,7 @@ class Factory implements FactoryInterface
             );
         }
 
-        if (!$connection instanceof RelayConnection) {
+        if ($parameters->client_info ?? false && !$connection instanceof RelayConnection) {
             $connection->addConnectCommand(
                 new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
             );

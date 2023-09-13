@@ -1258,9 +1258,24 @@ class ClientTest extends PredisTestCase
      * @group relay-incompatible
      * @requiresRedisVersion >= 7.2.0
      */
-    public function testSetClientInfoOnConnection(): void
+    public function testDoNoSetClientInfoOnConnection(): void
     {
         $client = new Client($this->getParameters());
+        $libName = $client->client('LIST')[0]['lib-name'];
+        $libVer = $client->client('LIST')[0]['lib-ver'];
+
+        $this->assertEmpty($libName);
+        $this->assertEmpty($libVer);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.2.0
+     */
+    public function testSetClientInfoOnConnectionWhenEnabled(): void
+    {
+        $client = new Client($this->getParameters(['client_info' => true]));
         $libName = $client->client('LIST')[0]['lib-name'];
         $libVer = $client->client('LIST')[0]['lib-ver'];
 
