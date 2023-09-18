@@ -60,8 +60,9 @@ class BFEXISTS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
-     * @requiresRedisBfVersion >= 1.0
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testExistsReturnsExistingItemWithinBloomFilter(): void
     {

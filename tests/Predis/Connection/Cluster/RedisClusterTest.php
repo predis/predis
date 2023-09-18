@@ -12,6 +12,7 @@
 
 namespace Predis\Connection\Cluster;
 
+use Iterator;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Cluster;
 use Predis\Command;
@@ -1212,11 +1213,12 @@ class RedisClusterTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @dataProvider onMovedResponsesDataProvider
      */
-    public function testAskSlotMapToRedisClusterOnMovedResponseByDefault(): void
+    public function testAskSlotMapToRedisClusterOnMovedResponseByDefault(string $movedErrorMessage): void
     {
         $cmdGET = Command\RawCommand::create('GET', 'node:1001');
-        $rspMOVED = new Response\Error('MOVED 1970 127.0.0.1:6380');
+        $rspMOVED = new Response\Error($movedErrorMessage);
         $rspSlotsArray = [
             [0,  8191, ['127.0.0.1', 6379]],
             [8192, 16383, ['127.0.0.1', 6380]],
@@ -1259,6 +1261,20 @@ class RedisClusterTest extends PredisTestCase
 
         $this->assertSame('foobar', $cluster->executeCommand($cmdGET));
         $this->assertCount(2, $cluster);
+    }
+
+    /**
+     * @return Iterator<string, array{movedErrorMessage: string}>
+     */
+    public function onMovedResponsesDataProvider(): Iterator
+    {
+        yield 'MOVED 1970 127.0.0.1:6380' => [
+            'movedErrorMessage' => 'MOVED 1970 127.0.0.1:6380',
+        ];
+
+        yield 'MOVED 1970 127.0.0.1:6380 (relay exception details)' => [
+            'movedErrorMessage' => 'MOVED 1970 127.0.0.1:6380 (relay exception details)',
+        ];
     }
 
     /**

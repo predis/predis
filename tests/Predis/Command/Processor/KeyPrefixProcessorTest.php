@@ -978,6 +978,11 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 ['key'],
                 ['prefix:key'],
             ],
+            /* ---------------- Redis 7.0 ---------------- */
+            ['EXPIRETIME',
+                ['key'],
+                ['prefix:key'],
+            ],
         ];
     }
 }

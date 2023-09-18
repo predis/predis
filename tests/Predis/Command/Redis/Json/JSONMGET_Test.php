@@ -60,6 +60,7 @@ class JSONMGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  array  $firstJson
      * @param  array  $secondJson

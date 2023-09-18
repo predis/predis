@@ -1,5 +1,27 @@
 ## Changelog
 
+## v2.2.2 (2023-09-13)
+
+### Added
+- Added `client_info` client parameter
+- Added support for `CLUSTER` container command
+
+### Fixed
+- Fixed `EXPIRETIME` not using `prefix`
+- Disabled `CLIENT SETINFO` calls by default
+
+## v2.2.1 (2023-08-15)
+
+### Added
+- Added support for `WAITAOF` command (#1357)
+- Added support for `SHUTDOWN` command (#1359)
+- Added support for `FUNCTION` command (#1332)
+- Added support for new optional `PEXPIRE`, `PEXPIREAT` and `COMMAND`
+- Added missing Redis Stack commands to `KeyPrefixProcessor` (#1358)
+
+### Changed
+- Set client name and version when establishing a connection (#1347)
+
 ## v2.2.0 (2023-06-14)
 
 Predis v2.2.0 introduces official support for [Redis Stack](https://redis.io/docs/stack/) as well as a [Relay](https://github.com/cachewerk/relay) integration for substantially [faster read performance](https://github.com/predis/predis/wiki/Using-Relay).
