@@ -33,7 +33,7 @@ but significantly reduces bytes sent over the network and Redis memory usage.
 
 Without Relay, Predis will not serialize data and will never do that by default. The reason
 behind this decision is that serialization is usually something that developers prefer to
-customize depending on their needs and can not be easilygeneralized when using Redis because
+customize depending on their needs and can not be easily generalized when using Redis because
 of the many possible access patterns for your data. This does not mean that it is impossible
 to have such a feature since you can leverage the extensibility of this library to define
 your own serialization-aware commands. You can find more details about how to do that
@@ -90,7 +90,7 @@ Predis is fast enough when Redis is located on the same machine as PHP, more on 
 [PhpRedis](https://github.com/phpredis/phpredis) (and Relay) perform significantly better when
 network I/O is involved, due to their ability to compress data by ~75%. Fewer bytes and received
 sent over the network [means faster operations](https://akalongman.medium.com/phpredis-vs-predis-comparison-on-real-production-data-a819b48cbadb),
-and potentially cost savings when network traffic isn't free (e.g. AWS Elasticache Inter-AZ transfer costs).
+and potentially cost savings when network traffic isn't free (e.g. AWS ElastiCache Inter-AZ transfer costs).
 
 ## Predis is a pure-PHP implementation: it can not be fast enough! ##
 

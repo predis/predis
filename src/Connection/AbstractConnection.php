@@ -14,6 +14,7 @@ namespace Predis\Connection;
 
 use InvalidArgumentException;
 use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
 use Predis\CommunicationException;
 use Predis\Protocol\ProtocolException;
 
@@ -27,6 +28,10 @@ abstract class AbstractConnection implements NodeConnectionInterface
     private $cachedId;
 
     protected $parameters;
+
+    /**
+     * @var RawCommand[]
+     */
     protected $initCommands = [];
 
     /**
@@ -99,6 +104,14 @@ abstract class AbstractConnection implements NodeConnectionInterface
     public function addConnectCommand(CommandInterface $command)
     {
         $this->initCommands[] = $command;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getInitCommands(): array
+    {
+        return $this->initCommands;
     }
 
     /**

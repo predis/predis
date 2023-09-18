@@ -464,6 +464,14 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     {
         [$slot, $connectionID] = explode(' ', $details, 2);
 
+        // Handle connection ID in the form of "IP:port (details about exception)"
+        // by trimming everything after first space (including the space)
+        $startPositionOfExtraDetails = strpos($connectionID, ' ');
+
+        if ($startPositionOfExtraDetails !== false) {
+            $connectionID = substr($connectionID, 0, $startPositionOfExtraDetails);
+        }
+
         if (!$connection = $this->getConnectionById($connectionID)) {
             $connection = $this->createConnection($connectionID);
         }
