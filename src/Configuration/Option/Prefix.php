@@ -12,6 +12,7 @@
 
 namespace Predis\Configuration\Option;
 
+use Closure;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Command\Processor\ProcessorInterface;
 use Predis\Configuration\OptionInterface;
@@ -28,7 +29,7 @@ class Prefix implements OptionInterface
      */
     public function filter(OptionsInterface $options, $value)
     {
-        if (is_callable($value)) {
+        if (is_callable($value) && (is_object($value) || $value instanceof Closure)) {
             $value = call_user_func($value, $options);
         }
 
