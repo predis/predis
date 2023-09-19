@@ -197,7 +197,13 @@ class KeyPrefixProcessor implements ProcessorInterface
         if ($command instanceof PrefixableCommandInterface) {
             $command->prefixKeys($this->prefix);
         } elseif (isset($this->commands[$commandID = strtoupper($command->getId())])) {
-            call_user_func($this->commands[$commandID], $command, $this->prefix);
+            $callable = $this->commands[$commandID];
+
+            if (is_string($callable) && 0 === strpos($callable, 'static::')) {
+                $callable = substr_replace($callable, get_class($this), 0, 6);
+            }
+
+            call_user_func($callable, $command, $this->prefix);
         }
     }
 
