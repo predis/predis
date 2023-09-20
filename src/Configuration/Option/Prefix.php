@@ -29,7 +29,7 @@ class Prefix implements OptionInterface
      */
     public function filter(OptionsInterface $options, $value)
     {
-        if (is_callable($value) && (is_object($value) || $value instanceof Closure)) {
+        if ($value instanceof Closure) {
             $value = call_user_func($value, $options);
         }
 
