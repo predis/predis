@@ -177,6 +177,10 @@ abstract class ClusterStrategy implements StrategyInterface
 
             /* cluster */
             'CLUSTER' => [$this, 'getFakeKey'],
+
+            'KEYS' => $getKeyFromFirstArgument,
+            'JSON.GET' => $getKeyFromFirstArgument,
+            'JSON.SET' => $getKeyFromFirstArgument
         ];
     }
 
