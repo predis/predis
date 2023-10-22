@@ -51,6 +51,7 @@ class CFRESERVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider filtersProvider
      * @param  array $filterArguments
      * @param  int   $expectedCapacity

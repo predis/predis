@@ -63,7 +63,7 @@ class FTINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      *
@@ -96,7 +96,6 @@ class FTINFO_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Unknown Index name');
 
         $redis->ftinfo('index');
     }

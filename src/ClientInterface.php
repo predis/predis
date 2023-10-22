@@ -40,6 +40,7 @@ use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\FactoryInterface;
 use Predis\Command\Redis\Container\ACL;
+use Predis\Command\Redis\Container\CLUSTER;
 use Predis\Command\Redis\Container\FunctionContainer;
 use Predis\Command\Redis\Container\Json\JSONDEBUG;
 use Predis\Command\Redis\Container\Search\FTCONFIG;
@@ -108,7 +109,7 @@ use Predis\Response\Status;
  * @method array             cfinsertnx(string $key, int $capacity = -1, bool $noCreate = false, string ...$item)
  * @method Status            cfreserve(string $key, int $capacity, int $bucketSize = -1, int $maxIterations = -1, int $expansion = -1)
  * @method array             cfscandump(string $key, int $iterator)
- * @method array             cmsincrby(string $key, string|int...$itemIncrementDictionary)
+ * @method array             cmsincrby(string $key, string|int ...$itemIncrementDictionary)
  * @method array             cmsinfo(string $key)
  * @method Status            cmsinitbydim(string $key, int $width, int $depth)
  * @method Status            cmsinitbyprob(string $key, float $errorRate, float $probability)
@@ -154,7 +155,7 @@ use Predis\Response\Status;
  * @method mixed             mset(array $dictionary)
  * @method int               msetnx(array $dictionary)
  * @method Status            psetex(string $key, $milliseconds, $value)
- * @method Status            set(string $key, $value, $expireResolution = null, $expireTTL = null, $flag = null)
+ * @method Status|null       set(string $key, $value, $expireResolution = null, $expireTTL = null, $flag = null)
  * @method int               setbit(string $key, $offset, $value)
  * @method Status            setex(string $key, $seconds, $value)
  * @method int               setnx(string $key, $value)
@@ -322,12 +323,14 @@ use Predis\Response\Status;
  * @method array|null        exec()
  * @method mixed             multi()
  * @method mixed             unwatch()
+ * @method array             waitaof(int $numLocal, int $numReplicas, int $timeout)
  * @method mixed             watch(string $key)
  * @method mixed             eval(string $script, int $numkeys, string ...$keyOrArg = null)
  * @method mixed             eval_ro(string $script, array $keys, ...$argument)
  * @method mixed             evalsha(string $script, int $numkeys, string ...$keyOrArg = null)
  * @method mixed             evalsha_ro(string $sha1, array $keys, ...$argument)
  * @method mixed             script($subcommand, $argument = null)
+ * @method Status            shutdown(bool $noSave = null, bool $now = false, bool $force = false, bool $abort = false)
  * @method mixed             auth(string $password)
  * @method string            echo(string $message)
  * @method mixed             ping(string $message = null)
@@ -356,6 +359,7 @@ use Predis\Response\Status;
  * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
+ * @property CLUSTER           $cluster
  * @property FunctionContainer $function
  * @property FTCONFIG          $ftconfig
  * @property FTCURSOR          $ftcursor

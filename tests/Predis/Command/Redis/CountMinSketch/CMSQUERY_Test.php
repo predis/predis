@@ -61,6 +61,7 @@ class CMSQUERY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider sketchesProvider
      * @param  array $queryArguments
      * @param  array $expectedResponse

@@ -13,8 +13,13 @@
 namespace Predis\Connection;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\ClientException;
 use Predis\Command\RawCommand;
 use Predis\Response\Error as ErrorResponse;
+use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use ReflectionClass;
+use Relay\Exception as RelayException;
+use Relay\Relay;
 
 /**
  * @group ext-relay
@@ -57,6 +62,141 @@ class RelayConnectionTest extends PredisConnectionTestCase
 
         $connection->addConnectCommand($cmdSelect);
         $connection->connect();
+    }
+
+    /**
+     * @group connected
+     */
+    public function testGetIdentifierUsesParentGetIdentifier(): void
+    {
+        $relayMock = $this
+            ->getMockBuilder(Relay::class)
+            ->onlyMethods(['endpointId'])
+            ->getMock();
+
+        $relayMock->method('endpointId')
+            ->willThrowException(
+                new RelayException('Not Connected')
+            );
+
+        /** @var RelayConnection&MockObject $connection */
+        $connection = $this
+            ->getMockBuilder($this->getConnectionClass())
+            ->onlyMethods(['createResource'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $reflection = new ReflectionClass($connection);
+        $propertyClient = $reflection->getProperty('client');
+        $propertyClient->setAccessible(true);
+        $propertyClient->setValue($connection, $relayMock);
+        $propertyParameters = $reflection->getProperty('parameters');
+        $propertyParameters->setAccessible(true);
+        $propertyParameters->setValue($connection, new Parameters([
+            'host' => '127.0.0.1',
+            'port' => 6379,
+        ]));
+
+        $this->assertEquals('127.0.0.1:6379', $connection->getIdentifier());
+    }
+
+    /**
+     * @group connected
+     */
+    public function testGetIdentifierUsesClientEndpointId(): void
+    {
+        $relayMock = $this
+            ->getMockBuilder(Relay::class)
+            ->onlyMethods(['endpointId'])
+            ->getMock();
+
+        $relayMock->method('endpointId')
+            ->willReturn('127.0.0.1:6379');
+
+        /** @var RelayConnection&MockObject $connection */
+        $connection = $this
+            ->getMockBuilder($this->getConnectionClass())
+            ->onlyMethods(['createResource'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $reflection = new ReflectionClass($connection);
+        $propertyClient = $reflection->getProperty('client');
+        $propertyClient->setAccessible(true);
+        $propertyClient->setValue($connection, $relayMock);
+
+        $this->assertEquals('127.0.0.1:6379', $connection->getIdentifier());
+    }
+
+    /**
+     * @group connected
+     */
+    public function testExecuteCommandReturnsErrorResponseWhenItIsThrownByRelay(): void
+    {
+        $cmdSelect = RawCommand::create('GET', '1');
+
+        $relayMock = $this
+            ->getMockBuilder(Relay::class)
+            ->onlyMethods(['rawCommand'])
+            ->getMock();
+
+        $relayMock->method('rawCommand')
+            ->willThrowException(
+                new RelayException('RELAY_ERR_REDIS')
+            );
+
+        /** @var RelayConnection&MockObject $connection */
+        $connection = $this
+            ->getMockBuilder($this->getConnectionClass())
+            ->onlyMethods(['createResource', 'createClient'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $reflection = new ReflectionClass($connection);
+        $property = $reflection->getProperty('client');
+        $property->setAccessible(true);
+        $property->setValue($connection, $relayMock);
+
+        $connection->method('createResource');
+
+        $response = $connection->executeCommand($cmdSelect);
+
+        $this->assertInstanceOf(ErrorResponseInterface::class, $response);
+    }
+
+    /**
+     * @group connected
+     */
+    public function testExecuteCommandThrowsExceptionWhenThrownByRelayAndItIsNotErrorResponse(): void
+    {
+        $this->expectException('Predis\ClientException');
+        $cmdSelect = RawCommand::create('GET', '1');
+
+        $relayMock = $this
+            ->getMockBuilder(Relay::class)
+            ->onlyMethods(['rawCommand'])
+            ->getMock();
+
+        $relayMock->method('rawCommand')
+            ->willThrowException(
+                new ClientException('RELAY_ERR_REDIS')
+            );
+
+        /** @var RelayConnection&MockObject $connection */
+        $connection = $this
+            ->getMockBuilder($this->getConnectionClass())
+            ->onlyMethods(['createResource', 'createClient'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $reflection = new ReflectionClass($connection);
+        $property = $reflection->getProperty('client');
+        $property->setAccessible(true);
+        $property->setValue($connection, $relayMock);
+
+        $connection->method('createResource');
+
+        $connection->executeCommand($cmdSelect);
     }
 
     // ******************************************************************** //
