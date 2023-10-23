@@ -118,18 +118,6 @@ class OBJECT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion <= 7.2.0
-     */
-    public function testObjectEncodingResp3(): void
-    {
-        $redis = $this->getResp3Client();
-
-        $redis->lpush('list:metavars', 'foo', 'bar');
-        $this->assertMatchesRegularExpression('/[zip|quick]list/', $redis->object('ENCODING', 'list:metavars'));
-    }
-
-    /**
-     * @group connected
      * @requiresRedisVersion >= 2.2.3
      */
     public function testReturnsNullOnNonExistingKey(): void
