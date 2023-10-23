@@ -281,7 +281,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
                 }
 
                 usleep($retryAfter * 1000);
-                $retryAfter = $retryAfter * 2;
+                $retryAfter *= 2;
                 ++$retries;
             }
         }
@@ -556,7 +556,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
                 break;
             } catch (Throwable $exception) {
                 usleep($retryAfter * 1000);
-                $retryAfter = $retryAfter * 2;
+                $retryAfter *= 2;
 
                 if ($exception instanceof ConnectionException) {
                     $connection = $exception->getConnection();

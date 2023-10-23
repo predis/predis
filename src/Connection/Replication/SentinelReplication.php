@@ -212,6 +212,7 @@ class SentinelReplication implements ReplicationInterface
             $this->master = $connection;
         } elseif ('sentinel' === $role) {
             $this->sentinels[] = $connection;
+
             // sentinels are not considered part of the pool.
             return;
         } else {
@@ -315,31 +316,30 @@ class SentinelReplication implements ReplicationInterface
      */
     public function updateSentinels()
     {
-        SENTINEL_QUERY: {
+        SENTINEL_QUERY:
             $sentinel = $this->getSentinelConnection();
 
-            try {
-                $payload = $sentinel->executeCommand(
-                    RawCommand::create('SENTINEL', 'sentinels', $this->service)
-                );
+        try {
+            $payload = $sentinel->executeCommand(
+                RawCommand::create('SENTINEL', 'sentinels', $this->service)
+            );
 
-                $this->sentinels = [];
-                $this->sentinelIndex = 0;
-                // NOTE: sentinel server does not return itself, so we add it back.
-                $this->sentinels[] = $sentinel->getParameters()->toArray();
+            $this->sentinels = [];
+            $this->sentinelIndex = 0;
+            // NOTE: sentinel server does not return itself, so we add it back.
+            $this->sentinels[] = $sentinel->getParameters()->toArray();
 
-                foreach ($payload as $sentinel) {
-                    $this->sentinels[] = [
-                        'host' => $sentinel[3],
-                        'port' => $sentinel[5],
-                        'role' => 'sentinel',
-                    ];
-                }
-            } catch (ConnectionException $exception) {
-                $this->sentinelConnection = null;
-
-                goto SENTINEL_QUERY;
+            foreach ($payload as $sentinel) {
+                $this->sentinels[] = [
+                    'host' => $sentinel[3],
+                    'port' => $sentinel[5],
+                    'role' => 'sentinel',
+                ];
             }
+        } catch (ConnectionException $exception) {
+            $this->sentinelConnection = null;
+
+            goto SENTINEL_QUERY;
         }
     }
 
@@ -457,19 +457,18 @@ class SentinelReplication implements ReplicationInterface
             $this->updateSentinels();
         }
 
-        SENTINEL_QUERY: {
+        SENTINEL_QUERY:
             $sentinel = $this->getSentinelConnection();
 
-            try {
-                $masterParameters = $this->querySentinelForMaster($sentinel, $this->service);
-                $masterConnection = $this->connectionFactory->create($masterParameters);
+        try {
+            $masterParameters = $this->querySentinelForMaster($sentinel, $this->service);
+            $masterConnection = $this->connectionFactory->create($masterParameters);
 
-                $this->add($masterConnection);
-            } catch (ConnectionException $exception) {
-                $this->sentinelConnection = null;
+            $this->add($masterConnection);
+        } catch (ConnectionException $exception) {
+            $this->sentinelConnection = null;
 
-                goto SENTINEL_QUERY;
-            }
+            goto SENTINEL_QUERY;
         }
 
         return $masterConnection;
@@ -488,20 +487,19 @@ class SentinelReplication implements ReplicationInterface
             $this->updateSentinels();
         }
 
-        SENTINEL_QUERY: {
+        SENTINEL_QUERY:
             $sentinel = $this->getSentinelConnection();
 
-            try {
-                $slavesParameters = $this->querySentinelForSlaves($sentinel, $this->service);
+        try {
+            $slavesParameters = $this->querySentinelForSlaves($sentinel, $this->service);
 
-                foreach ($slavesParameters as $slaveParameters) {
-                    $this->add($this->connectionFactory->create($slaveParameters));
-                }
-            } catch (ConnectionException $exception) {
-                $this->sentinelConnection = null;
-
-                goto SENTINEL_QUERY;
+            foreach ($slavesParameters as $slaveParameters) {
+                $this->add($this->connectionFactory->create($slaveParameters));
             }
+        } catch (ConnectionException $exception) {
+            $this->sentinelConnection = null;
+
+            goto SENTINEL_QUERY;
         }
 
         return array_values($this->slaves);
