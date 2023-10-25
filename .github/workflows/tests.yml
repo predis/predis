@@ -27,6 +27,7 @@ jobs:
           - '8.0'
           - '8.1'
           - '8.2'
+          - '8.3'
         redis:
           - 3
           - 4
@@ -98,6 +99,7 @@ jobs:
           - '8.0'
           - '8.1'
           - '8.2'
+          - '8.3'
 
     steps:
       - name: Checkout repository
