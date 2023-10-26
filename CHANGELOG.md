@@ -2,6 +2,7 @@
 
 ## v3.0.0 (2023-10-26)
 - Extended ClusterInterface, so it's possible to execute command on each node (#1348)
+- Added Redis Gears Trigger Function API support (#1348)
 
 ## v2.2.0 (2023-06-14)
 
