@@ -56,6 +56,7 @@ class JSONDEBUG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  array  $jsonArguments
      * @param  string $key
@@ -91,6 +92,7 @@ class JSONDEBUG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */

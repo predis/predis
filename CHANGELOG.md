@@ -1,5 +1,9 @@
 ## Changelog
 
+## v3.0.0 (2023-10-26)
+- Extended ClusterInterface, so it's possible to execute command on each node (#1348)
+- Added Redis Gears Trigger Function API support (#1348)
+
 ## v2.2.0 (2023-06-14)
 
 Predis v2.2.0 introduces official support for [Redis Stack](https://redis.io/docs/stack/) as well as a [Relay](https://github.com/cachewerk/relay) integration for substantially [faster read performance](https://github.com/predis/predis/wiki/Using-Relay).

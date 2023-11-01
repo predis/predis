@@ -32,6 +32,8 @@
             <group>ext-relay</group>
             <group>ext-curl</group>
             <group>cluster</group>
+            <group>gears</group>
+            <group>gears-cluster</group>
             <!-- <group>connected</group> -->
             <!-- <group>disconnected</group> -->
             <!-- <group>commands</group> -->

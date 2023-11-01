@@ -64,6 +64,7 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.1.0
      */
@@ -122,12 +123,19 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
     {
         $redis = $this->getResp3Client();
         $expectedResponse = [
-            2,
-            [
-                'country', 'Ukraine', 'birth', '1995', 'country_birth_Vlad_count', '2',
-            ],
-            [
-                'country', 'Israel', 'birth', '1994', 'country_birth_Vlad_count', '1',
+            'attributes' => [],
+            'error' => [],
+            'total_results' => 2,
+            'format' => 'STRING',
+            'results' => [
+                [
+                    'extra_attributes' => ['country' => 'Ukraine', 'birth' => '1995', 'country_birth_Vlad_count' => '2'],
+                    'values' => [],
+                ],
+                [
+                    'extra_attributes' => ['country' => 'Israel', 'birth' => '1994', 'country_birth_Vlad_count' => '1'],
+                    'values' => [],
+                ],
             ],
         ];
 
@@ -166,6 +174,7 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.1.0
      */

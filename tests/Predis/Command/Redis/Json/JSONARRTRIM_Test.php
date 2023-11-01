@@ -60,6 +60,7 @@ class JSONARRTRIM_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  array  $jsonArguments
      * @param  string $key
@@ -102,7 +103,7 @@ class JSONARRTRIM_Test extends PredisCommandTestCase
         $actualResponse = $redis->jsonarrtrim('key', '$.key2', 1, 4);
 
         $this->assertSame([4], $actualResponse);
-        $this->assertSame([['{"key1":"value1","key2":[2,3,4,5]}']], $redis->jsonget('key'));
+        $this->assertSame('[{"key1":"value1","key2":[2,3,4,5]}]', $redis->jsonget('key'));
     }
 
     public function jsonProvider(): array

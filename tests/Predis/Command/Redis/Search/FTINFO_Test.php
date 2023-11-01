@@ -63,7 +63,7 @@ class FTINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      *
@@ -105,11 +105,12 @@ class FTINFO_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $createResponse);
 
         $actualResponse = $redis->ftinfo('index');
-        $this->assertEquals('index', $actualResponse[1]);
+        $this->assertEquals('index', $actualResponse['index_name']);
     }
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */

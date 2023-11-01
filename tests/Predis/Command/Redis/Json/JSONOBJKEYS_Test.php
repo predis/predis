@@ -60,6 +60,7 @@ class JSONOBJKEYS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  array  $jsonArguments
      * @param  string $key
@@ -92,7 +93,7 @@ class JSONOBJKEYS_Test extends PredisCommandTestCase
 
         $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}');
 
-        $this->assertSame(['key1', 'key2'], $redis->jsonobjkeys('key'));
+        $this->assertSame([['key1', 'key2']], $redis->jsonobjkeys('key'));
     }
 
     public function jsonProvider(): array

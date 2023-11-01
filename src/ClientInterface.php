@@ -44,6 +44,7 @@ use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
 use Predis\Command\Container\Search\FTCURSOR;
+use Predis\Command\Container\TFUNCTION;
 use Predis\Command\Container\XGROUP;
 use Predis\Command\Container\XINFO;
 use Predis\Command\FactoryInterface;
@@ -257,6 +258,8 @@ use Predis\Response\Status;
  * @method Status            tdigestreset(string $key)
  * @method array             tdigestrevrank(string $key, float ...$value)
  * @method string            tdigesttrimmed_mean(string $key, float $lowCutQuantile, float $highCutQuantile)
+ * @method mixed             tfcall(string $libraryName, string $functionName, array $keys = [], array $arguments = [])
+ * @method mixed             tfcallasync(string $libraryName, string $functionName, array $keys = [], array $arguments = [])
  * @method array             topkadd(string $key, ...$items)
  * @method array             topkincrby(string $key, ...$itemIncrement)
  * @method array             topkinfo(string $key)
@@ -373,6 +376,7 @@ use Predis\Response\Status;
  * @property ACL       $acl
  * @property XGROUP    $xgroup
  * @property XINFO     $xinfo
+ * @property TFUNCTION $tfunction
  */
 interface ClientInterface
 {

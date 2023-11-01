@@ -235,7 +235,7 @@ class StreamConnection extends AbstractConnection
             foreach ($this->initCommands as $command) {
                 $response = $this->executeCommand($command);
 
-                if ($response instanceof ErrorResponseInterface && $command->getId() === 'CLIENT') {
+                if ($response instanceof ErrorResponseInterface && ($command->getId() === 'CLIENT')) {
                     // Do nothing on CLIENT SETINFO command failure
                 } elseif ($response instanceof ErrorResponseInterface) {
                     $this->onConnectionError("`{$command->getId()}` failed: {$response->getMessage()}", 0);

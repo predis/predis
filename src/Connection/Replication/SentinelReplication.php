@@ -212,6 +212,7 @@ class SentinelReplication implements ReplicationInterface
             $this->master = $connection;
         } elseif ('sentinel' === $role) {
             $this->sentinels[] = $connection;
+
             // sentinels are not considered part of the pool.
             return;
         } else {

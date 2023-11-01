@@ -201,6 +201,26 @@ $options    = ['cluster' => 'redis'];
 $client = new Predis\Client($parameters, $options);
 ```
 
+#### Redis Gears with cluster ####
+
+Since Redis v7.2, Redis Gears module is a part of Redis Stack bundle. Client supports a variety of
+Redis Gears commands that can be used with OSS cluster API. Currently, before using any Redis
+Gears commands against OSS cluster Redis server needs to be aware of cluster topology.
+
+`REDISGEARS_2.REFRESHCLUSTER` command should be called against **each master node** (read replicas
+should be ignored) **on cluster creation and each time cluster topology changes**.
+
+In most cases this actions should be performed from the CLI interface by the administrator, DevOPS
+or even Kubernetes, depends on your infrastructure managing process. However, client provides an API
+to do this programmatically.
+
+```php
+/** @var \Predis\Connection\Cluster\ClusterInterface $connection */
+$connection->executeCommandOnEachNode(
+    new \Predis\Command\RawCommand('REDISGEARS_2.REFRESHCLUSTER')
+);
+```
+
 #### Replication ####
 
 The client can be configured to operate in a single master / multiple slaves setup to provide better

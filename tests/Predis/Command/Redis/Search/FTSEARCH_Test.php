@@ -54,6 +54,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      * @requiresRedisJsonVersion >= 1.0.0
@@ -80,7 +81,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $ftCreateResponse);
 
         // Timeout to make sure that index created before search performed.
-        usleep(2000);
+        usleep(10000);
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->addReturn(2, 'arr', 'val');
@@ -91,6 +92,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -114,7 +116,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $ftCreateResponse);
 
         // Timeout to make sure that index created before search performed.
-        usleep(2000);
+        usleep(10000);
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->addReturn(1, 'should_return');
@@ -131,7 +133,15 @@ class FTSEARCH_Test extends PredisCommandTestCase
     public function testSearchValuesByHashIndexResp3(): void
     {
         $redis = $this->getResp3Client();
-        $expectedResponse = [1, 'doc:1', ['should_return', 'value1']];
+        $expectedResponse = [
+            'attributes' => [],
+            'error' => [],
+            'total_results' => 1,
+            'format' => 'STRING',
+            'results' => [
+                ['id' => 'doc:1', 'extra_attributes' => ['should_return' => 'value1'], 'values' => []],
+            ],
+        ];
 
         $hashResponse = $redis->hmset('doc:1', 'field1', 'value1', 'field2', 'value2');
         $this->assertEquals('OK', $hashResponse);
@@ -146,6 +156,9 @@ class FTSEARCH_Test extends PredisCommandTestCase
 
         $ftCreateResponse = $redis->ftcreate('idx_hash', $schema, $ftCreateArguments);
         $this->assertEquals('OK', $ftCreateResponse);
+
+        // Timeout to make sure that index created before search performed.
+        usleep(10000);
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->addReturn(1, 'should_return');
