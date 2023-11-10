@@ -26,6 +26,7 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\NotSupportedException;
+use Predis\Replication\ReplicationStrategy;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
@@ -63,6 +64,9 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $connections;
     private $retryLimit = 5;
     private $retryInterval = 10;
+    private $replicaPool = [];
+    private $replicaSlotmap;
+    private $replicaStrategy;
 
     /**
      * @param FactoryInterface  $connections Optional connection factory.
@@ -75,6 +79,9 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         $this->connections = $connections;
         $this->strategy = $strategy ?: new RedisClusterStrategy();
         $this->slotmap = new SlotMap();
+
+        $this->replicaSlotmap = new SlotMap();
+        $this->replicaStrategy = new ReplicationStrategy();
     }
 
     /**
@@ -141,6 +148,10 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function disconnect()
     {
         foreach ($this->pool as $connection) {
+            $connection->disconnect();
+        }
+
+        foreach ($this->replicaPool as $connection) {
             $connection->disconnect();
         }
     }
@@ -284,15 +295,38 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         $response = $this->queryClusterNodeForSlotMap($connection);
 
         foreach ($response as $slots) {
-            // We only support master servers for now, so we ignore subsequent
-            // elements in the $slots array identifying slaves.
             [$start, $end, $master] = $slots;
+            $replicas = array_slice($slots, 3);
 
             if ($master[0] === '') {
                 $this->slotmap->setSlots($start, $end, (string) $connection);
             } else {
                 $this->slotmap->setSlots($start, $end, "{$master[0]}:{$master[1]}");
             }
+
+            if ($replicas) {
+                $this->initReplicaMap($replicas, $start, $end);
+            }
+        }
+    }
+
+    private function initReplicaMap(array $replicas, int $start, int $end)
+    {
+        // Split up slots evenly between replicas for now
+        $totalSlots = $end - $start + 1;
+        $slotsPerReplica = (int) ceil($totalSlots / count($replicas));
+
+        foreach ($replicas as $i => $replica) {
+            $replicaIp = $replica[0] ?? '';
+            $replicaPort = $replica[1] ?? '';
+
+            if (!$replicaIp) {
+                continue;
+            }
+
+            $partStart = $start + $slotsPerReplica * $i;
+            $partEnd = min($end, $partStart + $slotsPerReplica - 1);
+            $this->replicaSlotmap->setSlots($partStart, $partEnd, "{$replicaIp}:{$replicaPort}");
         }
     }
 
@@ -356,11 +390,48 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
             );
         }
 
+        if ($readConnection = $this->getReadConnection($command, $slot)) {
+            return $readConnection;
+        }
+
         if (isset($this->slots[$slot])) {
             return $this->slots[$slot];
         } else {
             return $this->getConnectionBySlot($slot);
         }
+    }
+
+    private function getReadConnection(CommandInterface $command, int $slot)
+    {
+        $isDisallowed = $this->replicaStrategy->isDisallowedOperation($command);
+        if ($isDisallowed) {
+            return null;
+        }
+
+        $isRead = $this->replicaStrategy->isReadOperation($command);
+        if (!$isRead) {
+            return null;
+        }
+
+        if (!SlotMap::isValid($slot)) {
+            throw new OutOfBoundsException("Invalid slot [$slot].");
+        }
+
+        $connectionID = $this->replicaSlotmap[$slot] ?? null;
+        if (!$connectionID) {
+            return null;
+        }
+
+        $connection = $this->replicaPool[$connectionID] ?? null;
+        if (!$connection) {
+            $connection = $this->createConnection($connectionID);
+            $this->replicaPool[$connectionID] = $connection;
+        }
+
+        $readonlyCommand = new RawCommand('READONLY');
+        $connection->executeCommand($readonlyCommand);
+
+        return $connection;
     }
 
     /**
