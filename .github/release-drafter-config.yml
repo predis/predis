@@ -1,7 +1,7 @@
-name-template: 'v$NEXT_MINOR_VERSION'
+name-template: '$NEXT_MINOR_VERSION'
 tag-template: 'v$NEXT_MINOR_VERSION'
-change-template: '- $TITLE (#$NUMBER)'
-
+filter-by-commitish: true
+commitish: v2.x
 autolabeler:
   - label: 'maintenance'
     files:
@@ -16,31 +16,36 @@ autolabeler:
   - label: 'feature'
     branch:
       - '/feature-.+'
-
 categories:
-  - title: 'Breaking Changes'
+  - title: '🔥 Breaking Changes'
     labels:
       - 'breakingchange'
-  - title: 'Experimental Features'
+  - title: '🧪 Experimental Features'
     labels:
       - 'experimental'
-  - title: 'New Features'
+  - title: '🚀 New Features'
     labels:
       - 'feature'
       - 'enhancement'
-  - title: 'Bug Fixes'
+  - title: '🐛 Bug Fixes'
     labels:
       - 'fix'
       - 'bugfix'
       - 'bug'
       - 'BUG'
-  - title: 'Maintenance'
-    label: 'maintenance'
-
+  - title: '🧰 Maintenance'
+    labels:
+      - 'maintenance'
+      - 'dependencies'
+      - 'documentation'
+      - 'docs'
+      - 'testing'
+change-template: '- $TITLE (#$NUMBER)'
 exclude-labels:
   - 'skip-changelog'
-
 template: |
+  # Changes
+
   $CHANGES
 
   ## Contributors
