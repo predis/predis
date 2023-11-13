@@ -12,9 +12,12 @@
 
 namespace Predis\Connection\Cluster;
 
+use Iterator;
+use OutOfBoundsException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Cluster;
 use Predis\Command;
+use Predis\Command\RawCommand;
 use Predis\Connection;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
@@ -1443,14 +1446,14 @@ class RedisClusterTest extends PredisTestCase
 
     public function testLoadBalancingReadsFromSecondaries()
     {
-        // Setup mock cluster connections
         $slotsmap = [
             [0, 5460, ['127.0.0.1', 1001], ['127.0.0.1', 2001]],
             [5461, 10922, ['127.0.0.1', 1002], ['127.0.0.1', 2002]],
             [10923, 16383, ['127.0.0.1', 1003], ['127.0.0.1', 2003]],
         ];
 
-        [$cluster, $returnMap, $primaryConnections] = $this->setupMocks($slotsmap, new ReplicationStrategy());
+        /** @var RedisCluster|MockObject $cluster */
+        [$cluster, $returnMap] = $this->setupMocks($slotsmap, new ReplicationStrategy());
 
         $cluster
             ->expects($this->exactly(3))
@@ -1477,7 +1480,6 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testNoLoadBalancingReadsFromPrimaries()
     {
-        // Setup mock cluster connections
         $slotsmap = [
             [0, 5460, ['127.0.0.1', 1001], ['127.0.0.1', 2001]],
             [5461, 10922, ['127.0.0.1', 1002], ['127.0.0.1', 2002]],
@@ -1486,6 +1488,7 @@ class RedisClusterTest extends PredisTestCase
 
         $replicationStrategy = new ReplicationStrategy();
         $replicationStrategy->disableLoadBalancing();
+        /** @var RedisCluster|MockObject $cluster */
         [$cluster, $returnMap, $primaryConnections] = $this->setupMocks($slotsmap, $replicationStrategy);
 
         // Check that the right connections are returned
@@ -1494,6 +1497,47 @@ class RedisClusterTest extends PredisTestCase
             $slot = $mapData[0];
 
             $command = new Command\RawCommand('GET', ['foo']);
+            $command->setSlot($slot);
+            $commandConnection = $cluster->getConnectionByCommand($command);
+
+            $expectedConnection = $primaryConnections[$i];
+            $this->assertSame($expectedConnection, $commandConnection);
+        }
+    }
+
+    /**
+     * Ensure that disabled load balancing keep the previous behavior of only using primaries.
+     */
+    public function testLoadBalancingWritesToPrimaries()
+    {
+        $command = new Command\RawCommand('SET', ['foo', 'bar']);
+        $this->checkLoadBalancingOnPrimaryCommands($command);
+    }
+
+    public function testLoadBalancingDisallowedCommandsToPrimaries()
+    {
+        $command = new Command\RawCommand('INFO', []);
+        $this->checkLoadBalancingOnPrimaryCommands($command);
+    }
+
+    private function checkLoadBalancingOnPrimaryCommands(Command\CommandInterface $command)
+    {
+        $slotsmap = [
+            [0, 5460, ['127.0.0.1', 1001], ['127.0.0.1', 2001]],
+            [5461, 10922, ['127.0.0.1', 1002], ['127.0.0.1', 2002]],
+            [10923, 16383, ['127.0.0.1', 1003], ['127.0.0.1', 2003]],
+        ];
+
+        $replicationStrategy = new ReplicationStrategy();
+
+        /** @var RedisCluster|MockObject $cluster */
+        [$cluster, $returnMap, $primaryConnections] = $this->setupMocks($slotsmap, $replicationStrategy);
+
+        // Check that the right connections are returned
+        foreach ($slotsmap as $i => $mapData) {
+            // pick a slot that belongs to this shard, e.g. the start
+            $slot = $mapData[0];
+
             $command->setSlot($slot);
             $commandConnection = $cluster->getConnectionByCommand($command);
 
@@ -1561,5 +1605,40 @@ class RedisClusterTest extends PredisTestCase
         $cluster->askSlotMap();
 
         return [$cluster, $returnMap, $primaryConnections];
+    }
+
+    /**
+     * Cover the guard clause in getReadConnection.
+     */
+    public function testLoadBalancingSlotRange()
+    {
+        $cluster = new RedisCluster(new Connection\Factory(), null, new ReplicationStrategy());
+
+        $this->expectException(OutOfBoundsException::class);
+
+        $command = new RawCommand('GET', ['foo']);
+        $command->setSlot(16384);
+
+        $cluster->getConnectionByCommand($command);
+    }
+
+    /**
+     * Coverage test for empty replica slotma.
+     */
+    public function testLoadBalancingEmptySlotMap()
+    {
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
+            ->onlyMethods(['getConnectionBySlot'])
+            ->setConstructorArgs([new Connection\Factory(), null, new ReplicationStrategy()])
+            ->getMock();
+
+        $command = new RawCommand('GET', ['foo']);
+
+        $cluster->expects($this->once())
+            ->method('getConnectionBySlot')
+            ->willReturn($this->getMockConnection(''));
+
+        $cluster->getConnectionByCommand($command);
     }
 }
