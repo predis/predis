@@ -281,14 +281,16 @@ class ClusterTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $options
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(4))
             ->method('__get')
             ->withConsecutive(
+                ['loadBalancing'],
                 ['connections'],
                 ['crc16'],
                 ['readTimeout']
             )
             ->willReturnOnConsecutiveCalls(
+                null,
                 $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock(),
                 $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock(),
                 1000
@@ -309,14 +311,16 @@ class ClusterTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $options
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(4))
             ->method('__get')
             ->withConsecutive(
+                ['loadBalancing'],
                 ['connections'],
                 ['crc16'],
                 ['readTimeout']
             )
             ->willReturnOnConsecutiveCalls(
+                null,
                 $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock(),
                 $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock(),
                 1000

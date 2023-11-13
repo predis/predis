@@ -12,12 +12,15 @@
 
 namespace Predis\Connection\Cluster;
 
+use OutOfBoundsException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Cluster;
 use Predis\Command;
+use Predis\Command\RawCommand;
 use Predis\Connection;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\Parameters;
+use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
 use PredisTestCase;
 
@@ -1517,5 +1520,276 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($expectedConnection);
 
         $this->assertInstanceOf(Connection\RelayConnection::class, $cluster->getConnectionBySlot(9999));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testLoadBalancingReadsFromSecondaries()
+    {
+        $slotsmap = [
+            [0, 5460, ['127.0.0.1', 1001], ['127.0.0.1', 2001]],
+            [5461, 10922, ['127.0.0.1', 1002], ['127.0.0.1', 2002]],
+            [10923, 16383, ['127.0.0.1', 1003], ['127.0.0.1', 2003]],
+        ];
+
+        /** @var RedisCluster|MockObject $cluster */
+        [$cluster, $returnMap] = $this->setupMocks($slotsmap, new ReplicationStrategy());
+
+        $cluster
+            ->expects($this->exactly(3))
+            ->method('createConnection')
+            ->willReturnMap($returnMap);
+
+        // Check that the right connections are returned
+        foreach ($slotsmap as $i => $mapData) {
+            // pick a slot that belongs to this shard, e.g. the start
+            $slot = $mapData[0];
+
+            $command = new Command\RawCommand('GET', ['foo']);
+            $command->setSlot($slot);
+            $commandConnection = $cluster->getConnectionByCommand($command);
+
+            $expectedConnection = $returnMap[$i][1];
+
+            $this->assertSame($expectedConnection, $commandConnection);
+        }
+    }
+
+    /**
+     * Ensure that disabled load balancing keep the previous behavior of only using primaries.
+     *
+     * @group disconnected
+     */
+    public function testNoLoadBalancingReadsFromPrimaries()
+    {
+        $slotsmap = [
+            [0, 5460, ['127.0.0.1', 1001], ['127.0.0.1', 2001]],
+            [5461, 10922, ['127.0.0.1', 1002], ['127.0.0.1', 2002]],
+            [10923, 16383, ['127.0.0.1', 1003], ['127.0.0.1', 2003]],
+        ];
+
+        $replicationStrategy = new ReplicationStrategy();
+        $replicationStrategy->disableLoadBalancing();
+        /** @var RedisCluster|MockObject $cluster */
+        [$cluster, $returnMap, $primaryConnections] = $this->setupMocks($slotsmap, $replicationStrategy);
+
+        // Check that the right connections are returned
+        foreach ($slotsmap as $i => $mapData) {
+            // pick a slot that belongs to this shard, e.g. the start
+            $slot = $mapData[0];
+
+            $command = new Command\RawCommand('GET', ['foo']);
+            $command->setSlot($slot);
+            $commandConnection = $cluster->getConnectionByCommand($command);
+
+            $expectedConnection = $primaryConnections[$i];
+            $this->assertSame($expectedConnection, $commandConnection);
+        }
+    }
+
+    /**
+     * Ensure that disabled load balancing keep the previous behavior of only using primaries.
+     *
+     * @group disconnected
+     */
+    public function testLoadBalancingWritesToPrimaries()
+    {
+        $command = new Command\RawCommand('SET', ['foo', 'bar']);
+        $this->checkLoadBalancingOnPrimaryCommands($command);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testLoadBalancingDisallowedCommandsToPrimaries()
+    {
+        $command = new Command\RawCommand('INFO', []);
+        $this->checkLoadBalancingOnPrimaryCommands($command);
+    }
+
+    private function checkLoadBalancingOnPrimaryCommands(Command\CommandInterface $command)
+    {
+        $slotsmap = [
+            [0, 5460, ['127.0.0.1', 1001], ['127.0.0.1', 2001]],
+            [5461, 10922, ['127.0.0.1', 1002], ['127.0.0.1', 2002]],
+            [10923, 16383, ['127.0.0.1', 1003], ['127.0.0.1', 2003]],
+        ];
+
+        $replicationStrategy = new ReplicationStrategy();
+
+        /** @var RedisCluster|MockObject $cluster */
+        [$cluster, $returnMap, $primaryConnections] = $this->setupMocks($slotsmap, $replicationStrategy);
+
+        // Check that the right connections are returned
+        foreach ($slotsmap as $i => $mapData) {
+            // pick a slot that belongs to this shard, e.g. the start
+            $slot = $mapData[0];
+
+            $command->setSlot($slot);
+            $commandConnection = $cluster->getConnectionByCommand($command);
+
+            $expectedConnection = $primaryConnections[$i];
+            $this->assertSame($expectedConnection, $commandConnection);
+        }
+    }
+
+    private function setupMocks(array $slotsmap, ReplicationStrategy $replicationStrategy): array
+    {
+        // Setup mock cluster connections
+        $primaryConnections = [];
+        $returnMap = [];
+        foreach ($slotsmap as $mapData) {
+            [$start, $end, $primary, $secondary] = $mapData;
+
+            $primaryIp = $primary[0];
+            $primaryPort = $primary[1];
+            $primaryConnection = $this->getMockConnection("tcp://{$primaryIp}:{$primaryPort}");
+
+            // Mock cluster slots response
+            $primaryConnection
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'CLUSTER', ['SLOTS']
+            ))
+            ->willReturn($slotsmap);
+
+            $primaryConnections[] = $primaryConnection;
+
+            $secondaryIp = $secondary[0];
+            $secondaryPort = $secondary[1];
+            $connectionId = "{$secondaryIp}:{$secondaryPort}";
+
+            $secondaryConnection = $this->getMockConnection("tcp://{$connectionId}");
+
+            $returnMap[] = [$connectionId, $secondaryConnection];
+        }
+
+        // Setup mock cluster object
+        $connections = $this->getMockBuilder(Connection\FactoryInterface::class)->getMock();
+        $connections
+            ->expects($this->never())
+            ->method('create');
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
+            ->onlyMethods([
+                'createConnection',
+                'getRandomConnection',
+            ])
+            ->setConstructorArgs([
+                new Connection\Factory(),
+                new Parameters(),
+                null,
+                $replicationStrategy,
+            ])
+            ->getMock();
+
+        // setup mock methods
+        $cluster
+            ->expects($this->once())
+            ->method('getRandomConnection')
+            ->willReturnOnConsecutiveCalls(...$primaryConnections);
+
+        foreach ($primaryConnections as $primaryConnection) {
+            $cluster->add($primaryConnection);
+        }
+
+        // Init slot map
+        $cluster->askSlotMap();
+
+        return [$cluster, $returnMap, $primaryConnections];
+    }
+
+    /**
+     * Cover the guard clause in getReadConnection.
+     *
+     * @group disconnected
+     */
+    public function testLoadBalancingSlotRange()
+    {
+        $cluster = new RedisCluster(
+            new Connection\Factory(),
+            new Parameters(),
+            null,
+            new ReplicationStrategy()
+        );
+
+        $this->expectException(OutOfBoundsException::class);
+
+        $command = new RawCommand('GET', ['foo']);
+        $command->setSlot(16384);
+
+        $cluster->getConnectionByCommand($command);
+    }
+
+    /**
+     * Coverage test for empty replica slotmap.
+     *
+     * @group disconnected
+     */
+    public function testLoadBalancingEmptySlotMap()
+    {
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
+            ->onlyMethods(['getConnectionBySlot'])
+            ->setConstructorArgs([
+                new Connection\Factory(),
+                new Parameters(),
+                null,
+                new ReplicationStrategy(),
+            ])
+            ->getMock();
+
+        $command = new RawCommand('GET', ['foo']);
+
+        $cluster->expects($this->once())
+            ->method('getConnectionBySlot')
+            ->willReturn($this->getMockConnection(''));
+
+        $cluster->getConnectionByCommand($command);
+    }
+
+    /**
+     * Test some basic key setting and getting.
+     *
+     * @requiresRedisVersion >= 2.0.0
+     * @group connected
+     * @group cluster
+     */
+    public function testLoadBalancingClusterIntegration()
+    {
+        $options = ['loadBalancing' => true];
+        $client = $this->createClient(null, $options);
+
+        // Test normal set/get
+        foreach (range(0, 100) as $i) {
+            $key = "foo{$i}";
+            $value = "bar{$i}";
+            $client->set($key, $value);
+
+            $gotValue = $client->get($key);
+            $this->assertEquals($value, $gotValue);
+
+            $client->del($key);
+
+            $newValue = $client->get($key);
+            $this->assertNull($newValue);
+        }
+
+        // Test hset/hget
+        foreach (range(0, 100) as $i) {
+            $key = 'key' . ($i % 4);
+            $field = "foo{$i}";
+            $value = "bar{$i}";
+            $client->hset($key, $field, $value);
+
+            $gotValue = $client->hget($key, $field);
+            $this->assertEquals($value, $gotValue);
+
+            $client->hdel($key, [$field]);
+
+            $newValue = $client->hget($key, $field);
+            $this->assertNull($newValue);
+        }
     }
 }
