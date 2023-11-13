@@ -200,6 +200,13 @@ $options    = ['cluster' => 'redis'];
 $client = new Predis\Client($parameters, $options);
 ```
 
+If your redis cluster uses replicated nodes, you can also set the `loadBalancing` option to send read commands to replicas:
+
+```php
+$options    = ['cluster' => 'redis', 'loadBalancing' => true];
+```
+Note: In the case that a node has multiple replicas, each replica node will serve a subset of the primary's slots.
+
 #### Replication ####
 
 The client can be configured to operate in a single master / multiple slaves setup to provide better
