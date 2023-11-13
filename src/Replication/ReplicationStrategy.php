@@ -289,4 +289,14 @@ class ReplicationStrategy
 
         return $this;
     }
+
+    /**
+     * Returns the current load balancing setting.
+     *
+     * @return bool
+     */
+    public function isUsingLoadBalancing(): bool
+    {
+        return $this->loadBalancing;
+    }
 }

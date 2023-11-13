@@ -17,6 +17,7 @@ use Predis\Cluster\RedisStrategy;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Cluster\PredisCluster;
 use Predis\Connection\Cluster\RedisCluster;
+use Predis\Replication\ReplicationStrategy;
 
 /**
  * Configures an aggregate connection used for clustering
@@ -59,7 +60,12 @@ class Cluster extends Aggregate
             case 'redis':
             case 'redis-cluster':
                 return function ($parameters, $options, $option) {
-                    return new RedisCluster($options->connections, new RedisStrategy($options->crc16));
+                    $replicationStrategy = new ReplicationStrategy();
+                    if (!$options->loadBalancing) {
+                        $replicationStrategy->disableLoadBalancing();
+                    }
+
+                    return new RedisCluster($options->connections, new RedisStrategy($options->crc16), $replicationStrategy);
                 };
 
             case 'predis':
