@@ -92,6 +92,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         FactoryInterface $connections,
         ParametersInterface $parameters,
         StrategyInterface $strategy = null,
+        ReplicationStrategy $replicationStrategy = null,
         int $readTimeout = null
     ) {
         $this->connections = $connections;
@@ -100,7 +101,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         $this->slotmap = new SlotMap();
 
         $this->replicaSlotmap = new SlotMap();
-        $this->replicaStrategy = new ReplicationStrategy();
+        $this->replicaStrategy = $replicationStrategy ?: (new ReplicationStrategy())->disableLoadBalancing();
 
         if (!is_null($readTimeout)) {
             $this->readTimeout = $readTimeout;
@@ -319,7 +320,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 
         foreach ($response as $slots) {
             [$start, $end, $master] = $slots;
-            $replicas = array_slice($slots, 3);
 
             if ($master[0] === '') {
                 $this->slotmap->setSlots($start, $end, (string) $connection);
@@ -327,14 +327,28 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
                 $this->slotmap->setSlots($start, $end, "{$master[0]}:{$master[1]}");
             }
 
-            if ($replicas) {
+            if ($this->replicaStrategy->isUsingLoadBalancing()) {
+                $replicas = array_slice($slots, 3);
                 $this->initReplicaMap($replicas, $start, $end);
             }
         }
     }
 
-    private function initReplicaMap(array $replicas, int $start, int $end)
+    /**
+     * Initializes the slot maps for any replicas.
+     *
+     * @param  array                $replicas
+     * @param  int                  $start
+     * @param  int                  $end
+     * @return void
+     * @throws OutOfBoundsException
+     */
+    private function initReplicaMap(array $replicas, int $start, int $end): void
     {
+        if (!$replicas) {
+            return;
+        }
+
         // Split up slots evenly between replicas for now
         $totalSlots = $end - $start + 1;
         $slotsPerReplica = (int) ceil($totalSlots / count($replicas));
@@ -424,7 +438,17 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         }
     }
 
-    private function getReadConnection(CommandInterface $command, int $slot)
+    /**
+     * Returns a connection to a replica if possible.
+     *
+     * @param  CommandInterface             $command
+     * @param  int                          $slot
+     * @return NodeConnectionInterface|null
+     *
+     * @throws NotSupportedException
+     * @throws OutOfBoundsException
+     */
+    private function getReadConnection(CommandInterface $command, int $slot): ?NodeConnectionInterface
     {
         $isDisallowed = $this->replicaStrategy->isDisallowedOperation($command);
         if ($isDisallowed) {

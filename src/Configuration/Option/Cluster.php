@@ -18,6 +18,7 @@ use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Cluster\PredisCluster;
 use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\Parameters;
+use Predis\Replication\ReplicationStrategy;
 
 /**
  * Configures an aggregate connection used for clustering
@@ -62,10 +63,16 @@ class Cluster extends Aggregate
                 return static function ($parameters, $options, $option) {
                     $optionParameters = $options->parameters ?? [];
 
+                    $replicationStrategy = new ReplicationStrategy();
+                    if (!$options->loadBalancing) {
+                        $replicationStrategy->disableLoadBalancing();
+                    }
+
                     return new RedisCluster(
                         $options->connections,
                         new Parameters($optionParameters),
                         new RedisStrategy($options->crc16),
+                        $replicationStrategy,
                         $options->readTimeout
                     );
                 };
