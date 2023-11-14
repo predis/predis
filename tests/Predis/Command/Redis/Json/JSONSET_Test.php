@@ -59,6 +59,7 @@ class JSONSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  string      $key
      * @param  string      $defaultJson
@@ -97,11 +98,12 @@ class JSONSET_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}'));
         $this->assertEquals('OK', $redis->jsonset('key', '$', '{"key3":"value3"}'));
-        $this->assertSame([['{"key3":"value3"}']], $redis->jsonget('key'));
+        $this->assertSame('[{"key3":"value3"}]', $redis->jsonget('key'));
     }
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */

@@ -60,6 +60,7 @@ class BFMEXISTS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */

@@ -121,4 +121,4 @@ jobs:
       - name: Run tests against cluster
         run: |
           sleep 5 # Timeout to make sure that docker image is setup
-          vendor/bin/phpunit --group cluster
+          vendor/bin/phpunit --group cluster,gears-cluster

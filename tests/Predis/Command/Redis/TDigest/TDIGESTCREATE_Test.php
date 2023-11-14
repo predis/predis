@@ -59,6 +59,7 @@ class TDIGESTCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider sketchesProvider
      * @param  array  $createArguments
      * @param  string $key
@@ -98,6 +99,7 @@ class TDIGESTCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */

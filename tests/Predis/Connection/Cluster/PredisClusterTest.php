@@ -12,6 +12,7 @@
 
 namespace Predis\Connection\Cluster;
 
+use Predis\Command\CommandInterface;
 use Predis\Connection\Parameters;
 use PredisTestCase;
 
@@ -431,5 +432,43 @@ class PredisClusterTest extends PredisTestCase
         $cluster = new PredisCluster($expectedParameters);
 
         $this->assertEquals($expectedParameters, $cluster->getParameters());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecuteCommandOnEachNode(): void
+    {
+        $mockCommand = $this->getMockBuilder(CommandInterface::class)->getMock();
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:7003');
+
+        $connection1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($mockCommand)
+            ->willReturn('response1');
+
+        $connection2
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($mockCommand)
+            ->willReturn('response2');
+
+        $connection3
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($mockCommand)
+            ->willReturn('response3');
+
+        $cluster = new PredisCluster(new Parameters());
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
+
+        $this->assertEquals(['response1', 'response2', 'response3'], $cluster->executeCommandOnEachNode($mockCommand));
     }
 }
