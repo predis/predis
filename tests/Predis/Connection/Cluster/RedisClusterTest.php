@@ -12,6 +12,7 @@
 
 namespace Predis\Connection\Cluster;
 
+use Iterator;
 use OutOfBoundsException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Cluster;
