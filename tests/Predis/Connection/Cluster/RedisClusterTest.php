@@ -12,7 +12,6 @@
 
 namespace Predis\Connection\Cluster;
 
-use Iterator;
 use OutOfBoundsException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Cluster;
@@ -1480,7 +1479,7 @@ class RedisClusterTest extends PredisTestCase
 
     /**
      * Ensure that disabled load balancing keep the previous behavior of only using primaries.
-     * 
+     *
      * @group disconnected
      */
     public function testNoLoadBalancingReadsFromPrimaries()
@@ -1512,7 +1511,7 @@ class RedisClusterTest extends PredisTestCase
 
     /**
      * Ensure that disabled load balancing keep the previous behavior of only using primaries.
-     * 
+     *
      * @group disconnected
      */
     public function testLoadBalancingWritesToPrimaries()
@@ -1619,7 +1618,7 @@ class RedisClusterTest extends PredisTestCase
 
     /**
      * Cover the guard clause in getReadConnection.
-     * 
+     *
      * @group disconnected
      */
     public function testLoadBalancingSlotRange()
@@ -1636,7 +1635,7 @@ class RedisClusterTest extends PredisTestCase
 
     /**
      * Coverage test for empty replica slotmap.
-     * 
+     *
      * @group disconnected
      */
     public function testLoadBalancingEmptySlotMap()
