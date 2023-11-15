@@ -1670,4 +1670,48 @@ class RedisClusterTest extends PredisTestCase
 
         $cluster->getConnectionByCommand($command);
     }
+
+    /**
+     * Test some basic key setting and getting.
+     *
+     * @requiresRedisVersion >= 2.0.0
+     * @group connected
+     * @group cluster
+     */
+    public function testLoadBalancingClusterIntegration()
+    {
+        $options = ['loadBalancing' => true];
+        $client = $this->createClient(null, $options);
+
+        // Test normal set/get
+        foreach (range(0, 100) as $i) {
+            $key = "foo{$i}";
+            $value = "bar{$i}";
+            $client->set($key, $value);
+
+            $gotValue = $client->get($key);
+            $this->assertEquals($value, $gotValue);
+
+            $client->del($key);
+
+            $newValue = $client->get($key);
+            $this->assertNull($newValue);
+        }
+
+        // Test hset/hget
+        foreach (range(0, 100) as $i) {
+            $key = 'key' . ($i % 4);
+            $field = "foo{$i}";
+            $value = "bar{$i}";
+            $client->hset($key, $field, $value);
+
+            $gotValue = $client->hget($key, $field);
+            $this->assertEquals($value, $gotValue);
+
+            $client->hdel($key, [$field]);
+
+            $newValue = $client->hget($key, $field);
+            $this->assertNull($newValue);
+        }
+    }
 }
