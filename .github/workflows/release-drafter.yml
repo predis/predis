@@ -11,9 +11,16 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
 
   update_release_draft:
+
+    permissions:
+      contents: write
+      pull-requests: write
 
     name: Update release draft
     runs-on: ubuntu-latest
