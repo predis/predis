@@ -3,7 +3,9 @@ name: Release Drafter
 on:
   push:
     branches:
-      - v3.x
+      - main
+      - v2.**
+      - v3.**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

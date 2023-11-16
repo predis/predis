@@ -451,8 +451,14 @@ implementation of the standard connection classes available in the `Predis\Conne
 ### Connection ###
 To establish the connection using RESP3 protocol, you need to set parameter `protocol => 3`. Default protocol is still RESP2.
 
+You can pass parameter as configuration option in array or as a query parameter in `redis_url`
+
 ```php
+  // Configuration option
   $client = new \Predis\Client(['protocol' => 3]);
+
+  // Redis URL
+  $client = new \Predis\Client('redis://localhost:6379?protocol=3');
 
   // ["proto" => "3"]
   $client->executeRaw(['HELLO']);
