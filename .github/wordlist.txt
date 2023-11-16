@@ -40,3 +40,4 @@ runtime
 sharding
 stunnel
 variadic
+commitish
