@@ -91,6 +91,20 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
+     * Returns a random connection from the pool.
+     *
+     * @return NodeConnectionInterface|null
+     */
+    protected function getRandomConnection()
+    {
+        if (!$this->pool) {
+            return null;
+        }
+
+        return $this->pool[array_rand($this->pool)];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function disconnect()
@@ -256,5 +270,19 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function getParameters(): ParametersInterface
     {
         return $this->connectionParameters;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function executeCommandOnEachNode(CommandInterface $command): array
+    {
+        $responses = [];
+
+        foreach ($this->pool as $connection) {
+            $responses[] = $connection->executeCommand($command);
+        }
+
+        return $responses;
     }
 }

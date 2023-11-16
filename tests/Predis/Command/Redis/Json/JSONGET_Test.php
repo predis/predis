@@ -59,6 +59,7 @@ class JSONGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  array  $jsonData
      * @param  string $key
@@ -94,13 +95,14 @@ class JSONGET_Test extends PredisCommandTestCase
 
         $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}');
         $this->assertSame(
-            [['{"key1":"value1","key2":"value2"}']],
+            '[{"key1":"value1","key2":"value2"}]',
             $redis->jsonget('key')
         );
     }
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -117,6 +119,7 @@ class JSONGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider unexpectedValuesProvider
      * @param  array  $arguments
      * @param  string $expectedExceptionMessage

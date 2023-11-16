@@ -31,7 +31,7 @@ jobs:
           - '8.1'
           - '8.2'
         redis:
-          - latest
+          - edge
 
     steps:
       - name: Checkout
@@ -61,6 +61,10 @@ jobs:
 
       - name: Run tests
         run: vendor/bin/phpunit --group realm-stack
+
+      - name: Run redis gears tests
+        if: ${{ matrix.redis == 'edge' }}
+        run: vendor/bin/phpunit --group gears
 
       - name: Run tests using Relay
         run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml

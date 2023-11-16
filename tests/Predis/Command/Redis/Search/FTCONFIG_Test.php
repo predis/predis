@@ -89,6 +89,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -113,6 +114,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -133,12 +135,13 @@ class FTCONFIG_Test extends PredisCommandTestCase
     {
         $redis = $this->getResp3Client();
 
-        $this->assertEquals([['MAXEXPANSIONS', '200']], $redis->ftconfig->get('MAXEXPANSIONS'));
+        $this->assertEquals(['MAXEXPANSIONS' => '200'], $redis->ftconfig->get('MAXEXPANSIONS'));
         $this->assertEmpty($redis->ftconfig->get('foobar'));
     }
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -161,6 +164,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */

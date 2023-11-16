@@ -113,7 +113,7 @@ class ACL_Test extends PredisCommandTestCase
             $redis->acl->dryRun('Test', 'SET', 'foo', 'bar')
         );
         $this->assertEquals(
-            "This user has no permissions to run the 'get' command",
+            "User Test has no permissions to run the 'get' command",
             $redis->acl->dryRun('Test', 'GET', 'foo')
         );
     }

@@ -61,6 +61,7 @@ class CMSINCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider sketchesProvider
      * @param  array $incrementArguments
      * @param  array $queryArguments
@@ -104,6 +105,7 @@ class CMSINCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @requiresRedisBfVersion >= 2.0.0
      */
     public function testThrowsExceptionOnNonExistingKey(): void

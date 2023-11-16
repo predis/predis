@@ -34,6 +34,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         'bloomFilter' => ['annotation' => 'requiresRedisBfVersion', 'name' => 'bf'],
         'search' => ['annotation' => 'requiresRediSearchVersion', 'name' => 'search'],
         'timeSeries' => ['annotation' => 'requiresRedisTimeSeriesVersion', 'name' => 'timeseries'],
+        'gears' => ['annotation' => 'requiresRedisGearsVersion', 'name' => 'redisgears_2'],
     ];
 
     /**
@@ -477,8 +478,8 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         }
 
         if (!$this->isSatisfiedRedisModuleVersion($reqVersion, $module)) {
-            $redisModuleVersion = $this->getRedisModuleVersion($module);
-            $module = strtoupper($module);
+            $redisModuleVersion = $this->getRedisModuleVersion($this->modulesMapping[$module]['name']);
+            $redisModuleVersion = str_replace('0', '.', $redisModuleVersion);
 
             $this->markTestSkipped(
                 "Test requires a Redis $module module >= $reqVersion but target module is $redisModuleVersion"
@@ -515,13 +516,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $this->info = $info;
         }
 
-        if (isset($info['modules'][$module]['ver'])) {
-            $this->redisJsonVersion = $info['modules'][$module]['ver'];
-
-            return $info['modules'][$module]['ver'];
-        }
-
-        return '0';
+        return $info['modules'][$module]['ver'] ?? '0';
     }
 
     /**
@@ -578,8 +573,18 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $this->getName(false)
         );
 
-        return isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group'])
-            && !empty($annotations['method']['requiresRedisVersion'])
+        $annotationExists = isset($annotations['method']['requiresRedisVersion']);
+
+        if (!$annotationExists) {
+            foreach ($this->modulesMapping as $module => $configuration) {
+                if (isset($annotations['method'][$configuration['annotation']])) {
+                    $annotationExists = true;
+                }
+            }
+        }
+
+        return $annotationExists
+            && isset($annotations['method']['group'])
             && in_array('connected', $annotations['method']['group'], true)
             && in_array('cluster', $annotations['method']['group'], true);
     }

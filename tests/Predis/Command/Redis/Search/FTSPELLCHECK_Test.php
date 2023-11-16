@@ -62,6 +62,7 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.4.0
      */
@@ -94,7 +95,11 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
     public function testSpellcheckReturnsPossibleSuggestionsToGivenMisspelledTermResp3(): void
     {
         $redis = $this->getResp3Client();
-        $expectedResponse = [['TERM', 'held', [[0.0, 'hello'], [0.0, 'help']]]];
+        $expectedResponse = [
+            'results' => [
+                'held' => [['hello' => 0.0], ['help' => 0.0]],
+            ],
+        ];
 
         $this->assertEquals('OK', $redis->ftcreate(
             'index',
@@ -114,6 +119,7 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.4.0
      */

@@ -60,6 +60,7 @@ class JSONARRINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  array  $jsonArguments
      * @param  string $key
@@ -104,7 +105,7 @@ class JSONARRINSERT_Test extends PredisCommandTestCase
         $actualResponse = $redis->jsonarrinsert('key', '$.key2', 1, '"value2"');
 
         $this->assertSame([3], $actualResponse);
-        $this->assertSame([['{"key1":"value1","key2":["value1","value2","value3"]}']], $redis->jsonget('key'));
+        $this->assertSame('[{"key1":"value1","key2":["value1","value2","value3"]}]', $redis->jsonget('key'));
     }
 
     public function jsonProvider(): array
