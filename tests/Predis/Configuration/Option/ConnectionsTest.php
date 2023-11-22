@@ -13,7 +13,6 @@
 namespace Predis\Configuration\Option;
 
 use Predis\Configuration\OptionsInterface;
-use Predis\Connection\Parameters;
 use Predis\Connection\RelayFactory;
 use PredisTestCase;
 use stdClass;

@@ -126,7 +126,7 @@ class Connections implements OptionInterface
     /**
      * Creates RelayFactory instance.
      *
-     * @param OptionsInterface $options
+     * @param  OptionsInterface $options
      * @return FactoryInterface
      */
     private function getRelayFactory(OptionsInterface $options): FactoryInterface

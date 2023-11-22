@@ -133,9 +133,9 @@ class RelayConnection extends AbstractConnection
     }
 
     /**
-     * @param ParametersInterface $parameters
-     * @param $address
-     * @param $flags
+     * @param  ParametersInterface $parameters
+     * @param                      $address
+     * @param                      $flags
      * @return Relay
      */
     protected function connectWithConfiguration(ParametersInterface $parameters, $address, $flags)
