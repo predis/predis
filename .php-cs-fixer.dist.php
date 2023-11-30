@@ -19,6 +19,7 @@ return (new PhpCsFixer\Config)
         'phpdoc_annotation_without_dot' => false,
         'no_superfluous_phpdoc_tags' => false,
         'no_unneeded_curly_braces' => false,
+        'no_unneeded_braces' => false,
         'global_namespace_import' => true,
         'yoda_style' => false,
         'single_line_throw' => false,
