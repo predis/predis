@@ -18,6 +18,7 @@ use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Factory;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\RelayConnection;
+use Predis\Connection\RelayFactory;
 
 /**
  * Configures a new connection factory instance.
@@ -94,28 +95,18 @@ class Connections implements OptionInterface
      */
     protected function createFactoryByString(OptionsInterface $options, string $value)
     {
-        /**
-         * @var FactoryInterface
-         */
-        $factory = $this->getDefault($options);
-
         switch (strtolower($value)) {
             case 'relay':
-                $factory->define('tcp', RelayConnection::class);
-                $factory->define('redis', RelayConnection::class);
-                $factory->define('unix', RelayConnection::class);
-                break;
+                return $this->getRelayFactory($options);
 
             case 'default':
-                return $factory;
+                return $this->getDefault($options);
 
             default:
                 throw new InvalidArgumentException(sprintf(
                     '%s does not recognize `%s` as a supported configuration string', static::class, $value
                 ));
         }
-
-        return $factory;
     }
 
     /**
@@ -124,6 +115,23 @@ class Connections implements OptionInterface
     public function getDefault(OptionsInterface $options)
     {
         $factory = new Factory();
+
+        if ($options->defined('parameters')) {
+            $factory->setDefaultParameters($options->parameters);
+        }
+
+        return $factory;
+    }
+
+    /**
+     * Creates RelayFactory instance.
+     *
+     * @param  OptionsInterface $options
+     * @return FactoryInterface
+     */
+    private function getRelayFactory(OptionsInterface $options): FactoryInterface
+    {
+        $factory = new RelayFactory();
 
         if ($options->defined('parameters')) {
             $factory->setDefaultParameters($options->parameters);
