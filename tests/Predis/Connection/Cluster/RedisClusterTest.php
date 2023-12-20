@@ -1494,4 +1494,28 @@ class RedisClusterTest extends PredisTestCase
 
         $this->assertEquals(['response1', 'response2', 'response3'], $cluster->executeCommandOnEachNode($mockCommand));
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreatesRelayConnectionsCluster(): void
+    {
+        $factory = $this->getMockBuilder(Connection\RelayFactory::class)->getMock();
+        $expectedConnection = $this
+            ->getMockBuilder(Connection\RelayConnection::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $parameters = new Parameters([
+            'scheme' => 'tcp',
+            'host' => '127.0.0.1',
+            'port' => 7001,
+            'protocol' => '3',
+        ]);
+
+        $cluster = new RedisCluster($factory, $parameters);
+
+        $cluster->add($expectedConnection);
+
+        $this->assertInstanceOf(Connection\RelayConnection::class, $cluster->getConnectionBySlot(9999));
+    }
 }

@@ -125,14 +125,6 @@ class RelayConnection extends AbstractConnection
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function getIdentifier()
-    {
-        return $this->client->endpointId();
-    }
-
-    /**
      * @param  ParametersInterface $parameters
      * @param                      $address
      * @param                      $flags

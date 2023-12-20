@@ -1323,6 +1323,20 @@ class ClientTest extends PredisTestCase
         $this->assertSame(Client::VERSION, $libVer);
     }
 
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 2.0.0
+     * @return void
+     */
+    public function testCreatesClusterWithRelayConnection(): void
+    {
+        $client = new Client($this->getDefaultParametersArray(), ['cluster' => 'redis', 'connections' => 'relay']);
+
+        $this->assertEquals('OK', $client->set('key', 'value'));
+        $this->assertSame('value', $client->get('key'));
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
