@@ -957,7 +957,7 @@ class ClientTest extends PredisTestCase
      */
     public function testGetClientByMethodSupportsSelectingConnectionByCommand(): void
     {
-        $command = \Predis\Command\RawCommand::create('GET', 'key');
+        $command = Command\RawCommand::create('GET', 'key');
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
 
         $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
