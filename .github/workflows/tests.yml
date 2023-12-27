@@ -219,13 +219,13 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
 
-    finish:
-      needs: predis-stack
-      if: ${{ always() }}
-      runs-on: ubuntu-latest
-      steps:
-        - name: Coveralls Finished
-          uses: coverallsapp/github-action@v2
-          with:
-            parallel-finished: true
-            carryforward: "Predis-Relay,Stack"
+  finish:
+    needs: predis-stack
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true
+          carryforward: "Predis-Relay,Stack"
