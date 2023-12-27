@@ -81,12 +81,12 @@ jobs:
         run: php vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov
 
       - name: Send coverage to Coveralls
-        env:
-            COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: ${{ env.COVERALLS_REPO_TOKEN && matrix.php == '8.1' && matrix.redis == '7' }}
-        run: |
-          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.7.0/php-coveralls.phar"
-          php ./php-coveralls.phar -v
+        uses: coverallsapp/github-action@v2
+        if: ${{ && matrix.php == '8.1' && matrix.redis == '7' }}
+        with:
+          flag-name: Predis-Relay
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
 
   predis-cluster:
 
@@ -130,3 +130,102 @@ jobs:
         run: |
           sleep 5 # Timeout to make sure that docker image is setup
           vendor/bin/phpunit --group cluster,gears-cluster
+
+  predis-stack:
+
+    name: PHP ${{ matrix.php }} (Redis Stack ${{ matrix.redis }})
+    needs: predis
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis/redis-stack-server:${{ matrix.redis }}
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        ports:
+          - 6379:6379
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - '7.2'
+          - '7.3'
+          - '7.4'
+          - '8.0'
+          - '8.1'
+          - '8.2'
+        redis:
+          - edge
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup PHP with Composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: relay
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "directory=$(composer config cache-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.directory }}
+          key: tests-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: tests-php-${{ matrix.php }}-composer
+
+      - name: Install Composer dependencies
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: composer install --ansi --no-progress --prefer-dist
+
+      - name: Run tests
+        if: ${{ matrix.php != '8.1' }}
+        run: vendor/bin/phpunit --group realm-stack
+
+      - name: Run tests with coverage
+        if: ${{ matrix.php == '8.1' }}
+        run: vendor/bin/phpunit --group realm-stack --coverage-php build/cov/coverage-stack.cov --coverage-filter ./src
+
+      - name: Run redis gears tests
+        if: ${{ matrix.php != '8.1' || matrix.redis == 'edge' }}
+        run: vendor/bin/phpunit --group gears
+
+      - name: Run redis gears tests with coverage
+        if: ${{ matrix.php == '8.1' }}
+        run: vendor/bin/phpunit --group gears --coverage-php build/cov/coverage-gears.cov --coverage-filter ./src
+
+      - name: Run tests using Relay
+        if: ${{ matrix.php != '8.1' }}
+        run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml
+
+      - name: Run tests using Relay with coverage
+        if: ${{ matrix.php == '8.1' }}
+        run: vendor/bin/phpunit --group realm-stack --coverage-php build/cov/coverage-relay-stack.cov --coverage-filter ./src -c phpunit.relay.xml
+
+      - name: Merge coverage reports
+        if: ${{ matrix.php == '8.1' }}
+        run: php vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov
+
+      - name: Send coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        if: ${{ && matrix.php == '8.1' && matrix.redis == '7' }}
+        with:
+          flag-name: Stack
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
+
+    finish:
+      needs: predis-stack
+      if: ${{ always() }}
+      runs-on: ubuntu-latest
+      steps:
+        - name: Coveralls Finished
+          uses: coverallsapp/github-action@v2
+          with:
+            parallel-finished: true
+            carryforward: "Predis-Relay,Stack"
