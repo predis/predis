@@ -192,7 +192,7 @@ jobs:
         run: vendor/bin/phpunit --group realm-stack --coverage-php build/cov/coverage-stack.cov --coverage-filter ./src
 
       - name: Run redis gears tests
-        if: ${{ matrix.php != '8.1' || matrix.redis == 'edge' }}
+        if: ${{ matrix.php != '8.1' }}
         run: vendor/bin/phpunit --group gears
 
       - name: Run redis gears tests with coverage
@@ -220,6 +220,7 @@ jobs:
           parallel: true
 
   finish:
+    name: Finish Coverall
     needs: predis-stack
     if: ${{ always() }}
     runs-on: ubuntu-latest
