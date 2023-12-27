@@ -66,18 +66,26 @@ jobs:
 
       - name: Run tests with coverage
         if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
-        run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml --coverage-filter ./src
+        run: vendor/bin/phpunit --coverage-php build/cov/coverage-predis.cov --coverage-filter ./src
 
       - name: Run tests using Relay
         if: ${{ matrix.redis >= '6' }}
         run: vendor/bin/phpunit -c phpunit.relay.xml
+
+      - name: Run tests using Relay with coverage
+        if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
+        run: vendor/bin/phpunit -c phpunit.relay.xml --coverage-php build/cov/coverage-relay.cov --coverage-filter ./src
+
+      - name: Merge coverage reports
+        if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
+        run: php vendor/bin/phpcov.php merge --clover build/logs/clover.xml build/cov
 
       - name: Send coverage to Coveralls
         env:
             COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ env.COVERALLS_REPO_TOKEN && matrix.php == '8.1' && matrix.redis == '7' }}
         run: |
-          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.3/php-coveralls.phar"
+          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.7.0/php-coveralls.phar"
           php ./php-coveralls.phar -v
 
   predis-cluster:
