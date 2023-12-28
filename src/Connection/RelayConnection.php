@@ -57,7 +57,7 @@ class RelayConnection extends AbstractConnection
     /**
      * The Relay instance.
      *
-     * @var \Relay\Relay
+     * @var Relay
      */
     protected $client;
 
