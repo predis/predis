@@ -1,6 +1,6 @@
 ## Changelog
 
-## v3.0 (2023-08-29)
+## Unreleased
 
 Predis v3.0 introduces support for new communication protocol [RESP3](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md) and new features based on it.
 
