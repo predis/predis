@@ -153,7 +153,7 @@ class ConnectionsTest extends PredisTestCase
     {
         $parameters = ['database' => 5, 'password' => 'mypassword'];
 
-        /** @var \Predis\Configuration\OptionsInterface|\PHPUnit\Framework\MockObject\MockObject\MockObject */
+        /** @var OptionsInterface|\PHPUnit\Framework\MockObject\MockObject\MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
             ->expects($this->once())
