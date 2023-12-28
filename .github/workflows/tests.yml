@@ -84,7 +84,6 @@ jobs:
         uses: coverallsapp/github-action@v2
         if: ${{ matrix.php == '8.1' && matrix.redis == '7' }}
         with:
-          flag-name: Predis-Relay
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
 
@@ -215,7 +214,6 @@ jobs:
         uses: coverallsapp/github-action@v2
         if: ${{ matrix.php == '8.1' }}
         with:
-          flag-name: Stack
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
 
@@ -229,4 +227,3 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           parallel-finished: true
-          carryforward: "Predis-Relay,Stack"

@@ -203,6 +203,7 @@ BUFFER;
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 6.0.0
      */
     public function testGetsNameOfConnectionResp3(): void

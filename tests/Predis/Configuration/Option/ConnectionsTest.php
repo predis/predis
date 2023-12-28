@@ -13,6 +13,7 @@
 namespace Predis\Configuration\Option;
 
 use Predis\Configuration\OptionsInterface;
+use Predis\Connection\RelayFactory;
 use PredisTestCase;
 use stdClass;
 
@@ -64,31 +65,44 @@ class ConnectionsTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @dataProvider provideSupportedStringValuesForOption
      */
-    public function testAcceptsStringToConfigureRelayBackend($value, $classFQCN)
+    public function testAcceptsStringToConfigureRelayBackendWithoutParameters()
     {
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
-        $default = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
-        $default
-            ->expects($this->exactly(3))
-            ->method('define')
-            ->with($this->matchesRegularExpression('/^tcp|unix|redis$/'), $classFQCN);
-
-        $option = $this->getMockBuilder('Predis\Configuration\Option\Connections')
-        ->setMethods(['getDefault'])
-        ->getMock();
-        $option
+        $options
             ->expects($this->once())
-            ->method('getDefault')
-            ->with($options)
-            ->will($this->returnValue($default));
+            ->method('defined')
+            ->with('parameters')
+            ->willReturn(false);
 
-        $factory = $option->filter($options, $value);
+        $option = new Connections();
+        $factory = $option->filter($options, 'relay');
 
-        $this->assertInstanceOf('Predis\Connection\FactoryInterface', $factory);
-        $this->assertSame($default, $factory);
+        $this->assertInstanceOf(RelayFactory::class, $factory);
+        $this->assertEmpty($factory->getDefaultParameters());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAcceptsStringToConfigureRelayBackendWithParameters()
+    {
+        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+
+        $options
+            ->expects($this->once())
+            ->method('defined')
+            ->with('parameters')
+            ->willReturn(true);
+
+        $options->parameters = ['foo' => 'bar'];
+
+        $option = new Connections();
+        $factory = $option->filter($options, 'relay');
+
+        $this->assertInstanceOf(RelayFactory::class, $factory);
+        $this->assertSame(['foo' => 'bar'], $factory->getDefaultParameters());
     }
 
     /**
@@ -139,7 +153,7 @@ class ConnectionsTest extends PredisTestCase
     {
         $parameters = ['database' => 5, 'password' => 'mypassword'];
 
-        /** @var \Predis\Configuration\OptionsInterface|\PHPUnit\Framework\MockObject\MockObject\MockObject */
+        /** @var OptionsInterface|\PHPUnit\Framework\MockObject\MockObject\MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
             ->expects($this->once())
@@ -215,21 +229,5 @@ class ConnectionsTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, new stdClass());
-    }
-
-    // ******************************************************************** //
-    // ---- HELPER METHODS ------------------------------------------------ //
-    // ******************************************************************** //
-
-    /**
-     * Test provider for string values supported by this client option.
-     *
-     * @return array
-     */
-    public function provideSupportedStringValuesForOption()
-    {
-        return [
-            ['relay', \Predis\Connection\RelayConnection::class],
-        ];
     }
 }
