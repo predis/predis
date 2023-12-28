@@ -24,8 +24,10 @@ class RelayFactory extends Factory
      */
     protected $schemes = [
         'tcp' => RelayConnection::class,
+        'tls' => RelayConnection::class,
         'unix' => RelayConnection::class,
         'redis' => RelayConnection::class,
+        'rediss' => RelayConnection::class,
     ];
 
     /**
