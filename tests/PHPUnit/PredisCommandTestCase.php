@@ -61,7 +61,11 @@ abstract class PredisCommandTestCase extends PredisTestCase
             );
         }
 
-        $client = $this->createClient(null, null, $flushdb);
+        if ($this->isClusterTest()) {
+            $client = $this->createClient(null, ['cluster' => 'redis'], $flushdb);
+        } else {
+            $client = $this->createClient(null, null, $flushdb);
+        }
 
         return $client;
     }

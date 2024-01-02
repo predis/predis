@@ -220,6 +220,18 @@ BUFFER;
     }
 
     /**
+     * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testSetNoEvictModeForCurrentConnection(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->client('NO-EVICT', 'ON'));
+        $this->assertEquals('OK', $redis->client('NO-EVICT', 'OFF'));
+    }
+
+    /**
      * @return array
      */
     public function invalidConnectionNameProvider()
