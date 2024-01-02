@@ -38,12 +38,13 @@ use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
+use Predis\Command\Container\ACL;
+use Predis\Command\Container\CLIENT;
+use Predis\Command\Container\FUNCTIONS;
+use Predis\Command\Container\Json\JSONDEBUG;
+use Predis\Command\Container\Search\FTCONFIG;
+use Predis\Command\Container\Search\FTCURSOR;
 use Predis\Command\FactoryInterface;
-use Predis\Command\Redis\Container\ACL;
-use Predis\Command\Redis\Container\FunctionContainer;
-use Predis\Command\Redis\Container\Json\JSONDEBUG;
-use Predis\Command\Redis\Container\Search\FTCONFIG;
-use Predis\Command\Redis\Container\Search\FTCURSOR;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\Status;
@@ -67,8 +68,8 @@ use Predis\Response\Status;
  * @method int               move(string $key, int $db)
  * @method mixed             object($subcommand, string $key)
  * @method int               persist(string $key)
- * @method int               pexpire(string $key, int $milliseconds)
- * @method int               pexpireat(string $key, int $timestamp)
+ * @method int               pexpire(string $key, int $milliseconds, string $option = null)
+ * @method int               pexpireat(string $key, int $timestamp, string $option = null)
  * @method int               pttl(string $key)
  * @method string|null       randomkey()
  * @method mixed             rename(string $key, string $target)
@@ -334,18 +335,17 @@ use Predis\Response\Status;
  * @method mixed             select(int $database)
  * @method mixed             bgrewriteaof()
  * @method mixed             bgsave()
- * @method mixed             client($subcommand, $argument = null)
  * @method mixed             config($subcommand, $argument = null)
  * @method int               dbsize()
  * @method mixed             flushall()
  * @method mixed             flushdb()
- * @method array             info($section = null)
+ * @method array             info(string ...$section = null)
  * @method int               lastsave()
  * @method mixed             save()
  * @method mixed             slaveof(string $host, int $port)
  * @method mixed             slowlog($subcommand, $argument = null)
  * @method array             time()
- * @method array             command()
+ * @method array             command($subcommand, $argument = null)
  * @method int               geoadd(string $key, $longitude, $latitude, $member)
  * @method array             geohash(string $key, array $members)
  * @method array             geopos(string $key, array $members)
@@ -356,11 +356,12 @@ use Predis\Response\Status;
  * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
- * @property FunctionContainer $function
- * @property FTCONFIG          $ftconfig
- * @property FTCURSOR          $ftcursor
- * @property JSONDEBUG         $jsondebug
- * @property ACL               $acl
+ * @property CLIENT    $client
+ * @property FUNCTIONS $function
+ * @property FTCONFIG  $ftconfig
+ * @property FTCURSOR  $ftcursor
+ * @property JSONDEBUG $jsondebug
+ * @property ACL       $acl
  */
 interface ClientInterface
 {
