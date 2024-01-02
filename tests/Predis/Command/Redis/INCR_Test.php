@@ -88,6 +88,18 @@ class INCR_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCreatesNewKeyOnNonExistingKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(1, $redis->incr('foo'));
+        $this->assertEquals(1, $redis->get('foo'));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsTheValueOfTheKeyAfterIncrement(): void
     {

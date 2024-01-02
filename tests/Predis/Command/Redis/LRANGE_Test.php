@@ -97,6 +97,22 @@ class LRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsListSliceWithPositiveStartAndStopResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->rpush('letters', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l');
+
+        $this->assertSame(['a', 'b', 'c', 'd'], $redis->lrange('letters', 0, 3));
+        $this->assertSame(['e', 'f', 'g', 'h'], $redis->lrange('letters', 4, 7));
+        $this->assertSame(['a', 'b'], $redis->lrange('letters', 0, 1));
+        $this->assertSame(['a'], $redis->lrange('letters', 0, 0));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsListSliceWithPositiveStartAndNegativeStop(): void
     {

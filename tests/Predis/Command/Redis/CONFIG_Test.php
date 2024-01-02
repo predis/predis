@@ -98,6 +98,21 @@ class CONFIG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsListOfConfigurationValuesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertIsArray($configs = $redis->config('GET', '*'));
+        $this->assertGreaterThan(1, count($configs));
+        $this->assertArrayHasKey('loglevel', $configs);
+        $this->assertArrayHasKey('appendonly', $configs);
+        $this->assertArrayHasKey('dbfilename', $configs);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsListOfOneConfigurationEntry(): void
@@ -139,6 +154,23 @@ class CONFIG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsTrueOnSuccessfulConfigurationResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $previous = $redis->config('GET', 'loglevel');
+
+        $this->assertEquals('OK', $redis->config('SET', 'loglevel', 'notice'));
+        $this->assertSame(['loglevel' => 'notice'], $redis->config('GET', 'loglevel'));
+
+        // We set the loglevel configuration to the previous value.
+        $redis->config('SET', 'loglevel', $previous['loglevel']);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionWhenSettingUnknownConfiguration(): void
@@ -164,6 +196,17 @@ class CONFIG_Test extends PredisCommandTestCase
     public function testReturnsTrueOnResetstat(): void
     {
         $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->config('RESETSTAT'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsTrueOnResetstatResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertEquals('OK', $redis->config('RESETSTAT'));
     }

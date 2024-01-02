@@ -85,6 +85,19 @@ class MSETNX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCreatesMultipleKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(1, $redis->msetnx('foo', 'bar', 'hoge', 'piyo'));
+        $this->assertSame('bar', $redis->get('foo'));
+        $this->assertSame('piyo', $redis->get('hoge'));
+    }
+
+    /**
+     * @group connected
      */
     public function testCreatesMultipleKeysAndPreservesExistingOnes(): void
     {

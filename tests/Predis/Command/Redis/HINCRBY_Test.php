@@ -91,6 +91,20 @@ class HINCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testIncrementsValueOfFieldByIntegerResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(10, $redis->hincrby('metavars', 'foo', 10));
+        $this->assertSame(5, $redis->hincrby('metavars', 'hoge', 5));
+        $this->assertSame(15, $redis->hincrby('metavars', 'hoge', 10));
+        $this->assertSame(['foo' => '10', 'hoge' => '15'], $redis->hgetall('metavars'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testDecrementsValueOfFieldByInteger(): void

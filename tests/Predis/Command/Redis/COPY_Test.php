@@ -71,6 +71,22 @@ class COPY_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
+    public function testSuccessfullyCopyValueOnNonExistingDestinationKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $redis->set('key', 'value');
+
+        $actualResponse = $redis->copy('key', 'destination');
+
+        $this->assertSame(1, $actualResponse);
+        $this->assertSame($redis->get('key'), $redis->get('destination'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
     public function testSuccessfullyCopyValueFromSourceToAnotherDb(): void
     {
         $defaultDatabaseIndexClient = $this->getClient();

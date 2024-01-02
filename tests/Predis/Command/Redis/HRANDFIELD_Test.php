@@ -83,6 +83,21 @@ class HRANDFIELD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsRandomFieldsFromHashResp3(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->hset('key', 'key1', 'value1', 'key2', 'value2', 'key3', 'value3');
+        $actualResponse = $redis->hrandfield('key');
+
+        $this->assertOneOf(['key1', 'key2', 'key3'], $actualResponse);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 6.2.0
      */
     public function testThrowsExceptionOnWrongType(): void

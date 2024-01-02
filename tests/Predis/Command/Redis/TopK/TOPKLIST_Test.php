@@ -63,6 +63,7 @@ class TOPKLIST_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider structureProvider
      * @param  array $reserveArguments
      * @param  array $addArguments
@@ -89,6 +90,24 @@ class TOPKLIST_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsListOfItemsWithinTopKStructureResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->topkreserve('key', 50);
+        $redis->topkadd('key', 1, 2, 2, 3, 3, 3);
+
+        $actualResponse = $redis->topklist('key');
+
+        $this->assertEquals(['3', '2', '1'], $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRedisBfVersion >= 2.0.0
      */

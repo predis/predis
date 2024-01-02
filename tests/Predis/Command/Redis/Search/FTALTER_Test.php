@@ -61,6 +61,7 @@ class FTALTER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -79,6 +80,25 @@ class FTALTER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testAddsAttributeToExistingIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $schema = [new TextField('field_name')];
+
+        $this->assertEquals('OK', $redis->ftcreate('index', $schema));
+
+        $schema = [new TextField('new_field_name')];
+
+        $this->assertEquals('OK', $redis->ftalter('index', $schema));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */

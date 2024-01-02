@@ -60,6 +60,7 @@ class JSONARRINDEX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  array  $jsonArguments
      * @param  string $key
@@ -84,6 +85,19 @@ class JSONARRINDEX_Test extends PredisCommandTestCase
 
         $redis->jsonset(...$jsonArguments);
         $this->assertSame($expectedIndices, $redis->jsonarrindex($key, $path, $value, $start, $stop));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
+    public function testReturnsCorrectJsonArrayIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1","key2":["value1","value2"]}');
+        $this->assertSame([1], $redis->jsonarrindex('key', '$.key2', '"value2"'));
     }
 
     public function jsonProvider(): array

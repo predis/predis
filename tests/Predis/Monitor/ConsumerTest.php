@@ -13,6 +13,7 @@
 namespace Predis\Monitor;
 
 use Predis\Client;
+use Predis\Connection\Parameters;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use PredisTestCase;
 
@@ -92,6 +93,11 @@ class ConsumerTest extends PredisTestCase
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
             ->onlyMethods(['disconnect'])
@@ -112,6 +118,11 @@ class ConsumerTest extends PredisTestCase
     public function testGarbageCollectorRunStopsConsumer(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
@@ -140,6 +151,11 @@ class ConsumerTest extends PredisTestCase
             ->method('read')
             ->willReturn($message);
 
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $client = new Client($connection);
 
         $monitor = new MonitorConsumer($client);
@@ -164,6 +180,11 @@ class ConsumerTest extends PredisTestCase
             ->expects($this->once())
             ->method('read')
             ->willReturn($message);
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $client = new Client($connection);
 

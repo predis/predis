@@ -17,12 +17,18 @@
         </testsuite>
     </testsuites>
 
+    <logging>
+        <log type="coverage-php" target="build/cov/coverage.cov"/>
+    </logging>
+
     <groups>
         <exclude>
             <group>relay-incompatible</group>
+            <group>relay-resp3</group>
             <group>realm-stack</group>
             <group>ext-curl</group>
             <group>cluster</group>
+            <group>gears</group>
         </exclude>
     </groups>
 

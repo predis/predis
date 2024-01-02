@@ -95,6 +95,21 @@ class PERSIST_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testRemovesExpireFromKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('foo', 'bar');
+        $redis->expire('foo', 10);
+
+        $this->assertSame(1, $redis->persist('foo'));
+        $this->assertSame(-1, $redis->ttl('foo'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
     public function testReturnsZeroOnNonExpiringKeys(): void

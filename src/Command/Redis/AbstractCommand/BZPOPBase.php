@@ -40,4 +40,13 @@ abstract class BZPOPBase extends RedisCommand
 
         return array_combine([$key], [[$data[0] => $data[1]]]);
     }
+
+    /**
+     * @param                                       $data
+     * @return array|false|mixed|null[]|string|null
+     */
+    public function parseResp3Response($data)
+    {
+        return $this->parseResponse($data);
+    }
 }

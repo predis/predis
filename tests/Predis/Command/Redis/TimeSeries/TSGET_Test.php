@@ -62,6 +62,7 @@ class TSGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -99,6 +100,44 @@ class TSGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
+    public function testGetSampleWithHighestTimestampFromGivenTimeSeriesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $createArguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('sensor_id', 2, 'area_id', 32);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:32', $createArguments)
+        );
+
+        $this->assertEquals(
+            123123123123,
+            $redis->tsadd('temperature:2:32', 123123123123, 27)
+        );
+
+        $this->assertEquals(
+            123123123124,
+            $redis->tsadd('temperature:2:32', 123123123124, 28)
+        );
+
+        $this->assertEquals(
+            123123123125,
+            $redis->tsadd('temperature:2:32', 123123123125, 29)
+        );
+
+        $this->assertEquals([123123123125, '29'], $redis->tsget('temperature:2:32'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */

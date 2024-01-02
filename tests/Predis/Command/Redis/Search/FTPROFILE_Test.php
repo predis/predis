@@ -61,6 +61,7 @@ class FTPROFILE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider queryProvider
      * @param  array $createArguments
      * @param  array $profileArguments
@@ -79,6 +80,20 @@ class FTPROFILE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testProfileReturnsPerformanceInformationAboutGivenQueryResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->ftcreate('index', [new TextField('text_field')]));
+        $this->assertNotEmpty($redis->ftprofile('index', (new ProfileArguments())->aggregate()->query('hello world')));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 2.2.0
      */

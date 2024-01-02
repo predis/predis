@@ -90,6 +90,20 @@ class LSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetsElementAtSpecifiedIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->rpush('letters', 'a', 'b', 'c');
+
+        $this->assertEquals('OK', $redis->lset('letters', 1, 'B'));
+        $this->assertSame(['a', 'B', 'c'], $redis->lrange('letters', 0, -1));
+    }
+
+    /**
+     * @group connected
      */
     public function testThrowsExceptionOnIndexOutOfRange(): void
     {

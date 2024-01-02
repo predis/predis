@@ -61,6 +61,7 @@ class TSCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -81,6 +82,27 @@ class TSCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
+    public function testCreatesTimeSeriesWithGivenArgumentsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $arguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('sensor_id', 2, 'area_id', 32);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:32', $arguments)
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */

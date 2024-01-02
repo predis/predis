@@ -60,6 +60,7 @@ class JSONTYPE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  array  $jsonArguments
      * @param  string $key
@@ -79,6 +80,20 @@ class JSONTYPE_Test extends PredisCommandTestCase
         $redis->jsonset(...$jsonArguments);
 
         $this->assertSame($expectedType, $redis->jsontype($key, $path));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 2.6.1
+     */
+    public function testReturnsJsonValueTypeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1"}');
+
+        $this->assertSame([['string']], $redis->jsontype('key', '$.key1'));
     }
 
     public function jsonProvider(): array

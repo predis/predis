@@ -61,6 +61,7 @@ class BFINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider filtersProvider
      * @param  array  $filter
      * @param  string $key
@@ -83,6 +84,25 @@ class BFINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisBfVersion 2.6.0
+     */
+    public function testInfoReturnsCorrectInformationAboutBloomFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->bfadd('key', 'item');
+        $this->assertSame([
+            'Capacity' => 100,
+            'Size' => 240,
+            'Number of filters' => 1,
+            'Number of items inserted' => 1,
+            'Expansion rate' => 2,
+        ], $redis->bfinfo('key'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion 1.0.0
      */
@@ -98,7 +118,8 @@ class BFINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisBfVersion >= 1.0
+     * @group relay-resp3
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {

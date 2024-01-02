@@ -90,6 +90,19 @@ class PSETEX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCreatesNewKeyAndSetsTTLResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->psetex('foo', 10000, 'bar'));
+        $this->assertSame(1, $redis->exists('foo'));
+        $this->assertSame(10, $redis->ttl('foo'));
+    }
+
+    /**
+     * @group connected
      * @group slow
      * @requiresRedisVersion >= 2.6.0
      */

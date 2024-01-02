@@ -64,6 +64,7 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.1.0
      */
@@ -115,6 +116,65 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testReturnsAggregatedSearchResultWithGivenModifiersResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = [
+            'attributes' => [],
+            'error' => [],
+            'total_results' => 2,
+            'format' => 'STRING',
+            'results' => [
+                [
+                    'extra_attributes' => ['country' => 'Ukraine', 'birth' => '1995', 'country_birth_Vlad_count' => '2'],
+                    'values' => [],
+                ],
+                [
+                    'extra_attributes' => ['country' => 'Israel', 'birth' => '1994', 'country_birth_Vlad_count' => '1'],
+                    'values' => [],
+                ],
+            ],
+        ];
+
+        $ftCreateArguments = (new CreateArguments())->prefix(['user:']);
+        $schema = [
+            new TextField('name'),
+            new TextField('country'),
+            new NumericField('dob', '', AbstractField::SORTABLE),
+        ];
+
+        $this->assertEquals('OK', $redis->ftcreate('idx', $schema, $ftCreateArguments));
+        $this->assertSame(
+            3,
+            $redis->hset('user:0', 'name', 'Vlad', 'country', 'Ukraine', 'dob', 813801600)
+        );
+        $this->assertSame(
+            3,
+            $redis->hset('user:1', 'name', 'Vlad', 'country', 'Israel', 'dob', 782265600)
+        );
+        $this->assertSame(
+            3,
+            $redis->hset('user:2', 'name', 'Vlad', 'country', 'Ukraine', 'dob', 813801600)
+        );
+
+        $ftAggregateArguments = (new AggregateArguments())
+            ->apply('year(@dob)', 'birth')
+            ->groupBy('@country', '@birth')
+            ->reduce('COUNT', true, 'country_birth_Vlad_count')
+            ->sortBy(0, '@birth', 'DESC');
+
+        $this->assertSame(
+            $expectedResponse,
+            $redis->ftaggregate('idx', '@name: "Vlad"', $ftAggregateArguments)
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.1.0
      */

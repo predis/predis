@@ -102,6 +102,22 @@ class EVALSHA_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testExecutesSpecifiedLuaScriptResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $lua = 'return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}';
+        $sha1 = sha1($lua);
+        $result = ['foo', 'hoge', 'bar', 'piyo'];
+
+        $this->assertSame($result, $redis->eval($lua, 2, 'foo', 'hoge', 'bar', 'piyo'));
+        $this->assertSame($result, $redis->evalsha($sha1, 2, 'foo', 'hoge', 'bar', 'piyo'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testThrowsExceptionOnWrongNumberOfKeys(): void

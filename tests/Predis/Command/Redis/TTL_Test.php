@@ -92,6 +92,20 @@ class TTL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsTTLResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('foo', 'bar');
+        $redis->expire('foo', 10);
+
+        $this->assertSame(10, $redis->ttl('foo'));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsLessThanZeroOnNonExpiringKeys(): void
     {

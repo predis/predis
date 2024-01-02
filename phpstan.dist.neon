@@ -26,9 +26,6 @@ parameters:
     - message: "#^Call to an undefined method Predis\\\\Command\\\\FactoryInterface\\:\\:undefine\\(\\)\\.$#"
       count: 1
       path: src/Configuration/Option/Commands.php
-    - message: "#^Access to an undefined property Predis\\\\Configuration\\\\OptionsInterface\\:\\:\\$parameters\\.$#"
-      count: 1
-      path: src/Configuration/Option/Connections.php
     - message: "#^Access to an undefined property Predis\\\\Connection\\\\ParametersInterface\\:\\:\\$weight\\.$#"
       count: 1
       path: src/Connection/Cluster/PredisCluster.php

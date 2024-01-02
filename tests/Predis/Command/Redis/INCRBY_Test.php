@@ -88,6 +88,18 @@ class INCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCreatesNewKeyOnNonExistingKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(10, $redis->incrby('foo', 10));
+        $this->assertEquals(10, $redis->get('foo'));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsTheValueOfTheKeyAfterIncrement(): void
     {

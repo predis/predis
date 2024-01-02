@@ -60,6 +60,7 @@ class FTSUGGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider suggestionProvider
      * @param  array $addArguments
      * @param  array $getArguments
@@ -83,6 +84,7 @@ class FTSUGGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -100,6 +102,24 @@ class FTSUGGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testGetReturnsLimitedResultsWithMaxModifierResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->ftsugadd('key', 'hello', 2);
+        $redis->ftsugadd('key', 'hell', 2);
+
+        $actualResponse = $redis->ftsugget('key', 'hel', (new SugGetArguments())->max(1));
+
+        $this->assertSame(['hell'], $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */

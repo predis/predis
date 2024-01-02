@@ -61,6 +61,7 @@ class TDIGESTMAX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
@@ -81,6 +82,28 @@ class TDIGESTMAX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsMaxValueFromGivenSketchResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->tdigestcreate('key');
+        $redis->tdigestcreate('empty_key');
+
+        $redis->tdigestadd('key', 3, 2, 4, 5, 1);
+
+        $actualResponse = $redis->tdigestmax('key');
+
+        $this->assertEquals('5', $actualResponse);
+        $this->assertEquals(0, $redis->tdigestmax('empty_key'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */

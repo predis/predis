@@ -80,6 +80,20 @@ class SORT_RO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testSortItemsWithinGivenListResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->lpush('key', 2, 1);
+
+        $this->assertSame(['1', '2'], $redis->sort_ro('key'));
+    }
+
+    /**
+     * @group connected
      * @dataProvider listsProvider
      * @param  array $localKeys
      * @param  array $externalKeys

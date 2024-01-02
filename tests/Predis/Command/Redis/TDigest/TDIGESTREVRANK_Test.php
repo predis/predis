@@ -61,6 +61,7 @@ class TDIGESTREVRANK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
@@ -82,6 +83,28 @@ class TDIGESTREVRANK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsReversedRanksOfGivenObservationsValueResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = [3, 2, 1, 0, -1];
+
+        $redis->tdigestcreate('key');
+        $redis->tdigestcreate('empty_key');
+
+        $redis->tdigestadd('key', 10, 20, 30);
+
+        $actualResponse = $redis->tdigestrevrank('key', 0, 10, 20, 30, 40);
+
+        $this->assertSame($expectedResponse, $actualResponse);
+        $this->assertSame([-2, -2, -2], $redis->tdigestrank('empty_key', 1, 2, 3));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */

@@ -20,6 +20,7 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
+use Predis\Connection\ParametersInterface;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Replication\RoleException;
 use Predis\Response\Error;
@@ -211,6 +212,7 @@ class SentinelReplication implements ReplicationInterface
             $this->master = $connection;
         } elseif ('sentinel' === $role) {
             $this->sentinels[] = $connection;
+
             // sentinels are not considered part of the pool.
             return;
         } else {
@@ -770,5 +772,25 @@ class SentinelReplication implements ReplicationInterface
         return [
             'master', 'slaves', 'pool', 'service', 'sentinels', 'connectionFactory', 'strategy',
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): ?ParametersInterface
+    {
+        if (isset($this->master)) {
+            return $this->master->getParameters();
+        }
+
+        if (!empty($this->slaves)) {
+            return $this->slaves[0]->getParameters();
+        }
+
+        if (!empty($this->sentinels)) {
+            return $this->sentinels[0]->getParameters();
+        }
+
+        return null;
     }
 }

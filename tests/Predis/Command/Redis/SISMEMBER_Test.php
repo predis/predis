@@ -93,6 +93,20 @@ class SISMEMBER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsMemberExistenceInSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->sadd('letters', 'a', 'b', 'c');
+
+        $this->assertSame(1, $redis->sismember('letters', 'a'));
+        $this->assertSame(0, $redis->sismember('letters', 'z'));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsZeroOnNonExistingSet(): void
     {

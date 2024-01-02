@@ -61,6 +61,7 @@ class JSONRESP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  array  $jsonArguments
      * @param  string $key
@@ -80,6 +81,20 @@ class JSONRESP_Test extends PredisCommandTestCase
         $redis->jsonset(...$jsonArguments);
 
         $this->assertEquals($expectedResponse, $redis->jsonresp($key, $path));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
+    public function testReturnRespValueFromGivenJsonResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1"}');
+
+        $this->assertEquals(['value1'], $redis->jsonresp('key', '$.key1'));
     }
 
     public function jsonProvider(): array

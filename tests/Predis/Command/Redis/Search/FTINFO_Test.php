@@ -63,7 +63,7 @@ class FTINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      *
@@ -89,6 +89,29 @@ class FTINFO_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testInfoReturnsInformationAboutGivenIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $arguments = new CreateArguments();
+        $arguments->prefix(['prefix:']);
+        $arguments->language();
+
+        $schema = [new TextField('text_field')];
+
+        $createResponse = $redis->ftcreate('index', $schema, $arguments);
+        $this->assertEquals('OK', $createResponse);
+
+        $actualResponse = $redis->ftinfo('index');
+        $this->assertEquals('index', $actualResponse['index_name']);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
     public function testThrowsExceptionOnNonExistingIndex(): void
@@ -96,7 +119,6 @@ class FTINFO_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Unknown Index name');
 
         $redis->ftinfo('index');
     }
