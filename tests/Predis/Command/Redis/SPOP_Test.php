@@ -92,6 +92,22 @@ class SPOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testPopsRandomMemberFromSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->sadd('letters', 'a', 'b');
+
+        $this->assertContains($redis->spop('letters'), ['a', 'b']);
+        $this->assertContains($redis->spop('letters'), ['a', 'b']);
+
+        $this->assertNull($redis->spop('letters'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
     public function testPopsMoreRandomMembersFromSet(): void

@@ -61,6 +61,7 @@ class CFDEL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
@@ -87,6 +88,33 @@ class CFDEL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testDeletesItemFromGivenCuckooFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->cfadd('key', 'item');
+        $singleItemResponse = $redis->cfdel('key', 'item');
+
+        $this->assertTrue($singleItemResponse);
+        $this->assertFalse($redis->cfexists('key', 'item'));
+
+        $redis->cfadd('key', 'item');
+        $redis->cfadd('key', 'item');
+
+        $multipleItemsResponse = $redis->cfdel('key', 'item');
+        $this->assertTrue($multipleItemsResponse);
+        $this->assertTrue($redis->cfexists('key', 'item'));
+
+        $nonExistingItemResponse = $redis->cfdel('key', 'non_existing_item');
+        $this->assertFalse($nonExistingItemResponse);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */

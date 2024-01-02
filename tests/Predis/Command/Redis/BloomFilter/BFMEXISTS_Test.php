@@ -60,8 +60,9 @@ class BFMEXISTS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
-     * @requiresRedisBfVersion >= 1.0
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testExistsReturnsExistingItemsWithinBloomFilter(): void
     {
@@ -69,5 +70,18 @@ class BFMEXISTS_Test extends PredisCommandTestCase
 
         $redis->bfmadd('key', 'item1', 'item2');
         $this->assertSame([1, 1], $redis->bfmexists('key', 'item1', 'item2'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testExistsReturnsExistingItemsWithinBloomFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->bfmadd('key', 'item1', 'item2');
+        $this->assertSame([true, true], $redis->bfmexists('key', 'item1', 'item2'));
     }
 }

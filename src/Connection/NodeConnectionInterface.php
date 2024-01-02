@@ -54,4 +54,11 @@ interface NodeConnectionInterface extends ConnectionInterface
      * @return mixed
      */
     public function read();
+
+    /**
+     * Checks if current connection has data to read from server.
+     *
+     * @return bool
+     */
+    public function hasDataToRead(): bool;
 }

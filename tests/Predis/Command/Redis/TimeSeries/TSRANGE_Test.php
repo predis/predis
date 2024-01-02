@@ -61,6 +61,7 @@ class TSRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -85,6 +86,31 @@ class TSRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
+    public function testReturnsQueriedRangeInForwardDirectionFromGivenTimeSeriesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $createArguments = (new CreateArguments())->labels('type', 'temp', 'location', 'TLV');
+        $this->assertEquals('OK', $redis->tscreate('temp:TLV', $createArguments));
+
+        $this->assertSame(
+            [1000, 1010, 1020, 1030],
+            $redis->tsmadd('temp:TLV', 1000, 30, 'temp:TLV', 1010, 35, 'temp:TLV', 1020, 9999, 'temp:TLV', 1030, 40)
+        );
+
+        $rangeArguments = (new RangeArguments())->filterByValue(-100, 100);
+        $this->assertEquals(
+            [[1000, '30'], [1010, '35'], [1030, '40']],
+            $redis->tsrange('temp:TLV', '-', '+', $rangeArguments)
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */

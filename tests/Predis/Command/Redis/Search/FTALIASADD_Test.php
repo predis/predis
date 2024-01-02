@@ -63,6 +63,7 @@ class FTALIASADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -86,6 +87,29 @@ class FTALIASADD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testAddAliasToGivenIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $arguments = new CreateArguments();
+        $arguments->prefix(['prefix:']);
+        $arguments->language();
+
+        $schema = [new TextField('text_field')];
+
+        $createResponse = $redis->ftcreate('index', $schema, $arguments);
+        $this->assertEquals('OK', $createResponse);
+
+        $actualResponse = $redis->ftaliasadd('alias', 'index');
+        $this->assertEquals('OK', $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
     public function testThrowsExceptionOnNonExistingIndex(): void
@@ -100,6 +124,7 @@ class FTALIASADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */

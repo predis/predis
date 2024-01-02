@@ -1,0 +1,557 @@
+<?php
+
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis\Consumer\PubSub;
+
+use Predis\Client;
+use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\NodeConnectionInterface;
+use Predis\Consumer\PubSub\Consumer as PubSubConsumer;
+use Predis\NotSupportedException;
+use PredisTestCase;
+
+/**
+ * @group realm-pubsub
+ */
+class ConsumerTest extends PredisTestCase
+{
+    /**
+     * @group disconnected
+     */
+    public function testPubSubConsumerRequirePubSubRelatedCommand(): void
+    {
+        $this->expectException('Predis\NotSupportedException');
+        $this->expectExceptionMessage('PUB/SUB commands are not supported by the current command factory.');
+
+        $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
+        $commands
+            ->expects($this->any())
+            ->method('supports')
+            ->willReturn(false);
+
+        $client = new Client(null, ['commands' => $commands]);
+
+        new PubSubConsumer($client);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPubSubConsumerAllowsClusterConnectionOnShardedContext(): void
+    {
+        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
+        $client = new Client($cluster);
+
+        new PubSubConsumer($client);
+
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testConstructorWithoutSubscriptionsDoesNotStartConsumer(): void
+    {
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+
+        /** @var Client */
+        $client = $this->getMockBuilder('Predis\Client')
+            ->onlyMethods(['executeCommand'])
+            ->setConstructorArgs([$connection])
+            ->getMock();
+
+        $client->expects($this->never())
+            ->method('executeCommand');
+
+        new PubSubConsumer($client);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testConstructorWithSubscriptionsStartsConsumer(): void
+    {
+        $commands = $this->getCommandFactory();
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection->expects($this->exactly(3))->method('writeRequest');
+
+        /** @var Client */
+        $client = $this->getMockBuilder('Predis\Client')
+            ->onlyMethods(['createCommand'])
+            ->addMethods(['writeRequest'])
+            ->setConstructorArgs([$connection])
+            ->getMock();
+        $client
+            ->expects($this->exactly(3))
+            ->method('createCommand')
+            ->with($this->logicalOr(
+                $this->equalTo('subscribe'),
+                $this->equalTo('psubscribe'),
+                $this->equalTo('ssubscribe')
+            ))
+            ->willReturnCallback(function ($id, $args) use ($commands) {
+                return $commands->create($id, $args);
+            });
+
+        $options = ['subscribe' => 'channel:foo', 'ssubscribe' => 'channel:bar', 'psubscribe' => 'channels:*'];
+
+        new PubSubConsumer($client, $options);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testStoppingConsumerWithTrueClosesConnection(): void
+    {
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+
+        /** @var Client */
+        $client = $this->getMockBuilder('Predis\Client')
+            ->onlyMethods(['disconnect'])
+            ->setConstructorArgs([$connection])
+            ->getMock();
+        $client
+            ->expects($this->once())
+            ->method('disconnect');
+
+        $pubsub = new PubSubConsumer($client, ['subscribe' => 'channel:foo']);
+
+        $connection->expects($this->never())->method('writeRequest');
+
+        $pubsub->stop(true);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testStoppingConsumerWithFalseSendsUnsubscriptions(): void
+    {
+        $commands = $this->getCommandFactory();
+        $classUnsubscribe = $commands->getCommandClass('unsubscribe');
+        $classPunsubscribe = $commands->getCommandClass('punsubscribe');
+        $classSunsubscribe = $commands->getCommandClass('sunsubscribe');
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+
+        /** @var Client */
+        $client = $this->getMockBuilder('Predis\Client')
+            ->onlyMethods(['disconnect'])
+            ->setConstructorArgs([$connection])
+            ->getMock();
+
+        $options = ['subscribe' => 'channel:foo', 'ssubscribe' => 'channel:bar', 'psubscribe' => 'channels:*'];
+        $pubsub = new PubSubConsumer($client, $options);
+
+        $connection
+            ->expects($this->exactly(3))
+            ->method('writeRequest')
+            ->with($this->logicalOr(
+                $this->isInstanceOf($classUnsubscribe),
+                $this->isInstanceOf($classPunsubscribe),
+                $this->isInstanceOf($classSunsubscribe)
+            ));
+
+        $pubsub->stop(false);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testIsNotValidWhenNotSubscribed(): void
+    {
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+
+        /** @var Client */
+        $client = $this->getMockBuilder('Predis\Client')
+            ->onlyMethods(['disconnect'])
+            ->setConstructorArgs([$connection])
+            ->getMock();
+
+        $pubsub = new PubSubConsumer($client);
+
+        $this->assertFalse($pubsub->valid());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testHandlesPongMessages(): void
+    {
+        $rawmessage = ['pong', ''];
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($rawmessage);
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, ['subscribe' => 'channel:foo']);
+
+        $message = $pubsub->current();
+        $this->assertSame('pong', $message->kind);
+        $this->assertSame('', $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testHandlesPongMessagesWithPayload(): void
+    {
+        $rawmessage = ['pong', 'foobar'];
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($rawmessage);
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, ['subscribe' => 'channel:foo']);
+
+        $message = $pubsub->current();
+        $this->assertSame('pong', $message->kind);
+        $this->assertSame('foobar', $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReadsMessageFromConnection(): void
+    {
+        $rawmessage = ['message', 'channel:foo', 'message from channel'];
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($rawmessage);
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, ['subscribe' => 'channel:foo']);
+
+        $message = $pubsub->current();
+        $this->assertSame('message', $message->kind);
+        $this->assertSame('channel:foo', $message->channel);
+        $this->assertSame('message from channel', $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReadsPmessageFromConnection(): void
+    {
+        $rawmessage = ['pmessage', 'channel:*', 'channel:foo', 'message from channel'];
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($rawmessage);
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, ['psubscribe' => 'channel:*']);
+
+        $message = $pubsub->current();
+        $this->assertSame('pmessage', $message->kind);
+        $this->assertSame('channel:*', $message->pattern);
+        $this->assertSame('channel:foo', $message->channel);
+        $this->assertSame('message from channel', $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReadsSubscriptionMessageFromConnection(): void
+    {
+        $rawmessage = ['subscribe', 'channel:foo', 1];
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($rawmessage);
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, ['subscribe' => 'channel:foo']);
+
+        $message = $pubsub->current();
+        $this->assertSame('subscribe', $message->kind);
+        $this->assertSame('channel:foo', $message->channel);
+        $this->assertSame(1, $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReadsSSubscriptionMessageFromConnection(): void
+    {
+        $rawmessage = ['ssubscribe', 'channel:foo', 1];
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($rawmessage);
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, ['ssubscribe' => 'channel:foo']);
+
+        $message = $pubsub->current();
+        $this->assertSame('ssubscribe', $message->kind);
+        $this->assertSame('channel:foo', $message->channel);
+        $this->assertSame(1, $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReadsUnsubscriptionMessageFromConnection(): void
+    {
+        $rawmessage = ['unsubscribe', 'channel:foo', 1];
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($rawmessage);
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, ['subscribe' => 'channel:foo']);
+
+        $message = $pubsub->current();
+        $this->assertSame('unsubscribe', $message->kind);
+        $this->assertSame('channel:foo', $message->channel);
+        $this->assertSame(1, $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReadsSUnsubscriptionMessageFromConnection(): void
+    {
+        $rawmessage = ['sunsubscribe', 'channel:foo', 1];
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($rawmessage);
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, ['ssubscribe' => 'channel:foo']);
+
+        $message = $pubsub->current();
+        $this->assertSame('sunsubscribe', $message->kind);
+        $this->assertSame('channel:foo', $message->channel);
+        $this->assertSame(1, $message->payload);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testUnsubscriptionMessageWithZeroChannelCountInvalidatesConsumer(): void
+    {
+        $rawmessage = ['unsubscribe', 'channel:foo', 0];
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($rawmessage);
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client, ['subscribe' => 'channel:foo']);
+
+        $this->assertTrue($pubsub->valid());
+
+        $message = $pubsub->current();
+        $this->assertSame('unsubscribe', $message->kind);
+        $this->assertSame('channel:foo', $message->channel);
+        $this->assertSame(0, $message->payload);
+
+        $this->assertFalse($pubsub->valid());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetUnderlyingClientInstance(): void
+    {
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client);
+
+        $this->assertSame($client, $pubsub->getClient());
+    }
+
+    /**
+     * @dataProvider connectionsProvider
+     * @group disconnected
+     * @param  string                $connection
+     * @param  string                $context
+     * @return void
+     * @throws NotSupportedException
+     */
+    public function testGetSubscriptionContext(string $connection, string $context): void
+    {
+        $connection = $this->getMockBuilder($connection)->getMock();
+
+        $client = new Client($connection);
+        $pubsub = new PubSubConsumer($client);
+
+        $this->assertSame($context, $pubsub->getSubscriptionContext()->getContext());
+    }
+
+    public function connectionsProvider(): array
+    {
+        return [
+            [ClusterInterface::class, SubscriptionContext::CONTEXT_SHARDED],
+            [NodeConnectionInterface::class, SubscriptionContext::CONTEXT_NON_SHARDED],
+        ];
+    }
+
+    // ******************************************************************** //
+    // ---- INTEGRATION TESTS --------------------------------------------- //
+    // ******************************************************************** //
+
+    // NOTE: the following 2 tests fail at random without any apparent reason
+    // when executed on our CI environments and these failures are not tied
+    // to a particular version of PHP or Redis. It is most likely some weird
+    // timing issue on busy systems as it is really rare to get it triggered
+    // locally. The chances it is a bug in the library are pretty low so for
+    // now we just mark this test skipped on our CI environments (but still
+    // enabled for local test runs) and "debug" this issue using a separate
+    // branch to avoid having spurious failures on main development branches
+    // which is utterly annoying.
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.0.0
+     */
+    public function testPubSubAgainstRedisServer(): void
+    {
+        $this->markTestSkippedOnCIEnvironment(
+            'Test temporarily skipped on CI environments, see note in the body of the test' // TODO
+        );
+
+        $parameters = [
+            'host' => constant('REDIS_SERVER_HOST'),
+            'port' => constant('REDIS_SERVER_PORT'),
+            'database' => constant('REDIS_SERVER_DBNUM'),
+            // Prevents suite from handing on broken test
+            'read_write_timeout' => 2,
+        ];
+
+        $messages = [];
+
+        $producer = new Client($parameters);
+        $producer->connect();
+
+        $consumer = new Client($parameters);
+        $consumer->connect();
+
+        $pubsub = new PubSubConsumer($consumer);
+        $pubsub->subscribe('channel:foo');
+
+        $producer->publish('channel:foo', 'message1');
+        $producer->publish('channel:foo', 'message2');
+        $producer->publish('channel:foo', 'QUIT');
+
+        foreach ($pubsub as $message) {
+            if ($message->kind !== 'message') {
+                continue;
+            }
+            $messages[] = ($payload = $message->payload);
+            if ($payload === 'QUIT') {
+                $pubsub->stop();
+            }
+        }
+
+        $this->assertSame(['message1', 'message2', 'QUIT'], $messages);
+        $this->assertFalse($pubsub->valid());
+        $this->assertEquals('ECHO', $consumer->echo('ECHO'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.0.0
+     * @requires extension pcntl
+     */
+    public function testPubSubAgainstRedisServerBlocking(): void
+    {
+        $this->markTestSkippedOnCIEnvironment(
+            'Test temporarily skipped on CI environments, see note in the body of the test' // TODO
+        );
+
+        $parameters = [
+            'host' => constant('REDIS_SERVER_HOST'),
+            'port' => constant('REDIS_SERVER_PORT'),
+            'database' => constant('REDIS_SERVER_DBNUM'),
+            'read_write_timeout' => -1, // -1 to set blocking reads
+        ];
+
+        // create consumer before forking so the child can disconnect it
+        $consumer = new Client($parameters);
+        $consumer->connect();
+
+        /*
+         * fork
+         *  parent: consumer
+         *  child: producer
+         */
+        if ($childPID = pcntl_fork()) {
+            $messages = [];
+
+            $pubsub = new PubSubConsumer($consumer);
+            $pubsub->subscribe('channel:foo');
+
+            foreach ($pubsub as $message) {
+                if ($message->kind !== 'message') {
+                    continue;
+                }
+                $messages[] = ($payload = $message->payload);
+                if ($payload === 'QUIT') {
+                    $pubsub->stop();
+                }
+            }
+
+            $this->assertSame(['message1', 'message2', 'QUIT'], $messages);
+            $this->assertFalse($pubsub->valid());
+            $this->assertEquals('ECHO', $consumer->echo('ECHO'));
+
+            // kill the child
+            posix_kill($childPID, SIGKILL);
+        } else {
+            // create producer, read_write_timeout = 2 because it doesn't do blocking reads anyway
+            $producer = new Client(array_replace($parameters, ['read_write_timeout' => 2]));
+            $producer->connect();
+
+            $producer->publish('channel:foo', 'message1');
+            $producer->publish('channel:foo', 'message2');
+
+            $producer->publish('channel:foo', 'QUIT');
+
+            // sleep, giving the consumer a chance to respond to the QUIT message
+            sleep(1);
+
+            // disconnect the consumer because otherwise it could remain stuck in blocking read
+            //  if it failed to respond to the QUIT message
+            $consumer->disconnect();
+
+            // exit child
+            exit(0);
+        }
+    }
+}

@@ -112,6 +112,23 @@ class ZINTER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsIntersectedValuesOnSortedSetsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('test-zinter1', 1, 'member1', 2, 'member2', 3, 'member3');
+        $redis->zadd('test-zinter2', 1, 'member1', 2, 'member2');
+
+        $actualResponse = $redis->zinter(['test-zinter1', 'test-zinter2']);
+
+        $this->assertSame(['member1', 'member2'], $actualResponse);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 6.2.0
      */
     public function testThrowsExceptionOnWrongType(): void

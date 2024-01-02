@@ -92,6 +92,22 @@ class SRANDMEMBER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsRandomMemberFromSetResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->sadd('letters', 'a', 'b');
+
+        $this->assertContains($redis->srandmember('letters'), ['a', 'b']);
+        $this->assertContains($redis->srandmember('letters'), ['a', 'b']);
+
+        $this->assertSame(2, $redis->scard('letters'));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsNullOnNonExistingSet(): void
     {

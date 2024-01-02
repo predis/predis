@@ -103,6 +103,19 @@ class SET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testSetStringValueResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
+        $this->assertSame(1, $redis->exists('foo'));
+        $this->assertSame('bar', $redis->get('foo'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.12
      */
     public function testSetStringValueWithModifierEX(): void

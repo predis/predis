@@ -1,5 +1,27 @@
 ## Changelog
 
+## Unreleased
+
+Predis v3.0 introduces support for new communication protocol [RESP3](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md) and new features based on it.
+
+First of all, RESP3 provides more explicit command responses based on new response [types](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md#resp3-types). New communication model introduced, so it's possible to subscribe for [Push notifications](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md#push-type) that Redis server sends.
+
+More details in README.md. New examples available in `examples/` folder.
+
+### Added
+- Added support for RESP3 communication protocol (#1047)
+- Added support for Push notifications (#1316)
+- Added support for Sharded Pub/Sub (#1303)
+- Added support for XGROUP commands (#1324)
+- Added support for XREADGROUP command (#1327)
+- Added support for XAUTOCLAIM command (#1328)
+- Added support for XINFO commands (#1331)
+- Added support for Redis Gears triggered functions API (#1348)
+
+### Changed
+- Changed interfaces for commands to support arguments introduced in Redis 6.2, 7.0 (#1330)
+- Changed interface of CLIENT command (#1337)
+
 ## v2.2.0 (2023-06-14)
 
 Predis v2.2.0 introduces official support for [Redis Stack](https://redis.io/docs/stack/) as well as a [Relay](https://github.com/cachewerk/relay) integration for substantially [faster read performance](https://github.com/predis/predis/wiki/Using-Relay).

@@ -58,4 +58,9 @@ class LMPOP extends RedisCommand
 
         return [$data[0] => $data[1]];
     }
+
+    public function parseResp3Response($data)
+    {
+        return $this->parseResponse($data);
+    }
 }

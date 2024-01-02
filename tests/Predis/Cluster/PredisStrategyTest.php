@@ -113,7 +113,7 @@ class PredisStrategyTest extends PredisTestCase
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
-        $arguments = [];
+        $arguments = ['arg1', 'arg2'];
 
         foreach ($this->getExpectedCommands('keys-fake') as $commandID) {
             $command = $commands->create($commandID, $arguments);
@@ -226,6 +226,21 @@ class PredisStrategyTest extends PredisTestCase
         $arguments = ['%SCRIPT%', 2, '{key}:1', '{key}:2', 'value1', 'value2'];
 
         foreach ($this->getExpectedCommands('keys-script') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testKeysForSUnsubscribeCommand(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = [];
+
+        foreach ($this->getExpectedCommands('keys-sunsubscribe') as $commandID) {
             $command = $commands->create($commandID, $arguments);
             $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
@@ -463,6 +478,16 @@ class PredisStrategyTest extends PredisTestCase
             'GEODIST' => 'keys-first',
             'GEORADIUS' => 'keys-georadius',
             'GEORADIUSBYMEMBER' => 'keys-georadius',
+
+            /* sharded pubsub */
+            'SSUBSCRIBE' => 'keys-all',
+            'SUNSUBSCRIBE' => 'keys-sunsubscribe',
+            'SPUBLISH' => 'keys-first',
+
+            /* gears */
+            'TFUNCTION' => 'keys-fake',
+            'TFCALL' => 'keys-fake',
+            'TFCALLASYNC' => 'keys-fake',
         ];
 
         if (isset($type)) {

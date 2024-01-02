@@ -62,6 +62,7 @@ class TSDELETERULE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -86,6 +87,31 @@ class TSDELETERULE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
+    public function testDeleteCompactionRuleFromGivenTimeSeriesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $arguments = (new CreateArguments())
+            ->labels('type', 'temp', 'location', 'TLV');
+
+        $this->assertEquals('OK', $redis->tscreate('temp:TLV', $arguments));
+        $this->assertEquals('OK', $redis->tscreate('dailyAvgTemp:TLV', $arguments));
+        $this->assertEquals(
+            'OK',
+            $redis->tscreaterule('temp:TLV', 'dailyAvgTemp:TLV', 'twa', 86400000)
+        );
+        $this->assertEquals(
+            'OK',
+            $redis->tsdeleterule('temp:TLV', 'dailyAvgTemp:TLV')
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */

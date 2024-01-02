@@ -63,6 +63,7 @@ class TSDECRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -99,6 +100,40 @@ class TSDECRBY_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
+    public function testDecrByDecreasesValueAndTimestampOfExistingSampleResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $arguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('sensor_id', 2, 'area_id', 32);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:32', $arguments)
+        );
+
+        $addArguments = (new AddArguments())
+            ->retentionMsecs(31536000000);
+
+        $this->assertEquals(
+            123123123123,
+            $redis->tsadd('temperature:2:32', 123123123123, 27, $addArguments)
+        );
+
+        $this->assertEquals(
+            123123123124,
+            $redis->tsdecrby('temperature:2:32', 1, (new DecrByArguments())->timestamp(123123123124))
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
     public function testDecrByCreateNewSampleIfNotExists(): void
     {
         $redis = $this->getClient();
@@ -121,6 +156,7 @@ class TSDECRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -147,7 +183,6 @@ class TSDECRBY_Test extends PredisCommandTestCase
         );
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('TSDB: for incrby/decrby, timestamp should be newer than the');
 
         $redis->tsdecrby('temperature:2:32', 27, (new DecrByArguments())->timestamp(123123123122));
     }

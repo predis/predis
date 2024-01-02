@@ -71,4 +71,17 @@ class TIME_Test extends PredisCommandTestCase
         $this->assertIsString($time[0]);
         $this->assertIsString($time[1]);
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsServerTimeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertIsArray($time = $redis->time());
+        $this->assertIsString($time[0]);
+        $this->assertIsString($time[1]);
+    }
 }

@@ -51,6 +51,7 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider sketchesProvider
      * @param  string $sourceKey1
      * @param  string $sourceKey2
@@ -92,6 +93,7 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
@@ -118,6 +120,33 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testMergedSketchHaveCompressionEqualMaxValueAmongAllSourceSketchesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->tdigestcreate('source-key1');
+        $redis->tdigestcreate('source-key2', 1000);
+
+        $redis->tdigestadd('source-key1', 1, 2);
+        $redis->tdigestadd('source-key2', 3, 4);
+
+        $actualResponse = $redis->tdigestmerge('destination-key', ['source-key1', 'source-key2']);
+        $info = $redis->tdigestinfo('destination-key');
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame(1000, $info['Compression']);
+        $this->assertEquals(
+            [1.0, 2.0, 3.0, 4.0, INF],
+            $redis->tdigestbyrank('destination-key', 0, 1, 2, 3, 4)
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
@@ -156,6 +185,7 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
@@ -184,6 +214,7 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */

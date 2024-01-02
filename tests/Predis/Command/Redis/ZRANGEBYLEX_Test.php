@@ -100,11 +100,11 @@ class ZRANGEBYLEX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 2.8.9
+     * @requiresRedisVersion >= 6.0.0
      */
-    public function testReturnsElementsInWholeRange(): void
+    public function testReturnsElementsInWholeRangeResp3(): void
     {
-        $redis = $this->getClient();
+        $redis = $this->getResp3Client();
 
         $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
 

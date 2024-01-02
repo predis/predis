@@ -60,6 +60,7 @@ class FTDICTDEL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider dictionariesProvider
      * @param  array $addArguments
      * @param  array $deleteArguments
@@ -77,6 +78,20 @@ class FTDICTDEL_Test extends PredisCommandTestCase
         $redis->ftdictadd(...$addArguments);
 
         $this->assertSame($expectedResponse, $redis->ftdictdel(...$deleteArguments));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testRemovesTermsFromGivenDictionaryResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->ftdictadd('dict', 'foo', 'bar');
+
+        $this->assertSame(1, $redis->ftdictdel('dict', 'foo'));
     }
 
     public function dictionariesProvider(): array

@@ -60,6 +60,7 @@ class CFEXISTS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
@@ -71,5 +72,20 @@ class CFEXISTS_Test extends PredisCommandTestCase
 
         $this->assertSame(1, $redis->cfexists('key', 'item'));
         $this->assertSame(0, $redis->cfexists('non-existing key', 'item'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testExistsReturnsExistingItemWithinCuckooFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->cfadd('key', 'item');
+
+        $this->assertTrue($redis->cfexists('key', 'item'));
+        $this->assertFalse($redis->cfexists('non-existing key', 'item'));
     }
 }

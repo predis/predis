@@ -104,6 +104,24 @@ class FCALL_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
+    public function testInvokeGivenFunctionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame('mylib', $redis->function->load(
+            "#!lua name=mylib \n redis.register_function('myfunc', function(keys, args) return 'hello' end)")
+        );
+
+        $actualResponse = $redis->fcall('myfunc', []);
+        $this->assertSame('hello', $actualResponse);
+        $this->assertEquals('OK', $redis->function->delete('mylib'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
     public function testThrowsExceptionOnNonExistingFunctionGiven(): void
     {
         $redis = $this->getClient();

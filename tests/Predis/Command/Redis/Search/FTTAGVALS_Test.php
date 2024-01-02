@@ -63,6 +63,7 @@ class FTTAGVALS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -95,6 +96,39 @@ class FTTAGVALS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testReturnIndexedTagFieldDistinctValuesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = ['hello', 'hey', 'world'];
+
+        $this->assertEquals(
+            'OK',
+            $redis->ftcreate(
+                'index',
+                [new TagField('tag_field')],
+                (new CreateArguments())->prefix(['prefix:'])
+            )
+        );
+
+        $this->assertSame(
+            1,
+            $redis->hset('prefix:1', 'tag_field', 'Hello, World')
+        );
+
+        $this->assertSame(
+            1,
+            $redis->hset('prefix:2', 'tag_field', 'Hey, World')
+        );
+
+        $this->assertSame($expectedResponse, $redis->fttagvals('index', 'tag_field'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */

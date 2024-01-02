@@ -61,6 +61,7 @@ class FTDICTDUMP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.4.0
      */
@@ -75,6 +76,21 @@ class FTDICTDUMP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testDumpTermsFromGivenDictionaryResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->ftdictadd('dict', 'foo', 'bar');
+
+        $this->assertSame(['bar', 'foo'], $redis->ftdictdump('dict'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.4.0
      */

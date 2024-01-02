@@ -60,6 +60,7 @@ class BFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider filtersProvider
      * @param  array  $arguments
      * @param  string $key
@@ -87,6 +88,37 @@ class BFINSERT_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testInsertCreatesBloomFilterWithGivenItemsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->bfinsert(
+            'key',
+            -1,
+            -1,
+            -1,
+            false,
+            false,
+            'item1',
+            'item2'
+        );
+
+        $this->assertSame([true, true], $actualResponse);
+        $this->assertSame([
+            'Capacity' => 100,
+            'Size' => 240,
+            'Number of filters' => 1,
+            'Number of items inserted' => 2,
+            'Expansion rate' => 2,
+        ], $redis->bfinfo('key'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testInsertThrowsExceptionOnNonExistingBloomFilterWithNoCreateModifier(): void
@@ -101,6 +133,7 @@ class BFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
@@ -134,6 +167,7 @@ class BFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider unexpectedValuesProvider
      * @param  array  $arguments
      * @param  string $expectedExceptionMessage

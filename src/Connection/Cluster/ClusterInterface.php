@@ -12,6 +12,7 @@
 
 namespace Predis\Connection\Cluster;
 
+use Predis\Command\CommandInterface;
 use Predis\Connection\AggregateConnectionInterface;
 
 /**
@@ -20,4 +21,11 @@ use Predis\Connection\AggregateConnectionInterface;
  */
 interface ClusterInterface extends AggregateConnectionInterface
 {
+    /**
+     * Executes given command on each connection from connection pool.
+     *
+     * @param  CommandInterface $command
+     * @return array
+     */
+    public function executeCommandOnEachNode(CommandInterface $command): array;
 }

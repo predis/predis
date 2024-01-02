@@ -13,6 +13,7 @@
 namespace Predis\Configuration;
 
 use Predis\Command\Processor\ProcessorInterface;
+use Predis\Connection\ParametersInterface;
 
 /**
  * @property callable                            $aggregate   Custom aggregate connection initializer
@@ -21,7 +22,9 @@ use Predis\Command\Processor\ProcessorInterface;
  * @property bool                                $exceptions  Toggles exceptions in client for -ERR responses
  * @property ProcessorInterface                  $prefix      Key prefixing strategy using the supplied string as prefix
  * @property \Predis\Command\FactoryInterface    $commands    Command factory for creating Redis commands
+ * @property array|ParametersInterface           $parameters  Parameters associated with connection.
  * @property callable                            $replication Aggregate connection initializer for replication
+ * @property int                                 $readTimeout Timeout in milliseconds between read operations on reading from multiple connections.
  */
 interface OptionsInterface
 {

@@ -4,14 +4,23 @@ on:
   push:
     branches:
       - main
+      - v2.**
+      - v3.**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
 
   update_release_draft:
+
+    permissions:
+      contents: write
+      pull-requests: write
 
     name: Update release draft
     runs-on: ubuntu-latest

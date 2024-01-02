@@ -62,6 +62,7 @@ class FTALIASDEL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -78,6 +79,23 @@ class FTALIASDEL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testRemovesAliasFromGivenIndexResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $schema = [new TextField('text_field')];
+
+        $this->assertEquals('OK', $redis->ftcreate('index', $schema));
+        $this->assertEquals('OK', $redis->ftaliasadd('alias', 'index'));
+        $this->assertEquals('OK', $redis->ftaliasdel('alias'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */

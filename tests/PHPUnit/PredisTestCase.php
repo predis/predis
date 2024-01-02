@@ -10,6 +10,7 @@
  * file that was distributed with this source code.
  */
 
+use PHPUnit\AssertSameWithPrecisionConstraint;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\OneOfConstraint;
 use PHPUnit\Util\Test as TestUtil;
@@ -33,6 +34,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         'bloomFilter' => ['annotation' => 'requiresRedisBfVersion', 'name' => 'bf'],
         'search' => ['annotation' => 'requiresRediSearchVersion', 'name' => 'search'],
         'timeSeries' => ['annotation' => 'requiresRedisTimeSeriesVersion', 'name' => 'timeseries'],
+        'gears' => ['annotation' => 'requiresRedisGearsVersion', 'name' => 'redisgears_2'],
     ];
 
     /**
@@ -132,10 +134,24 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Asserts that two values (of the same type) have the same values with given precision.
+     *
+     * @param  mixed  $expected  Expected value
+     * @param  mixed  $actual    Actual value
+     * @param  int    $precision Precision value should be round to
+     * @param  string $message   Optional assertion message
+     * @return void
+     */
+    public function assertSameWithPrecision($expected, $actual, int $precision = 0, string $message = ''): void
+    {
+        $this->assertThat($actual, new AssertSameWithPrecisionConstraint($expected, $precision), $message);
+    }
+
+    /**
      * Asserts that a string matches a given regular expression.
      *
      * @throws ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public static function assertMatchesRegularExpression(string $pattern, string $string, $message = ''): void
     {
@@ -408,7 +424,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * decorates test methods while the version of the Redis server used to run
      * integration tests is retrieved directly from the server by using `INFO`.
      *
-     * @throws \PHPUnit\Framework\SkippedTestError When the required Redis server version is not met
+     * @throws PHPUnit\Framework\SkippedTestError When the required Redis server version is not met
      */
     protected function checkRequiredRedisServerVersion(): void
     {
@@ -462,8 +478,8 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         }
 
         if (!$this->isSatisfiedRedisModuleVersion($reqVersion, $module)) {
-            $redisModuleVersion = $this->getRedisModuleVersion($module);
-            $module = strtoupper($module);
+            $redisModuleVersion = $this->getRedisModuleVersion($this->modulesMapping[$module]['name']);
+            $redisModuleVersion = str_replace('0', '.', $redisModuleVersion);
 
             $this->markTestSkipped(
                 "Test requires a Redis $module module >= $reqVersion but target module is $redisModuleVersion"
@@ -500,13 +516,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $this->info = $info;
         }
 
-        if (isset($info['modules'][$module]['ver'])) {
-            $this->redisJsonVersion = $info['modules'][$module]['ver'];
-
-            return $info['modules'][$module]['ver'];
-        }
-
-        return '0';
+        return $info['modules'][$module]['ver'] ?? '0';
     }
 
     /**
@@ -563,8 +573,18 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $this->getName(false)
         );
 
-        return isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group'])
-            && !empty($annotations['method']['requiresRedisVersion'])
+        $annotationExists = isset($annotations['method']['requiresRedisVersion']);
+
+        if (!$annotationExists) {
+            foreach ($this->modulesMapping as $module => $configuration) {
+                if (isset($annotations['method'][$configuration['annotation']])) {
+                    $annotationExists = true;
+                }
+            }
+        }
+
+        return $annotationExists
+            && isset($annotations['method']['group'])
             && in_array('connected', $annotations['method']['group'], true)
             && in_array('cluster', $annotations['method']['group'], true);
     }

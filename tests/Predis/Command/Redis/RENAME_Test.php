@@ -91,6 +91,21 @@ class RENAME_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testRenamesKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->set('foo', 'bar');
+
+        $this->assertEquals('OK', $redis->rename('foo', 'foofoo'));
+        $this->assertSame(0, $redis->exists('foo'));
+        $this->assertSame(1, $redis->exists('foofoo'));
+    }
+
+    /**
+     * @group connected
      */
     public function testThrowsExceptionOnNonExistingKeys(): void
     {

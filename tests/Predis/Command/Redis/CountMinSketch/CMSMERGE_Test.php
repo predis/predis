@@ -59,6 +59,7 @@ class CMSMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider sketchesProvider
      * @param  array  $mergeArguments
      * @param  string $destinationKey
@@ -90,6 +91,28 @@ class CMSMERGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testMergeSketchesAndSaveWithinDestinationCountMinSketchResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->cmsinitbyprob('source1', 0.001, 0.01);
+        $redis->cmsinitbyprob('source2', 0.001, 0.01);
+        $redis->cmsinitbyprob('destination', 0.001, 0.01);
+        $redis->cmsincrby('source1', 'item1', 1, 'item2', 1);
+        $redis->cmsincrby('source2', 'item1', 1, 'item2', 1);
+
+        $actualResponse = $redis->cmsmerge('destination', ['source1', 'source2']);
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame([2, 2], $redis->cmsquery('destination', 'item1', 'item2'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
      * @requiresRedisBfVersion >= 2.0.0
      */
     public function testThrowsExceptionOnNonExistingDestinationCountMinSketch(): void
@@ -107,6 +130,7 @@ class CMSMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.0.0
      */
@@ -125,6 +149,7 @@ class CMSMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.0.0
      */

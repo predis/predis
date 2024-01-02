@@ -88,6 +88,18 @@ class GET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsStringValueResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->set('foo', 'bar'));
+        $this->assertEquals('bar', $redis->get('foo'));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsEmptyStringOnEmptyStrings(): void
     {

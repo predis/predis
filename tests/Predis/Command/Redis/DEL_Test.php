@@ -109,4 +109,25 @@ class DEL_Test extends PredisCommandTestCase
         $redis->set('hoge', 'piyo');
         $this->assertSame(2, $redis->del('foo', 'hoge'));
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsNumberOfDeletedKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame(0, $redis->del('foo'));
+
+        $redis->set('foo', 'bar');
+        $this->assertSame(1, $redis->del('foo'));
+
+        $redis->set('foo', 'bar');
+        $this->assertSame(1, $redis->del('foo', 'hoge'));
+
+        $redis->set('foo', 'bar');
+        $redis->set('hoge', 'piyo');
+        $this->assertSame(2, $redis->del('foo', 'hoge'));
+    }
 }

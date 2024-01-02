@@ -95,6 +95,24 @@ class XDEL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testRemovesSpecifiedMembersResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->xadd('stream', ['key0' => 'val0'], '0-1');
+        $redis->xadd('stream', ['key1' => 'val1'], '1-1');
+        $redis->xadd('stream', ['key2' => 'val2'], '2-1');
+
+        $this->assertSame(2, $redis->xdel('stream', '0-1', '2-1', '99-1'));
+        $this->assertSame(['1-1' => ['key1' => 'val1']], $redis->xrange('stream', '-', '+'));
+
+        $this->assertSame(0, $redis->xdel('stream', '0-1'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 5.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

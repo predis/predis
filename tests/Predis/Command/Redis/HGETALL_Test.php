@@ -96,6 +96,20 @@ class HGETALL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsAllTheFieldsAndTheirValuesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->hmset('metavars', 'foo', 'bar', 'hoge', 'piyo', 'lol', 'wut');
+
+        $this->assertSame(['foo' => 'bar', 'hoge' => 'piyo', 'lol' => 'wut'], $redis->hgetall('metavars'));
+        $this->assertSame([], $redis->hgetall('unknown'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionOnWrongType(): void

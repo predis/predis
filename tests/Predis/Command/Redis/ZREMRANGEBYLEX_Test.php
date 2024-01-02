@@ -93,6 +93,22 @@ class ZREMRANGEBYLEX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testRemovesRangeByLexWithWholeRangeResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('letters', 0, 'a', 0, 'b', 0, 'c', 0, 'd', 0, 'e', 0, 'f', 0, 'g');
+
+        $this->assertSame(0, $redis->zremrangebylex('letters', '+', '-'));
+        $this->assertSame(7, $redis->zremrangebylex('letters', '-', '+'));
+
+        $this->assertSame([], $redis->zrange('letters', 0, -1));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.8.9
      */
     public function testRemovesRangeByLexWithInclusiveRange(): void

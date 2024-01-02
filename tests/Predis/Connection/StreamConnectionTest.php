@@ -13,6 +13,7 @@
 namespace Predis\Connection;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Client;
 use Predis\Command\RawCommand;
 use Predis\Response\Error as ErrorResponse;
 
@@ -194,5 +195,40 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $this->assertArrayHasKey('socket', $options);
         $this->assertArrayHasKey('tcp_nodelay', $options['socket']);
         $this->assertFalse($options['socket']['tcp_nodelay']);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion < 7.0.0
+     */
+    public function testConnectDoNotThrowsExceptionOnClientCommandError(): void
+    {
+        $connection = $this->createConnectionWithParams([]);
+        $connection->addConnectCommand(
+            new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
+        );
+        $connection->addConnectCommand(
+            new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])
+        );
+
+        $connection->connect();
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testGetInitCommandsReturnsGivenInitCommands(): void
+    {
+        $command = new RawCommand('HELLO', [3]);
+
+        $connection = $this->createConnection();
+        $connection->addConnectCommand($command);
+
+        $initCommands = $connection->getInitCommands();
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
+        $this->assertSame('HELLO', $initCommands[0]->getId());
     }
 }

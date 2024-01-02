@@ -61,6 +61,7 @@ class TOPKQUERY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.0.0
      */
@@ -76,6 +77,22 @@ class TOPKQUERY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testQueryChecksIfItemExistsWithinGivenTopKStructureResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->topkreserve('key', 50);
+        $redis->topkadd('key', 'item1');
+
+        $this->assertSame([true, false], $redis->topkquery('key', 'item1', 'item2'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRedisBfVersion >= 2.0.0
      */

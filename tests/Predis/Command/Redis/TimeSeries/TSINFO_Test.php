@@ -61,6 +61,7 @@ class TSINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -70,6 +71,31 @@ class TSINFO_Test extends PredisCommandTestCase
         $expectedResponse = ['totalSamples', 0, 'memoryUsage', 4239, 'firstTimestamp', 0, 'lastTimestamp', 0,
             'retentionTime', 60000, 'chunkCount', 1, 'chunkSize', 4096, 'chunkType', 'compressed', 'duplicatePolicy',
         'max', 'labels', [['sensor_id', '2'], ['area_id', '32']], 'sourceKey', null, 'rules', []];
+
+        $arguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('sensor_id', 2, 'area_id', 32);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:32', $arguments)
+        );
+
+        $this->assertEquals($expectedResponse, $redis->tsinfo('temperature:2:32'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.10.0
+     */
+    public function testReturnsInformationAboutGivenTimeSeriesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = ['totalSamples' => 0, 'memoryUsage' => 4239, 'firstTimestamp' => 0, 'lastTimestamp' => 0,
+            'retentionTime' => 60000, 'chunkCount' => 1, 'chunkSize' => 4096, 'chunkType' => 'compressed',
+            'duplicatePolicy' => 'max', 'labels' => ['sensor_id' => '2', 'area_id' => '32'], 'sourceKey' => null, 'rules' => []];
 
         $arguments = (new CreateArguments())
             ->retentionMsecs(60000)

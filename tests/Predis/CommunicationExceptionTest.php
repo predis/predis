@@ -117,7 +117,7 @@ class CommunicationExceptionTest extends PredisTestCase
      * @param int                                $code       Exception code.
      * @param Exception                          $inner      Inner exception.
      *
-     * @return \Predis\CommunicationException
+     * @return CommunicationException
      */
     protected function createMockException(
         Connection\NodeConnectionInterface $connection,

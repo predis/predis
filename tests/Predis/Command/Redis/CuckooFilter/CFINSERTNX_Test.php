@@ -51,6 +51,7 @@ class CFINSERTNX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider filtersProvider
      * @param  array  $filterArguments
      * @param  string $key
@@ -76,6 +77,7 @@ class CFINSERTNX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
@@ -93,6 +95,23 @@ class CFINSERTNX_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testDoNotInsertAlreadyExistingItemsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->cfadd('filter', 'item1');
+        $redis->cfadd('filter', 'item2');
+
+        $actualResponse = $redis->cfinsertnx('filter', -1, false, 'item1', 'item2');
+        $this->assertSame([0, 0], $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testInsertThrowsErrorOnInsertingIntoNonExistingFilterWithNoCreateModifier(): void
@@ -107,6 +126,7 @@ class CFINSERTNX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */

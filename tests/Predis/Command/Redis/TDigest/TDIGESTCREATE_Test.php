@@ -59,6 +59,7 @@ class TDIGESTCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider sketchesProvider
      * @param  array  $createArguments
      * @param  string $key
@@ -82,6 +83,23 @@ class TDIGESTCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testCreateTDigestSketchWithGivenConfigurationResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->tdigestcreate('key');
+        $info = $redis->tdigestinfo('key');
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame(100, $info['Compression']);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */

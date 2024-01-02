@@ -19,6 +19,7 @@ use Predis\Command\RawCommand;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
 use Predis\Replication\MissingMasterException;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response\ErrorInterface as ResponseErrorInterface;
@@ -549,5 +550,23 @@ class MasterSlaveReplication implements ReplicationInterface
     public function __sleep()
     {
         return ['master', 'slaves', 'pool', 'aliases', 'strategy'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): ?ParametersInterface
+    {
+        if (isset($this->master)) {
+            return $this->master->getParameters();
+        }
+
+        $slave = $this->pickSlave();
+
+        if (null !== $slave) {
+            return $slave->getParameters();
+        }
+
+        return null;
     }
 }

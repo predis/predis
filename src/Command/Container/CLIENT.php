@@ -18,6 +18,7 @@ use Predis\Response\Status;
  * @method string getName()
  * @method Status kill(...$arguments)
  * @method string list(string $type = null, int ...$clientId)
+ * @method Status noEvict(bool $enable = null)
  * @method Status noTouch(bool $enable = null)
  * @method Status setInfo(string $modifier = null, string $value = null)
  * @method Status setName(string $connectionName)

@@ -74,6 +74,21 @@ class EXEC_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testExecutesTransactionAndReturnsArrayOfResponsesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->multi();
+        $redis->echo('tx1');
+        $redis->echo('tx2');
+
+        $this->assertSame(['tx1', 'tx2'], $redis->exec());
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsEmptyArrayOnEmptyTransactions(): void
     {

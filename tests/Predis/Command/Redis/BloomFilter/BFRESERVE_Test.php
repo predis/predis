@@ -60,6 +60,7 @@ class BFRESERVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider filtersProvider
      * @param  array  $filter
      * @param  string $key
@@ -84,6 +85,21 @@ class BFRESERVE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReserveCreatesBloomFilterWithCorrectConfigurationResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->bfreserve('key', 0.01, 100);
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame(['Capacity' => 100], $redis->bfinfo('key', 'capacity'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
      * @requiresRedisBfVersion 1.0.0
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(): void
@@ -98,7 +114,8 @@ class BFRESERVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisBfVersion >= 1.0
+     * @group relay-resp3
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {

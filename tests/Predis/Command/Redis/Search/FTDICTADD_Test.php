@@ -60,12 +60,27 @@ class FTDICTADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.4.0
      */
     public function testAddTermsIntoGivenDictionary(): void
     {
         $redis = $this->getClient();
+
+        $actualResponse = $redis->ftdictadd('dict', 'foo', 'bar');
+
+        $this->assertSame(2, $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testAddTermsIntoGivenDictionaryResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $actualResponse = $redis->ftdictadd('dict', 'foo', 'bar');
 

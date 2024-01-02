@@ -91,6 +91,21 @@ class LINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsLengthOfListAfterInsertResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->rpush('letters', 'a', 'c', 'e');
+
+        $this->assertSame(4, $redis->linsert('letters', 'before', 'c', 'b'));
+        $this->assertSame(5, $redis->linsert('letters', 'after', 'c', 'd'));
+        $this->assertSame(['a', 'b', 'c', 'd', 'e'], $redis->lrange('letters', 0, -1));
+    }
+
+    /**
+     * @group connected
      */
     public function testReturnsNegativeLengthOnFailedInsert(): void
     {

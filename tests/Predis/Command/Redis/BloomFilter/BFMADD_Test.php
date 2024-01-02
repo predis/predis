@@ -61,8 +61,9 @@ class BFMADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
-     * @requiresRedisBfVersion >= 1.0
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testAddGivenItemsIntoBloomFilter(): void
     {
@@ -75,7 +76,22 @@ class BFMADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisBfVersion >= 1.0
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testAddGivenItemsIntoBloomFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->bfmadd('key', 'item1', 'item2');
+        $this->assertSame([true, true], $actualResponse);
+        $this->assertSame([true, true], $redis->bfmexists('key', 'item1', 'item2'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {

@@ -78,6 +78,23 @@ class ZDIFFSTORE_Test extends PredisCommandTestCase
         $this->assertSame($expectedResponse, $redis->zrange('zdiffstore', 0, -1));
     }
 
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testStoresDifferenceBetweenSortedSetsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('test-zset-1', 1, 'member1', 2, 'member2', 3, 'member3');
+        $redis->zadd('test-zset-2', 1, 'member4', 2, 'member5', 3, 'member6');
+        $actualResponse = $redis->zdiffstore('zdiffstore', ['test-zset-1', 'test-zset-2']);
+
+        $this->assertSame(3, $actualResponse);
+        $this->assertSame(['member1', 'member2', 'member3'], $redis->zrange('zdiffstore', 0, -1));
+    }
+
     public function sortedSetsProvider(): array
     {
         return [

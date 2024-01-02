@@ -27,13 +27,13 @@ trait ByLexByScore
 
     public function setArguments(array $arguments)
     {
-        $argument = $arguments[static::$byLexByScoreArgumentPositionOffset];
-
-        if (false === $argument) {
+        if (count($arguments) <= static::$byLexByScoreArgumentPositionOffset || false === $arguments[static::$byLexByScoreArgumentPositionOffset]) {
             parent::setArguments($arguments);
 
             return;
         }
+
+        $argument = $arguments[static::$byLexByScoreArgumentPositionOffset];
 
         if (is_string($argument) && in_array(strtoupper($argument), self::$argumentsEnum)) {
             $argument = self::$argumentsEnum[$argument];
