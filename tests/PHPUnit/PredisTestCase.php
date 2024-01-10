@@ -21,7 +21,7 @@ use Predis\Connection;
 /**
  * Base test case class for the Predis test suite.
  */
-abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
+abstract class PredisTestCase extends PHPUnit\Framework\TestCase
 {
     protected $redisServerVersion;
     protected $redisJsonVersion;
@@ -295,7 +295,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         if (!is_a($interface, '\Predis\Connection\NodeConnectionInterface', true)) {
             $method = __METHOD__;
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Argument `\$interface` for $method() expects a type implementing Predis\Connection\NodeConnectionInterface"
             );
         }

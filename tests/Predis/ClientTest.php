@@ -1209,7 +1209,7 @@ class ClientTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383');
 
-        $aggregate = new \Predis\Connection\Cluster\PredisCluster();
+        $aggregate = new Connection\Cluster\PredisCluster();
 
         $aggregate->add($connection1);
         $aggregate->add($connection2);
