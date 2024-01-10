@@ -150,7 +150,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * Asserts that a string matches a given regular expression.
      *
      * @throws ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public static function assertMatchesRegularExpression(string $pattern, string $string, $message = ''): void
     {
@@ -423,7 +423,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * decorates test methods while the version of the Redis server used to run
      * integration tests is retrieved directly from the server by using `INFO`.
      *
-     * @throws \PHPUnit\Framework\SkippedTestError When the required Redis server version is not met
+     * @throws PHPUnit\Framework\SkippedTestError When the required Redis server version is not met
      */
     protected function checkRequiredRedisServerVersion(): void
     {
