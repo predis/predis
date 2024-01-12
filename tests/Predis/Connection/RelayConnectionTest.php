@@ -267,7 +267,7 @@ class RelayConnectionTest extends PredisTestCase
      */
     public function testGetResourceForcesConnection(): void
     {
-        $connection = new RelayConnection(new Parameters(), new \Relay\Relay());
+        $connection = new RelayConnection(new Parameters(), new Relay());
 
         $this->assertFalse($connection->isConnected());
         $connection->getResource();
@@ -279,7 +279,7 @@ class RelayConnectionTest extends PredisTestCase
      */
     public function testExecutesCommand(): void
     {
-        $connection = new RelayConnection(new Parameters(), new \Relay\Relay());
+        $connection = new RelayConnection(new Parameters(), new Relay());
 
         $this->assertEquals(
             'OK',
@@ -298,7 +298,7 @@ class RelayConnectionTest extends PredisTestCase
      */
     public function testConnectWithOnConnectionCommands(): void
     {
-        $connection = new RelayConnection(new Parameters(), new \Relay\Relay());
+        $connection = new RelayConnection(new Parameters(), new Relay());
         $connection->addConnectCommand(new RawCommand('CLIENT', ['SETNAME', 'predis']));
 
         $connection->connect();

@@ -42,7 +42,7 @@ $client = new Client(
 $pubSub = $client->pubSubLoop();
 
 // 3. Create a dispatcher loop instance and attach a bunch of callbacks.
-$dispatcher = new \Predis\Consumer\PubSub\DispatcherLoop($pubSub);
+$dispatcher = new Predis\Consumer\PubSub\DispatcherLoop($pubSub);
 
 // 4. Demonstrate how to use a callable class as a callback for the dispatcher loop.
 class EventsListener implements Countable
