@@ -30,7 +30,7 @@ $client = new Predis\Client($single_server + ['read_write_timeout' => 0]);
 $pubsub = $client->pubSubLoop();
 
 // Create a dispatcher loop instance and attach a bunch of callbacks.
-$dispatcher = new \Predis\Consumer\PubSub\DispatcherLoop($pubsub);
+$dispatcher = new Predis\Consumer\PubSub\DispatcherLoop($pubsub);
 
 // Demonstrate how to use a callable class as a callback for the dispatcher loop.
 class EventsListener implements Countable

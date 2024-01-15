@@ -51,17 +51,17 @@ class SentinelReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testParametersForSentinelConnectionShouldIgnoreDatabaseAndPassword(): void
+    public function testParametersForSentinelConnectionShouldIgnoreDatabase(): void
     {
         $replication = $this->getReplicationConnection('svc', [
-            'tcp://127.0.0.1:5381?role=sentinel&database=1&username=myusername',
+            'tcp://127.0.0.1:5381?role=sentinel&database=1&username=myusername&password=password',
         ]);
 
         $parameters = $replication->getSentinelConnection()->getParameters()->toArray();
 
         $this->assertArrayNotHasKey('database', $parameters, 'Parameter `database` was expected to not exist in connection parameters');
-        $this->assertArrayNotHasKey('username', $parameters, 'Parameter `username` was expected to not exist in connection parameters');
-        $this->assertArrayNotHasKey('password', $parameters, 'Parameter `password` was expected to not exist in connection parameters');
+        $this->assertArrayHasKey('username', $parameters, 'Parameter `username` was expected to not exist in connection parameters');
+        $this->assertArrayHasKey('password', $parameters, 'Parameter `password` was expected to not exist in connection parameters');
     }
 
     /**
