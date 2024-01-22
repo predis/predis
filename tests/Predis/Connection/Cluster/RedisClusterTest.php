@@ -12,13 +12,21 @@
 
 namespace Predis\Connection\Cluster;
 
+use OutOfBoundsException;
 use PHPUnit\Framework\MockObject\MockObject;
-use Predis\Cluster;
-use Predis\Command;
-use Predis\Connection;
+use Predis\Cluster\RedisStrategy;
+use Predis\Cluster\StrategyInterface;
+use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
+use Predis\Connection\ConnectionException;
+use Predis\Connection\Factory;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\Parameters;
-use Predis\Response;
+use Predis\Connection\RelayConnection;
+use Predis\Connection\RelayFactory;
+use Predis\Replication\ReplicationStrategy;
+use Predis\Response\Error;
+use Predis\Response\Status;
 use PredisTestCase;
 
 class RedisClusterTest extends PredisTestCase
@@ -28,8 +36,8 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAcceptsCustomConnectionFactory(): void
     {
-        /** @var Connection\FactoryInterface */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $cluster = new RedisCluster($factory, new Parameters());
 
         $this->assertSame($factory, $cluster->getConnectionFactory());
@@ -40,9 +48,9 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testUsesRedisClusterStrategyByDefault(): void
     {
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
-        $this->assertInstanceOf('Predis\Cluster\RedisStrategy', $cluster->getClusterStrategy());
+        $this->assertInstanceOf(RedisStrategy::class, $cluster->getClusterStrategy());
     }
 
     /**
@@ -50,10 +58,10 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAcceptsCustomClusterStrategy(): void
     {
-        /** @var Cluster\StrategyInterface */
-        $strategy = $this->getMockBuilder('Predis\Cluster\StrategyInterface')->getMock();
+        /** @var StrategyInterface */
+        $strategy = $this->getMockBuilder(StrategyInterface::class)->getMock();
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters(), $strategy);
+        $cluster = new RedisCluster(new Factory(), new Parameters(), $strategy);
 
         $this->assertSame($strategy, $cluster->getClusterStrategy());
     }
@@ -66,7 +74,7 @@ class RedisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -85,7 +93,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6371');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -103,7 +111,7 @@ class RedisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -122,7 +130,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -171,7 +179,7 @@ class RedisClusterTest extends PredisTestCase
                 return $connect2;
             });
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -198,7 +206,7 @@ class RedisClusterTest extends PredisTestCase
             ->expects($this->once())
             ->method('disconnect');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -223,7 +231,7 @@ class RedisClusterTest extends PredisTestCase
             ->method('isConnected')
             ->willReturn(true);
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -248,7 +256,7 @@ class RedisClusterTest extends PredisTestCase
             ->method('isConnected')
             ->willReturn(false);
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -266,7 +274,7 @@ class RedisClusterTest extends PredisTestCase
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383?slots=10923-16383');
         $connection4 = $this->getMockConnection('tcp://127.0.0.1:6384');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
         $cluster->useClusterSlots(false);
 
         $cluster->add($connection1);
@@ -307,7 +315,7 @@ class RedisClusterTest extends PredisTestCase
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383');
         $connection4 = $this->getMockConnection('tcp://127.0.0.1:6384');
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->exactly(2))
             ->method('create')
@@ -331,8 +339,8 @@ class RedisClusterTest extends PredisTestCase
             );
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
-        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
             ->getMock();
@@ -363,7 +371,7 @@ class RedisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
 
@@ -385,7 +393,7 @@ class RedisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -415,7 +423,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380?slots=5461-10922');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=10923-16383');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -445,7 +453,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380?slots=5461-5499,5600-10922');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=10923-10999,11001-16383');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -479,7 +487,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -504,7 +512,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -544,7 +552,7 @@ class RedisClusterTest extends PredisTestCase
             ->expects($this->never())
             ->method('writeRequest');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
         $cluster->useClusterSlots(false);
 
         $cluster->add($connection1);
@@ -571,7 +579,7 @@ class RedisClusterTest extends PredisTestCase
             ->method('readResponse')
             ->with($command);
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
         $cluster->useClusterSlots(false);
 
         $cluster->add($connection1);
@@ -599,7 +607,7 @@ class RedisClusterTest extends PredisTestCase
                 'GET', ['node:1001']
             ))
             ->willThrowException(
-                new Connection\ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
+                new ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
             );
 
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382?slots=5461-10922');
@@ -633,8 +641,8 @@ class RedisClusterTest extends PredisTestCase
                 'value:5001'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -651,11 +659,11 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection3);
 
         $this->assertSame('value:1001', $cluster->executeCommand(
-            Command\RawCommand::create('get', 'node:1001')
+            RawCommand::create('get', 'node:1001')
         ));
 
         $this->assertSame('value:5001', $cluster->executeCommand(
-            Command\RawCommand::create('get', 'node:5001')
+            RawCommand::create('get', 'node:5001')
         ));
     }
 
@@ -672,7 +680,7 @@ class RedisClusterTest extends PredisTestCase
                 'GET', ['node:1001']
             ))
             ->willThrowException(
-                new Connection\ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
+                new ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
             );
 
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382?slots=5501-11000');
@@ -683,7 +691,7 @@ class RedisClusterTest extends PredisTestCase
                 'GET', ['node:1001']
             ))
             ->willReturn(
-                new Response\Error('MOVED 1970 127.0.0.1:9381')
+                new Error('MOVED 1970 127.0.0.1:9381')
             );
 
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383?slots=11101-16383');
@@ -700,7 +708,7 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn('value:1001');
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -711,8 +719,8 @@ class RedisClusterTest extends PredisTestCase
             ->willReturn($connection4);
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
-        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
             ->getMock();
@@ -727,7 +735,7 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection3);
 
         $this->assertSame('value:1001', $cluster->executeCommand(
-            Command\RawCommand::create('get', 'node:1001')
+            RawCommand::create('get', 'node:1001')
         ));
     }
 
@@ -740,8 +748,8 @@ class RedisClusterTest extends PredisTestCase
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('No connections available in the pool');
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
@@ -749,7 +757,7 @@ class RedisClusterTest extends PredisTestCase
         $cluster = new RedisCluster($factory, new Parameters());
 
         $cluster->executeCommand(
-            Command\RawCommand::create('get', 'node:1001')
+            RawCommand::create('get', 'node:1001')
         );
     }
 
@@ -758,8 +766,8 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAskSlotMapReturnEmptyArrayOnEmptyConnectionsPool(): void
     {
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
@@ -789,7 +797,7 @@ class RedisClusterTest extends PredisTestCase
                 'CLUSTER', ['SLOTS']
             ))
             ->willThrowException(
-                new Connection\ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
+                new ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
             );
 
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382?slots=5461-10922');
@@ -800,7 +808,7 @@ class RedisClusterTest extends PredisTestCase
                 'CLUSTER', ['SLOTS']
             ))
             ->willThrowException(
-                new Connection\ConnectionException($connection2, 'Unknown connection error [127.0.0.1:6383]')
+                new ConnectionException($connection2, 'Unknown connection error [127.0.0.1:6383]')
             );
 
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383?slots=10923-16383');
@@ -812,14 +820,14 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn($slotsmap);
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
-        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
             ->getMock();
@@ -842,7 +850,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAskSlotMapHonorsRetryLimitOnMultipleConnectionFailures(): void
     {
-        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectException(ConnectionException::class);
         $this->expectExceptionMessage('Unknown connection error [127.0.0.1:6382]');
 
         $slotsmap = [
@@ -859,7 +867,7 @@ class RedisClusterTest extends PredisTestCase
                 'CLUSTER', ['SLOTS']
             ))
             ->willThrowException(
-                new Connection\ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
+                new ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
             );
 
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382?slots=5461-10922');
@@ -870,7 +878,7 @@ class RedisClusterTest extends PredisTestCase
                 'CLUSTER', ['SLOTS']
             ))
             ->willThrowException(
-                new Connection\ConnectionException($connection2, 'Unknown connection error [127.0.0.1:6382]')
+                new ConnectionException($connection2, 'Unknown connection error [127.0.0.1:6382]')
             );
 
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383?slots=10923-16383');
@@ -878,14 +886,14 @@ class RedisClusterTest extends PredisTestCase
             ->expects($this->never())
             ->method('executeCommand');
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
-        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
             ->getMock();
@@ -913,7 +921,7 @@ class RedisClusterTest extends PredisTestCase
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -934,7 +942,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAskResponseWithConnectionInPool(): void
     {
-        $askResponse = new Response\Error('ASK 1970 127.0.0.1:6380');
+        $askResponse = new Error('ASK 1970 127.0.0.1:6380');
 
         $command = $this->getCommandFactory()->create('get', ['node:1001']);
 
@@ -954,12 +962,12 @@ class RedisClusterTest extends PredisTestCase
                 [$this->isRedisCommand($command)]
             )
             ->willReturnOnConsecutiveCalls(
-                new Response\Status('OK'),
+                new Status('OK'),
                 'foobar'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
@@ -980,7 +988,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAskResponseWithConnectionNotInPool(): void
     {
-        $askResponse = new Response\Error('ASK 1970 127.0.0.1:6381');
+        $askResponse = new Error('ASK 1970 127.0.0.1:6381');
 
         $command = $this->getCommandFactory()->create('get', ['node:1001']);
 
@@ -1005,12 +1013,12 @@ class RedisClusterTest extends PredisTestCase
                 [$this->isRedisCommand($command)]
             )
             ->willReturnOnConsecutiveCalls(
-                new Response\Status('OK'),
+                new Status('OK'),
                 'foobar'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -1036,7 +1044,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testMovedResponseWithConnectionInPool(): void
     {
-        $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6380');
+        $movedResponse = new Error('MOVED 1970 127.0.0.1:6380');
 
         $command = $this->getCommandFactory()->create('get', ['node:1001']);
 
@@ -1054,8 +1062,8 @@ class RedisClusterTest extends PredisTestCase
             ->with($command)
             ->willReturnOnConsecutiveCalls('foobar', 'foobar');
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory->expects($this->never())->method('create');
 
         $cluster = new RedisCluster($factory, new Parameters());
@@ -1074,7 +1082,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testMovedResponseWithConnectionNotInPool(): void
     {
-        $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6381');
+        $movedResponse = new Error('MOVED 1970 127.0.0.1:6381');
 
         $command = $this->getCommandFactory()->create('get', ['node:1001']);
 
@@ -1097,8 +1105,8 @@ class RedisClusterTest extends PredisTestCase
             ->with($command)
             ->willReturnOnConsecutiveCalls('foobar', 'foobar');
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -1124,7 +1132,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testParseIPv6AddresseAndPortPairInRedirectionPayload(): void
     {
-        $movedResponse = new Response\Error('MOVED 1970 2001:db8:0:f101::2:6379');
+        $movedResponse = new Error('MOVED 1970 2001:db8:0:f101::2:6379');
 
         $command = $this->getCommandFactory()->create('get', ['node:1001']);
 
@@ -1142,8 +1150,8 @@ class RedisClusterTest extends PredisTestCase
             ->with($command)
             ->willReturn('foobar');
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -1194,8 +1202,8 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn($response);
 
-        /** @var Connection\FactoryInterface */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
 
         $cluster = new RedisCluster($factory, new Parameters());
 
@@ -1211,8 +1219,8 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAskSlotMapToRedisClusterOnMovedResponseByDefault(): void
     {
-        $cmdGET = Command\RawCommand::create('GET', 'node:1001');
-        $rspMOVED = new Response\Error('MOVED 1970 127.0.0.1:6380');
+        $cmdGET = RawCommand::create('GET', 'node:1001');
+        $rspMOVED = new Error('MOVED 1970 127.0.0.1:6380');
         $rspSlotsArray = [
             [0,  8191, ['127.0.0.1', 6379]],
             [8192, 16383, ['127.0.0.1', 6380]],
@@ -1238,8 +1246,8 @@ class RedisClusterTest extends PredisTestCase
                 'foobar'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -1267,7 +1275,7 @@ class RedisClusterTest extends PredisTestCase
 
         $ping = $this->getCommandFactory()->create('ping');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($this->getMockConnection('tcp://127.0.0.1:6379'));
 
@@ -1284,7 +1292,7 @@ class RedisClusterTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380?slots=5461-10922');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=10923-16383');
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
 
         $cluster->add($connection1);
         $cluster->add($connection2);
@@ -1304,9 +1312,9 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testRetryCommandSuccessOnClusterDownErrors()
     {
-        $clusterDownError = new Response\Error('CLUSTERDOWN');
+        $clusterDownError = new Error('CLUSTERDOWN');
 
-        $command = Command\RawCommand::create('get', 'node:1001');
+        $command = RawCommand::create('get', 'node:1001');
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->exactly(3))
@@ -1317,7 +1325,7 @@ class RedisClusterTest extends PredisTestCase
                         $clusterDownError,
                         'foobar'));
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
         $cluster->useClusterSlots(false);
         $cluster->setRetryLimit(2);
         $cluster->add($connection1);
@@ -1335,9 +1343,9 @@ class RedisClusterTest extends PredisTestCase
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('CLUSTERDOWN');
 
-        $clusterDownError = new Response\Error('CLUSTERDOWN');
+        $clusterDownError = new Error('CLUSTERDOWN');
 
-        $command = Command\RawCommand::create('get', 'node:1001');
+        $command = RawCommand::create('get', 'node:1001');
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->exactly(3))
@@ -1349,7 +1357,7 @@ class RedisClusterTest extends PredisTestCase
                         $clusterDownError
                     ));
 
-        $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
+        $cluster = new RedisCluster(new Factory(), new Parameters());
         $cluster->useClusterSlots(false);
         $cluster->setRetryLimit(2);
         $cluster->add($connection1);
@@ -1378,7 +1386,7 @@ class RedisClusterTest extends PredisTestCase
                 'CLUSTER', ['SLOTS']
             ))
             ->willThrowException(
-                new Connection\ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
+                new ConnectionException($connection1, 'Unknown connection error [127.0.0.1:6381]')
             );
 
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382?slots=5461-10922');
@@ -1389,7 +1397,7 @@ class RedisClusterTest extends PredisTestCase
                 'CLUSTER', ['SLOTS']
             ))
             ->willThrowException(
-                new Connection\ConnectionException($connection2, 'Unknown connection error [127.0.0.1:6383]')
+                new ConnectionException($connection2, 'Unknown connection error [127.0.0.1:6383]')
             );
 
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383?slots=10923-16383');
@@ -1401,14 +1409,14 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn($slotsmap);
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
-        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
             ->getMock();
@@ -1442,7 +1450,8 @@ class RedisClusterTest extends PredisTestCase
     public function testGetParameters(): void
     {
         $connection = $this->getMockConnection('tcp://127.0.0.1:7001?protocol=3');
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
 
         $expectedParameters = new Parameters([
             'scheme' => 'tcp',
@@ -1461,7 +1470,9 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testExecuteCommandOnEachNode(): void
     {
-        $mockCommand = $this->getMockBuilder(Command\CommandInterface::class)->getMock();
+        /** @var CommandInterface|MockObject */
+        $mockCommand = $this->getMockBuilder(CommandInterface::class)->getMock();
+        /** @var FactoryInterface|MockObject */
         $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
@@ -1500,9 +1511,11 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testCreatesRelayConnectionsCluster(): void
     {
-        $factory = $this->getMockBuilder(Connection\RelayFactory::class)->getMock();
+        /** @var RelayFactory|MockObject */
+        $factory = $this->getMockBuilder(RelayFactory::class)->getMock();
+        /** @var RelayConnection|MockObject */
         $expectedConnection = $this
-            ->getMockBuilder(Connection\RelayConnection::class)
+            ->getMockBuilder(RelayConnection::class)
             ->disableOriginalConstructor()
             ->getMock();
         $parameters = new Parameters([
@@ -1516,6 +1529,277 @@ class RedisClusterTest extends PredisTestCase
 
         $cluster->add($expectedConnection);
 
-        $this->assertInstanceOf(Connection\RelayConnection::class, $cluster->getConnectionBySlot(9999));
+        $this->assertInstanceOf(RelayConnection::class, $cluster->getConnectionBySlot(9999));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testLoadBalancingReadsFromSecondaries()
+    {
+        $slotsmap = [
+            [0, 5460, ['127.0.0.1', 1001], ['127.0.0.1', 2001]],
+            [5461, 10922, ['127.0.0.1', 1002], ['127.0.0.1', 2002]],
+            [10923, 16383, ['127.0.0.1', 1003], ['127.0.0.1', 2003]],
+        ];
+
+        /** @var RedisCluster|MockObject $cluster */
+        [$cluster, $returnMap] = $this->setupMocks($slotsmap, new ReplicationStrategy());
+
+        $cluster
+            ->expects($this->exactly(3))
+            ->method('createConnection')
+            ->willReturnMap($returnMap);
+
+        // Check that the right connections are returned
+        foreach ($slotsmap as $i => $mapData) {
+            // pick a slot that belongs to this shard, e.g. the start
+            $slot = $mapData[0];
+
+            $command = new RawCommand('GET', ['foo']);
+            $command->setSlot($slot);
+            $commandConnection = $cluster->getConnectionByCommand($command);
+
+            $expectedConnection = $returnMap[$i][1];
+
+            $this->assertSame($expectedConnection, $commandConnection);
+        }
+    }
+
+    /**
+     * Ensure that disabled load balancing keep the previous behavior of only using primaries.
+     *
+     * @group disconnected
+     */
+    public function testNoLoadBalancingReadsFromPrimaries()
+    {
+        $slotsmap = [
+            [0, 5460, ['127.0.0.1', 1001], ['127.0.0.1', 2001]],
+            [5461, 10922, ['127.0.0.1', 1002], ['127.0.0.1', 2002]],
+            [10923, 16383, ['127.0.0.1', 1003], ['127.0.0.1', 2003]],
+        ];
+
+        $replicationStrategy = new ReplicationStrategy();
+        $replicationStrategy->disableLoadBalancing();
+        /** @var RedisCluster|MockObject $cluster */
+        [$cluster, $returnMap, $primaryConnections] = $this->setupMocks($slotsmap, $replicationStrategy);
+
+        // Check that the right connections are returned
+        foreach ($slotsmap as $i => $mapData) {
+            // pick a slot that belongs to this shard, e.g. the start
+            $slot = $mapData[0];
+
+            $command = new RawCommand('GET', ['foo']);
+            $command->setSlot($slot);
+            $commandConnection = $cluster->getConnectionByCommand($command);
+
+            $expectedConnection = $primaryConnections[$i];
+            $this->assertSame($expectedConnection, $commandConnection);
+        }
+    }
+
+    /**
+     * Ensure that disabled load balancing keep the previous behavior of only using primaries.
+     *
+     * @group disconnected
+     */
+    public function testLoadBalancingWritesToPrimaries()
+    {
+        $command = new RawCommand('SET', ['foo', 'bar']);
+        $this->checkLoadBalancingOnPrimaryCommands($command);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testLoadBalancingDisallowedCommandsToPrimaries()
+    {
+        $command = new RawCommand('INFO', []);
+        $this->checkLoadBalancingOnPrimaryCommands($command);
+    }
+
+    private function checkLoadBalancingOnPrimaryCommands(CommandInterface $command)
+    {
+        $slotsmap = [
+            [0, 5460, ['127.0.0.1', 1001], ['127.0.0.1', 2001]],
+            [5461, 10922, ['127.0.0.1', 1002], ['127.0.0.1', 2002]],
+            [10923, 16383, ['127.0.0.1', 1003], ['127.0.0.1', 2003]],
+        ];
+
+        $replicationStrategy = new ReplicationStrategy();
+
+        /** @var RedisCluster|MockObject $cluster */
+        [$cluster, $returnMap, $primaryConnections] = $this->setupMocks($slotsmap, $replicationStrategy);
+
+        // Check that the right connections are returned
+        foreach ($slotsmap as $i => $mapData) {
+            // pick a slot that belongs to this shard, e.g. the start
+            $slot = $mapData[0];
+
+            $command->setSlot($slot);
+            $commandConnection = $cluster->getConnectionByCommand($command);
+
+            $expectedConnection = $primaryConnections[$i];
+            $this->assertSame($expectedConnection, $commandConnection);
+        }
+    }
+
+    private function setupMocks(array $slotsmap, ReplicationStrategy $replicationStrategy): array
+    {
+        // Setup mock cluster connections
+        $primaryConnections = [];
+        $returnMap = [];
+        foreach ($slotsmap as $mapData) {
+            [$start, $end, $primary, $secondary] = $mapData;
+
+            $primaryIp = $primary[0];
+            $primaryPort = $primary[1];
+            $primaryConnection = $this->getMockConnection("tcp://{$primaryIp}:{$primaryPort}");
+
+            // Mock cluster slots response
+            $primaryConnection
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'CLUSTER', ['SLOTS']
+            ))
+            ->willReturn($slotsmap);
+
+            $primaryConnections[] = $primaryConnection;
+
+            $secondaryIp = $secondary[0];
+            $secondaryPort = $secondary[1];
+            $connectionId = "{$secondaryIp}:{$secondaryPort}";
+
+            $secondaryConnection = $this->getMockConnection("tcp://{$connectionId}");
+
+            $returnMap[] = [$connectionId, $secondaryConnection];
+        }
+
+        // Setup mock cluster object
+        $connections = $this->getMockBuilder(FactoryInterface::class)->getMock();
+        $connections
+            ->expects($this->never())
+            ->method('create');
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
+            ->onlyMethods([
+                'createConnection',
+                'getRandomConnection',
+            ])
+            ->setConstructorArgs([
+                new Factory(),
+                new Parameters(),
+                null,
+                $replicationStrategy,
+            ])
+            ->getMock();
+
+        // setup mock methods
+        $cluster
+            ->expects($this->once())
+            ->method('getRandomConnection')
+            ->willReturnOnConsecutiveCalls(...$primaryConnections);
+
+        foreach ($primaryConnections as $primaryConnection) {
+            $cluster->add($primaryConnection);
+        }
+
+        // Init slot map
+        $cluster->askSlotMap();
+
+        return [$cluster, $returnMap, $primaryConnections];
+    }
+
+    /**
+     * Cover the guard clause in getReadConnection.
+     *
+     * @group disconnected
+     */
+    public function testLoadBalancingSlotRange()
+    {
+        $cluster = new RedisCluster(
+            new Factory(),
+            new Parameters(),
+            null,
+            new ReplicationStrategy()
+        );
+
+        $this->expectException(OutOfBoundsException::class);
+
+        $command = new RawCommand('GET', ['foo']);
+        $command->setSlot(16384);
+
+        $cluster->getConnectionByCommand($command);
+    }
+
+    /**
+     * Coverage test for empty replica slotmap.
+     *
+     * @group disconnected
+     */
+    public function testLoadBalancingEmptySlotMap()
+    {
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
+            ->onlyMethods(['getConnectionBySlot'])
+            ->setConstructorArgs([
+                new Factory(),
+                new Parameters(),
+                null,
+                new ReplicationStrategy(),
+            ])
+            ->getMock();
+
+        $command = new RawCommand('GET', ['foo']);
+
+        $cluster->expects($this->once())
+            ->method('getConnectionBySlot')
+            ->willReturn($this->getMockConnection(''));
+
+        $cluster->getConnectionByCommand($command);
+    }
+
+    /**
+     * Test some basic key setting and getting.
+     *
+     * @requiresRedisVersion >= 2.0.0
+     * @group connected
+     * @group cluster
+     */
+    public function testLoadBalancingClusterIntegration()
+    {
+        $options = ['loadBalancing' => true];
+        $client = $this->createClient(null, $options);
+
+        // Test normal set/get
+        foreach (range(0, 100) as $i) {
+            $key = "foo{$i}";
+            $value = "bar{$i}";
+            $client->set($key, $value);
+
+            $gotValue = $client->get($key);
+            $this->assertEquals($value, $gotValue);
+
+            $client->del($key);
+
+            $newValue = $client->get($key);
+            $this->assertNull($newValue);
+        }
+
+        // Test hset/hget
+        foreach (range(0, 100) as $i) {
+            $key = 'key' . ($i % 4);
+            $field = "foo{$i}";
+            $value = "bar{$i}";
+            $client->hset($key, $field, $value);
+
+            $gotValue = $client->hget($key, $field);
+            $this->assertEquals($value, $gotValue);
+
+            $client->hdel($key, [$field]);
+
+            $newValue = $client->hget($key, $field);
+            $this->assertNull($newValue);
+        }
     }
 }

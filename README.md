@@ -201,6 +201,13 @@ $options    = ['cluster' => 'redis'];
 $client = new Predis\Client($parameters, $options);
 ```
 
+If your redis cluster uses replicated nodes, you can also set the `loadBalancing` option to send read commands to replicas:
+
+```php
+$options    = ['cluster' => 'redis', 'loadBalancing' => true];
+```
+Note: In the case that a node has multiple replicas, each replica node will serve a subset of the primary's slots.
+
 #### Redis Gears with cluster ####
 
 Since Redis v7.2, Redis Gears module is a part of Redis Stack bundle. Client supports a variety of

@@ -27,6 +27,7 @@ use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
+use Predis\Replication\ReplicationStrategy;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
@@ -68,6 +69,9 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $connections;
     private $retryLimit = 5;
     private $retryInterval = 10;
+    private $replicaPool = [];
+    private $replicaSlotmap;
+    private $replicaStrategy;
 
     /**
      * @var int
@@ -88,12 +92,16 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         FactoryInterface $connections,
         ParametersInterface $parameters,
         StrategyInterface $strategy = null,
+        ReplicationStrategy $replicationStrategy = null,
         int $readTimeout = null
     ) {
         $this->connections = $connections;
         $this->connectionParameters = $parameters;
         $this->strategy = $strategy ?: new RedisClusterStrategy();
         $this->slotmap = new SlotMap();
+
+        $this->replicaSlotmap = new SlotMap();
+        $this->replicaStrategy = $replicationStrategy ?: (new ReplicationStrategy())->disableLoadBalancing();
 
         if (!is_null($readTimeout)) {
             $this->readTimeout = $readTimeout;
@@ -164,6 +172,10 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function disconnect()
     {
         foreach ($this->pool as $connection) {
+            $connection->disconnect();
+        }
+
+        foreach ($this->replicaPool as $connection) {
             $connection->disconnect();
         }
     }
@@ -307,8 +319,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         $response = $this->queryClusterNodeForSlotMap($connection);
 
         foreach ($response as $slots) {
-            // We only support master servers for now, so we ignore subsequent
-            // elements in the $slots array identifying slaves.
             [$start, $end, $master] = $slots;
 
             if ($master[0] === '') {
@@ -316,6 +326,44 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
             } else {
                 $this->slotmap->setSlots($start, $end, "{$master[0]}:{$master[1]}");
             }
+
+            if ($this->replicaStrategy->isUsingLoadBalancing()) {
+                $replicas = array_slice($slots, 3);
+                $this->initReplicaMap($replicas, $start, $end);
+            }
+        }
+    }
+
+    /**
+     * Initializes the slot maps for any replicas.
+     *
+     * @param  array                $replicas
+     * @param  int                  $start
+     * @param  int                  $end
+     * @return void
+     * @throws OutOfBoundsException
+     */
+    private function initReplicaMap(array $replicas, int $start, int $end): void
+    {
+        if (!$replicas) {
+            return;
+        }
+
+        // Split up slots evenly between replicas for now
+        $totalSlots = $end - $start + 1;
+        $slotsPerReplica = (int) ceil($totalSlots / count($replicas));
+
+        foreach ($replicas as $i => $replica) {
+            $replicaIp = $replica[0] ?? '';
+            $replicaPort = $replica[1] ?? '';
+
+            if (!$replicaIp) {
+                continue;
+            }
+
+            $partStart = $start + $slotsPerReplica * $i;
+            $partEnd = min($end, $partStart + $slotsPerReplica - 1);
+            $this->replicaSlotmap->setSlots($partStart, $partEnd, "{$replicaIp}:{$replicaPort}");
         }
     }
 
@@ -379,11 +427,58 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
             );
         }
 
+        if ($readConnection = $this->getReadConnection($command, $slot)) {
+            return $readConnection;
+        }
+
         if (isset($this->slots[$slot])) {
             return $this->slots[$slot];
         } else {
             return $this->getConnectionBySlot($slot);
         }
+    }
+
+    /**
+     * Returns a connection to a replica if possible.
+     *
+     * @param  CommandInterface             $command
+     * @param  int                          $slot
+     * @return NodeConnectionInterface|null
+     *
+     * @throws NotSupportedException
+     * @throws OutOfBoundsException
+     */
+    private function getReadConnection(CommandInterface $command, int $slot): ?NodeConnectionInterface
+    {
+        $isDisallowed = $this->replicaStrategy->isDisallowedOperation($command);
+        if ($isDisallowed) {
+            return null;
+        }
+
+        $isRead = $this->replicaStrategy->isReadOperation($command);
+        if (!$isRead) {
+            return null;
+        }
+
+        if (!SlotMap::isValid($slot)) {
+            throw new OutOfBoundsException("Invalid slot [$slot].");
+        }
+
+        $connectionID = $this->replicaSlotmap[$slot] ?? null;
+        if (!$connectionID) {
+            return null;
+        }
+
+        $connection = $this->replicaPool[$connectionID] ?? null;
+        if (!$connection) {
+            $connection = $this->createConnection($connectionID);
+            $this->replicaPool[$connectionID] = $connection;
+        }
+
+        $readonlyCommand = new RawCommand('READONLY');
+        $connection->executeCommand($readonlyCommand);
+
+        return $connection;
     }
 
     /**
