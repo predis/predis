@@ -14,10 +14,12 @@ namespace Predis\Connection\Cluster;
 
 use OutOfBoundsException;
 use PHPUnit\Framework\MockObject\MockObject;
-use Predis\Cluster;
+use Predis\Cluster\RedisStrategy;
+use Predis\Cluster\StrategyInterface;
 use Predis\Command;
 use Predis\Command\RawCommand;
 use Predis\Connection;
+use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\Parameters;
 use Predis\Replication\ReplicationStrategy;
@@ -31,8 +33,8 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAcceptsCustomConnectionFactory(): void
     {
-        /** @var Connection\FactoryInterface */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $cluster = new RedisCluster($factory, new Parameters());
 
         $this->assertSame($factory, $cluster->getConnectionFactory());
@@ -45,7 +47,7 @@ class RedisClusterTest extends PredisTestCase
     {
         $cluster = new RedisCluster(new Connection\Factory(), new Parameters());
 
-        $this->assertInstanceOf('Predis\Cluster\RedisStrategy', $cluster->getClusterStrategy());
+        $this->assertInstanceOf(RedisStrategy::class, $cluster->getClusterStrategy());
     }
 
     /**
@@ -53,8 +55,8 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAcceptsCustomClusterStrategy(): void
     {
-        /** @var Cluster\StrategyInterface */
-        $strategy = $this->getMockBuilder('Predis\Cluster\StrategyInterface')->getMock();
+        /** @var StrategyInterface */
+        $strategy = $this->getMockBuilder(StrategyInterface::class)->getMock();
 
         $cluster = new RedisCluster(new Connection\Factory(), new Parameters(), $strategy);
 
@@ -310,7 +312,7 @@ class RedisClusterTest extends PredisTestCase
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383');
         $connection4 = $this->getMockConnection('tcp://127.0.0.1:6384');
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->exactly(2))
             ->method('create')
@@ -334,8 +336,8 @@ class RedisClusterTest extends PredisTestCase
             );
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
-        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
             ->getMock();
@@ -636,8 +638,8 @@ class RedisClusterTest extends PredisTestCase
                 'value:5001'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -703,7 +705,7 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn('value:1001');
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -714,8 +716,8 @@ class RedisClusterTest extends PredisTestCase
             ->willReturn($connection4);
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
-        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
             ->getMock();
@@ -743,8 +745,8 @@ class RedisClusterTest extends PredisTestCase
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('No connections available in the pool');
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
@@ -761,8 +763,8 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAskSlotMapReturnEmptyArrayOnEmptyConnectionsPool(): void
     {
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
@@ -815,14 +817,14 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn($slotsmap);
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
-        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
             ->getMock();
@@ -845,7 +847,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAskSlotMapHonorsRetryLimitOnMultipleConnectionFailures(): void
     {
-        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectException(Connection\ConnectionException::class);
         $this->expectExceptionMessage('Unknown connection error [127.0.0.1:6382]');
 
         $slotsmap = [
@@ -881,14 +883,14 @@ class RedisClusterTest extends PredisTestCase
             ->expects($this->never())
             ->method('executeCommand');
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
-        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
             ->getMock();
@@ -961,8 +963,8 @@ class RedisClusterTest extends PredisTestCase
                 'foobar'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
@@ -1012,8 +1014,8 @@ class RedisClusterTest extends PredisTestCase
                 'foobar'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -1058,7 +1060,7 @@ class RedisClusterTest extends PredisTestCase
             ->willReturnOnConsecutiveCalls('foobar', 'foobar');
 
         /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory->expects($this->never())->method('create');
 
         $cluster = new RedisCluster($factory, new Parameters());
@@ -1100,8 +1102,8 @@ class RedisClusterTest extends PredisTestCase
             ->with($command)
             ->willReturnOnConsecutiveCalls('foobar', 'foobar');
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -1145,8 +1147,8 @@ class RedisClusterTest extends PredisTestCase
             ->with($command)
             ->willReturn('foobar');
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -1197,8 +1199,8 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn($response);
 
-        /** @var Connection\FactoryInterface */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
 
         $cluster = new RedisCluster($factory, new Parameters());
 
@@ -1241,8 +1243,8 @@ class RedisClusterTest extends PredisTestCase
                 'foobar'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->once())
             ->method('create')
@@ -1404,14 +1406,14 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn($slotsmap);
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->never())
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
-        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder(RedisCluster::class)
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
             ->getMock();
@@ -1445,7 +1447,8 @@ class RedisClusterTest extends PredisTestCase
     public function testGetParameters(): void
     {
         $connection = $this->getMockConnection('tcp://127.0.0.1:7001?protocol=3');
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
 
         $expectedParameters = new Parameters([
             'scheme' => 'tcp',
@@ -1464,7 +1467,9 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testExecuteCommandOnEachNode(): void
     {
+        /** @var Command\CommandInterface|MockObject */
         $mockCommand = $this->getMockBuilder(Command\CommandInterface::class)->getMock();
+        /** @var FactoryInterface|MockObject */
         $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
@@ -1503,7 +1508,9 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testCreatesRelayConnectionsCluster(): void
     {
+        /** @var Connection\RelayFactory|MockObject */
         $factory = $this->getMockBuilder(Connection\RelayFactory::class)->getMock();
+        /** @var Connection\RelayConnection|MockObject */
         $expectedConnection = $this
             ->getMockBuilder(Connection\RelayConnection::class)
             ->disableOriginalConstructor()

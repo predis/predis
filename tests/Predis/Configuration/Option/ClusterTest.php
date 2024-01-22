@@ -13,7 +13,14 @@
 namespace Predis\Configuration\Option;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Cluster\Hash\HashGeneratorInterface;
 use Predis\Configuration\OptionsInterface;
+use Predis\Connection\AggregateConnectionInterface;
+use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\Cluster\PredisCluster;
+use Predis\Connection\Cluster\RedisCluster;
+use Predis\Connection\FactoryInterface;
+use Predis\Connection\NodeConnectionInterface;
 use PredisTestCase;
 
 class ClusterTest extends PredisTestCase
@@ -26,10 +33,10 @@ class ClusterTest extends PredisTestCase
         $option = new Cluster();
 
         /** @var OptionsInterface */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
 
         $this->assertInstanceOf('closure', $initializer = $option->getDefault($options));
-        $this->assertInstanceOf('Predis\Connection\Cluster\PredisCluster', $initializer($parameters = []));
+        $this->assertInstanceOf(PredisCluster::class, $initializer($parameters = []));
     }
 
     /**
@@ -41,8 +48,8 @@ class ClusterTest extends PredisTestCase
         $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
 
         /** @var OptionsInterface */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
-        $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
+        $connection = $this->getMockBuilder(AggregateConnectionInterface::class)->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
             ->addMethods(['__invoke'])
@@ -65,7 +72,7 @@ class ClusterTest extends PredisTestCase
         $option = new Cluster();
         $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->exactly(2))
             ->method('create')
@@ -79,14 +86,14 @@ class ClusterTest extends PredisTestCase
             );
 
         /** @var MockObject|OptionsInterface */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
         $options
             ->expects($this->once())
             ->method('__get')
             ->with('connections')
             ->willReturn($factory);
 
-        $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
+        $connection = $this->getMockBuilder(AggregateConnectionInterface::class)->getMock();
         $connection
             ->expects($this->exactly(2))
             ->method('add')
@@ -117,13 +124,13 @@ class ClusterTest extends PredisTestCase
         $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
 
         /** @var MockObject|OptionsInterface */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
         $options
             ->expects($this->never())
             ->method('__get')
             ->with('connections');
 
-        $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
+        $connection = $this->getMockBuilder(AggregateConnectionInterface::class)->getMock();
         $connection
             ->expects($this->never())
             ->method('add');
@@ -149,7 +156,7 @@ class ClusterTest extends PredisTestCase
         $option = new Cluster();
         $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
 
-        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
         $factory
             ->expects($this->exactly(2))
             ->method('create')
@@ -163,14 +170,14 @@ class ClusterTest extends PredisTestCase
             );
 
         /** @var MockObject|OptionsInterface */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
         $options
             ->expects($this->once())
             ->method('__get')
             ->with('connections')
             ->willReturn($factory);
 
-        $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
+        $connection = $this->getMockBuilder(AggregateConnectionInterface::class)->getMock();
         $connection
             ->expects($this->exactly(2))
             ->method('add')
@@ -201,13 +208,13 @@ class ClusterTest extends PredisTestCase
         $parameters = [];
 
         /** @var MockObject|OptionsInterface */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
         $options
             ->expects($this->never())
             ->method('__get')
             ->with('connections');
 
-        $connection = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')->getMock();
+        $connection = $this->getMockBuilder(AggregateConnectionInterface::class)->getMock();
         $connection
             ->expects($this->never())
             ->method('add');
@@ -239,8 +246,8 @@ class ClusterTest extends PredisTestCase
         $parameters = ['127.0.0.1:6379', '127.0.0.1:6380'];
 
         /** @var OptionsInterface */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
-        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
+        $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
             ->addMethods(['__invoke'])
@@ -264,10 +271,10 @@ class ClusterTest extends PredisTestCase
         $option = new Cluster();
 
         /** @var OptionsInterface|MockObject */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
 
         $this->assertInstanceOf('closure', $initializer = $option->filter($options, 'predis'));
-        $this->assertInstanceOf('Predis\Connection\Cluster\PredisCluster', $initializer($parameters = []));
+        $this->assertInstanceOf(PredisCluster::class, $initializer($parameters = []));
     }
 
     /**
@@ -278,7 +285,7 @@ class ClusterTest extends PredisTestCase
         $option = new Cluster();
 
         /** @var OptionsInterface|MockObject */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
 
         $options
             ->expects($this->exactly(4))
@@ -291,13 +298,13 @@ class ClusterTest extends PredisTestCase
             )
             ->willReturnOnConsecutiveCalls(
                 null,
-                $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock(),
-                $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock(),
+                $this->getMockBuilder(FactoryInterface::class)->getMock(),
+                $this->getMockBuilder(HashGeneratorInterface::class)->getMock(),
                 1000
             );
 
         $this->assertInstanceOf('closure', $initializer = $option->filter($options, 'redis'));
-        $this->assertInstanceOf('Predis\Connection\Cluster\RedisCluster', $initializer($parameters = []));
+        $this->assertInstanceOf(RedisCluster::class, $initializer($parameters = []));
     }
 
     /**
@@ -308,7 +315,7 @@ class ClusterTest extends PredisTestCase
         $option = new Cluster();
 
         /** @var OptionsInterface|MockObject */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
 
         $options
             ->expects($this->exactly(4))
@@ -321,13 +328,13 @@ class ClusterTest extends PredisTestCase
             )
             ->willReturnOnConsecutiveCalls(
                 null,
-                $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock(),
-                $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock(),
+                $this->getMockBuilder(FactoryInterface::class)->getMock(),
+                $this->getMockBuilder(HashGeneratorInterface::class)->getMock(),
                 1000
             );
 
         $this->assertInstanceOf('closure', $initializer = $option->filter($options, 'redis-cluster'));
-        $this->assertInstanceOf('Predis\Connection\Cluster\RedisCluster', $initializer($parameters = []));
+        $this->assertInstanceOf(RedisCluster::class, $initializer($parameters = []));
     }
 
     /**
@@ -343,7 +350,7 @@ class ClusterTest extends PredisTestCase
         $option = new Cluster();
 
         /** @var OptionsInterface */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
 
         $option->filter($options, 'unknown');
     }
@@ -361,8 +368,8 @@ class ClusterTest extends PredisTestCase
         $option = new Cluster();
 
         /** @var OptionsInterface */
-        $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
-        $connection = $this->getMockBuilder('Predis\Connection\Cluster\ClusterInterface')->getMock();
+        $options = $this->getMockBuilder(OptionsInterface::class)->getMock();
+        $connection = $this->getMockBuilder(ClusterInterface::class)->getMock();
 
         $option->filter($options, $connection);
     }
