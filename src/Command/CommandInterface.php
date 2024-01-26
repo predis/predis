@@ -89,7 +89,7 @@ interface CommandInterface
     /**
      * Returns RESP-formatted representation of command.
      *
-     * @return mixed
+     * @return string
      */
     public function serializeCommand(): string;
 }

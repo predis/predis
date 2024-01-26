@@ -226,7 +226,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithReplicationArgument(): void
     {
-        $replication = new Connection\Replication\MasterSlaveReplication();
+        $replication = new MasterSlaveReplication();
 
         $factory = new Connection\Factory();
         $replication->add($factory->create('tcp://host1?alias=master'));
