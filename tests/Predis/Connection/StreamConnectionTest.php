@@ -220,6 +220,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisVersion >= 6.2.0
      */
     public function testSetClientIdOnResp2Connection(): void
     {
@@ -235,6 +236,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisVersion >= 6.2.0
      */
     public function testDoNotSetClientIdOnResp2ConnectionIfNotHelloCommand(): void
     {
@@ -250,6 +252,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisVersion >= 6.2.0
      */
     public function testSetClientIdOnResp3Connection(): void
     {

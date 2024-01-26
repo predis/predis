@@ -250,8 +250,8 @@ class StreamConnection extends AbstractConnection
                 } elseif (is_array($response)) {
                     // Searching for the CLIENT ID in RESP2 connection tricky because no dictionaries.
                     if (
-                        $this->getParameters()->protocol == 2 &&
-                        false !== $key = array_search('id', $response, true)
+                        $this->getParameters()->protocol == 2
+                        && false !== $key = array_search('id', $response, true)
                     ) {
                         $this->clientId = $response[$key + 1];
                     } elseif ($this->getParameters()->protocol == 3) {
