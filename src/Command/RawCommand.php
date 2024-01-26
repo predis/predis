@@ -128,4 +128,25 @@ final class RawCommand implements CommandInterface
     {
         return $data;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serializeCommand(): string
+    {
+        $commandID = $this->getId();
+        $arguments = $this->getArguments();
+
+        $cmdlen = strlen($commandID);
+        $reqlen = count($arguments) + 1;
+
+        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandID}\r\n";
+
+        foreach ($arguments as $argument) {
+            $arglen = strlen(strval($argument));
+            $buffer .= "\${$arglen}\r\n{$argument}\r\n";
+        }
+
+        return $buffer;
+    }
 }

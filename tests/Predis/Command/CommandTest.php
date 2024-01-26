@@ -156,4 +156,27 @@ class CommandTest extends PredisTestCase
         $arguments = [new stdClass()];
         $this->assertSame($arguments, Command::normalizeVariadic($arguments));
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testSerializeCommand(): void
+    {
+        $command = new class() extends Command {
+            public function getId()
+            {
+                return 'Test';
+            }
+
+            public function getArguments()
+            {
+                return ['foo', 'bar'];
+            }
+        };
+
+        $this->assertSame(
+            "*3\r\n\$4\r\nTest\r\n\$3\r\nfoo\r\n\$3\r\nbar\r\n",
+            $command->serializeCommand()
+        );
+    }
 }

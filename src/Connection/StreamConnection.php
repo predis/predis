@@ -232,13 +232,31 @@ class StreamConnection extends AbstractConnection
     public function connect()
     {
         if (parent::connect() && $this->initCommands) {
-            foreach ($this->initCommands as $command) {
-                $response = $this->executeCommand($command);
+            $buffer = '';
 
-                if ($response instanceof ErrorResponseInterface && ($command->getId() === 'CLIENT')) {
+            foreach ($this->initCommands as $command) {
+                $buffer .= $command->serializeCommand();
+            }
+
+            $this->write($buffer);
+
+            for ($i = 0, $iMax = count($this->initCommands); $i < $iMax; $i++) {
+                $response = $this->read();
+
+                if ($response instanceof ErrorResponseInterface && false !== strpos($response->getMessage(), 'CLIENT')) {
                     // Do nothing on CLIENT SETINFO command failure
                 } elseif ($response instanceof ErrorResponseInterface) {
-                    $this->onConnectionError("`{$command->getId()}` failed: {$response->getMessage()}", 0);
+                    $this->onConnectionError("`Failed: {$response->getMessage()}", 0);
+                } elseif (is_array($response)) {
+                    // Searching for the CLIENT ID in RESP2 connection tricky because no dictionaries.
+                    if (
+                        $this->getParameters()->protocol == 2 &&
+                        false !== $key = array_search('id', $response, true)
+                    ) {
+                        $this->clientId = $response[$key + 1];
+                    } elseif ($this->getParameters()->protocol == 3) {
+                        $this->clientId = $response['id'];
+                    }
                 }
             }
         }
@@ -259,12 +277,9 @@ class StreamConnection extends AbstractConnection
     }
 
     /**
-     * Performs a write operation over the stream of the buffer containing a
-     * command serialized with the Redis wire protocol.
-     *
-     * @param string $buffer Representation of a command in the Redis wire protocol.
+     * {@inheritDoc}
      */
-    protected function write($buffer)
+    public function write(string $buffer): void
     {
         $socket = $this->getResource();
 
@@ -373,19 +388,7 @@ class StreamConnection extends AbstractConnection
      */
     public function writeRequest(CommandInterface $command)
     {
-        $commandID = $command->getId();
-        $arguments = $command->getArguments();
-
-        $cmdlen = strlen($commandID);
-        $reqlen = count($arguments) + 1;
-
-        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandID}\r\n";
-
-        foreach ($arguments as $argument) {
-            $arglen = strlen(strval($argument));
-            $buffer .= "\${$arglen}\r\n{$argument}\r\n";
-        }
-
+        $buffer = $command->serializeCommand();
         $this->write($buffer);
     }
 

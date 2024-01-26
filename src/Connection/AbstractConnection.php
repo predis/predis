@@ -31,6 +31,11 @@ abstract class AbstractConnection implements NodeConnectionInterface
      */
     protected $parserStrategy;
 
+    /**
+     * @var int|null
+     */
+    protected $clientId;
+
     private $resource;
     private $cachedId;
 
@@ -207,6 +212,14 @@ abstract class AbstractConnection implements NodeConnectionInterface
         }
 
         return "{$this->parameters->host}:{$this->parameters->port}";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getClientId(): ?int
+    {
+        return $this->clientId;
     }
 
     /**

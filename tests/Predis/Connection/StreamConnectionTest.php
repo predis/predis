@@ -33,19 +33,21 @@ class StreamConnectionTest extends PredisConnectionTestCase
     public function testThrowsExceptionOnInitializationCommandFailure(): void
     {
         $this->expectException('Predis\Connection\ConnectionException');
-        $this->expectExceptionMessage('`SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]');
+        $this->expectExceptionMessage('Failed: ERR invalid DB index [tcp://127.0.0.1:6379]');
 
         $cmdSelect = RawCommand::create('SELECT', '1000');
 
         /** @var NodeConnectionInterface|MockObject */
         $connection = $this
             ->getMockBuilder($this->getConnectionClass())
-            ->onlyMethods(['executeCommand', 'createResource'])
+            ->onlyMethods(['write', 'read', 'createResource'])
             ->setConstructorArgs([new Parameters()])
             ->getMock();
         $connection
-            ->method('executeCommand')
-            ->with($cmdSelect)
+            ->expects($this->once())
+            ->method('write');
+        $connection
+            ->method('read')
             ->willReturn(
                 new ErrorResponse('ERR invalid DB index')
             );
@@ -213,6 +215,51 @@ class StreamConnectionTest extends PredisConnectionTestCase
 
         $connection->connect();
         $this->assertTrue(true);
+    }
+
+    /**
+     * @group connected
+     * @return void
+     */
+    public function testSetClientIdOnResp2Connection(): void
+    {
+        $connection = $this->createConnectionWithParams([]);
+        $connection->addConnectCommand(
+            new RawCommand('HELLO', [2])
+        );
+        $connection->connect();
+
+        $this->assertNotNull($connection->getClientId());
+    }
+
+    /**
+     * @group connected
+     * @return void
+     */
+    public function testDoNotSetClientIdOnResp2ConnectionIfNotHelloCommand(): void
+    {
+        $connection = $this->createConnectionWithParams([]);
+        $connection->addConnectCommand(
+            new RawCommand('INFO')
+        );
+        $connection->connect();
+
+        $this->assertNull($connection->getClientId());
+    }
+
+    /**
+     * @group connected
+     * @return void
+     */
+    public function testSetClientIdOnResp3Connection(): void
+    {
+        $connection = $this->createConnectionWithParams(['protocol' => 3]);
+        $connection->addConnectCommand(
+            new RawCommand('HELLO', [3])
+        );
+        $connection->connect();
+
+        $this->assertNotNull($connection->getClientId());
     }
 
     /**
