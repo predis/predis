@@ -456,15 +456,17 @@ class StreamConnection extends AbstractConnection
             return;
         }
 
-        if ($failedCommand->getId() === 'HELLO' && in_array('AUTH', $failedCommand->getArguments(), true)) {
-            $parameters = $this->getParameters();
+        if ($failedCommand->getId() === 'HELLO') {
+            if (in_array('AUTH', $failedCommand->getArguments(), true)) {
+                $parameters = $this->getParameters();
 
-            $hello = new RawCommand('HELLO', [$parameters->protocol]);
-            $response = $this->executeCommand($hello);
-            $this->handleOnConnectResponse($response, $hello);
+                $auth = new RawCommand('AUTH', [$parameters->username, $parameters->password]);
+                $response = $this->executeCommand($auth);
+                $this->handleOnConnectResponse($response, $auth);
+            }
 
-            $auth = new RawCommand('AUTH', [$parameters->username, $parameters->password]);
-            $response = $this->executeCommand($auth);
+            $setName = new RawCommand('CLIENT', ['SETNAME', 'predis']);
+            $response = $this->executeCommand($setName);
             $this->handleOnConnectResponse($response, $auth);
         }
 
