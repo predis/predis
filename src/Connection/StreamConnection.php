@@ -468,6 +468,8 @@ class StreamConnection extends AbstractConnection
             $setName = new RawCommand('CLIENT', ['SETNAME', 'predis']);
             $response = $this->executeCommand($setName);
             $this->handleOnConnectResponse($response, $setName);
+
+            return;
         }
 
         $this->onConnectionError("Failed: {$error->getMessage()}");
