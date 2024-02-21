@@ -14,6 +14,7 @@ namespace Predis\Connection;
 
 use InvalidArgumentException;
 use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
 use Predis\Consumer\Push\PushNotificationException;
 use Predis\Consumer\Push\PushResponse;
 use Predis\Protocol\Parser\Strategy\Resp2Strategy;
@@ -232,32 +233,10 @@ class StreamConnection extends AbstractConnection
     public function connect()
     {
         if (parent::connect() && $this->initCommands) {
-            $buffer = '';
-
             foreach ($this->initCommands as $command) {
-                $buffer .= $command->serializeCommand();
-            }
+                $response = $this->executeCommand($command);
 
-            $this->write($buffer);
-
-            for ($i = 0, $iMax = count($this->initCommands); $i < $iMax; $i++) {
-                $response = $this->read();
-
-                if ($response instanceof ErrorResponseInterface && false !== strpos($response->getMessage(), 'CLIENT')) {
-                    // Do nothing on CLIENT SETINFO command failure
-                } elseif ($response instanceof ErrorResponseInterface) {
-                    $this->onConnectionError("`Failed: {$response->getMessage()}", 0);
-                } elseif (is_array($response)) {
-                    // Searching for the CLIENT ID in RESP2 connection tricky because no dictionaries.
-                    if (
-                        $this->getParameters()->protocol == 2
-                        && false !== $key = array_search('id', $response, true)
-                    ) {
-                        $this->clientId = $response[$key + 1];
-                    } elseif ($this->getParameters()->protocol == 3) {
-                        $this->clientId = $response['id'];
-                    }
-                }
+                $this->handleOnConnectResponse($response, $command);
             }
         }
     }
@@ -435,5 +414,60 @@ class StreamConnection extends AbstractConnection
         } while ($bytesLeft > 0);
 
         return $string;
+    }
+
+    /**
+     * Handle response from on-connect command.
+     *
+     * @param                   $response
+     * @param  CommandInterface $command
+     * @return void
+     */
+    private function handleOnConnectResponse($response, CommandInterface $command): void
+    {
+        if ($response instanceof ErrorResponseInterface) {
+            $this->handleError($response, $command);
+        }
+
+        if ($command->getId() === 'HELLO' && is_array($response)) {
+            // Searching for the CLIENT ID in RESP2 connection tricky because no dictionaries.
+            if (
+                $this->getParameters()->protocol == 2
+                && false !== $key = array_search('id', $response, true)
+            ) {
+                $this->clientId = $response[$key + 1];
+            } elseif ($this->getParameters()->protocol == 3) {
+                $this->clientId = $response['id'];
+            }
+        }
+    }
+
+    /**
+     * Handle server errors.
+     *
+     * @param  ErrorResponseInterface $error
+     * @param  CommandInterface       $failedCommand
+     * @return void
+     */
+    private function handleError(ErrorResponseInterface $error, CommandInterface $failedCommand): void
+    {
+        if ($failedCommand->getId() === 'CLIENT') {
+            // Do nothing on CLIENT SETINFO command failure
+            return;
+        }
+
+        if ($failedCommand->getId() === 'HELLO' && in_array('AUTH', $failedCommand->getArguments(), true)) {
+            $parameters = $this->getParameters();
+
+            $hello = new RawCommand('HELLO', [$parameters->protocol]);
+            $response = $this->executeCommand($hello);
+            $this->handleOnConnectResponse($response, $hello);
+
+            $auth = new RawCommand('AUTH', [$parameters->username, $parameters->password]);
+            $response = $this->executeCommand($auth);
+            $this->handleOnConnectResponse($response, $auth);
+        }
+
+        $this->onConnectionError("Failed: {$error->getMessage()}");
     }
 }

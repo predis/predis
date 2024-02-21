@@ -194,7 +194,7 @@ BUFFER;
     {
         $redis = $this->getClient();
         $clientName = $redis->client->getName();
-        $this->assertNull($clientName);
+        $this->assertEquals('predis', $clientName);
 
         $expectedConnectionName = 'foo-bar';
         $this->assertEquals('OK', $redis->client->setName($expectedConnectionName));
