@@ -478,7 +478,7 @@ class Client implements ClientInterface, IteratorAggregate
      *
      * @return Pipeline|array
      */
-    protected function createPipeline(array $options = null, $callable = null)
+    protected function createPipeline(?array $options = null, $callable = null)
     {
         if (isset($options['atomic']) && $options['atomic']) {
             $class = Atomic::class;
@@ -531,7 +531,7 @@ class Client implements ClientInterface, IteratorAggregate
      *
      * @return MultiExecTransaction|array
      */
-    protected function createTransaction(array $options = null, $callable = null)
+    protected function createTransaction(?array $options = null, $callable = null)
     {
         $transaction = new MultiExecTransaction($this, $options);
 
@@ -561,7 +561,7 @@ class Client implements ClientInterface, IteratorAggregate
      * @param  callable|null $preLoopCallback Callback that should be called on client before enter a loop.
      * @return PushConsumer
      */
-    public function push(callable $preLoopCallback = null): PushConsumer
+    public function push(?callable $preLoopCallback = null): PushConsumer
     {
         return new PushConsumer($this, $preLoopCallback);
     }
@@ -574,7 +574,7 @@ class Client implements ClientInterface, IteratorAggregate
      *
      * @return PubSubConsumer|null
      */
-    protected function createPubSub(array $options = null, $callable = null)
+    protected function createPubSub(?array $options = null, $callable = null)
     {
         if ($this->connection instanceof RelayConnection) {
             $pubsub = new RelayPubSubConsumer($this, $options);

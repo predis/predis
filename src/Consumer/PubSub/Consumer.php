@@ -55,7 +55,7 @@ class Consumer extends AbstractConsumer
      * @param  array|null            $options Options for the consumer initialization.
      * @throws NotSupportedException
      */
-    public function __construct(ClientInterface $client, array $options = null)
+    public function __construct(ClientInterface $client, ?array $options = null)
     {
         $this->options = $options ?: [];
         $this->setSubscriptionContext($client->getConnection());

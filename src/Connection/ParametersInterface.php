@@ -28,6 +28,7 @@ namespace Predis\Connection;
  * @property float  $timeout            Timeout for the connect() operation.
  * @property float  $read_write_timeout Timeout for read() and write() operations.
  * @property bool   $persistent         Leaves the connection open after a GC collection.
+ * @property string $username           Username to access Redis (see the AUTH command).
  * @property string $password           Password to access Redis (see the AUTH command).
  * @property string $database           Database index (see the SELECT command).
  * @property bool   $async_connect      Performs the connect() operation asynchronously.

@@ -266,6 +266,57 @@ class StreamConnectionTest extends PredisConnectionTestCase
     }
 
     /**
+     * @group connected
+     * @return void
+     */
+    public function testConnectionDoesNotThrowsExceptionOnClientCommandFail(): void
+    {
+        $failedCommand = new RawCommand('CLIENT', ['FOOBAR']);
+
+        $connection = $this->createConnection();
+        $connection->addConnectCommand($failedCommand);
+
+        $connection->connect();
+
+        $this->assertTrue(true);
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testConnectionRetriesOnFailingHelloCommand(): void
+    {
+        $failedCommand = new RawCommand('HELLO', ['FOOBAR']);
+
+        $connection = $this->createConnection();
+        $connection->addConnectCommand($failedCommand);
+
+        $connection->connect();
+
+        $clientName = $connection->executeCommand(new RawCommand('CLIENT', ['GETNAME']));
+
+        $this->assertSame('predis', $clientName);
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testConnectionRetriesOnFailingHelloCommandButFailsOnAuth(): void
+    {
+        $failedCommand = new RawCommand('HELLO', ['FOOBAR', 'AUTH', 'foobar']);
+
+        $connection = $this->createConnection();
+        $connection->addConnectCommand($failedCommand);
+
+        $this->expectException(ConnectionException::class);
+        $connection->connect();
+    }
+
+    /**
      * @group disconnected
      * @return void
      */

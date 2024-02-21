@@ -26,7 +26,7 @@ class ConnectionExceptionTest extends CommunicationExceptionTest
         NodeConnectionInterface $connection,
         string $message,
         int $code = 0,
-        Exception $inner = null
+        ?Exception $inner = null
     ) {
         return new ConnectionException($connection, $message, $code, $inner);
     }
