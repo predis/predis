@@ -28,7 +28,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAcceptsCustomConnectionFactory(): void
     {
-        /** @var Connection\FactoryInterface */
+        /** @var FactoryInterface */
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $cluster = new RedisCluster($factory, new Parameters());
 
@@ -1194,7 +1194,7 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn($response);
 
-        /** @var Connection\FactoryInterface */
+        /** @var FactoryInterface */
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
 
         $cluster = new RedisCluster($factory, new Parameters());

@@ -124,7 +124,7 @@ class SentinelReplication implements ReplicationInterface
         $service,
         array $sentinels,
         ConnectionFactoryInterface $connectionFactory,
-        ReplicationStrategy $strategy = null
+        ?ReplicationStrategy $strategy = null
     ) {
         $this->sentinels = $sentinels;
         $this->service = $service;

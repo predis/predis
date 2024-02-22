@@ -12,9 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Redis;
-
-class SPUBLISH_Test extends Redis\PredisCommandTestCase
+class SPUBLISH_Test extends PredisCommandTestCase
 {
     /**
      * {@inheritDoc}

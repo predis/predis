@@ -22,7 +22,7 @@ class UnexpectedTypeException extends UnexpectedValueException
      */
     protected $type;
 
-    public function __construct(string $type, $message = '', $code = 0, Throwable $previous = null)
+    public function __construct(string $type, $message = '', $code = 0, ?Throwable $previous = null)
     {
         $this->type = $type;
 

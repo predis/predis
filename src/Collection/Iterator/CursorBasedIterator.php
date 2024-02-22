@@ -176,13 +176,13 @@ abstract class CursorBasedIterator implements Iterator
                 $this->fetch();
             }
 
-            if ($this->elements) {
-                $this->extractNext();
-            } elseif ($this->cursor) {
-                goto tryFetch;
-            } else {
-                $this->valid = false;
-            }
+        if ($this->elements) {
+            $this->extractNext();
+        } elseif ($this->cursor) {
+            goto tryFetch;
+        } else {
+            $this->valid = false;
+        }
     }
 
     /**

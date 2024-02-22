@@ -30,7 +30,7 @@ interface DispatcherLoopInterface
      * @param  callable|null $callback
      * @return void
      */
-    public function setDefaultCallback(callable $callback = null): void;
+    public function setDefaultCallback(?callable $callback = null): void;
 
     /**
      * Binds given message type to given callback.
