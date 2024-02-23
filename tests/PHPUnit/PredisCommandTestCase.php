@@ -36,13 +36,13 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new command instance.
      *
-     * @return Command\CommandInterface
+     * @return CommandInterface
      */
-    public function getCommand(): Command\CommandInterface
+    public function getCommand(): CommandInterface
     {
         $command = $this->getExpectedCommand();
 
-        return $command instanceof Command\CommandInterface ? $command : new $command();
+        return $command instanceof CommandInterface ? $command : new $command();
     }
 
     /**

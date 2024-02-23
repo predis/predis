@@ -48,7 +48,7 @@ abstract class AbstractDispatcherLoop implements DispatcherLoopInterface
     /**
      * {@inheritDoc}
      */
-    public function setDefaultCallback(callable $callback = null): void
+    public function setDefaultCallback(?callable $callback = null): void
     {
         $this->defaultCallback = $callback;
     }

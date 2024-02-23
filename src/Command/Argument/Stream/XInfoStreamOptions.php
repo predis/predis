@@ -28,7 +28,7 @@ class XInfoStreamOptions implements ArrayableArgument
      * @param  int|null $count
      * @return self
      */
-    public function full(int $count = null): self
+    public function full(?int $count = null): self
     {
         $this->options[] = 'FULL';
 

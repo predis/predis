@@ -22,7 +22,7 @@ class Consumer extends AbstractConsumer
      * @param ClientInterface $client
      * @param callable|null   $preLoopCallback Callback that should be called on client before enter a loop.
      */
-    public function __construct(ClientInterface $client, callable $preLoopCallback = null)
+    public function __construct(ClientInterface $client, ?callable $preLoopCallback = null)
     {
         parent::__construct($client);
 
