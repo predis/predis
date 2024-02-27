@@ -64,4 +64,23 @@ class FireAndForgetTest extends PredisTestCase
 
         $this->assertEmpty($pipeline->execute());
     }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testClusterExecutePipeline(): void
+    {
+        $pipeline = new FireAndForget($this->createClient());
+
+        $pipeline->set('foo', 'bar');
+        $pipeline->get('foo');
+        $pipeline->set('bar', 'foo');
+        $pipeline->get('bar');
+        $pipeline->set('baz', 'baz');
+        $pipeline->get('baz');
+
+        $this->assertEmpty($pipeline->execute());
+    }
 }

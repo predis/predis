@@ -62,11 +62,13 @@ class Atomic extends Pipeline
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
         $commandFactory = $this->getClient()->getCommandFactory();
-        $connection->executeCommand($commandFactory->create('multi'));
+        $buffer = $commandFactory->create('multi')->serializeCommand();
 
         foreach ($commands as $command) {
-            $connection->writeRequest($command);
+            $buffer .= $command->serializeCommand();
         }
+
+        $connection->write($buffer);
 
         foreach ($commands as $command) {
             $response = $connection->readResponse($command);

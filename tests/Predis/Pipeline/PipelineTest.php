@@ -546,6 +546,36 @@ class PipelineTest extends PredisTestCase
         $this->assertSame('bar', $results[2]);
     }
 
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testClusterExecutePipeline(): void
+    {
+        $client = $this->getClient();
+
+        $results = $client->pipeline(function (Pipeline $pipe) {
+            $pipe->set('foo', 'bar');
+            $pipe->get('foo');
+            $pipe->set('bar', 'foo');
+            $pipe->get('bar');
+            $pipe->set('baz', 'baz');
+            $pipe->get('baz');
+        });
+
+        $expectedResults = [
+            new Response\Status('OK'),
+            'bar',
+            new Response\Status('OK'),
+            'foo',
+            new Response\Status('OK'),
+            'baz',
+        ];
+
+        $this->assertSameValues($expectedResults, $results);
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

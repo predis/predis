@@ -13,9 +13,11 @@
 namespace Predis\Connection\Replication;
 
 use InvalidArgumentException;
+use Predis\Command\Command;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\CommunicationException;
+use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
@@ -31,7 +33,7 @@ use Predis\Response\ServerException;
  * @author Daniele Alessandri <suppakilla@gmail.com>
  * @author Ville Mattila <ville@eventio.fi>
  */
-class SentinelReplication implements ReplicationInterface
+class SentinelReplication extends AbstractAggregateConnection implements ReplicationInterface
 {
     /**
      * @var NodeConnectionInterface

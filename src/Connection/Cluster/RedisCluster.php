@@ -20,8 +20,10 @@ use Predis\ClientException;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
 use Predis\Cluster\SlotMap;
 use Predis\Cluster\StrategyInterface;
+use Predis\Command\Command;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
@@ -54,7 +56,7 @@ use Traversable;
  * Asking for the cluster configuration to Redis is actually done by issuing a
  * CLUSTER SLOTS command to a random node in the pool.
  */
-class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
+class RedisCluster extends AbstractAggregateConnection implements ClusterInterface, IteratorAggregate, Countable
 {
     private $useClusterSlots = true;
 

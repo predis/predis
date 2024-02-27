@@ -17,7 +17,9 @@ use Countable;
 use IteratorAggregate;
 use Predis\Cluster\PredisStrategy;
 use Predis\Cluster\StrategyInterface;
+use Predis\Command\Command;
 use Predis\Command\CommandInterface;
+use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
@@ -28,7 +30,7 @@ use Traversable;
  * Abstraction for a cluster of aggregate connections to various Redis servers
  * implementing client-side sharding based on pluggable distribution strategies.
  */
-class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
+class PredisCluster extends AbstractAggregateConnection implements ClusterInterface, IteratorAggregate, Countable
 {
     /**
      * @var NodeConnectionInterface[]

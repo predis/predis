@@ -1518,4 +1518,48 @@ class RedisClusterTest extends PredisTestCase
 
         $this->assertInstanceOf(Connection\RelayConnection::class, $cluster->getConnectionBySlot(9999));
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testWrite(): void
+    {
+        $command1 = new Command\Redis\GET();
+        $command1->setArguments(['arg1']);
+
+        $command2 = new Command\Redis\GET();
+        $command2->setArguments(['arg2']);
+
+        $command3 = new Command\Redis\GET();
+        $command3->setArguments(['arg3']);
+
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:7003');
+
+        $connection1
+            ->expects($this->once())
+            ->method('write')
+            ->with($command3->serializeCommand());
+
+        $connection2
+            ->expects($this->once())
+            ->method('write')
+            ->with($command2->serializeCommand());
+
+        $connection3
+            ->expects($this->once())
+            ->method('write')
+            ->with($command1->serializeCommand());
+
+        $cluster = new RedisCluster($factory, new Parameters());
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
+
+        $cluster->write($command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand());
+    }
 }

@@ -14,8 +14,10 @@ namespace Predis\Connection\Replication;
 
 use InvalidArgumentException;
 use Predis\ClientException;
+use Predis\Command\Command;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
@@ -28,7 +30,7 @@ use Predis\Response\ErrorInterface as ResponseErrorInterface;
  * Aggregate connection handling replication of Redis nodes configured in a
  * single master / multiple slaves setup.
  */
-class MasterSlaveReplication implements ReplicationInterface
+class MasterSlaveReplication extends AbstractAggregateConnection implements ReplicationInterface
 {
     /**
      * @var ReplicationStrategy

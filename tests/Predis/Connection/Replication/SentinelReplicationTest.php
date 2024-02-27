@@ -1545,6 +1545,52 @@ class SentinelReplicationTest extends PredisTestCase
         $this->assertSame($sentinel->getParameters(), $replication->getParameters());
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testWrite(): void
+    {
+        $command1 = new Command\Redis\Search\FTSEARCH();
+        $command1->setArguments(['arg1', '*']);
+
+        $command2 = new Command\Redis\Search\FTSEARCH();
+        $command2->setArguments(['arg2', '*']);
+
+        $command3 = new Command\Redis\Search\FTSEARCH();
+        $command3->setArguments(['arg3', '*']);
+
+        $sentinel = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
+        $strategy = new Replication\ReplicationStrategy();
+        $factory = new Connection\Factory();
+
+        $master
+            ->expects($this->exactly(3))
+            ->method('isConnected')
+            ->willReturn(true);
+
+        $slave
+            ->expects($this->never())
+            ->method('write');
+
+        $master
+            ->expects($this->exactly(3))
+            ->method('write')
+            ->withConsecutive(
+                [$command1->serializeCommand()],
+                [$command2->serializeCommand()],
+                [$command3->serializeCommand()],
+            );
+
+        $replication = new SentinelReplication('svc', [$sentinel], $factory, $strategy);
+
+        $replication->add($master);
+        $replication->add($slave);
+
+        $replication->write($command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand());
+    }
+
     public function connectionsProvider(): array
     {
         return [
