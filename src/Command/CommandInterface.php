@@ -99,5 +99,5 @@ interface CommandInterface
      * @param  string $serializedCommand
      * @return static
      */
-    public static function deserializeCommand(string $serializedCommand): self;
+    public static function deserializeCommand(string $serializedCommand): CommandInterface;
 }

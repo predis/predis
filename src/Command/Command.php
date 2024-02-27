@@ -159,7 +159,7 @@ abstract class Command implements CommandInterface
     /**
      * {@inheritDoc}
      */
-    public static function deserializeCommand(string $serializedCommand): self
+    public static function deserializeCommand(string $serializedCommand): CommandInterface
     {
         if ($serializedCommand[0] !== '*') {
             throw new UnexpectedValueException('Invalid serializing format');
