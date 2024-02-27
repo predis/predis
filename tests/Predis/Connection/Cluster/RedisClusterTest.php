@@ -331,7 +331,7 @@ class RedisClusterTest extends PredisTestCase
             );
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
+        /** @var RedisCluster|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
@@ -633,7 +633,7 @@ class RedisClusterTest extends PredisTestCase
                 'value:5001'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
+        /** @var FactoryInterface|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->once())
@@ -711,7 +711,7 @@ class RedisClusterTest extends PredisTestCase
             ->willReturn($connection4);
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
+        /** @var RedisCluster|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
@@ -740,7 +740,7 @@ class RedisClusterTest extends PredisTestCase
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('No connections available in the pool');
 
-        /** @var Connection\FactoryInterface|MockObject */
+        /** @var FactoryInterface|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->never())
@@ -758,7 +758,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAskSlotMapReturnEmptyArrayOnEmptyConnectionsPool(): void
     {
-        /** @var Connection\FactoryInterface|MockObject */
+        /** @var FactoryInterface|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->never())
@@ -818,7 +818,7 @@ class RedisClusterTest extends PredisTestCase
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
+        /** @var RedisCluster|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
@@ -884,7 +884,7 @@ class RedisClusterTest extends PredisTestCase
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
+        /** @var RedisCluster|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
@@ -958,7 +958,7 @@ class RedisClusterTest extends PredisTestCase
                 'foobar'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
+        /** @var FactoryInterface|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->never())
@@ -1009,7 +1009,7 @@ class RedisClusterTest extends PredisTestCase
                 'foobar'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
+        /** @var FactoryInterface|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->once())
@@ -1054,7 +1054,7 @@ class RedisClusterTest extends PredisTestCase
             ->with($command)
             ->willReturnOnConsecutiveCalls('foobar', 'foobar');
 
-        /** @var Connection\FactoryInterface|MockObject */
+        /** @var FactoryInterface|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory->expects($this->never())->method('create');
 
@@ -1097,7 +1097,7 @@ class RedisClusterTest extends PredisTestCase
             ->with($command)
             ->willReturnOnConsecutiveCalls('foobar', 'foobar');
 
-        /** @var Connection\FactoryInterface|MockObject */
+        /** @var FactoryInterface|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->once())
@@ -1142,7 +1142,7 @@ class RedisClusterTest extends PredisTestCase
             ->with($command)
             ->willReturn('foobar');
 
-        /** @var Connection\FactoryInterface|MockObject */
+        /** @var FactoryInterface|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->once())
@@ -1238,7 +1238,7 @@ class RedisClusterTest extends PredisTestCase
                 'foobar'
             );
 
-        /** @var Connection\FactoryInterface|MockObject */
+        /** @var FactoryInterface|MockObject */
         $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
         $factory
             ->expects($this->once())
@@ -1407,7 +1407,7 @@ class RedisClusterTest extends PredisTestCase
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var Connection\Cluster\RedisCluster|MockObject */
+        /** @var RedisCluster|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory, new Parameters()])
