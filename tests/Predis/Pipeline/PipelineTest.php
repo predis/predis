@@ -18,6 +18,8 @@ use Predis\Client;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
+use Predis\Command\Redis\ECHO_;
+use Predis\Command\Redis\PING;
 use Predis\Connection\Parameters;
 use Predis\Response;
 use PredisTestCase;
@@ -215,10 +217,21 @@ class PipelineTest extends PredisTestCase
      */
     public function testExecuteWithFilledBuffer(): void
     {
+        $command1 = new ECHO_();
+        $command1->setArguments(['one']);
+
+        $command2 = new ECHO_();
+        $command2->setArguments(['two']);
+
+        $command3 = new ECHO_();
+        $command3->setArguments(['three']);
+
+        $buffer = $command1->serializeCommand() . $command2->serializeCommand(). $command3->serializeCommand();
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->exactly(3))
-            ->method('writeRequest');
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
@@ -261,10 +274,27 @@ class PipelineTest extends PredisTestCase
      */
     public function testFlushHandlesPartialBuffers(): void
     {
+        $command1 = new ECHO_();
+        $command1->setArguments(['one']);
+
+        $command2 = new ECHO_();
+        $command2->setArguments(['two']);
+
+        $buffer1 = $command1->serializeCommand() . $command2->serializeCommand();
+
+        $command3 = new ECHO_();
+        $command3->setArguments(['three']);
+
+        $command4 = new ECHO_();
+        $command4->setArguments(['four']);
+
+        $buffer2 = $command3->serializeCommand() . $command4->serializeCommand();;
+
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->exactly(4))
-            ->method('writeRequest');
+            ->expects($this->exactly(2))
+            ->method('write')
+            ->withConsecutive([$buffer1], [$buffer2]);
         $connection
             ->expects($this->exactly(4))
             ->method('readResponse')
@@ -291,6 +321,7 @@ class PipelineTest extends PredisTestCase
      */
     public function testSwitchesToMasterWithReplicationConnection(): void
     {
+        $buffer = (new PING())->serializeCommand() . (new PING())->serializeCommand() . (new PING())->serializeCommand();
         $pong = new Response\Status('PONG');
 
         $connection = $this->getMockBuilder('Predis\Connection\Replication\ReplicationInterface')->getMock();
@@ -298,8 +329,9 @@ class PipelineTest extends PredisTestCase
             ->expects($this->once())
             ->method('switchToMaster');
         $connection
-            ->expects($this->exactly(3))
-            ->method('writeRequest');
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
@@ -366,10 +398,28 @@ class PipelineTest extends PredisTestCase
      */
     public function testExecuteWithCallableArgumentRunsPipelineInCallable(): void
     {
+        $command1 = new ECHO_();
+        $command1->setArguments(['one']);
+
+        $command2 = new ECHO_();
+        $command2->setArguments(['two']);
+
+        $command3 = new ECHO_();
+        $command3->setArguments(['three']);
+
+        $command4 = new ECHO_();
+        $command4->setArguments(['four']);
+
+        $buffer = $command1->serializeCommand()
+            . $command2->serializeCommand()
+            . $command3->serializeCommand()
+            . $command4->serializeCommand();
+
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->exactly(4))
-            ->method('writeRequest');
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->exactly(4))
             ->method('readResponse')
