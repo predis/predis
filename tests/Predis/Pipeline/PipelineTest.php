@@ -226,7 +226,7 @@ class PipelineTest extends PredisTestCase
         $command3 = new ECHO_();
         $command3->setArguments(['three']);
 
-        $buffer = $command1->serializeCommand() . $command2->serializeCommand(). $command3->serializeCommand();
+        $buffer = $command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand();
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
             ->expects($this->once())
@@ -288,7 +288,7 @@ class PipelineTest extends PredisTestCase
         $command4 = new ECHO_();
         $command4->setArguments(['four']);
 
-        $buffer2 = $command3->serializeCommand() . $command4->serializeCommand();;
+        $buffer2 = $command3->serializeCommand() . $command4->serializeCommand();
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
