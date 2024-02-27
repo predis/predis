@@ -1580,7 +1580,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->withConsecutive(
                 [$command1->serializeCommand()],
                 [$command2->serializeCommand()],
-                [$command3->serializeCommand()],
+                [$command3->serializeCommand()]
             );
 
         $replication = new SentinelReplication('svc', [$sentinel], $factory, $strategy);
