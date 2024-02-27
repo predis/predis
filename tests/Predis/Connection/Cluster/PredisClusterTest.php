@@ -497,7 +497,7 @@ class PredisClusterTest extends PredisTestCase
             ->withConsecutive(
                 [$command1->serializeCommand()],
                 [$command2->serializeCommand()],
-                [$command3->serializeCommand()],
+                [$command3->serializeCommand()]
             );
 
         $connection2
