@@ -1478,7 +1478,7 @@ repl_backlog_histlen:12978
             ->withConsecutive(
                 [$command1->serializeCommand()],
                 [$command2->serializeCommand()],
-                [$command3->serializeCommand()],
+                [$command3->serializeCommand()]
             );
 
         $replication = new MasterSlaveReplication();
