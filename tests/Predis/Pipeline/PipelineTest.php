@@ -607,19 +607,19 @@ class PipelineTest extends PredisTestCase
 
         $results = $client->pipeline(function (Pipeline $pipe) {
             $pipe->set('foo', 'bar');
-            $pipe->get('foo');
             $pipe->set('bar', 'foo');
-            $pipe->get('bar');
             $pipe->set('baz', 'baz');
+            $pipe->get('foo');
+            $pipe->get('bar');
             $pipe->get('baz');
         });
 
         $expectedResults = [
             new Response\Status('OK'),
+            new Response\Status('OK'),
+            new Response\Status('OK'),
             'bar',
-            new Response\Status('OK'),
             'foo',
-            new Response\Status('OK'),
             'baz',
         ];
 
