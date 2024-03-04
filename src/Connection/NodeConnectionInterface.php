@@ -63,6 +63,15 @@ interface NodeConnectionInterface extends ConnectionInterface
     public function read();
 
     /**
+     * Performs a write operation over the stream of the buffer containing a
+     * command serialized with the Redis wire protocol.
+     *
+     * @param  string $buffer
+     * @return void
+     */
+    public function write(string $buffer): void;
+
+    /**
      * Checks if current connection has data to read from server.
      *
      * @return bool

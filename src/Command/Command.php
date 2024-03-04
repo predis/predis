@@ -159,6 +159,27 @@ abstract class Command implements CommandInterface
     /**
      * {@inheritDoc}
      */
+    public function serializeCommand(): string
+    {
+        $commandID = $this->getId();
+        $arguments = $this->getArguments();
+
+        $cmdlen = strlen($commandID);
+        $reqlen = count($arguments) + 1;
+
+        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandID}\r\n";
+
+        foreach ($arguments as $argument) {
+            $arglen = strlen(strval($argument));
+            $buffer .= "\${$arglen}\r\n{$argument}\r\n";
+        }
+
+        return $buffer;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public static function deserializeCommand(string $serializedCommand): CommandInterface
     {
         if ($serializedCommand[0] !== '*') {
