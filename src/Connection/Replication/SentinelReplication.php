@@ -426,6 +426,14 @@ class SentinelReplication implements ReplicationInterface
                 continue;
             }
 
+            if (isset($slave[31])) {
+                $masterLinkStatus = $slave[31];
+
+                if ($masterLinkStatus !== 'ok') {
+                    continue;
+                }
+            }
+
             $slaves[] = [
                 'host' => $slave[3],
                 'port' => $slave[5],
