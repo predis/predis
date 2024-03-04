@@ -173,7 +173,7 @@ class RawCommandTest extends PredisTestCase
         $command = new $class();
         $command->setArguments($arguments);
 
-        $deserializedCommand = Command::deserializeCommand($command->serializeCommand());
+        $deserializedCommand = RawCommand::deserializeCommand($command->serializeCommand());
 
         $this->assertInstanceOf($class, $deserializedCommand);
         $this->assertSame($command->getArguments(), $deserializedCommand->getArguments());
@@ -188,7 +188,7 @@ class RawCommandTest extends PredisTestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Invalid serializing format');
 
-        Command::deserializeCommand('foobar');
+        RawCommand::deserializeCommand('foobar');
     }
 
     public function deserializeCommandProvider(): array
