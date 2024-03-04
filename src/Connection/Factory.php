@@ -165,12 +165,20 @@ class Factory implements FactoryInterface
         $parameters = $connection->getParameters();
 
         if (isset($parameters->password) && strlen($parameters->password)) {
-            $cmdAuthArgs = isset($parameters->username) && strlen($parameters->username)
-                ? [$parameters->username, $parameters->password]
-                : [$parameters->password];
+            $cmdAuthArgs = [$parameters->protocol, 'AUTH'];
+
+            isset($parameters->username) && strlen($parameters->username)
+                ? array_push($cmdAuthArgs, $parameters->username, $parameters->password)
+                : $cmdAuthArgs[] = $parameters->password;
+
+            array_push($cmdAuthArgs, 'SETNAME', 'predis');
 
             $connection->addConnectCommand(
-                new RawCommand('AUTH', $cmdAuthArgs)
+                new RawCommand('HELLO', $cmdAuthArgs)
+            );
+        } else {
+            $connection->addConnectCommand(
+                new RawCommand('HELLO', [$parameters->protocol ?? 2, 'SETNAME', 'predis'])
             );
         }
 
@@ -181,12 +189,6 @@ class Factory implements FactoryInterface
         $connection->addConnectCommand(
             new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])
         );
-
-        if (isset($parameters->protocol) && (int) $parameters->protocol > 2) {
-            $connection->addConnectCommand(
-                new RawCommand('HELLO', [$parameters->protocol, 'SETNAME', 'predis'])
-            );
-        }
 
         if (isset($parameters->database) && strlen($parameters->database)) {
             $connection->addConnectCommand(

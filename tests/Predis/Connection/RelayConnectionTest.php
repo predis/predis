@@ -13,6 +13,7 @@
 namespace Predis\Connection;
 
 use Predis\Command\RawCommand;
+use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use PredisTestCase;
 use Relay\Relay;
@@ -59,6 +60,28 @@ class RelayConnectionTest extends PredisTestCase
             ->willReturn(true);
 
         $this->assertTrue($this->connection->isConnected());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReadThrowsException(): void
+    {
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('The "relay" extension does not support reading responses.');
+
+        $this->connection->read();
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testWriteThrowsException(): void
+    {
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('The "relay" extension does not support writing operations.');
+
+        $this->connection->write('foobar');
     }
 
     /**

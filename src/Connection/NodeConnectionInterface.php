@@ -41,6 +41,13 @@ interface NodeConnectionInterface extends ConnectionInterface
     public function getParameters();
 
     /**
+     * Returns Client ID assigned by Redis server to current connection.
+     *
+     * @return int|null
+     */
+    public function getClientId(): ?int;
+
+    /**
      * Pushes the given command into a queue of commands executed when
      * establishing the actual connection to Redis.
      *
@@ -54,6 +61,15 @@ interface NodeConnectionInterface extends ConnectionInterface
      * @return mixed
      */
     public function read();
+
+    /**
+     * Performs a write operation over the stream of the buffer containing a
+     * command serialized with the Redis wire protocol.
+     *
+     * @param  string $buffer
+     * @return void
+     */
+    public function write(string $buffer): void;
 
     /**
      * Checks if current connection has data to read from server.

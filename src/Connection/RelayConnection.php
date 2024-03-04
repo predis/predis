@@ -369,4 +369,12 @@ class RelayConnection extends AbstractConnection
 
         return $parameters;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function write(string $buffer): void
+    {
+        throw new NotSupportedException('The "relay" extension does not support writing operations.');
+    }
 }

@@ -138,4 +138,17 @@ class RawCommandTest extends PredisTestCase
 
         $this->assertSame('SET', $command->getId());
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testSerializeCommand(): void
+    {
+        $command = new RawCommand('Test', ['foo', 'bar']);
+
+        $this->assertSame(
+            "*3\r\n\$4\r\nTEST\r\n\$3\r\nfoo\r\n\$3\r\nbar\r\n",
+            $command->serializeCommand()
+        );
+    }
 }

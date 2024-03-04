@@ -85,4 +85,11 @@ interface CommandInterface
      * @return mixed
      */
     public function parseResp3Response($data);
+
+    /**
+     * Returns RESP-formatted representation of command.
+     *
+     * @return string
+     */
+    public function serializeCommand(): string;
 }

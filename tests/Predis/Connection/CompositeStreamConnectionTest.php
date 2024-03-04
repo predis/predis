@@ -32,19 +32,21 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
     public function testThrowsExceptionOnInitializationCommandFailure(): void
     {
         $this->expectException('Predis\Connection\ConnectionException');
-        $this->expectExceptionMessage('`SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]');
+        $this->expectExceptionMessage('Failed: ERR invalid DB index [tcp://127.0.0.1:6379]');
 
         $cmdSelect = RawCommand::create('SELECT', '1000');
 
         /** @var NodeConnectionInterface|MockObject */
         $connection = $this
             ->getMockBuilder($this->getConnectionClass())
-            ->onlyMethods(['executeCommand', 'createResource'])
+            ->onlyMethods(['write', 'read', 'createResource'])
             ->setConstructorArgs([new Parameters()])
             ->getMock();
         $connection
-            ->method('executeCommand')
-            ->with($cmdSelect)
+            ->expects($this->once())
+            ->method('write');
+        $connection
+            ->method('read')
             ->willReturn(
                 new ErrorResponse('ERR invalid DB index')
             );
