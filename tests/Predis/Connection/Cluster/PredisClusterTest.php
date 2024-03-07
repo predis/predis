@@ -13,6 +13,7 @@
 namespace Predis\Connection\Cluster;
 
 use Predis\Command\CommandInterface;
+use Predis\Command\Redis\GET;
 use Predis\Connection\Parameters;
 use PredisTestCase;
 
@@ -470,5 +471,49 @@ class PredisClusterTest extends PredisTestCase
         $cluster->add($connection3);
 
         $this->assertEquals(['response1', 'response2', 'response3'], $cluster->executeCommandOnEachNode($mockCommand));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testWrite(): void
+    {
+        $command1 = new GET();
+        $command1->setArguments(['arg1']);
+
+        $command2 = new GET();
+        $command2->setArguments(['arg2']);
+
+        $command3 = new GET();
+        $command3->setArguments(['arg3']);
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:7003');
+
+        $connection1
+            ->expects($this->exactly(3))
+            ->method('write')
+            ->withConsecutive(
+                [$command1->serializeCommand()],
+                [$command2->serializeCommand()],
+                [$command3->serializeCommand()]
+            );
+
+        $connection2
+            ->expects($this->never())
+            ->method('write');
+
+        $connection3
+            ->expects($this->never())
+            ->method('write');
+
+        $cluster = new PredisCluster(new Parameters());
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
+
+        $cluster->write($command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand());
     }
 }

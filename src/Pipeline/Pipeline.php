@@ -131,9 +131,13 @@ class Pipeline implements ClientContextInterface
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
+        $buffer = '';
+
         foreach ($commands as $command) {
-            $connection->writeRequest($command);
+            $buffer .= $command->serializeCommand();
         }
+
+        $connection->write($buffer);
 
         $responses = [];
         $exceptions = $this->throwServerExceptions();

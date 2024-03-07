@@ -1451,6 +1451,44 @@ repl_backlog_histlen:12978
         $this->assertSame($connection->getParameters(), $replication->getParameters());
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testWrite(): void
+    {
+        $command1 = new Command\Redis\Json\JSONGET();
+        $command1->setArguments(['arg1']);
+
+        $command2 = new Command\Redis\Json\JSONGET();
+        $command2->setArguments(['arg2']);
+
+        $command3 = new Command\Redis\Json\JSONGET();
+        $command3->setArguments(['arg3']);
+
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
+
+        $slave1
+            ->expects($this->never())
+            ->method('write');
+
+        $master
+            ->expects($this->exactly(3))
+            ->method('write')
+            ->withConsecutive(
+                [$command1->serializeCommand()],
+                [$command2->serializeCommand()],
+                [$command3->serializeCommand()]
+            );
+
+        $replication = new MasterSlaveReplication();
+
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $replication->write($command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand());
+    }
+
     public function connectionsProvider(): array
     {
         return [

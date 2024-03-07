@@ -22,7 +22,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns the expected command for tests.
      *
-     * @return Command\CommandInterface|string Instance or FQCN of the expected command
+     * @return CommandInterface|string Instance or FQCN of the expected command
      */
     abstract protected function getExpectedCommand(): string;
 

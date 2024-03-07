@@ -13,6 +13,7 @@
 namespace Predis\Pipeline;
 
 use Predis\Client;
+use Predis\Command\Redis\PING;
 use PredisTestCase;
 
 class FireAndForgetTest extends PredisTestCase
@@ -22,10 +23,12 @@ class FireAndForgetTest extends PredisTestCase
      */
     public function testPipelineWithSingleConnection(): void
     {
+        $buffer = (new PING())->serializeCommand() . (new PING())->serializeCommand() . (new PING())->serializeCommand();
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->exactly(3))
-            ->method('writeRequest');
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->never())
             ->method('readResponse');
@@ -44,14 +47,16 @@ class FireAndForgetTest extends PredisTestCase
      */
     public function testSwitchesToMasterWithReplicationConnection(): void
     {
+        $buffer = (new PING())->serializeCommand() . (new PING())->serializeCommand() . (new PING())->serializeCommand();
         $connection = $this->getMockBuilder('Predis\Connection\Replication\ReplicationInterface')
             ->getMock();
         $connection
             ->expects($this->once())
             ->method('switchToMaster');
         $connection
-            ->expects($this->exactly(3))
-            ->method('writeRequest');
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->never())
             ->method('readResponse');
@@ -61,6 +66,25 @@ class FireAndForgetTest extends PredisTestCase
         $pipeline->ping();
         $pipeline->ping();
         $pipeline->ping();
+
+        $this->assertEmpty($pipeline->execute());
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testClusterExecutePipeline(): void
+    {
+        $pipeline = new FireAndForget($this->createClient());
+
+        $pipeline->set('foo', 'bar');
+        $pipeline->get('foo');
+        $pipeline->set('bar', 'foo');
+        $pipeline->get('bar');
+        $pipeline->set('baz', 'baz');
+        $pipeline->get('baz');
 
         $this->assertEmpty($pipeline->execute());
     }

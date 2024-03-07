@@ -63,10 +63,13 @@ class Atomic extends Pipeline
     {
         $commandFactory = $this->getClient()->getCommandFactory();
         $connection->executeCommand($commandFactory->create('multi'));
+        $buffer = '';
 
         foreach ($commands as $command) {
-            $connection->writeRequest($command);
+            $buffer .= $command->serializeCommand();
         }
+
+        $connection->write($buffer);
 
         foreach ($commands as $command) {
             $response = $connection->readResponse($command);
