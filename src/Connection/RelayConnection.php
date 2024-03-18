@@ -345,4 +345,20 @@ class RelayConnection extends StreamConnection
         $this->assertExtensions();
         $this->client = $this->createClient();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getReadWriteTimeout()
+    {
+        return $this->client->getOption(Relay::OPT_READ_TIMEOUT);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setReadWriteTimeout($timeout)
+    {
+        return $this->client->setOption(Relay::OPT_READ_TIMEOUT, $timeout);
+    }
 }

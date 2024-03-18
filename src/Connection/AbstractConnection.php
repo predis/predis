@@ -71,6 +71,16 @@ abstract class AbstractConnection implements NodeConnectionInterface
     /**
      * {@inheritdoc}
      */
+    abstract public function getReadWriteTimeout();
+
+    /**
+     * {@inheritdoc}
+     */
+    abstract public function setReadWriteTimeout($timeout);
+
+    /**
+     * {@inheritdoc}
+     */
     public function isConnected()
     {
         return isset($this->resource);

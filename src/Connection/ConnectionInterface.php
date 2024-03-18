@@ -62,4 +62,18 @@ interface ConnectionInterface
      * @return mixed
      */
     public function executeCommand(CommandInterface $command);
+
+    /**
+     * Gets read-write timeout
+     *
+     * @return int|float
+     */
+    public function getReadWriteTimeout();
+
+    /**
+     * Sets read-write timeout
+     *
+     * @param int|float $timeout
+     */
+    public function setReadWriteTimeout($timeout);
 }

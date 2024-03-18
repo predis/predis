@@ -110,11 +110,7 @@ class StreamConnection extends AbstractConnection
         }
 
         if (isset($parameters->read_write_timeout)) {
-            $rwtimeout = (float) $parameters->read_write_timeout;
-            $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
-            $timeoutSeconds = floor($rwtimeout);
-            $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
-            stream_set_timeout($resource, $timeoutSeconds, $timeoutUSeconds);
+            $this->setReadWriteTimeout($parameters->read_write_timeout);
         }
 
         return $resource;
@@ -370,5 +366,31 @@ class StreamConnection extends AbstractConnection
         }
 
         $this->write($buffer);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getReadWriteTimeout()
+    {
+        return $this->parameters->read_write_timeout ?? -1;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setReadWriteTimeout($timeout)
+    {
+        $rwtimeout = (float) $timeout;
+        $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
+        $timeoutSeconds = floor($rwtimeout);
+        $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
+        if (stream_set_timeout($this->getResource(), $timeoutSeconds, $timeoutUSeconds)) {
+            $this->parameters = Parameters::create(array_merge($this->parameters->toArray(), [
+                'read_write_timeout' => $rwtimeout,
+            ]));
+            return true;
+        }
+        return false;
     }
 }
