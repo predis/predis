@@ -14,6 +14,7 @@ namespace Predis\Connection;
 
 use Predis\Command\Command;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 
 abstract class AbstractAggregateConnection implements AggregateConnectionInterface
 {
@@ -91,5 +92,21 @@ abstract class AbstractAggregateConnection implements AggregateConnectionInterfa
             $commandObj = Command::deserializeCommand($command);
             $this->getConnectionByCommand($commandObj)->write($command);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getReadWriteTimeout()
+    {
+        throw new NotSupportedException('Does not allow to get read_write_timeout');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setReadWriteTimeout($timeout)
+    {
+        throw new NotSupportedException('Does not allow to set read_write_timeout');
     }
 }

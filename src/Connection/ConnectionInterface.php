@@ -78,4 +78,18 @@ interface ConnectionInterface
      * @return ParametersInterface
      */
     public function getParameters();
+
+    /**
+     * Gets read-write timeout.
+     *
+     * @return int|float
+     */
+    public function getReadWriteTimeout();
+
+    /**
+     * Sets read-write timeout.
+     *
+     * @param int|float $timeout
+     */
+    public function setReadWriteTimeout($timeout);
 }
