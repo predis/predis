@@ -27,6 +27,7 @@ use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
@@ -734,5 +735,40 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
 
             usleep($this->readTimeout);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getReadWriteTimeout()
+    {
+        return $this->connectionParameters->read_write_timeout ?? -1;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setReadWriteTimeout($timeout)
+    {
+        $result = true;
+        foreach ($this->pool as $id => $connection) {
+            if (!$result = $connection->setReadWriteTimeout($timeout)) {
+                break;
+            }
+        }
+        if ($result) {
+            $this->connectionParameters = Parameters::create(array_merge($this->connectionParameters->toArray(), [
+                'read_write_timeout' => (float) $timeout,
+            ]));
+
+            return true;
+        }
+        // Rollback to previous value
+        $timeout = $this->getReadWriteTimeout();
+        foreach ($this->pool as $connection) {
+            $connection->setReadWriteTimeout($timeout);
+        }
+
+        return false;
     }
 }

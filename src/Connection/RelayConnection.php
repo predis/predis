@@ -377,4 +377,20 @@ class RelayConnection extends AbstractConnection
     {
         throw new NotSupportedException('The "relay" extension does not support writing operations.');
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getReadWriteTimeout()
+    {
+        return $this->client->getOption(Relay::OPT_READ_TIMEOUT);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setReadWriteTimeout($timeout)
+    {
+        return $this->client->setOption(Relay::OPT_READ_TIMEOUT, $timeout);
+    }
 }
