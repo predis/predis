@@ -51,7 +51,7 @@ class MultiExec implements ClientContextInterface
      * @param ClientInterface $client  Client instance used by the transaction.
      * @param array           $options Initialization options.
      */
-    public function __construct(ClientInterface $client, array $options = null)
+    public function __construct(ClientInterface $client, ?array $options = null)
     {
         $this->assertClient($client);
 
