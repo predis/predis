@@ -16,6 +16,7 @@ use PHPUnit\OneOfConstraint;
 use PHPUnit\Util\Test as TestUtil;
 use Predis\Client;
 use Predis\Command;
+use Predis\Configuration\Options;
 use Predis\Connection;
 
 /**
@@ -188,7 +189,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     protected function getDefaultOptionsArray(): array
     {
         return [
-            'commands' => new Command\RedisFactory(),
+            'commands' => $this->getCommandFactory(),
         ];
     }
 
@@ -245,14 +246,10 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function createClient(array $parameters = null, array $options = null, ?bool $flushdb = true): Client
     {
-        $parameters = array_merge(
-            $this->getDefaultParametersArray(),
-            $parameters ?: []
-        );
+        $parameters = $this->getParametersArray($parameters ?: []);
 
         $options = array_merge(
-            ['commands' => $this->getCommandFactory()],
-            $options ?: [],
+            $options ?: $this->getDefaultOptionsArray(),
             getenv('USE_RELAY') ? ['connections' => 'relay'] : []
         );
 

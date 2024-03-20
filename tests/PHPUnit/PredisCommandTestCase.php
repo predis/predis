@@ -48,10 +48,11 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new client instance.
      *
+     * @param  array  $options Additional client options
      * @param  bool   $flushdb Flush selected database before returning the client
      * @return Client
      */
-    public function getClient(bool $flushdb = true): Client
+    public function getClient(array $options = [], bool $flushdb = true): Client
     {
         $commands = $this->getCommandFactory();
 
@@ -62,12 +63,10 @@ abstract class PredisCommandTestCase extends PredisTestCase
         }
 
         if ($this->isClusterTest()) {
-            $client = $this->createClient(null, ['cluster' => 'redis'], $flushdb);
-        } else {
-            $client = $this->createClient(null, null, $flushdb);
+            $options['cluster'] = 'redis';
         }
 
-        return $client;
+        return $this->createClient(null, $options, $flushdb);
     }
 
     /**

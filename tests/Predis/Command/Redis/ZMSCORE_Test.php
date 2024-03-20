@@ -86,6 +86,19 @@ class ZMSCORE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 6.2.0
      */
+    public function testClientPrefix(): void
+    {
+        $key = 'test-zscore';
+        $redis = $this->getClient(['prefix' => 'test:']);
+        $redis->zadd($key, ['member1' => 1, 'member2' => 2]);
+
+        $this->assertSame(['1', '2'], $redis->zmscore($key, 'member1', 'member2'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.2.0
+     */
     public function testThrowsExceptionOnWrongType(): void
     {
         $this->expectException(ServerException::class);
