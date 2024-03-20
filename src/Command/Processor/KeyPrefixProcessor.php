@@ -186,6 +186,8 @@ class KeyPrefixProcessor implements ProcessorInterface
             'XLEN' => $prefixFirst,
             'XACK' => $prefixFirst,
             'XTRIM' => $prefixFirst,
+            'ZPOPMIN' => $prefixFirst,
+            'ZPOPMAX' => $prefixFirst,
 
             /* ---------------- Redis 6.2 ---------------- */
             'GETDEL' => $prefixFirst,

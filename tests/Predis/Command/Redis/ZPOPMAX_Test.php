@@ -84,6 +84,20 @@ class ZPOPMAX_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testClientPrefix(): void
+    {
+        $redis = $this->getClient(['prefix' => 'test:']);
+
+        $redis->zadd('letters', ['a' => 1, 'b' => 2]);
+
+        $this->assertEquals(['b' => '2'], $redis->zpopmax('letters'));
+        $this->assertEquals(['a' => '1'], $redis->zpopmax('letters'));
+    }
+
+    /**
      * @requiresRedisVersion >= 5.0.0
      *
      * @group connected

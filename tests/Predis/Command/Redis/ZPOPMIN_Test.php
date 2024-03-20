@@ -84,6 +84,20 @@ class ZPOPMIN_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testClientPrefix(): void
+    {
+        $redis = $this->getClient(['prefix' => 'test:']);
+
+        $redis->zadd('letters', ['a' => 1, 'b' => 2]);
+
+        $this->assertEquals(['a' => '1'], $redis->zpopmin('letters'));
+        $this->assertEquals(['b' => '2'], $redis->zpopmin('letters'));
+    }
+
+    /**
      * @requiresRedisVersion >= 5.0.0
      *
      * @group connected
