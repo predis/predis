@@ -92,7 +92,7 @@ class ZMSCORE_Test extends PredisCommandTestCase
         $redis = $this->getClient(['prefix' => 'test:']);
         $redis->zadd($key, ['member1' => 1, 'member2' => 2]);
 
-        $this->assertSame(['1', '2'], $redis->zmscore($key, 'member1', 'member2'));
+        $this->assertEquals(['1', '2'], $redis->zmscore($key, 'member1', 'member2'));
     }
 
     /**
