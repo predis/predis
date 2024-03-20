@@ -57,7 +57,7 @@ class RelayConnection extends StreamConnection
     /**
      * The Relay instance.
      *
-     * @var Relay
+     * @var \Relay\Relay
      */
     protected $client;
 
@@ -151,7 +151,7 @@ class RelayConnection extends StreamConnection
     /**
      * Creates a new instance of the client.
      *
-     * @return Relay
+     * @return \Relay\Relay
      */
     private function createClient()
     {
@@ -189,7 +189,7 @@ class RelayConnection extends StreamConnection
     /**
      * Returns the underlying client.
      *
-     * @return Relay
+     * @return \Relay\Relay
      */
     public function getClient()
     {

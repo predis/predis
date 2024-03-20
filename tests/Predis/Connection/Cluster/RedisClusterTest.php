@@ -336,7 +336,7 @@ class RedisClusterTest extends PredisTestCase
             );
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var RedisCluster|MockObject */
+        /** @var Connection\Cluster\RedisCluster|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory])
@@ -716,7 +716,7 @@ class RedisClusterTest extends PredisTestCase
             ->willReturn($connection4);
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var RedisCluster|MockObject */
+        /** @var Connection\Cluster\RedisCluster|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory])
@@ -823,7 +823,7 @@ class RedisClusterTest extends PredisTestCase
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var RedisCluster|MockObject */
+        /** @var Connection\Cluster\RedisCluster|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory])
@@ -889,7 +889,7 @@ class RedisClusterTest extends PredisTestCase
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var RedisCluster|MockObject */
+        /** @var Connection\Cluster\RedisCluster|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory])
@@ -1427,7 +1427,7 @@ class RedisClusterTest extends PredisTestCase
             ->method('create');
 
         // TODO: I'm not sure about mocking a protected method, but it'll do for now
-        /** @var RedisCluster|MockObject */
+        /** @var Connection\Cluster\RedisCluster|MockObject */
         $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
             ->onlyMethods(['getRandomConnection'])
             ->setConstructorArgs([$factory])

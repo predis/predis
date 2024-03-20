@@ -32,7 +32,7 @@ function zpop($client, $key)
         'cas' => true,      // Initialize with support for CAS operations
         'watch' => $key,    // Key that needs to be WATCHed to detect changes
         'retry' => 3,       // Number of retries on aborted transactions, after
-        // which the client bails out with an exception.
+                            // which the client bails out with an exception.
     ];
 
     $client->transaction($options, function ($tx) use ($key, &$element) {

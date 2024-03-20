@@ -72,7 +72,7 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * {@inheritdoc}
      */
-    public function __construct(?ReplicationStrategy $strategy = null)
+    public function __construct(ReplicationStrategy $strategy = null)
     {
         $this->strategy = $strategy ?: new ReplicationStrategy();
     }

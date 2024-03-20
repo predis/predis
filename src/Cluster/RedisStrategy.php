@@ -27,7 +27,7 @@ class RedisStrategy extends ClusterStrategy
     /**
      * @param HashGeneratorInterface $hashGenerator Hash generator instance.
      */
-    public function __construct(?HashGeneratorInterface $hashGenerator = null)
+    public function __construct(HashGeneratorInterface $hashGenerator = null)
     {
         parent::__construct();
 

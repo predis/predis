@@ -23,7 +23,7 @@ class SubcommandStrategyResolver implements StrategyResolverInterface
      */
     private $separator;
 
-    public function __construct(?string $separator = null)
+    public function __construct(string $separator = null)
     {
         $this->separator = $separator;
     }

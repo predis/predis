@@ -43,7 +43,7 @@ class Options implements OptionsInterface
     /**
      * @param array $options Named array of client options
      */
-    public function __construct(?array $options = null)
+    public function __construct(array $options = null)
     {
         $this->input = $options ?? [];
     }

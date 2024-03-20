@@ -31,7 +31,7 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
      */
     public function __construct(
         ParametersInterface $parameters,
-        ?ProtocolProcessorInterface $protocol = null
+        ProtocolProcessorInterface $protocol = null
     ) {
         $this->parameters = $this->assertParameters($parameters);
         $this->protocol = $protocol ?: new TextProtocolProcessor();
