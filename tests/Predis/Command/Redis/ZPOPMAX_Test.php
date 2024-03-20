@@ -85,7 +85,7 @@ class ZPOPMAX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 6.2.0
+     * @requiresRedisVersion >= 5.0.0
      */
     public function testClientPrefix(): void
     {
