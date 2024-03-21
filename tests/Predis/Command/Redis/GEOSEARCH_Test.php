@@ -209,7 +209,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 [
                     'member1' => ['lng' => 1.1, 'lat' => 2.2],
                     'member2' => ['lng' => 2.2, 'lat' => 3.3],
-                    'member3' => ['lng' => 3.3, 'lat' => 4.4]],
+                    'member3' => ['lng' => 3.3, 'lat' => 4.4], ],
             ],
             'with WITHDIST modifier' => [
                 [['member1', '111.111'], ['member2', '222.222'], ['member3', '333.333']],
