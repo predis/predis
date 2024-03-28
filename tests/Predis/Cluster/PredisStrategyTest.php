@@ -452,6 +452,8 @@ class PredisStrategyTest extends PredisTestCase
             /* scripting */
             'EVAL' => 'keys-script',
             'EVALSHA' => 'keys-script',
+            'EVAL_RO' => 'keys-script',
+            'EVALSHA_RO' => 'keys-script',
 
             /* server */
             'INFO' => 'keys-fake',
