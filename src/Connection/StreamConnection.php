@@ -12,9 +12,11 @@
 
 namespace Predis\Connection;
 
-use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\Connection\Resource\Exception\StreamInitException;
+use Predis\Connection\Resource\StreamFactory;
+use Predis\Connection\Resource\StreamFactoryInterface;
 use Predis\Consumer\Push\PushNotificationException;
 use Predis\Consumer\Push\PushResponse;
 use Predis\Protocol\Parser\Strategy\Resp2Strategy;
@@ -22,6 +24,8 @@ use Predis\Protocol\Parser\Strategy\Resp3Strategy;
 use Predis\Protocol\Parser\UnexpectedTypeException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 /**
  * Standard connection to Redis servers implemented on top of PHP's streams.
@@ -37,9 +41,27 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
  *  - tcp_nodelay: enables or disables Nagle's algorithm for coalescing.
  *  - persistent: the connection is left intact after a GC collection.
  *  - ssl: context options array (see http://php.net/manual/en/context.ssl.php)
+ *
+ * @method StreamInterface getResource()
  */
 class StreamConnection extends AbstractConnection
 {
+    /**
+     * @var StreamFactoryInterface
+     */
+    protected $streamFactory;
+
+    /**
+     * @param ParametersInterface         $parameters
+     * @param StreamFactoryInterface|null $factory
+     */
+    public function __construct(ParametersInterface $parameters, ?StreamFactoryInterface $factory = null)
+    {
+        parent::__construct($parameters);
+
+        $this->streamFactory = $factory ?? new StreamFactory();
+    }
+
     /**
      * Disconnects from the server and destroys the underlying resource when the
      * garbage collector kicks in only if the connection has not been marked as
@@ -55,176 +77,14 @@ class StreamConnection extends AbstractConnection
     }
 
     /**
-     * {@inheritdoc}
+     * Creates a stream resource to communicate with Redis.
+     *
+     * @return StreamInterface
+     * @throws StreamInitException
      */
-    protected function assertParameters(ParametersInterface $parameters)
+    protected function createResource(): StreamInterface
     {
-        switch ($parameters->scheme) {
-            case 'tcp':
-            case 'redis':
-            case 'unix':
-            case 'tls':
-            case 'rediss':
-                break;
-
-            default:
-                throw new InvalidArgumentException("Invalid scheme: '$parameters->scheme'.");
-        }
-
-        return $parameters;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createResource()
-    {
-        switch ($this->parameters->scheme) {
-            case 'tcp':
-            case 'redis':
-                return $this->tcpStreamInitializer($this->parameters);
-
-            case 'unix':
-                return $this->unixStreamInitializer($this->parameters);
-
-            case 'tls':
-            case 'rediss':
-                return $this->tlsStreamInitializer($this->parameters);
-
-            default:
-                throw new InvalidArgumentException("Invalid scheme: '{$this->parameters->scheme}'.");
-        }
-    }
-
-    /**
-     * Creates a connected stream socket resource.
-     *
-     * @param ParametersInterface $parameters Connection parameters.
-     * @param string              $address    Address for stream_socket_client().
-     * @param int                 $flags      Flags for stream_socket_client().
-     *
-     * @return resource
-     */
-    protected function createStreamSocket(ParametersInterface $parameters, $address, $flags)
-    {
-        $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0);
-        $context = stream_context_create(['socket' => ['tcp_nodelay' => (bool) $parameters->tcp_nodelay]]);
-
-        if (!$resource = @stream_socket_client($address, $errno, $errstr, $timeout, $flags, $context)) {
-            $this->onConnectionError(trim($errstr), $errno);
-        }
-
-        if (isset($parameters->read_write_timeout)) {
-            $rwtimeout = (float) $parameters->read_write_timeout;
-            $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
-            $timeoutSeconds = floor($rwtimeout);
-            $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
-            stream_set_timeout($resource, $timeoutSeconds, $timeoutUSeconds);
-        }
-
-        return $resource;
-    }
-
-    /**
-     * Initializes a TCP stream resource.
-     *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
-     *
-     * @return resource
-     */
-    protected function tcpStreamInitializer(ParametersInterface $parameters)
-    {
-        if (!filter_var($parameters->host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-            $address = "tcp://$parameters->host:$parameters->port";
-        } else {
-            $address = "tcp://[$parameters->host]:$parameters->port";
-        }
-
-        $flags = STREAM_CLIENT_CONNECT;
-
-        if (isset($parameters->async_connect) && $parameters->async_connect) {
-            $flags |= STREAM_CLIENT_ASYNC_CONNECT;
-        }
-
-        if (isset($parameters->persistent)) {
-            if (false !== $persistent = filter_var($parameters->persistent, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
-                $flags |= STREAM_CLIENT_PERSISTENT;
-
-                if ($persistent === null) {
-                    $address = "{$address}/{$parameters->persistent}";
-                }
-            }
-        }
-
-        return $this->createStreamSocket($parameters, $address, $flags);
-    }
-
-    /**
-     * Initializes a UNIX stream resource.
-     *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
-     *
-     * @return resource
-     */
-    protected function unixStreamInitializer(ParametersInterface $parameters)
-    {
-        if (!isset($parameters->path)) {
-            throw new InvalidArgumentException('Missing UNIX domain socket path.');
-        }
-
-        $flags = STREAM_CLIENT_CONNECT;
-
-        if (isset($parameters->persistent)) {
-            if (false !== $persistent = filter_var($parameters->persistent, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
-                $flags |= STREAM_CLIENT_PERSISTENT;
-
-                if ($persistent === null) {
-                    throw new InvalidArgumentException(
-                        'Persistent connection IDs are not supported when using UNIX domain sockets.'
-                    );
-                }
-            }
-        }
-
-        return $this->createStreamSocket($parameters, "unix://{$parameters->path}", $flags);
-    }
-
-    /**
-     * Initializes a SSL-encrypted TCP stream resource.
-     *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
-     *
-     * @return resource
-     */
-    protected function tlsStreamInitializer(ParametersInterface $parameters)
-    {
-        $resource = $this->tcpStreamInitializer($parameters);
-        $metadata = stream_get_meta_data($resource);
-
-        // Detect if crypto mode is already enabled for this stream (PHP >= 7.0.0).
-        if (isset($metadata['crypto'])) {
-            return $resource;
-        }
-
-        if (isset($parameters->ssl) && is_array($parameters->ssl)) {
-            $options = $parameters->ssl;
-        } else {
-            $options = [];
-        }
-
-        if (!isset($options['crypto_type'])) {
-            $options['crypto_type'] = STREAM_CRYPTO_METHOD_TLS_CLIENT;
-        }
-
-        if (!stream_context_set_option($resource, ['ssl' => $options])) {
-            $this->onConnectionError('Error while setting SSL context options');
-        }
-
-        if (!stream_socket_enable_crypto($resource, true, $options['crypto_type'])) {
-            $this->onConnectionError('Error while switching to encrypted communication');
-        }
-
-        return $resource;
+        return $this->streamFactory->createStream($this->parameters);
     }
 
     /**
@@ -247,10 +107,8 @@ class StreamConnection extends AbstractConnection
     public function disconnect()
     {
         if ($this->isConnected()) {
-            $resource = $this->getResource();
-            if (is_resource($resource)) {
-                fclose($resource);
-            }
+            $this->getResource()->close();
+
             parent::disconnect();
         }
     }
@@ -260,17 +118,17 @@ class StreamConnection extends AbstractConnection
      */
     public function write(string $buffer): void
     {
-        $socket = $this->getResource();
+        $stream = $this->getResource();
 
         while (($length = strlen($buffer)) > 0) {
-            $written = is_resource($socket) ? @fwrite($socket, $buffer) : false;
+            try {
+                $written = $stream->write($buffer);
+            } catch (RuntimeException $e) {
+                $this->onStreamError($e, 'Error while writing bytes to the server.');
+            }
 
             if ($length === $written) {
                 return;
-            }
-
-            if ($written === false || $written === 0) {
-                $this->onConnectionError('Error while writing bytes to the server.');
             }
 
             $buffer = substr($buffer, $written);
@@ -280,14 +138,20 @@ class StreamConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      * @throws PushNotificationException
+     * @throws StreamInitException
      */
     public function read()
     {
-        $socket = $this->getResource();
-        $chunk = fgets($socket);
+        $stream = $this->getResource();
 
-        if ($chunk === false || $chunk === '') {
-            $this->onConnectionError('Error while reading line from the server.');
+        if ($stream->eof()) {
+            $this->onStreamError(new RuntimeException('Stream is already at the end'), '');
+        }
+
+        try {
+            $chunk = $stream->read(-1);
+        } catch (RuntimeException $e) {
+            $this->onStreamError($e, 'Error while reading line from the server.');
         }
 
         try {
@@ -321,17 +185,17 @@ class StreamConnection extends AbstractConnection
                 return $data;
 
             case Resp2Strategy::TYPE_BULK_STRING:
-                $bulkData = $this->readByChunks($socket, $parsedData['value']);
+                $bulkData = $this->readByChunks($stream, $parsedData['value']);
 
                 return substr($bulkData, 0, -2);
 
             case Resp3Strategy::TYPE_VERBATIM_STRING:
-                $bulkData = $this->readByChunks($socket, $parsedData['value']);
+                $bulkData = $this->readByChunks($stream, $parsedData['value']);
 
                 return substr($bulkData, $parsedData['offset'], -2);
 
             case Resp3Strategy::TYPE_BLOB_ERROR:
-                $errorMessage = $this->readByChunks($socket, $parsedData['value']);
+                $errorMessage = $this->readByChunks($stream, $parsedData['value']);
 
                 return new Error(substr($errorMessage, 0, -2));
 
@@ -376,37 +240,26 @@ class StreamConnection extends AbstractConnection
      */
     public function hasDataToRead(): bool
     {
-        $resource = $this->getResource();
-
-        if ($resource) {
-            $resourceArray = [$resource];
-            $write = null;
-            $except = null;
-            $num = stream_select($resourceArray, $write, $except, 0);
-
-            return $num > 0;
-        }
-
-        return false;
+        return !$this->getResource()->eof();
     }
 
     /**
      * Reads given resource split on chunks with given size.
      *
-     * @param         $resource
-     * @param  int    $chunkSize
+     * @param  StreamInterface $stream
+     * @param  int             $chunkSize
      * @return string
      */
-    private function readByChunks($resource, int $chunkSize): string
+    private function readByChunks(StreamInterface $stream, int $chunkSize): string
     {
         $string = '';
         $bytesLeft = ($chunkSize += 2);
 
         do {
-            $chunk = is_resource($resource) ? fread($resource, min($bytesLeft, 4096)) : false;
-
-            if ($chunk === false || $chunk === '') {
-                $this->onConnectionError('Error while reading bytes from the server.');
+            try {
+                $chunk = $stream->read(min($bytesLeft, 4096));
+            } catch (RuntimeException $e) {
+                $this->onStreamError($e, 'Error while reading bytes from the server.');
             }
 
             $string .= $chunk;
@@ -473,5 +326,22 @@ class StreamConnection extends AbstractConnection
         }
 
         $this->onConnectionError("Failed: {$error->getMessage()}");
+    }
+
+    /**
+     * Handles stream-related exceptions.
+     *
+     * @param  RuntimeException $e
+     * @param  string|null      $message
+     * @return void
+     */
+    protected function onStreamError(RuntimeException $e, ?string $message = null): void
+    {
+        // Code = 1 represents issues related to read/write operation.
+        if ($e->getCode() === 1) {
+            $this->onConnectionError($message);
+        }
+
+        throw $e;
     }
 }

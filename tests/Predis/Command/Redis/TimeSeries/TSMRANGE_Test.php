@@ -117,17 +117,17 @@ class TSMRANGE_Test extends PredisCommandTestCase
     {
         $redis = $this->getResp3Client();
         $expectedResponse = [
-                'type=stock' => [
-                    ['type' => 'stock'],
-                    ['reducers' => ['max']],
-                    ['sources' => ['stock:A', 'stock:B']],
-                    [
-                        [1000, 120],
-                        [1010, 110],
-                        [1020, 120],
-                    ],
+            'type=stock' => [
+                ['type' => 'stock'],
+                ['reducers' => ['max']],
+                ['sources' => ['stock:A', 'stock:B']],
+                [
+                    [1000, 120],
+                    [1010, 110],
+                    [1020, 120],
                 ],
-            ];
+            ],
+        ];
 
         $this->assertEquals(
             'OK',

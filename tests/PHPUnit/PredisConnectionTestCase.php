@@ -84,17 +84,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnInvalidScheme(): void
-    {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage("Invalid scheme: 'udp'");
-
-        $this->createConnectionWithParams(['scheme' => 'udp']);
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testExposesParameters(): void
     {
         $parameters = $this->getParameters();
@@ -201,7 +190,8 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         $connection = $this->createConnection();
 
         $this->assertFalse($connection->isConnected());
-        $this->assertIsResource($connection->getResource());
+        $connection->connect();
+
         $this->assertTrue($connection->isConnected());
     }
 
@@ -476,57 +466,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      * @group connected
      * @group slow
      */
-    public function testThrowsExceptionOnConnectionTimeout(): void
-    {
-        $this->expectException('Predis\Connection\ConnectionException');
-        $this->expectExceptionMessageMatches('/.* \[tcp:\/\/169.254.10.10:6379\]/');
-
-        $connection = $this->createConnectionWithParams([
-            'host' => '169.254.10.10',
-            'timeout' => 0.1,
-        ], false);
-
-        $connection->connect();
-    }
-
-    /**
-     * @group connected
-     * @group slow
-     */
-    public function testThrowsExceptionOnConnectionTimeoutIPv6(): void
-    {
-        $this->expectException('Predis\Connection\ConnectionException');
-        $this->expectExceptionMessageMatches('/.* \[tcp:\/\/\[0:0:0:0:0:ffff:a9fe:a0a\]:6379\]/');
-
-        $connection = $this->createConnectionWithParams([
-            'host' => '0:0:0:0:0:ffff:a9fe:a0a',
-            'timeout' => 0.1,
-        ], false);
-
-        $connection->connect();
-    }
-
-    /**
-     * @group connected
-     * @group slow
-     */
-    public function testThrowsExceptionOnUnixDomainSocketNotFound(): void
-    {
-        $this->expectException('Predis\Connection\ConnectionException');
-        $this->expectExceptionMessageMatches('/.* \[unix:\/tmp\/nonexistent\/redis\.sock]/');
-
-        $connection = $this->createConnectionWithParams([
-            'scheme' => 'unix',
-            'path' => '/tmp/nonexistent/redis.sock',
-        ], false);
-
-        $connection->connect();
-    }
-
-    /**
-     * @group connected
-     * @group slow
-     */
     public function testThrowsExceptionOnReadWriteTimeout(): void
     {
         $this->expectException('Predis\Connection\ConnectionException');
@@ -538,23 +477,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         ], true);
 
         $connection->executeCommand($commands->create('brpop', ['foo', 3]));
-    }
-
-    /**
-     * @medium
-     * @group connected
-     */
-    public function testThrowsExceptionOnProtocolDesynchronizationErrors(): void
-    {
-        $this->expectException('Predis\Protocol\ProtocolException');
-
-        $connection = $this->createConnection();
-        $stream = $connection->getResource();
-
-        $connection->writeRequest($this->getCommandFactory()->create('ping'));
-        fread($stream, 1);
-
-        $connection->read();
     }
 
     // ******************************************************************** //
@@ -590,11 +512,11 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      * This assertion will trigger a connect() operation if the connection has
      * not been open yet.
      *
-     * @param NodeConnectionInterface $connection Connection instance
+     * @param resource $resource
      */
-    protected function assertPersistentConnection(NodeConnectionInterface $connection): void
+    protected function assertPersistentConnection($resource): void
     {
-        $this->assertSame('persistent stream', get_resource_type($connection->getResource()));
+        $this->assertSame('persistent stream', get_resource_type($resource));
     }
 
     /**
@@ -603,11 +525,11 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      * This assertion will trigger a connect() operation if the connection has
      * not been open yet.
      *
-     * @param NodeConnectionInterface $connection Connection instance
+     * @param resource $resource
      */
-    protected function assertNonPersistentConnection(NodeConnectionInterface $connection): void
+    protected function assertNonPersistentConnection($resource): void
     {
-        $this->assertSame('stream', get_resource_type($connection->getResource()));
+        $this->assertSame('stream', get_resource_type($resource));
     }
 
     /**

@@ -12,7 +12,6 @@
 
 namespace Predis\Connection;
 
-use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\CommunicationException;
@@ -36,7 +35,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
      */
     protected $clientId;
 
-    private $resource;
+    protected $resource;
     private $cachedId;
 
     protected $parameters;
@@ -51,7 +50,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
      */
     public function __construct(ParametersInterface $parameters)
     {
-        $this->parameters = $this->assertParameters($parameters);
+        $this->parameters = $parameters;
         $this->setParserStrategy();
     }
 
@@ -63,23 +62,6 @@ abstract class AbstractConnection implements NodeConnectionInterface
     {
         $this->disconnect();
     }
-
-    /**
-     * Checks some of the parameters used to initialize the connection.
-     *
-     * @param ParametersInterface $parameters Initialization parameters for the connection.
-     *
-     * @return ParametersInterface
-     * @throws InvalidArgumentException
-     */
-    abstract protected function assertParameters(ParametersInterface $parameters);
-
-    /**
-     * Creates the underlying resource used to communicate with Redis.
-     *
-     * @return mixed
-     */
-    abstract protected function createResource();
 
     /**
      * {@inheritdoc}
