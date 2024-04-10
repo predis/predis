@@ -15,9 +15,11 @@ namespace Predis\Connection;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\CommunicationException;
+use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Protocol\Parser\ParserStrategyResolver;
 use Predis\Protocol\Parser\Strategy\ParserStrategyInterface;
 use Predis\Protocol\ProtocolException;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Base class with the common logic used by connection classes to communicate
@@ -78,6 +80,14 @@ abstract class AbstractConnection implements NodeConnectionInterface
     {
         return true;
     }
+
+    /**
+     * Creates a stream resource to communicate with Redis.
+     *
+     * @return StreamInterface
+     * @throws StreamInitException
+     */
+    abstract protected function createResource(): StreamInterface;
 
     /**
      * {@inheritdoc}
@@ -152,6 +162,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
      * Helper method to handle protocol errors.
      *
      * @param string $message Error message.
+     * @throws CommunicationException
      */
     protected function onProtocolError($message)
     {

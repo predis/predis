@@ -335,6 +335,36 @@ class StreamConnectionTest extends PredisConnectionTestCase
     /**
      * @group disconnected
      */
+    public function testReadAggregateDataTypesThrowsExceptionOnBrokenChunk(): void
+    {
+        $parameters = new Parameters(['protocol' => 3]);
+
+        $this->mockStreamFactory
+            ->expects($this->once())
+            ->method('createStream')
+            ->with($parameters)
+            ->willReturn($this->mockStream);
+
+        $this->mockStream
+            ->expects($this->exactly(2))
+            ->method('read')
+            ->withConsecutive([-1], [8])
+            ->willReturnOnConsecutiveCalls(
+                "$6\r\nfoobar\r\n",
+                $this->throwException(new RuntimeException('Error while reading', 1))
+            );
+
+        $connection = new StreamConnection($parameters, $this->mockStreamFactory);
+
+        $this->expectException(ConnectionException::class);
+        $this->expectExceptionMessage('Error while reading bytes from the server. [tcp://127.0.0.1:6379]');
+
+        $connection->read();
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testReadThrowsExceptionOnUnknownDataType(): void
     {
         $parameters = new Parameters(['protocol' => 3]);

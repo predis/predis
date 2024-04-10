@@ -14,6 +14,7 @@ namespace Predis\Connection;
 
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\CommunicationException;
 use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Connection\Resource\StreamFactory;
 use Predis\Connection\Resource\StreamFactoryInterface;
@@ -77,10 +78,7 @@ class StreamConnection extends AbstractConnection
     }
 
     /**
-     * Creates a stream resource to communicate with Redis.
-     *
-     * @return StreamInterface
-     * @throws StreamInitException
+     * {@inheritdoc}
      */
     protected function createResource(): StreamInterface
     {
@@ -138,7 +136,7 @@ class StreamConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      * @throws PushNotificationException
-     * @throws StreamInitException
+     * @throws StreamInitException|CommunicationException
      */
     public function read()
     {
@@ -334,6 +332,7 @@ class StreamConnection extends AbstractConnection
      * @param  RuntimeException $e
      * @param  string|null      $message
      * @return void
+     * @throws RuntimeException
      */
     protected function onStreamError(RuntimeException $e, ?string $message = null): void
     {
