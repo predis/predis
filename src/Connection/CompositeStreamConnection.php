@@ -16,24 +16,28 @@ use InvalidArgumentException;
 use Predis\Command\CommandInterface;
 use Predis\Protocol\ProtocolProcessorInterface;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
+use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 /**
  * Connection abstraction to Redis servers based on PHP's stream that uses an
  * external protocol processor defining the protocol used for the communication.
+ *
+ * @method StreamInterface getResource()
  */
 class CompositeStreamConnection extends StreamConnection implements CompositeConnectionInterface
 {
     protected $protocol;
 
     /**
-     * @param ParametersInterface        $parameters Initialization parameters for the connection.
-     * @param ProtocolProcessorInterface $protocol   Protocol processor.
+     * @param ParametersInterface             $parameters Initialization parameters for the connection.
+     * @param ProtocolProcessorInterface|null $protocol   Protocol processor.
      */
     public function __construct(
         ParametersInterface $parameters,
         ?ProtocolProcessorInterface $protocol = null
     ) {
-        $this->parameters = $this->assertParameters($parameters);
+        parent::__construct($parameters);
         $this->protocol = $protocol ?: new TextProtocolProcessor();
     }
 
@@ -63,17 +67,21 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
         }
 
         $value = '';
-        $socket = $this->getResource();
+        $stream = $this->getResource();
+
+        if ($stream->eof()) {
+            $this->onStreamError(new RuntimeException('Stream is already at the end'), '');
+        }
 
         do {
-            $chunk = fread($socket, $length);
-
-            if ($chunk === false || $chunk === '') {
-                $this->onConnectionError('Error while reading bytes from the server.');
+            try {
+                $chunk = $stream->read($length);
+            } catch (RuntimeException $e) {
+                $this->onStreamError($e, 'Error while reading bytes from the server.');
             }
 
-            $value .= $chunk;
-        } while (($length -= strlen($chunk)) > 0);
+            $value .= $chunk; // @phpstan-ignore-line
+        } while (($length -= strlen($chunk)) > 0); // @phpstan-ignore-line
 
         return $value;
     }
@@ -84,16 +92,20 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
     public function readLine()
     {
         $value = '';
-        $socket = $this->getResource();
+        $stream = $this->getResource();
+
+        if ($stream->eof()) {
+            $this->onStreamError(new RuntimeException('Stream is already at the end'), '');
+        }
 
         do {
-            $chunk = fgets($socket);
-
-            if ($chunk === false || $chunk === '') {
-                $this->onConnectionError('Error while reading line from the server.');
+            try {
+                $chunk = $stream->read(-1);
+            } catch (RuntimeException $e) {
+                $this->onStreamError($e, 'Error while reading bytes from the server.');
             }
 
-            $value .= $chunk;
+            $value .= $chunk; // @phpstan-ignore-line
         } while (substr($value, -2) !== "\r\n");
 
         return substr($value, 0, -2);

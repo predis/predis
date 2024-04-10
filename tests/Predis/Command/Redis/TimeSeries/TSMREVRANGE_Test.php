@@ -118,16 +118,16 @@ class TSMREVRANGE_Test extends PredisCommandTestCase
         $redis = $this->getResp3Client();
         $expectedResponse = [
             'type=stock' => [
-                    ['type' => 'stock'],
-                    ['reducers' => ['max']],
-                    ['sources' => ['stock:A', 'stock:B']],
-                    [
-                        [1020, 120],
-                        [1010, 110],
-                        [1000, 120],
-                    ],
+                ['type' => 'stock'],
+                ['reducers' => ['max']],
+                ['sources' => ['stock:A', 'stock:B']],
+                [
+                    [1020, 120],
+                    [1010, 110],
+                    [1000, 120],
                 ],
-            ];
+            ],
+        ];
 
         $this->assertEquals(
             'OK',

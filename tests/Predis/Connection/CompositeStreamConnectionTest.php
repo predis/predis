@@ -86,16 +86,16 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
     public function testPersistentParameterWithFalseLikeValues(): void
     {
         $connection1 = $this->createConnectionWithParams(['persistent' => 0]);
-        $this->assertNonPersistentConnection($connection1);
+        $this->assertNonPersistentConnection($connection1->getResource()->detach());
 
         $connection2 = $this->createConnectionWithParams(['persistent' => false]);
-        $this->assertNonPersistentConnection($connection2);
+        $this->assertNonPersistentConnection($connection2->getResource()->detach());
 
         $connection3 = $this->createConnectionWithParams(['persistent' => '0']);
-        $this->assertNonPersistentConnection($connection3);
+        $this->assertNonPersistentConnection($connection3->getResource()->detach());
 
         $connection4 = $this->createConnectionWithParams(['persistent' => 'false']);
-        $this->assertNonPersistentConnection($connection4);
+        $this->assertNonPersistentConnection($connection4->getResource()->detach());
     }
 
     /**
@@ -105,16 +105,16 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
     public function testPersistentParameterWithTrueLikeValues(): void
     {
         $connection1 = $this->createConnectionWithParams(['persistent' => 1]);
-        $this->assertPersistentConnection($connection1);
+        $this->assertPersistentConnection($connection1->getResource()->detach());
 
         $connection2 = $this->createConnectionWithParams(['persistent' => true]);
-        $this->assertPersistentConnection($connection2);
+        $this->assertPersistentConnection($connection2->getResource()->detach());
 
         $connection3 = $this->createConnectionWithParams(['persistent' => '1']);
-        $this->assertPersistentConnection($connection3);
+        $this->assertPersistentConnection($connection3->getResource()->detach());
 
         $connection4 = $this->createConnectionWithParams(['persistent' => 'true']);
-        $this->assertPersistentConnection($connection4);
+        $this->assertPersistentConnection($connection4->getResource()->detach());
 
         $connection1->disconnect();
     }
@@ -128,10 +128,10 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
         $connection1 = $this->createConnectionWithParams(['persistent' => true]);
         $connection2 = $this->createConnectionWithParams(['persistent' => true]);
 
-        $this->assertPersistentConnection($connection1);
-        $this->assertPersistentConnection($connection2);
+        $this->assertPersistentConnection($connection1->getResource()->detach());
+        $this->assertPersistentConnection($connection2->getResource()->detach());
 
-        $this->assertSame($connection1->getResource(), $connection2->getResource());
+        $this->assertEquals($connection1->getResource(), $connection2->getResource());
 
         $connection1->disconnect();
     }
@@ -145,8 +145,8 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
         $connection1 = $this->createConnectionWithParams(['persistent' => 'conn1']);
         $connection2 = $this->createConnectionWithParams(['persistent' => 'conn2']);
 
-        $this->assertPersistentConnection($connection1);
-        $this->assertPersistentConnection($connection2);
+        $this->assertPersistentConnection($connection1->getResource()->detach());
+        $this->assertPersistentConnection($connection2->getResource()->detach());
 
         $this->assertNotSame($connection1->getResource(), $connection2->getResource());
     }

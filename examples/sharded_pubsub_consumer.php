@@ -21,8 +21,8 @@ $client = new Client(
         'tcp://127.0.0.1:6373?read_write_timeout=0',
         'tcp://127.0.0.1:6374?read_write_timeout=0',
     ], [
-    'cluster' => 'redis',
-]);
+        'cluster' => 'redis',
+    ]);
 
 // 2. Run pub/sub loop. Sharded channels belongs to different shards.
 $pubSub = $client->pubSubLoop();
