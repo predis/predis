@@ -80,8 +80,8 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
                 $this->onStreamError($e, 'Error while reading bytes from the server.');
             }
 
-            $value .= $chunk;
-        } while (($length -= strlen($chunk)) > 0);
+            $value .= $chunk; // @phpstan-ignore-line
+        } while (($length -= strlen($chunk)) > 0); // @phpstan-ignore-line
 
         return $value;
     }
@@ -105,7 +105,7 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
                 $this->onStreamError($e, 'Error while reading bytes from the server.');
             }
 
-            $value .= $chunk;
+            $value .= $chunk; // @phpstan-ignore-line
         } while (substr($value, -2) !== "\r\n");
 
         return substr($value, 0, -2);

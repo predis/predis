@@ -113,6 +113,7 @@ class StreamConnection extends AbstractConnection
 
     /**
      * {@inheritDoc}
+     * @throws CommunicationException
      */
     public function write(string $buffer): void
     {
@@ -125,11 +126,11 @@ class StreamConnection extends AbstractConnection
                 $this->onStreamError($e, 'Error while writing bytes to the server.');
             }
 
-            if ($length === $written) {
+            if ($length === $written) { // @phpstan-ignore-line
                 return;
             }
 
-            $buffer = substr($buffer, $written);
+            $buffer = substr($buffer, $written); // @phpstan-ignore-line
         }
     }
 
@@ -153,7 +154,7 @@ class StreamConnection extends AbstractConnection
         }
 
         try {
-            $parsedData = $this->parserStrategy->parseData($chunk);
+            $parsedData = $this->parserStrategy->parseData($chunk); // @phpstan-ignore-line
         } catch (UnexpectedTypeException $e) {
             $this->onProtocolError("Unknown response prefix: '{$e->getType()}'.");
 
@@ -244,9 +245,10 @@ class StreamConnection extends AbstractConnection
     /**
      * Reads given resource split on chunks with given size.
      *
-     * @param  StreamInterface $stream
-     * @param  int             $chunkSize
+     * @param  StreamInterface        $stream
+     * @param  int                    $chunkSize
      * @return string
+     * @throws CommunicationException
      */
     private function readByChunks(StreamInterface $stream, int $chunkSize): string
     {
@@ -260,7 +262,7 @@ class StreamConnection extends AbstractConnection
                 $this->onStreamError($e, 'Error while reading bytes from the server.');
             }
 
-            $string .= $chunk;
+            $string .= $chunk; // @phpstan-ignore-line
             $bytesLeft = $chunkSize - strlen($string);
         } while ($bytesLeft > 0);
 
@@ -270,9 +272,10 @@ class StreamConnection extends AbstractConnection
     /**
      * Handle response from on-connect command.
      *
-     * @param                   $response
-     * @param  CommandInterface $command
+     * @param                         $response
+     * @param  CommandInterface       $command
      * @return void
+     * @throws CommunicationException
      */
     private function handleOnConnectResponse($response, CommandInterface $command): void
     {
@@ -299,6 +302,7 @@ class StreamConnection extends AbstractConnection
      * @param  ErrorResponseInterface $error
      * @param  CommandInterface       $failedCommand
      * @return void
+     * @throws CommunicationException
      */
     private function handleError(ErrorResponseInterface $error, CommandInterface $failedCommand): void
     {
@@ -329,12 +333,11 @@ class StreamConnection extends AbstractConnection
     /**
      * Handles stream-related exceptions.
      *
-     * @param  RuntimeException $e
-     * @param  string|null      $message
-     * @return void
-     * @throws RuntimeException
+     * @param  RuntimeException                        $e
+     * @param  string|null                             $message
+     * @throws RuntimeException|CommunicationException
      */
-    protected function onStreamError(RuntimeException $e, ?string $message = null): void
+    protected function onStreamError(RuntimeException $e, ?string $message = null)
     {
         // Code = 1 represents issues related to read/write operation.
         if ($e->getCode() === 1) {

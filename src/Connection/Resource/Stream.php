@@ -232,7 +232,7 @@ class Stream implements StreamInterface
 
     /**
      * {@inheritDoc}
-     * @param int $length If length = -1, reads a stream line by line (e.g fgets())
+     * @param  int              $length If length = -1, reads a stream line by line (e.g fgets())
      * @throws RuntimeException
      */
     public function read(int $length): string
