@@ -84,10 +84,10 @@ abstract class AbstractConnection implements NodeConnectionInterface
     /**
      * Creates a stream resource to communicate with Redis.
      *
-     * @return StreamInterface
+     * @return mixed
      * @throws StreamInitException
      */
-    abstract protected function createResource(): StreamInterface;
+    abstract protected function createResource();
 
     /**
      * {@inheritdoc}
