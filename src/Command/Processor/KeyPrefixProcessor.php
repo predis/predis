@@ -103,6 +103,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'ZCARD' => $prefixFirst,
             'ZSCORE' => $prefixFirst,
             'ZREMRANGEBYSCORE' => $prefixFirst,
+
             /* ---------------- Redis 2.0 ---------------- */
             'SETEX' => $prefixFirst,
             'APPEND' => $prefixFirst,
@@ -132,6 +133,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'PSUBSCRIBE' => $prefixAll,
             'PUNSUBSCRIBE' => $prefixAll,
             'PUBLISH' => $prefixFirst,
+
             /* ---------------- Redis 2.2 ---------------- */
             'PERSIST' => $prefixFirst,
             'STRLEN' => $prefixFirst,
@@ -145,6 +147,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'BRPOPLPUSH' => $prefixSkipLast,
             'ZREVRANGEBYSCORE' => $prefixFirst,
             'WATCH' => $prefixAll,
+
             /* ---------------- Redis 2.6 ---------------- */
             'PTTL' => $prefixFirst,
             'PEXPIRE' => $prefixFirst,
@@ -157,6 +160,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'EVAL' => $prefixEvalKeys,
             'EVALSHA' => $prefixEvalKeys,
             'MIGRATE' => $prefixMigrate,
+
             /* ---------------- Redis 2.8 ---------------- */
             'SSCAN' => $prefixFirst,
             'ZSCAN' => $prefixFirst,
@@ -169,6 +173,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'ZREMRANGEBYLEX' => $prefixFirst,
             'ZREVRANGEBYLEX' => $prefixFirst,
             'BITPOS' => $prefixFirst,
+
             /* ---------------- Redis 3.2 ---------------- */
             'HSTRLEN' => $prefixFirst,
             'BITFIELD' => $prefixFirst,
@@ -178,6 +183,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'GEODIST' => $prefixFirst,
             'GEORADIUS' => $prefixGeoradius,
             'GEORADIUSBYMEMBER' => $prefixGeoradius,
+
             /* ---------------- Redis 5.0 ---------------- */
             'XADD' => $prefixFirst,
             'XRANGE' => $prefixFirst,
@@ -186,9 +192,12 @@ class KeyPrefixProcessor implements ProcessorInterface
             'XLEN' => $prefixFirst,
             'XACK' => $prefixFirst,
             'XTRIM' => $prefixFirst,
+            'ZPOPMIN' => $prefixFirst,
+            'ZPOPMAX' => $prefixFirst,
 
             /* ---------------- Redis 6.2 ---------------- */
             'GETDEL' => $prefixFirst,
+            'ZMSCORE' => $prefixFirst,
 
             /* ---------------- Redis 7.0 ---------------- */
             'EXPIRETIME' => $prefixFirst,
