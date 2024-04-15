@@ -209,7 +209,7 @@ BUFFER;
     public function testGetsNameOfConnectionResp3(): void
     {
         $redis = $this->getResp3Client();
-        $clientName = $redis->client('GETNAME');
+        $clientName = $redis->client->getName();
         $this->assertSame('predis', $clientName);
 
         $expectedConnectionName = 'foo-bar';
@@ -305,6 +305,17 @@ BUFFER;
         $redis = $this->getClient();
 
         $redis->client->kill('127.0.0.1:65535');
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.4.0
+     */
+    public function testKillWithMaxAgeOption(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertSame(0, $redis->client->kill('MAXAGE', 100));
     }
 
     public function listArgumentsProvider(): array

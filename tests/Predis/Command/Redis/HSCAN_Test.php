@@ -163,6 +163,20 @@ class HSCAN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 7.4.0
+     */
+    public function testScanWithNoValues(): void
+    {
+        $redis = $this->getClient();
+        $redis->hmset('key', ['field:one' => 'one', 'field:two' => 'two', 'field:three' => 'three', 'field:four' => 'four']);
+
+        $response = $redis->hscan('key', 0, ['MATCH' => 'field:t*', 'NOVALUES' => true]);
+
+        $this->assertSame(['field:two', 'field:three'], $response[1]);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.8.0
      */
     public function testScanWithNoMatchingMembers(): void
