@@ -87,6 +87,7 @@ class HSCAN_Test extends PredisCommandTestCase
         $expected = ['3', ['field:1' => '1', 'field:2' => '2', 'field:3' => '3']];
 
         $command = $this->getCommand();
+        $command->setArguments($raw);
 
         $this->assertSame($expected, $command->parseResponse($raw));
     }
