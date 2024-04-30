@@ -198,6 +198,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             /* ---------------- Redis 6.2 ---------------- */
             'GETDEL' => $prefixFirst,
             'ZMSCORE' => $prefixFirst,
+            'GEOSEARCH' => $prefixFirst,
 
             /* ---------------- Redis 7.0 ---------------- */
             'EXPIRETIME' => $prefixFirst,
