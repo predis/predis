@@ -201,6 +201,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'ZMSCORE' => $prefixFirst,
             'LMOVE' => $prefixFirstTwo,
             'BLMOVE' => $prefixFirstTwo,
+            'GEOSEARCH' => $prefixFirst,
 
             /* ---------------- Redis 7.0 ---------------- */
             'EXPIRETIME' => $prefixFirst,
