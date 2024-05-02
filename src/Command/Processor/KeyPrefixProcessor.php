@@ -33,6 +33,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         $this->prefix = $prefix;
 
         $prefixFirst = static::class . '::first';
+        $prefixFirstTwo = static::class . '::firstTwo';
         $prefixAll = static::class . '::all';
         $prefixInterleaved = static::class . '::interleaved';
         $prefixSkipFirst = static::class . '::skipFirst';
@@ -198,6 +199,8 @@ class KeyPrefixProcessor implements ProcessorInterface
             /* ---------------- Redis 6.2 ---------------- */
             'GETDEL' => $prefixFirst,
             'ZMSCORE' => $prefixFirst,
+            'LMOVE' => $prefixFirstTwo,
+            'BLMOVE' => $prefixFirstTwo,
             'GEOSEARCH' => $prefixFirst,
 
             /* ---------------- Redis 7.0 ---------------- */
@@ -394,6 +397,24 @@ class KeyPrefixProcessor implements ProcessorInterface
             $arguments[0] = "$prefix{$arguments[0]}";
             $command->setRawArguments($arguments);
         }
+    }
+
+    /**
+     * Applies the specified prefix only to the first two arguments.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function firstTwo(CommandInterface $command, $prefix)
+    {
+        $arguments = $command->getArguments();
+        $length = min(count($arguments), 2);
+
+        for ($i = 0; $i < $length; $i++) {
+            $arguments[$i] = "$prefix{$arguments[$i]}";
+        }
+
+        $command->setRawArguments($arguments);
     }
 
     /**
