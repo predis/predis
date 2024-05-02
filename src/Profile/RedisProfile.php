@@ -121,7 +121,7 @@ abstract class RedisProfile implements ProfileInterface
     /**
      * {@inheritdoc}
      */
-    public function setProcessor(ProcessorInterface $processor = null)
+    public function setProcessor(?ProcessorInterface $processor = null)
     {
         $this->processor = $processor;
     }

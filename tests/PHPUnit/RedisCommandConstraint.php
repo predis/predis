@@ -24,7 +24,7 @@ class RedisCommandConstraint extends \PHPUnit_Framework_Constraint
      * @param string|CommandInterface $command   Expected command ID or instance.
      * @param array                   $arguments Expected command arguments.
      */
-    public function __construct($command = null, array $arguments = null)
+    public function __construct($command = null, ?array $arguments = null)
     {
         if ($command instanceof CommandInterface) {
             $this->commandID = strtoupper($command->getId());

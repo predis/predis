@@ -108,7 +108,7 @@ class CommunicationExceptionTest extends PredisTestCase
         Connection\NodeConnectionInterface $connection,
         $message,
         $code = 0,
-        \Exception $inner = null
+        ?\Exception $inner = null
     ) {
         $arguments = array($connection, $message, $code, $inner);
         $mock = $this->getMockForAbstractClass('Predis\CommunicationException', $arguments);

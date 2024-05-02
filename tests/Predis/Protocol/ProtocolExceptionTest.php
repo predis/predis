@@ -24,7 +24,7 @@ class ProtocolExceptionTest extends CommunicationExceptionTest
     /**
      * {@inheritdoc}
      */
-    protected function getException(NodeConnectionInterface $connection, $message, $code = 0, \Exception $inner = null)
+    protected function getException(NodeConnectionInterface $connection, $message, $code = 0, ?\Exception $inner = null)
     {
         return new ProtocolException($connection, $message, $code, $inner);
     }

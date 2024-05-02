@@ -1238,7 +1238,7 @@ class SentinelReplicationTest extends PredisTestCase
      *
      * @return SentinelReplication
      */
-    protected function getReplicationConnection($service, $sentinels, Connection\FactoryInterface $factory = null)
+    protected function getReplicationConnection($service, $sentinels, ?Connection\FactoryInterface $factory = null)
     {
         $factory = $factory ?: new Connection\Factory();
 

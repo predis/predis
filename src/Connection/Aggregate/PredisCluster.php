@@ -34,7 +34,7 @@ class PredisCluster implements ClusterInterface, \IteratorAggregate, \Countable
     /**
      * @param StrategyInterface $strategy Optional cluster strategy.
      */
-    public function __construct(StrategyInterface $strategy = null)
+    public function __construct(?StrategyInterface $strategy = null)
     {
         $this->pool = array();
         $this->strategy = $strategy ?: new PredisStrategy();

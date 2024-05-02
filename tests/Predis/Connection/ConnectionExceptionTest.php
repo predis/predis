@@ -23,7 +23,7 @@ class ConnectionExceptionTest extends CommunicationExceptionTest
     /**
      * {@inheritdoc}
      */
-    protected function getException(NodeConnectionInterface $connection, $message, $code = 0, \Exception $inner = null)
+    protected function getException(NodeConnectionInterface $connection, $message, $code = 0, ?\Exception $inner = null)
     {
         return new ConnectionException($connection, $message, $code, $inner);
     }

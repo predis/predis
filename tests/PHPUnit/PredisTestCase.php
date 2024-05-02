@@ -50,7 +50,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
      *
      * @return RedisCommandConstraint
      */
-    public function isRedisCommand($command = null, array $arguments = null)
+    public function isRedisCommand($command = null, ?array $arguments = null)
     {
         return new RedisCommandConstraint($command, $arguments);
     }
@@ -179,7 +179,7 @@ abstract class PredisTestCase extends \PHPUnit_Framework_TestCase
      *
      * @return Client
      */
-    protected function createClient(array $parameters = null, array $options = null, $flushdb = true)
+    protected function createClient(?array $parameters = null, ?array $options = null, $flushdb = true)
     {
         $parameters = array_merge(
             $this->getDefaultParametersArray(),
