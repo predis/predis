@@ -28,7 +28,7 @@ class ProtocolExceptionTest extends CommunicationExceptionTest
         NodeConnectionInterface $connection,
         string $message,
         int $code = 0,
-        Exception $inner = null
+        ?Exception $inner = null
     ): CommunicationException {
         return new ProtocolException($connection, $message, $code, $inner);
     }
