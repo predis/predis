@@ -12,10 +12,13 @@
 
 namespace Predis\Command\Redis\TimeSeries;
 
+use Predis\Command\Argument\TimeSeries\AddArguments;
+use Predis\Command\Argument\TimeSeries\AlterArguments;
 use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
+use UnexpectedValueException;
 
 /**
  * @group commands
@@ -49,6 +52,20 @@ class TSCREATE_Test extends PredisCommandTestCase
         $command->setArguments($actualArguments);
 
         $this->assertSameValues($expectedArguments, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testFilterArgumentsThrowsExceptionOnNonPositiveValues(): void
+    {
+        $command = $this->getCommand();
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage("Ignore does not accept non-positive values");
+
+        $command->setArguments(['key', 123123121321, 1.0, (new CreateArguments())->ignore(-2, -1)]);
     }
 
     /**
@@ -117,6 +134,14 @@ class TSCREATE_Test extends PredisCommandTestCase
             'with DUPLICATE_POLICY modifier' => [
                 ['key', (new CreateArguments())->duplicatePolicy(CommonArguments::POLICY_FIRST)],
                 ['key', 'DUPLICATE_POLICY', CommonArguments::POLICY_FIRST],
+            ],
+            'with IGNORE modifier - with both values' => [
+                ['key', (new CreateArguments())->ignore(10, 1.1)],
+                ['key', 'IGNORE', 10, 1.1],
+            ],
+            'with IGNORE modifier - with one of values' => [
+                ['key', (new CreateArguments())->ignore(10)],
+                ['key', 'IGNORE', 10, 0.0],
             ],
             'with all modifiers' => [
                 ['key', (new CreateArguments())->retentionMsecs(100)->encoding(CreateArguments::ENCODING_UNCOMPRESSED)->chunkSize(100)->duplicatePolicy(CommonArguments::POLICY_FIRST)],
