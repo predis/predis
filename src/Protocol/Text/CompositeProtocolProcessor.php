@@ -37,12 +37,12 @@ class CompositeProtocolProcessor implements ProtocolProcessorInterface
     protected $reader;
 
     /**
-     * @param RequestSerializerInterface $serializer Request serializer.
-     * @param ResponseReaderInterface    $reader     Response reader.
+     * @param RequestSerializerInterface|null $serializer Request serializer.
+     * @param ResponseReaderInterface|null    $reader     Response reader.
      */
     public function __construct(
-        RequestSerializerInterface $serializer = null,
-        ResponseReaderInterface $reader = null
+        ?RequestSerializerInterface $serializer = null,
+        ?ResponseReaderInterface $reader = null
     ) {
         $this->setRequestSerializer($serializer ?: new RequestSerializer());
         $this->setResponseReader($reader ?: new ResponseReader());

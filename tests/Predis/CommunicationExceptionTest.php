@@ -123,7 +123,7 @@ class CommunicationExceptionTest extends PredisTestCase
         Connection\NodeConnectionInterface $connection,
         string $message,
         int $code = 0,
-        Exception $inner = null
+        ?Exception $inner = null
     ) {
         return $this->getMockBuilder('Predis\CommunicationException')
             ->setConstructorArgs([$connection, $message, $code, $inner])

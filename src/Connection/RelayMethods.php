@@ -28,11 +28,11 @@ trait RelayMethods
     /**
      * Registers a new `invalidated` event listener.
      *
-     * @param  callable $callback
-     * @param  string   $pattern
+     * @param  callable    $callback
+     * @param  string|null $pattern
      * @return bool
      */
-    public function onInvalidated(?callable $callback, string $pattern = null)
+    public function onInvalidated(?callable $callback, ?string $pattern = null)
     {
         return $this->client->onInvalidated($callback, $pattern);
     }
@@ -129,7 +129,7 @@ trait RelayMethods
      * @param  ?int    $db
      * @return bool
      */
-    public function flushMemory(string $endpointId = null, int $db = null)
+    public function flushMemory(?string $endpointId = null, ?int $db = null)
     {
         return $this->client->flushMemory($endpointId, $db);
     }

@@ -19,9 +19,9 @@ use Predis\Response\Status;
  * @method string dump()
  * @method Status flush(?string $mode = null)
  * @method Status kill()
- * @method array  list(string $libraryNamePattern = null, bool $withCode = false)
+ * @method array  list(?string $libraryNamePattern = null, bool $withCode = false)
  * @method string load(string $functionCode, bool $replace = 'false')
- * @method Status restore(string $value, string $policy = null)
+ * @method Status restore(string $value, ?string $policy = null)
  * @method array  stats()
  */
 class FunctionContainer extends AbstractContainer
