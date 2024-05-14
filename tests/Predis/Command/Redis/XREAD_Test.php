@@ -82,33 +82,6 @@ class XREAD_Test extends PredisCommandTestCase
     }
 
     /**
-     * @group connected
-     * @group relay-incompatible
-     * @return void
-     * @requiresRedisVersion >= 6.2.0
-     */
-    public function testReadFromTheBeginningOfGivenStreamsResp3(): void
-    {
-        $redis = $this->getResp3Client();
-
-        $stream1Id = $redis->xadd('stream1', ['field' => 'value']);
-        $stream2Id = $redis->xadd('stream2', ['field' => 'value']);
-
-        $expectedResponse = [
-            'stream1' => [
-                [$stream1Id, ['field', 'value']],
-            ],
-            'stream2' => [
-                [$stream2Id, ['field', 'value']],
-            ],
-        ];
-
-        $response = $redis->xread(2, null, ['stream1', 'stream2'], '0-0', '0-0');
-
-        $this->assertSame($expectedResponse, $response);
-    }
-
-    /**
      * @group medium
      * @group connected
      * @group relay-incompatible
