@@ -126,13 +126,9 @@ class TSADD_Test extends PredisCommandTestCase
                 ['key', 123123121321, 1.0, (new AddArguments())->onDuplicate(CommonArguments::POLICY_FIRST)],
                 ['key', 123123121321, 1.0, 'ON_DUPLICATE', CommonArguments::POLICY_FIRST],
             ],
-            'with IGNORE modifier - with both values' => [
+            'with IGNORE modifier' => [
                 ['key', 123123121321, 1.0, (new AddArguments())->ignore(10, 1.1)],
                 ['key', 123123121321, 1.0, 'IGNORE', 10, 1.1],
-            ],
-            'with IGNORE modifier - with one of values' => [
-                ['key', 123123121321, 1.0, (new AddArguments())->ignore(10)],
-                ['key', 123123121321, 1.0, 'IGNORE', 10, 0.0],
             ],
             'with all modifiers' => [
                 ['key', 123123121321, 1.0, (new AddArguments())->retentionMsecs(100)->encoding(CommonArguments::ENCODING_UNCOMPRESSED)->chunkSize(100)->onDuplicate(CommonArguments::POLICY_FIRST)],

@@ -52,17 +52,13 @@ class CommonArguments implements ArrayableArgument
      * @param float|null $maxValDiff Non-negative float value
      * @return $this
      */
-    public function ignore(int $maxTimeDiff = null, float $maxValDiff = null): self
+    public function ignore(int $maxTimeDiff, float $maxValDiff): self
     {
-        if (null === $maxTimeDiff && null === $maxValDiff) {
-            return $this;
-        }
-
         if ($maxTimeDiff < 0 || $maxValDiff < 0) {
             throw new UnexpectedValueException("Ignore does not accept non-positive values");
         }
 
-        array_push($this->arguments, 'IGNORE', $maxTimeDiff ?? 0, $maxValDiff ?? 0.0);
+        array_push($this->arguments, 'IGNORE', $maxTimeDiff, $maxValDiff);
 
         return $this;
     }

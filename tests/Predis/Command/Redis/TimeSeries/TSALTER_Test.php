@@ -139,13 +139,9 @@ class TSALTER_Test extends PredisCommandTestCase
                 ['key', (new AlterArguments())->duplicatePolicy(CommonArguments::POLICY_FIRST)],
                 ['key', 'DUPLICATE_POLICY', CommonArguments::POLICY_FIRST],
             ],
-            'with IGNORE modifier - with both values' => [
+            'with IGNORE modifier' => [
                 ['key', (new AlterArguments())->ignore(10, 1.1)],
                 ['key', 'IGNORE', 10, 1.1],
-            ],
-            'with IGNORE modifier - with one of values' => [
-                ['key', (new AlterArguments())->ignore(10)],
-                ['key', 'IGNORE', 10, 0.0],
             ],
             'with all modifiers' => [
                 ['key', (new AlterArguments())->retentionMsecs(100)->chunkSize(100)->duplicatePolicy(CommonArguments::POLICY_FIRST)],
