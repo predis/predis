@@ -14,6 +14,8 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
+use Predis\Command\Argument\Hash\HGetFArguments;
+use Predis\Command\Argument\Hash\HSetFArguments;
 use Predis\Command\Argument\Search\AggregateArguments;
 use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
@@ -171,6 +173,7 @@ use Predis\Response\Status;
  * @method array|null        hpexpireat(string $key, int $unixTimeMilliseconds, array $fields, string $flag = null)
  * @method array|null        hpexpiretime(string $key, array $fields)
  * @method string|null       hget(string $key, string $field)
+ * @method array|null        hgetf(string $key, array $fields, HGetFArguments $arguments = null)
  * @method array             hgetall(string $key)
  * @method int               hincrby(string $key, string $field, int $increment)
  * @method string            hincrbyfloat(string $key, string $field, int|float $increment)
@@ -181,6 +184,7 @@ use Predis\Response\Status;
  * @method array             hrandfield(string $key, int $count = 1, bool $withValues = false)
  * @method array             hscan(string $key, $cursor, array $options = null)
  * @method int               hset(string $key, string $field, string $value)
+ * @method mixed             hsetf(string $key, array $keyValuePairs, HSetFArguments $arguments = null)
  * @method int               hsetnx(string $key, string $field, string $value)
  * @method array|null        httl(string $key, array $fields)
  * @method array|null        hpttl(string $key, array $fields)
