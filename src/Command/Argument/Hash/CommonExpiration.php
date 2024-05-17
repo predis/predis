@@ -39,13 +39,13 @@ abstract class CommonExpiration implements ArrayableArgument
     /**
      * Set the modifier that defines a behaviour on expiration.
      *
-     * NX - for each specified field: set expiration only when the field has no expiration
+     * NX - for each specified field set expiration only when the field has no expiration
      *
-     * XX - for each specified field: set expiration only when the field has an existing expiration
+     * XX - for each specified field set expiration only when the field has an existing expiration
      *
-     * GT - for each specified field: set expiration only when the new expiration time is greater than the field's current one. A field with no expiration is treated as an infinite expiration.
+     * GT - for each specified field set expiration only when the new expiration time is greater than the field's current one. A field with no expiration is treated as an infinite expiration.
      *
-     * LT - for each specified field: set expiration only when the new expiration time is less than the field's current one. A field with no expiration is treated as an infinite expiration.
+     * LT - for each specified field set expiration only when the new expiration time is less than the field's current one. A field with no expiration is treated as an infinite expiration.
      *
      * @param  string $modifier
      * @return $this
@@ -64,13 +64,13 @@ abstract class CommonExpiration implements ArrayableArgument
     /**
      * Set the TTL for each specified field.
      *
-     * EX seconds – for each specified field: set the remaining time to live in seconds
+     * EX seconds – for each specified field set the remaining time to live in seconds
      *
-     * PX milliseconds – for each specified field: set the remaining time to live in milliseconds
+     * PX milliseconds – for each specified field set the remaining time to live in milliseconds
      *
-     * EXAT unix-time-seconds – for each specified field: set the expiration time to a UNIX timestamp specified in seconds since the Unix epoch
+     * EXAT unix-time-seconds – for each specified field set the expiration time to a UNIX timestamp specified in seconds since the Unix epoch
      *
-     * PXAT unix-time-milliseconds – for each specified field: set the expiration time to a UNIX timestamp specified in milliseconds since the Unix epoch
+     * PXAT unix-time-milliseconds – for each specified field set the expiration time to a UNIX timestamp specified in milliseconds since the Unix epoch
      *
      * @param  string $modifier
      * @param  int    $value
