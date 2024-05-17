@@ -43,9 +43,11 @@ abstract class CommonExpiration implements ArrayableArgument
      *
      * XX for each specified field set expiration only when the field has an existing expiration
      *
-     * GT for each specified field set expiration only when the new expiration time is greater than the field's current one. A field with no expiration is treated as an infinite expiration.
+     * GT for each specified field set expiration only when the new expiration time is greater than the field's current one.
+     * A field with no expiration is treated as an infinite expiration.
      *
-     * LT for each specified field set expiration only when the new expiration time is less than the field's current one. A field with no expiration is treated as an infinite expiration.
+     * LT for each specified field set expiration only when the new expiration time is less than the field's current one.
+     * A field with no expiration is treated as an infinite expiration.
      *
      * @param  string $modifier
      * @return $this
