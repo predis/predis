@@ -45,9 +45,9 @@ class HSetFArguments extends CommonExpiration
     /**
      * Set the modifier that define a behaviour on already existing/non-existing fields.
      *
-     * DCF - for each specified field if the field already exists set the field's value and expiration time ignore fields that do not exist
+     * DCF for each specified field if the field already exists set the field's value and expiration time ignore fields that do not exist
      *
-     * DOF - for each specified field if such field does not exist create field and set its value and expiration time ignore fields that already exists
+     * DOF for each specified field if such field does not exist create field and set its value and expiration time ignore fields that already exists
      *
      * @param  string $modifier
      * @return $this
@@ -66,9 +66,9 @@ class HSetFArguments extends CommonExpiration
     /**
      * Set the modifier that define a return value to be old/new field value.
      *
-     * GETNEW - new value of field or null if field does not exist and DCF specified.
+     * GETNEW new value of field or null if field does not exist and DCF specified.
      *
-     * GETOLD - old value of field or null if no such field existed before the command execution.
+     * GETOLD old value of field or null if no such field existed before the command execution.
      *
      * @param  string $modifier
      * @return $this
