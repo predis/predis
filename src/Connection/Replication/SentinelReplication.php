@@ -117,7 +117,7 @@ class SentinelReplication implements ReplicationInterface
      * @param string                     $service           Name of the service for autodiscovery.
      * @param array                      $sentinels         Sentinel servers connection parameters.
      * @param ConnectionFactoryInterface $connectionFactory Connection factory instance.
-     * @param ReplicationStrategy        $strategy          Replication strategy instance.
+     * @param ReplicationStrategy|null   $strategy          Replication strategy instance.
      */
     public function __construct(
         $service,

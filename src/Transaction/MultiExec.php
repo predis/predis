@@ -49,7 +49,7 @@ class MultiExec implements ClientContextInterface
 
     /**
      * @param ClientInterface $client  Client instance used by the transaction.
-     * @param array           $options Initialization options.
+     * @param array|null      $options Initialization options.
      */
     public function __construct(ClientInterface $client, ?array $options = null)
     {

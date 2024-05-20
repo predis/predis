@@ -50,7 +50,7 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $distributor;
 
     /**
-     * @param StrategyInterface $strategy Optional cluster strategy.
+     * @param StrategyInterface|null $strategy Optional cluster strategy.
      */
     public function __construct(?StrategyInterface $strategy = null)
     {

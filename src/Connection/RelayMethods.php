@@ -28,8 +28,8 @@ trait RelayMethods
     /**
      * Registers a new `invalidated` event listener.
      *
-     * @param  callable $callback
-     * @param  string   $pattern
+     * @param  callable    $callback
+     * @param  string|null $pattern
      * @return bool
      */
     public function onInvalidated(?callable $callback, ?string $pattern = null)

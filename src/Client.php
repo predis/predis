@@ -520,8 +520,8 @@ class Client implements ClientInterface, IteratorAggregate
     /**
      * Actual transaction context initializer method.
      *
-     * @param array $options  Options for the context.
-     * @param mixed $callable Optional callable used to execute the context.
+     * @param array|null $options  Options for the context.
+     * @param mixed      $callable Optional callable used to execute the context.
      *
      * @return MultiExecTransaction|array
      */
@@ -552,8 +552,8 @@ class Client implements ClientInterface, IteratorAggregate
     /**
      * Actual publish/subscribe context initializer method.
      *
-     * @param array $options  Options for the context.
-     * @param mixed $callable Optional callable used to execute the context.
+     * @param array|null $options  Options for the context.
+     * @param mixed      $callable Optional callable used to execute the context.
      *
      * @return PubSubConsumer|null
      */

@@ -26,8 +26,8 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
     protected $protocol;
 
     /**
-     * @param ParametersInterface        $parameters Initialization parameters for the connection.
-     * @param ProtocolProcessorInterface $protocol   Protocol processor.
+     * @param ParametersInterface             $parameters Initialization parameters for the connection.
+     * @param ProtocolProcessorInterface|null $protocol   Protocol processor.
      */
     public function __construct(
         ParametersInterface $parameters,
