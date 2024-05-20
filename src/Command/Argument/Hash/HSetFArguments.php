@@ -58,6 +58,10 @@ class HSetFArguments extends CommonExpiration
             throw new UnexpectedValueException('Incorrect field modifier value');
         }
 
+        if (!empty(array_intersect($this->fieldModifierEnum, $this->arguments))) {
+            throw new UnexpectedValueException('Cannot be mixed with other field modifiers');
+        }
+
         $this->arguments[] = strtoupper($modifier);
 
         return $this;
@@ -77,6 +81,10 @@ class HSetFArguments extends CommonExpiration
     {
         if (!in_array(strtoupper($modifier), $this->getModifierEnum, true)) {
             throw new UnexpectedValueException('Incorrect get modifier value');
+        }
+
+        if (!empty(array_intersect($this->getModifierEnum, $this->arguments))) {
+            throw new UnexpectedValueException('Cannot be mixed with other GET modifiers');
         }
 
         $this->arguments[] = strtoupper($modifier);

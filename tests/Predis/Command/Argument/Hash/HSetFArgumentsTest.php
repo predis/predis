@@ -51,6 +51,20 @@ class HSetFArgumentsTest extends TestCase
 
     /**
      * @group disconnected
+     * @return void
+     */
+    public function testSetFieldModifierThrowsExceptionOnAlreadySetModifier(): void
+    {
+        $test = (new HSetFArguments())->setFieldModifier('dof');
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Cannot be mixed with other field modifiers');
+
+        $test->setFieldModifier('dcf');
+    }
+
+    /**
+     * @group disconnected
      * @dataProvider getModifierProvider
      * @param  string $modifier
      * @return void
@@ -70,6 +84,20 @@ class HSetFArgumentsTest extends TestCase
         $this->expectExceptionMessage('Incorrect get modifier value');
 
         (new HSetFArguments())->setGetModifier('wrong');
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testSetGetModifierThrowsExceptionOnAlreadySetModifier(): void
+    {
+        $test = (new HSetFArguments())->setGetModifier('getold');
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Cannot be mixed with other GET modifiers');
+
+        $test->setGetModifier('getnew');
     }
 
     /**

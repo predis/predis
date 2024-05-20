@@ -42,7 +42,7 @@ class HEXPIRE extends RedisCommand
         }
 
         if (array_key_exists(2, $arguments) && null !== $arguments[2]) {
-            $processedArguments[] = count($arguments[2]);
+            array_push($processedArguments, 'FIELDS', count($arguments[2]));
             $processedArguments = array_merge($processedArguments, $arguments[2]);
         }
 

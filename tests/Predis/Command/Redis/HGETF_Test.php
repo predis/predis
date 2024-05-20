@@ -62,7 +62,7 @@ class HGETF_Test extends PredisCommandTestCase
             $redis->hgetf(
                 'test',
                 ['field1', 'field2', 'field3', 'field4'],
-                (new HGetFArguments())->setExpirationModifier('nx')->setTTLModifier('px', 10))
+                (new HGetFArguments())->setOverrideModifier('nx')->setTTLModifier('px', 10))
         );
         $this->assertSame(['value3', 'value4'],
             $redis->hgetf(
@@ -84,19 +84,19 @@ class HGETF_Test extends PredisCommandTestCase
                 ['key', 'FIELDS', 2, 'field1', 'field2'],
             ],
             'with expiration modifier argument - NX' => [
-                ['key', ['field1', 'field2'], (new HGetFArguments())->setExpirationModifier('nx')],
+                ['key', ['field1', 'field2'], (new HGetFArguments())->setOverrideModifier('nx')],
                 ['key', 'NX', 'FIELDS', 2, 'field1', 'field2'],
             ],
             'with expiration modifier argument - XX' => [
-                ['key', ['field1', 'field2'], (new HGetFArguments())->setExpirationModifier('xx')],
+                ['key', ['field1', 'field2'], (new HGetFArguments())->setOverrideModifier('xx')],
                 ['key', 'XX', 'FIELDS', 2, 'field1', 'field2'],
             ],
             'with expiration modifier argument - GT' => [
-                ['key', ['field1', 'field2'], (new HGetFArguments())->setExpirationModifier('gt')],
+                ['key', ['field1', 'field2'], (new HGetFArguments())->setOverrideModifier('gt')],
                 ['key', 'GT', 'FIELDS', 2, 'field1', 'field2'],
             ],
             'with expiration modifier argument - LT' => [
-                ['key', ['field1', 'field2'], (new HGetFArguments())->setExpirationModifier('lt')],
+                ['key', ['field1', 'field2'], (new HGetFArguments())->setOverrideModifier('lt')],
                 ['key', 'LT', 'FIELDS', 2, 'field1', 'field2'],
             ],
             'with TTL modifier argument - EX' => [

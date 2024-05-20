@@ -118,19 +118,19 @@ class HSETF_Test extends PredisCommandTestCase
                 ['key', 'DOF', 'FVS', 2, 'field1', 'value1', 'field2', 'value2'],
             ],
             'with expiration modifier argument - NX' => [
-                ['key', ['field1' => 'value1', 'field2' => 'value2'], (new HSetFArguments())->setExpirationModifier('nx')],
+                ['key', ['field1' => 'value1', 'field2' => 'value2'], (new HSetFArguments())->setOverrideModifier('nx')],
                 ['key', 'NX', 'FVS', 2, 'field1', 'value1', 'field2', 'value2'],
             ],
             'with expiration modifier argument - XX' => [
-                ['key', ['field1' => 'value1', 'field2' => 'value2'], (new HSetFArguments())->setExpirationModifier('xx')],
+                ['key', ['field1' => 'value1', 'field2' => 'value2'], (new HSetFArguments())->setOverrideModifier('xx')],
                 ['key', 'XX', 'FVS', 2, 'field1', 'value1', 'field2', 'value2'],
             ],
             'with expiration modifier argument - GT' => [
-                ['key', ['field1' => 'value1', 'field2' => 'value2'], (new HSetFArguments())->setExpirationModifier('gt')],
+                ['key', ['field1' => 'value1', 'field2' => 'value2'], (new HSetFArguments())->setOverrideModifier('gt')],
                 ['key', 'GT', 'FVS', 2, 'field1', 'value1', 'field2', 'value2'],
             ],
             'with expiration modifier argument - LT' => [
-                ['key', ['field1' => 'value1', 'field2' => 'value2'], (new HSetFArguments())->setExpirationModifier('lt')],
+                ['key', ['field1' => 'value1', 'field2' => 'value2'], (new HSetFArguments())->setOverrideModifier('lt')],
                 ['key', 'LT', 'FVS', 2, 'field1', 'value1', 'field2', 'value2'],
             ],
             'with get modifier argument - GETNEW' => [

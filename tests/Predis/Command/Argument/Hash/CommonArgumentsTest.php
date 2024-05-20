@@ -35,7 +35,7 @@ class CommonArgumentsTest extends TestCase
      */
     public function testSetExpirationModifier(string $modifier): void
     {
-        $this->assertSame([strtoupper($modifier)], $this->testClass->setExpirationModifier($modifier)->toArray());
+        $this->assertSame([strtoupper($modifier)], $this->testClass->setOverrideModifier($modifier)->toArray());
     }
 
     /**
@@ -47,7 +47,21 @@ class CommonArgumentsTest extends TestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Incorrect expire modifier value');
 
-        $this->testClass->setExpirationModifier('wrong');
+        $this->testClass->setOverrideModifier('wrong');
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testSetExpirationThrowsExceptionOnAlreadySetModifier(): void
+    {
+        $this->testClass->setOverrideModifier('NX');
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Cannot be mixed with other override modifiers');
+
+        $this->testClass->setOverrideModifier('XX');
     }
 
     /**
@@ -71,6 +85,20 @@ class CommonArgumentsTest extends TestCase
         $this->expectExceptionMessage('Incorrect TTL modifier');
 
         $this->testClass->setTTLModifier('wrong', 10);
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testSetTTLExpirationThrowsExceptionOnAlreadySetModifier(): void
+    {
+        $this->testClass->setTTLModifier('ex', 10);
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Cannot be mixed with other TTL modifiers');
+
+        $this->testClass->setTTLModifier('px', 10);
     }
 
     public function expirationModifierProvider(): array

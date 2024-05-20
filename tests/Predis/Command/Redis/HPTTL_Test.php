@@ -38,7 +38,7 @@ class HPTTL_Test extends PredisCommandTestCase
         $command = $this->getCommand();
         $command->setArguments(['key', ['field1', 'field2']]);
 
-        $this->assertSame(['key', 2, 'field1', 'field2'], $command->getArguments());
+        $this->assertSame(['key', 'FIELDS', 2, 'field1', 'field2'], $command->getArguments());
     }
 
     /**

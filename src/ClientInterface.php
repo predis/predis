@@ -184,7 +184,7 @@ use Predis\Response\Status;
  * @method array             hrandfield(string $key, int $count = 1, bool $withValues = false)
  * @method array             hscan(string $key, $cursor, array $options = null)
  * @method int               hset(string $key, string $field, string $value)
- * @method mixed             hsetf(string $key, array $keyValuePairs, HSetFArguments $arguments = null)
+ * @method mixed             hsetf(string $key, array $dictionary, HSetFArguments $arguments = null)
  * @method int               hsetnx(string $key, string $field, string $value)
  * @method array|null        httl(string $key, array $fields)
  * @method array|null        hpttl(string $key, array $fields)

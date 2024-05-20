@@ -23,7 +23,7 @@ class HTTL extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        $processedArguments = [$arguments[0], count($arguments[1])];
+        $processedArguments = [$arguments[0], 'FIELDS', count($arguments[1])];
         $processedArguments = array_merge($processedArguments, $arguments[1]);
 
         parent::setArguments($processedArguments);

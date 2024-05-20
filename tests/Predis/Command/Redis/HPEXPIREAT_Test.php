@@ -140,7 +140,7 @@ class HPEXPIREAT_Test extends PredisCommandTestCase
         return [
             'with specified fields' => [
                 ['key', 100, ['field1', 'field2']],
-                ['key', 100, 2, 'field1', 'field2'],
+                ['key', 100, 'FIELDS', 2, 'field1', 'field2'],
             ],
             'with specified flag' => [
                 ['key', 100, null, 'NX'],
@@ -148,7 +148,7 @@ class HPEXPIREAT_Test extends PredisCommandTestCase
             ],
             'with all arguments' => [
                 ['key', 100, ['field1', 'field2'], 'XX'],
-                ['key', 100, 'XX', 2, 'field1', 'field2'],
+                ['key', 100, 'XX', 'FIELDS', 2, 'field1', 'field2'],
             ],
         ];
     }

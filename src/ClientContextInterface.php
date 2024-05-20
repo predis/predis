@@ -175,7 +175,7 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this hrandfield(string $key, int $count = 1, bool $withValues = false)
  * @method $this hscan($key, $cursor, array $options = null)
  * @method $this hset($key, $field, $value)
- * @method $this hsetf(string $key, array $keyValuePairs, HSetFArguments $arguments = null)
+ * @method $this hsetf(string $key, array $dictionary, HSetFArguments $arguments = null)
  * @method $this hsetnx($key, $field, $value)
  * @method $this httl(string $key, array $fields)
  * @method $this hpttl(string $key, array $fields)
