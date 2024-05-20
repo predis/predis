@@ -48,8 +48,8 @@ class CommonArguments implements ArrayableArgument
     /**
      * Ignore samples with given time or value difference.
      *
-     * @param int|null $maxTimeDiff Non-negative integer value in milliseconds
-     * @param float|null $maxValDiff Non-negative float value
+     * @param int $maxTimeDiff Non-negative integer value in milliseconds
+     * @param float $maxValDiff Non-negative float value
      * @return $this
      */
     public function ignore(int $maxTimeDiff, float $maxValDiff): self

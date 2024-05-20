@@ -105,4 +105,14 @@ class CommonArgumentsTest extends TestCase
 
         $this->assertSame(['SELECTED_LABELS', 'label1', 'label2'], $this->arguments->toArray());
     }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithIgnoreModifier(): void
+    {
+        $this->arguments->ignore(10, 10);
+
+        $this->assertEquals(['IGNORE', 10, 10], $this->arguments->toArray());
+    }
 }
