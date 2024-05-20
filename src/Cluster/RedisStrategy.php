@@ -25,7 +25,7 @@ class RedisStrategy extends ClusterStrategy
     protected $hashGenerator;
 
     /**
-     * @param HashGeneratorInterface $hashGenerator Hash generator instance.
+     * @param HashGeneratorInterface|null $hashGenerator Hash generator instance.
      */
     public function __construct(?HashGeneratorInterface $hashGenerator = null)
     {
