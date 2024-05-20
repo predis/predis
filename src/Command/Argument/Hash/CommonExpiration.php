@@ -76,7 +76,8 @@ abstract class CommonExpiration implements ArrayableArgument
      *
      * EXAT unix-time-seconds for each specified field set the expiration time to a UNIX timestamp specified in seconds since the Unix epoch.
      *
-     * PXAT unix-time-milliseconds for each specified field set the expiration time to a UNIX timestamp specified in milliseconds since the Unix epoch.
+     * PXAT unix-time-milliseconds for each specified field set the expiration time to a UNIX timestamp specified in
+     * milliseconds since the Unix epoch.
      *
      * @param  string $modifier
      * @param  int    $value
