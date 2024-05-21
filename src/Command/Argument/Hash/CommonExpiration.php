@@ -89,7 +89,7 @@ abstract class CommonExpiration implements ArrayableArgument
             throw new UnexpectedValueException('Incorrect TTL modifier');
         }
 
-        $allModifiers = $this->ttlModifierEnum + ['KEEPTTL, PERSIST'];
+        $allModifiers = $this->ttlModifierEnum + ['KEEPTTL', 'PERSIST'];
 
         if (!empty(array_intersect($allModifiers, $this->arguments))) {
             throw new UnexpectedValueException('Cannot be mixed with other TTL modifiers');
