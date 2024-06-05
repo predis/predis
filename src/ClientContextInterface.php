@@ -14,8 +14,6 @@ namespace Predis;
 
 use Predis\Command\Argument\Geospatial\ByInterface;
 use Predis\Command\Argument\Geospatial\FromInterface;
-use Predis\Command\Argument\Hash\HGetFArguments;
-use Predis\Command\Argument\Hash\HSetFArguments;
 use Predis\Command\Argument\Search\AggregateArguments;
 use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
@@ -164,7 +162,6 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this hpexpireat(string $key, int $unixTimeMilliseconds, array $fields, string $flag = null)
  * @method $this hpexpiretime(string $key, array $fields)
  * @method $this hget($key, $field)
- * @method $this hgetf(string $key, array $fields, HGetFArguments $arguments = null)
  * @method $this hgetall($key)
  * @method $this hincrby($key, $field, $increment)
  * @method $this hincrbyfloat($key, $field, $increment)
@@ -175,7 +172,6 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this hrandfield(string $key, int $count = 1, bool $withValues = false)
  * @method $this hscan($key, $cursor, ?array $options = null)
  * @method $this hset($key, $field, $value)
- * @method $this hsetf(string $key, array $dictionary, HSetFArguments $arguments = null)
  * @method $this hsetnx($key, $field, $value)
  * @method $this httl(string $key, array $fields)
  * @method $this hpttl(string $key, array $fields)
