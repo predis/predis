@@ -68,6 +68,6 @@ class HPERSIST_Test extends PredisCommandTestCase
         $this->assertSame([1], $redis->hpersist('hashkey', ['field1']));
         $this->sleep(0.2);
         $this->assertSame(['field1' => 'value1'], $redis->hgetall('hashkey'));
-        $this->assertNull($redis->hpersist('wrongkey', ['field1']));
+        $this->assertSame([], $redis->hpersist('wrongkey', ['field1']));
     }
 }

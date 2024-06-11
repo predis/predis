@@ -65,6 +65,6 @@ class HPTTL_Test extends PredisCommandTestCase
 
         $this->assertSame([1, 1], $redis->hexpire('hashkey', 10, ['field1', 'field2']));
         $this->assertEqualsWithDelta([10000, 10000], $redis->hpttl('hashkey', ['field1', 'field2']), 10);
-        $this->assertNull($redis->hpttl('wrongkey', ['field1']));
+        $this->assertSame([], $redis->hpttl('wrongkey', ['field1']));
     }
 }

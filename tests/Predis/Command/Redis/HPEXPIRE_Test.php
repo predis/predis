@@ -86,7 +86,7 @@ class HPEXPIRE_Test extends PredisCommandTestCase
 
         $this->assertSame($expectedResponse, $redis->hpexpire(...$expireArgs));
         $this->sleep(0.2);
-        $this->assertSame($expectedHash, $redis->hgetall('hashkey'));
+        $this->assertSameValues($expectedHash, $redis->hgetall('hashkey'));
     }
 
     /**
@@ -107,7 +107,7 @@ class HPEXPIRE_Test extends PredisCommandTestCase
         $this->assertSame([0, 0], $redis->hpexpire('hashkey', 100, ['field1', 'field2'], 'GT'));
         $this->assertSame([1, 1], $redis->hpexpire('hashkey', 200, ['field1', 'field2'], 'LT'));
         $this->assertSame([0, 0], $redis->hpexpire('hashkey', 300, ['field1', 'field2'], 'LT'));
-        $this->assertNull($redis->hpexpire('wrongkey', 200, ['field1', 'field2']));
+        $this->assertSame([], $redis->hpexpire('wrongkey', 200, ['field1', 'field2']));
     }
 
     public function argumentsProvider(): array

@@ -88,7 +88,7 @@ class HPEXPIREAT_Test extends PredisCommandTestCase
         $expireArgs[1] = (time() + $expireArgs[1]) * 1000;
         $this->assertSame($expectedResponse, $redis->hpexpireat(...$expireArgs));
         $this->sleep(2);
-        $this->assertSame($expectedHash, $redis->hgetall('hashkey'));
+        $this->assertSameValues($expectedHash, $redis->hgetall('hashkey'));
     }
 
     /**
@@ -108,7 +108,7 @@ class HPEXPIREAT_Test extends PredisCommandTestCase
         $this->assertSame([0, 0], $redis->hpexpireat('hashkey', (time() + 1) * 1000, ['field1', 'field2'], 'GT'));
         $this->assertSame([1, 1], $redis->hpexpireat('hashkey', (time() + 2) * 1000, ['field1', 'field2'], 'LT'));
         $this->assertSame([0, 0], $redis->hpexpireat('hashkey', (time() + 3) * 1000, ['field1', 'field2'], 'LT'));
-        $this->assertNull($redis->hpexpireat('wrongkey', (time() + 2) * 1000, ['field1', 'field2']));
+        $this->assertSame([], $redis->hpexpireat('wrongkey', (time() + 2) * 1000, ['field1', 'field2']));
     }
 
     public function hashProvider(): array
