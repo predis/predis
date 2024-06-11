@@ -113,7 +113,7 @@ class XREAD_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-incompatible
      * @return void
-     * @requiresRedisVersion >= 7.4.0
+     * @requiresRedisVersion >= 7.3.0
      */
     public function testReadFromGivenStreamsStartingFromLastAvailableId(): void
     {

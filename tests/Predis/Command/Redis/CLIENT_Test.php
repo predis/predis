@@ -240,7 +240,7 @@ BUFFER;
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 7.4.0
+     * @requiresRedisVersion >= 7.3.0
      */
     public function testKillWithMaxAgeOption(): void
     {
