@@ -72,7 +72,7 @@ class HPEXPIRE_Test extends PredisCommandTestCase
      * @dataProvider hashProvider
      * @group connected
      * @group medium
-     * @requiresRedisVersion >= 7.4.4
+     * @requiresRedisVersion >= 7.3.0
      */
     public function testHashExpiresCorrectlyWithNoFlags(
         array $hashArgs,
@@ -92,7 +92,7 @@ class HPEXPIRE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group medium
-     * @requiresRedisVersion >= 7.4.4
+     * @requiresRedisVersion >= 7.3.0
      */
     public function testHashExpiresCorrectlyWithFlags(): void
     {

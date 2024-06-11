@@ -72,7 +72,7 @@ class HEXPIREAT_Test extends PredisCommandTestCase
      * @dataProvider hashProvider
      * @group connected
      * @group slow
-     * @requiresRedisVersion >= 7.4.4
+     * @requiresRedisVersion >= 7.3.0
      */
     public function testHashExpiresCorrectlyWithNoFlags(
         array $hashArgs,
@@ -93,7 +93,7 @@ class HEXPIREAT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 7.4.4
+     * @requiresRedisVersion >= 7.3.0
      */
     public function testHashExpiresCorrectlyWithFlags(): void
     {

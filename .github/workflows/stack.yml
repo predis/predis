@@ -33,6 +33,7 @@ jobs:
           - '8.3'
         redis:
           - latest
+          - 7.4.0-rc1
 
     continue-on-error: ${{ matrix.php == '8.3' }}
 

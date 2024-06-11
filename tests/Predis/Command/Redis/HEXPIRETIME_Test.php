@@ -55,7 +55,7 @@ class HEXPIRETIME_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 7.4.4
+     * @requiresRedisVersion >= 7.3.0
      */
     public function testReturnsExpirationTimestamp(): void
     {

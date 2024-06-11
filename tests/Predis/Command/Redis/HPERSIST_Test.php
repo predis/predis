@@ -56,7 +56,7 @@ class HPERSIST_Test extends PredisCommandTestCase
      * @group connected
      * @group medium
      * @return void
-     * @requiresRedisVersion >= 7.4.4
+     * @requiresRedisVersion >= 7.3.0
      */
     public function testRemovesExpirationFromGivenField(): void
     {
