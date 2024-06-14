@@ -14,7 +14,6 @@ namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
-use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -137,7 +136,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        $hashResponse = $redis->hmset('test:1', ['text_empty' => ""]);
+        $hashResponse = $redis->hmset('test:1', ['text_empty' => '']);
         $this->assertEquals('OK', $hashResponse);
 
         $schema = [
@@ -166,7 +165,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $searchArgs->dialect(5);
 
         $this->assertSame(
-            [1, "test:1", ['text_empty', ""]],
+            [1, 'test:1', ['text_empty', '']],
             $redis->ftsearch('idx', '@text_empty:("")', $searchArgs)
         );
 
@@ -219,7 +218,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $searchArgs->dialect(5);
 
         $this->assertSame(
-            [1, "test:1", ['$', '[{"text_empty":""}]']],
+            [1, 'test:1', ['$', '[{"text_empty":""}]']],
             $redis->ftsearch('idx', '@text_empty:("")', $searchArgs)
         );
 

@@ -17,7 +17,6 @@ use Predis\Command\Argument\Search\SchemaFields\GeoField;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
 use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
-use Predis\Command\Argument\Search\SchemaFields\VectorField;
 use Predis\Command\Redis\PredisCommandTestCase;
 
 /**

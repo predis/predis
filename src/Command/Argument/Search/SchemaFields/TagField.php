@@ -15,13 +15,13 @@ namespace Predis\Command\Argument\Search\SchemaFields;
 class TagField extends AbstractField
 {
     /**
-     * @param string $identifier
-     * @param string $alias
+     * @param string      $identifier
+     * @param string      $alias
      * @param bool|string $sortable
-     * @param bool $noIndex
-     * @param string $separator
-     * @param bool $caseSensitive
-     * @param bool $allowsEmpty
+     * @param bool        $noIndex
+     * @param string      $separator
+     * @param bool        $caseSensitive
+     * @param bool        $allowsEmpty
      */
     public function __construct(
         string $identifier,

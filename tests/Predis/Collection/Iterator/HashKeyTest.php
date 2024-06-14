@@ -63,7 +63,7 @@ class HashKeyTest extends PredisTestCase
             ->with('key:hash', 0, [])
             ->willReturn(
                 [0, [],
-            ]);
+                ]);
 
         $iterator = new HashKey($client, 'key:hash');
 
