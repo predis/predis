@@ -15,12 +15,13 @@ namespace Predis\Command\Argument\Search\SchemaFields;
 class TagField extends AbstractField
 {
     /**
-     * @param string      $identifier
-     * @param string      $alias
+     * @param string $identifier
+     * @param string $alias
      * @param bool|string $sortable
-     * @param bool        $noIndex
-     * @param string      $separator
-     * @param bool        $caseSensitive
+     * @param bool $noIndex
+     * @param string $separator
+     * @param bool $caseSensitive
+     * @param bool $allowsEmpty
      */
     public function __construct(
         string $identifier,
@@ -28,9 +29,11 @@ class TagField extends AbstractField
         $sortable = self::NOT_SORTABLE,
         bool $noIndex = false,
         string $separator = ',',
-        bool $caseSensitive = false
+        bool $caseSensitive = false,
+        bool $allowsEmpty = false,
+        bool $allowsMissing = false
     ) {
-        $this->setCommonOptions('TAG', $identifier, $alias, $sortable, $noIndex);
+        $this->setCommonOptions('TAG', $identifier, $alias, $sortable, $noIndex, $allowsMissing);
 
         if ($separator !== ',') {
             $this->fieldArguments[] = 'SEPARATOR';
@@ -39,6 +42,10 @@ class TagField extends AbstractField
 
         if ($caseSensitive) {
             $this->fieldArguments[] = 'CASESENSITIVE';
+        }
+
+        if ($allowsEmpty) {
+            $this->fieldArguments[] = 'INDEXEMPTY';
         }
     }
 }

@@ -52,6 +52,14 @@ class TextFieldTest extends TestCase
                 ['field_name', '', AbstractField::NOT_SORTABLE, true],
                 ['field_name', 'TEXT', 'NOINDEX'],
             ],
+            'with INDEXEMPTY modifier' => [
+                ['field_name', '', AbstractField::NOT_SORTABLE, false, false, '', 1 ,false, true],
+                ['field_name', 'TEXT', "INDEXEMPTY"],
+            ],
+            'with INDEXMISSING modifier' => [
+                ['field_name', '', AbstractField::NOT_SORTABLE, false, false, '', 1 ,false, false, true],
+                ['field_name', 'TEXT', "INDEXMISSING"],
+            ],
         ];
     }
 }

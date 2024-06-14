@@ -13,9 +13,11 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\CreateArguments;
+use Predis\Command\Argument\Search\SchemaFields\GeoField;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
 use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
+use Predis\Command\Argument\Search\SchemaFields\VectorField;
 use Predis\Command\Redis\PredisCommandTestCase;
 
 /**
@@ -82,6 +84,43 @@ class FTCREATE_Test extends PredisCommandTestCase
         $arguments->stopWords(['hello', 'world']);
 
         $actualResponse = $redis->ftcreate('index', $schema, $arguments);
+
+        $this->assertEquals('OK', $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.9.0
+     */
+    public function testCreatesSearchIndexWithMissingAndEmptyFields(): void
+    {
+        $redis = $this->getClient();
+
+        $schema = [
+            new TextField(
+                'text_empty',
+                '',
+                false, false, false, '', 1, false, true
+            ),
+            new TagField('tag_empty',
+                '', false, false, ',', false, true
+            ),
+            new NumericField('num_missing', '', false, false, true),
+            new GeoField('geo_missing', '', false, false, true),
+            new TextField(
+                'text_empty_missing',
+                '',
+                false,
+                false, false, '', 1, false, true, true
+            ),
+            new TagField('tag_empty_missing',
+                '', false, false, ',', false, true, true
+            ),
+        ];
+
+        $actualResponse = $redis->ftcreate('index', $schema);
 
         $this->assertEquals('OK', $actualResponse);
     }

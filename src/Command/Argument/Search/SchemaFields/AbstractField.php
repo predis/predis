@@ -24,11 +24,12 @@ abstract class AbstractField implements FieldInterface
     protected $fieldArguments = [];
 
     /**
-     * @param  string      $fieldType
-     * @param  string      $identifier
-     * @param  string      $alias
-     * @param  bool|string $sortable
-     * @param  bool        $noIndex
+     * @param string $fieldType
+     * @param string $identifier
+     * @param string $alias
+     * @param bool|string $sortable
+     * @param bool $noIndex
+     * @param bool $allowsMissing
      * @return void
      */
     protected function setCommonOptions(
@@ -36,7 +37,8 @@ abstract class AbstractField implements FieldInterface
         string $identifier,
         string $alias = '',
         $sortable = self::NOT_SORTABLE,
-        bool $noIndex = false
+        bool $noIndex = false,
+        bool $allowsMissing = false
     ): void {
         $this->fieldArguments[] = $identifier;
 
@@ -56,6 +58,10 @@ abstract class AbstractField implements FieldInterface
 
         if ($noIndex) {
             $this->fieldArguments[] = 'NOINDEX';
+        }
+
+        if ($allowsMissing) {
+            $this->fieldArguments[] = 'INDEXMISSING';
         }
     }
 
