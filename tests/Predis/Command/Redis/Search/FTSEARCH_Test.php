@@ -125,6 +125,64 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->assertSame($expectedResponse, $actualResponse);
     }
 
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.9.0
+     */
+    public function testSearchWithEnhancedMatchingCapabilities(): void
+    {
+        $redis = $this->getClient();
+
+        $hashResponse = $redis->hmset(
+            'test:1', 'uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', 5
+        );
+        $this->assertEquals('OK', $hashResponse);
+
+        $ftCreateArguments = new CreateArguments();
+        $ftCreateArguments->prefix(['test:']);
+
+        $schema = [
+            new TextField('uuid'),
+            new TextField('email'),
+            new NumericField('num'),
+        ];
+
+        $ftCreateResponse = $redis->ftcreate('idx_hash', $schema, $ftCreateArguments);
+        $this->assertEquals('OK', $ftCreateResponse);
+
+        $ftSearchArguments = new SearchArguments();
+        $ftSearchArguments->dialect(5);
+
+        $actualResponse = $redis->ftsearch(
+            'idx_hash', '@uuid:(3d3586fe 0416 4572 8ce)', $ftSearchArguments
+        );
+
+        $this->assertSame([
+            1, 'test:1',
+            ['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', '5']], $actualResponse
+        );
+
+        $actualResponse = $redis->ftsearch(
+            'idx_hash', '@email:(adriano acme com ie)', $ftSearchArguments
+        );
+
+        $this->assertSame([
+            1, 'test:1',
+            ['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', '5']], $actualResponse
+        );
+
+        $actualResponse = $redis->ftsearch(
+            'idx_hash', '@num:[5]', $ftSearchArguments
+        );
+
+        $this->assertSame([
+            1, 'test:1',
+            ['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', '5']], $actualResponse
+        );
+    }
+
     public function argumentsProvider(): array
     {
         return [
