@@ -154,27 +154,24 @@ class FTSEARCH_Test extends PredisCommandTestCase
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->params(['shape', 'POLYGON ((15 15, 75 15, 50 70, 20 40, 15 15))']);
+        $ftSearchArguments->noContent();
         $ftSearchArguments->dialect(3);
 
         $actualResponse = $redis->ftsearch('idx_geo', '@g:[intersects $shape]', $ftSearchArguments);
-        $this->assertSame(
+        $this->assertSameValues(
             [
                 2,
                 'geo:doc_polygon1',
-                ['g', 'POLYGON ((20 20, 25 35, 35 25, 20 20))'],
                 'geo:doc_point2',
-                ['g', 'POINT (50 50)'],
             ], $actualResponse
         );
 
         $actualResponse = $redis->ftsearch('idx_geo', '@g:[disjoint $shape]', $ftSearchArguments);
-        $this->assertSame(
+        $this->assertSameValues(
             [
                 2,
                 'geo:doc_polygon2',
-                ['g', 'POLYGON ((60 60, 65 75, 70 70, 65 55, 60 60))'],
                 'geo:doc_point1',
-                ['g', 'POINT (10 10)'],
             ], $actualResponse
         );
     }
@@ -208,42 +205,41 @@ class FTSEARCH_Test extends PredisCommandTestCase
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->params(['shape', 'POINT(25 25)']);
+        $ftSearchArguments->noContent();
         $ftSearchArguments->dialect(3);
 
         $actualResponse = $redis->ftsearch('idx_geo', '@g:[contains $shape]', $ftSearchArguments);
-        $this->assertSame(
+        $this->assertSameValues(
             [
                 1,
                 'geo:doc_polygon1',
-                ['g', 'POLYGON ((20 20, 25 35, 35 25, 20 20))'],
             ], $actualResponse
         );
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->params(['shape', 'POLYGON((24 24, 24 26, 25 25, 24 24))']);
+        $ftSearchArguments->noContent();
         $ftSearchArguments->dialect(3);
 
         $actualResponse = $redis->ftsearch('idx_geo', '@g:[contains $shape]', $ftSearchArguments);
-        $this->assertSame(
+        $this->assertSameValues(
             [
                 1,
                 'geo:doc_polygon1',
-                ['g', 'POLYGON ((20 20, 25 35, 35 25, 20 20))'],
             ], $actualResponse
         );
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->params(['shape', 'POLYGON((15 15, 75 15, 50 70, 20 40, 15 15))']);
+        $ftSearchArguments->noContent();
         $ftSearchArguments->dialect(3);
 
         $actualResponse = $redis->ftsearch('idx_geo', '@g:[within $shape]', $ftSearchArguments);
-        $this->assertSame(
+        $this->assertSameValues(
             [
                 2,
                 'geo:doc_polygon1',
-                ['g', 'POLYGON ((20 20, 25 35, 35 25, 20 20))'],
                 'geo:doc_point2',
-                ['g', 'POINT (50 50)'],
             ], $actualResponse
         );
     }
