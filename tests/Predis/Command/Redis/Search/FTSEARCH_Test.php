@@ -14,6 +14,7 @@ namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
+use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -144,8 +145,8 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $ftCreateArguments->prefix(['test:']);
 
         $schema = [
-            new TextField('uuid'),
-            new TextField('email'),
+            new TagField('uuid'),
+            new TagField('email'),
             new NumericField('num'),
         ];
 
@@ -153,10 +154,11 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $ftCreateResponse);
 
         $ftSearchArguments = new SearchArguments();
+        $ftSearchArguments->params(["uuid", "3d3586fe-0416-4572-8ce", "email", "adriano@acme.com.ie"]);
         $ftSearchArguments->dialect(5);
 
         $actualResponse = $redis->ftsearch(
-            'idx_hash', '@uuid:(3d3586fe 0416 4572 8ce)', $ftSearchArguments
+            'idx_hash', '@uuid:{$uuid}', $ftSearchArguments
         );
 
         $this->assertSame([
@@ -165,7 +167,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         );
 
         $actualResponse = $redis->ftsearch(
-            'idx_hash', '@email:(adriano acme com ie)', $ftSearchArguments
+            'idx_hash', '@email:{$email}', $ftSearchArguments
         );
 
         $this->assertSame([
