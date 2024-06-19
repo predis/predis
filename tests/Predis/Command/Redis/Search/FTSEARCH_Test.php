@@ -154,7 +154,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $ftCreateResponse);
 
         $ftSearchArguments = new SearchArguments();
-        $ftSearchArguments->params(["uuid", "3d3586fe-0416-4572-8ce", "email", "adriano@acme.com.ie"]);
+        $ftSearchArguments->params(['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie']);
         $ftSearchArguments->dialect(5);
 
         $actualResponse = $redis->ftsearch(
