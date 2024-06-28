@@ -13,7 +13,7 @@
 /**
  * PHPUnit constraint matching arrays with same elements even in different order.
  */
-class ArrayHasSameValuesConstraint extends \PHPUnit\Framework\Constraint\Constraint
+class ArrayHasSameValuesConstraint extends PHPUnit\Framework\Constraint\Constraint
 {
     protected $array;
 

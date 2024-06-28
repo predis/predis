@@ -36,7 +36,7 @@ class ConnectionsTest extends PredisTestCase
      */
     public function testAcceptsNamedArrayWithSchemeToConnectionClassMappings(): void
     {
-        /** @var \Predis\Configuration\OptionsInterface */
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $class = get_class($this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock());
@@ -139,7 +139,7 @@ class ConnectionsTest extends PredisTestCase
     {
         $parameters = ['database' => 5, 'password' => 'mypassword'];
 
-        /** @var \Predis\Configuration\OptionsInterface|\PHPUnit\Framework\MockObject\MockObject\MockObject */
+        /** @var OptionsInterface|\PHPUnit\Framework\MockObject\MockObject\MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
             ->expects($this->once())
@@ -184,7 +184,7 @@ class ConnectionsTest extends PredisTestCase
     {
         $option = new Connections();
 
-        /** @var \Predis\Configuration\OptionsInterface */
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $callable = $this->getMockBuilder('stdClass')
@@ -211,7 +211,7 @@ class ConnectionsTest extends PredisTestCase
 
         $option = new Connections();
 
-        /** @var \Predis\Configuration\OptionsInterface */
+        /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $option->filter($options, new stdClass());
