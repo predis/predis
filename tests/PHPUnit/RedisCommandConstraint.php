@@ -16,7 +16,7 @@ use SebastianBergmann\Exporter\Exporter;
 /**
  * PHPUnit constraint to verify that a Redis command matches certain conditions.
  */
-class RedisCommandConstraint extends \PHPUnit\Framework\Constraint\Constraint
+class RedisCommandConstraint extends PHPUnit\Framework\Constraint\Constraint
 {
     protected $commandID;
     protected $arguments;
