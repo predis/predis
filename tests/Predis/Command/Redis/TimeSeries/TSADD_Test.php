@@ -61,7 +61,7 @@ class TSADD_Test extends PredisCommandTestCase
         $command = $this->getCommand();
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Ignore does not accept non-positive values");
+        $this->expectExceptionMessage('Ignore does not accept non-positive values');
 
         $command->setArguments(['key', 123123121321, 1.0, (new AddArguments())->ignore(-2, -1)]);
     }

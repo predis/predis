@@ -48,14 +48,14 @@ class CommonArguments implements ArrayableArgument
     /**
      * Ignore samples with given time or value difference.
      *
-     * @param int $maxTimeDiff Non-negative integer value in milliseconds
-     * @param float $maxValDiff Non-negative float value
+     * @param  int   $maxTimeDiff Non-negative integer value in milliseconds
+     * @param  float $maxValDiff  Non-negative float value
      * @return $this
      */
     public function ignore(int $maxTimeDiff, float $maxValDiff): self
     {
         if ($maxTimeDiff < 0 || $maxValDiff < 0) {
-            throw new UnexpectedValueException("Ignore does not accept non-positive values");
+            throw new UnexpectedValueException('Ignore does not accept non-positive values');
         }
 
         array_push($this->arguments, 'IGNORE', $maxTimeDiff, $maxValDiff);

@@ -12,7 +12,6 @@
 
 namespace Predis\Command\Redis\TimeSeries;
 
-use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\AlterArguments;
 use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
@@ -63,7 +62,7 @@ class TSALTER_Test extends PredisCommandTestCase
         $command = $this->getCommand();
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Ignore does not accept non-positive values");
+        $this->expectExceptionMessage('Ignore does not accept non-positive values');
 
         $command->setArguments(['key', 123123121321, 1.0, (new AlterArguments())->ignore(-2, -1)]);
     }
