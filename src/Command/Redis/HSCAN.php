@@ -20,6 +20,11 @@ use Predis\Command\Command as RedisCommand;
 class HSCAN extends RedisCommand
 {
     /**
+     * @var array
+     */
+    private $arguments;
+
+    /**
      * {@inheritdoc}
      */
     public function getId()
@@ -37,6 +42,7 @@ class HSCAN extends RedisCommand
             $arguments = array_merge($arguments, $options);
         }
 
+        $this->arguments = $arguments;
         parent::setArguments($arguments);
     }
 
@@ -62,6 +68,10 @@ class HSCAN extends RedisCommand
             $normalized[] = $options['COUNT'];
         }
 
+        if (!empty($options['NOVALUES']) && true === $options['NOVALUES']) {
+            $normalized[] = 'NOVALUES';
+        }
+
         return $normalized;
     }
 
@@ -70,15 +80,17 @@ class HSCAN extends RedisCommand
      */
     public function parseResponse($data)
     {
-        if (is_array($data)) {
-            $fields = $data[1];
-            $result = [];
+        if (!in_array('NOVALUES', $this->arguments, true)) {
+            if (is_array($data)) {
+                $fields = $data[1];
+                $result = [];
 
-            for ($i = 0; $i < count($fields); ++$i) {
-                $result[$fields[$i]] = $fields[++$i];
+                for ($i = 0; $i < count($fields); ++$i) {
+                    $result[$fields[$i]] = $fields[++$i];
+                }
+
+                $data[1] = $result;
             }
-
-            $data[1] = $result;
         }
 
         return $data;

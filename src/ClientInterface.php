@@ -281,6 +281,7 @@ use Predis\Response\Status;
  * @method array             xrevrange(string $key, string $end, string $start, ?int $count = null)
  * @method array             xrange(string $key, string $start, string $end, ?int $count = null)
  * @method string            xtrim(string $key, array|string $strategy, string $threshold, ?array $options = null)
+ * @method array|null        xread(int $count = null, int $block = null, array $streams = null, string ...$id)
  * @method int               zadd(string $key, array $membersAndScoresDictionary)
  * @method int               zcard(string $key)
  * @method string            zcount(string $key, int|string $min, int|string $max)

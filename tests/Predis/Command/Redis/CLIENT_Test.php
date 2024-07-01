@@ -237,4 +237,15 @@ BUFFER;
 
         $redis->client('KILL', '127.0.0.1:65535');
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.3.0
+     */
+    public function testKillWithMaxAgeOption(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertSame(0, $redis->client('KILL', 'MAXAGE', 100));
+    }
 }

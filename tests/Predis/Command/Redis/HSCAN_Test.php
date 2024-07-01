@@ -85,6 +85,7 @@ class HSCAN_Test extends PredisCommandTestCase
         $expected = ['3', ['field:1' => '1', 'field:2' => '2', 'field:3' => '3']];
 
         $command = $this->getCommand();
+        $command->setArguments($raw);
 
         $this->assertSame($expected, $command->parseResponse($raw));
     }
@@ -121,6 +122,20 @@ class HSCAN_Test extends PredisCommandTestCase
 
         $this->assertSame(['field:two', 'field:three'], array_keys($response[1]));
         $this->assertSame(['two', 'three'], array_values($response[1]));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.3.0
+     */
+    public function testScanWithNoValues(): void
+    {
+        $redis = $this->getClient();
+        $redis->hmset('key', ['field:one' => 'one', 'field:two' => 'two', 'field:three' => 'three', 'field:four' => 'four']);
+
+        $response = $redis->hscan('key', 0, ['MATCH' => 'field:t*', 'NOVALUES' => true]);
+
+        $this->assertSame(['field:two', 'field:three'], $response[1]);
     }
 
     /**
