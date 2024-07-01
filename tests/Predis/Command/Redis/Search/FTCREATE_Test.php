@@ -17,6 +17,7 @@ use Predis\Command\Argument\Search\SchemaFields\GeoField;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
 use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
+use Predis\Command\Argument\Search\SchemaFields\VectorField;
 use Predis\Command\Redis\PredisCommandTestCase;
 
 /**
@@ -83,6 +84,32 @@ class FTCREATE_Test extends PredisCommandTestCase
         $arguments->stopWords(['hello', 'world']);
 
         $actualResponse = $redis->ftcreate('index', $schema, $arguments);
+
+        $this->assertEquals('OK', $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.9.0
+     */
+    public function testCreatesSearchIndexWithFloat16Vector(): void
+    {
+        $redis = $this->getClient();
+
+        $schema = [
+            new VectorField('float16',
+                'FLAT',
+                ['TYPE', 'FLOAT16', 'DIM', 768, 'DISTANCE_METRIC', 'COSINE']
+            ),
+            new VectorField('bfloat16',
+                'FLAT',
+                ['TYPE', 'BFLOAT16', 'DIM', 768, 'DISTANCE_METRIC', 'COSINE']
+            ),
+        ];
+
+        $actualResponse = $redis->ftcreate('index', $schema);
 
         $this->assertEquals('OK', $actualResponse);
     }
