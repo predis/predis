@@ -13,6 +13,7 @@
 namespace Predis\Command\Argument\TimeSeries;
 
 use PHPUnit\Framework\TestCase;
+use UnexpectedValueException;
 
 class CommonArgumentsTest extends TestCase
 {
@@ -114,5 +115,16 @@ class CommonArgumentsTest extends TestCase
         $this->arguments->ignore(10, 10);
 
         $this->assertEquals(['IGNORE', 10, 10], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testIgnoreModifierThrowsExceptionOnNonPositiveValues(): void
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Ignore does not accept non-positive values');
+
+        $this->arguments->ignore(-1, -1);
     }
 }
