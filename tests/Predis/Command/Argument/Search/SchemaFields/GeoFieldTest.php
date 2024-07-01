@@ -52,6 +52,10 @@ class GeoFieldTest extends TestCase
                 ['field_name', '', AbstractField::NOT_SORTABLE, true],
                 ['field_name', 'GEO', 'NOINDEX'],
             ],
+            'with INDEXMISSING modifier' => [
+                ['field_name', '', AbstractField::NOT_SORTABLE, false, true],
+                ['field_name', 'GEO', 'INDEXMISSING'],
+            ],
         ];
     }
 }
