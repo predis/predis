@@ -122,6 +122,24 @@ class TSDECRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.12.0
+     */
+    public function testDecrByCreateNewSampleWithIgnoreArgument(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals(
+            123123123123,
+            $redis->tsdecrby(
+                'temperature:2:32',
+                27,
+                (new DecrByArguments())->timestamp(123123123123)->ignore(10, 10))
+        );
+    }
+
+    /**
+     * @group connected
      * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
