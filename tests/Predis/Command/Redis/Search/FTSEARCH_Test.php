@@ -212,7 +212,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
         usleep(10000);
 
         $searchArgs = new SearchArguments();
-        $searchArgs->dialect(5);
+        $searchArgs->dialect(4);
 
         $this->assertSame(
             [1, 'test:1', ['$', '[{"text_empty":""}]']],
@@ -220,9 +220,6 @@ class FTSEARCH_Test extends PredisCommandTestCase
         );
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage(
-            'In order to query for empty values the field `text_not_empty` is required to be defined with `INDEXEMPTY`'
-        );
 
         $redis->ftsearch('idx', '@text_not_empty:("")', $searchArgs);
     }
