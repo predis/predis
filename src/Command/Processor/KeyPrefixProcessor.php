@@ -94,6 +94,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'SDIFF' => $prefixAll,
             'SDIFFSTORE' => $prefixAll,
             'SMEMBERS' => $prefixFirst,
+            'SMISMEMBER' => $prefixFirst,
             'SRANDMEMBER' => $prefixFirst,
             'ZADD' => $prefixFirst,
             'ZINCRBY' => $prefixFirst,
