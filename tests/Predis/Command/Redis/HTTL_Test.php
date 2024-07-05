@@ -65,6 +65,6 @@ class HTTL_Test extends PredisCommandTestCase
 
         $this->assertSame([1, 1], $redis->hexpire('hashkey', 10, ['field1', 'field2']));
         $this->assertSame([10, 10], $redis->httl('hashkey', ['field1', 'field2']));
-        $this->assertSame([], $redis->httl('wrongkey', ['field1']));
+        $this->assertSame([-2], $redis->httl('wrongkey', ['field1']));
     }
 }

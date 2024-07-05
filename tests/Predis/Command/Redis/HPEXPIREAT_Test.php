@@ -108,7 +108,7 @@ class HPEXPIREAT_Test extends PredisCommandTestCase
         $this->assertSame([0, 0], $redis->hpexpireat('hashkey', (time() + 1) * 1000, ['field1', 'field2'], 'GT'));
         $this->assertSame([1, 1], $redis->hpexpireat('hashkey', (time() + 2) * 1000, ['field1', 'field2'], 'LT'));
         $this->assertSame([0, 0], $redis->hpexpireat('hashkey', (time() + 3) * 1000, ['field1', 'field2'], 'LT'));
-        $this->assertSame([], $redis->hpexpireat('wrongkey', (time() + 2) * 1000, ['field1', 'field2']));
+        $this->assertSame([-2, -2], $redis->hpexpireat('wrongkey', (time() + 2) * 1000, ['field1', 'field2']));
     }
 
     public function hashProvider(): array

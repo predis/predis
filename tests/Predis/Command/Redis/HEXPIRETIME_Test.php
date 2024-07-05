@@ -66,6 +66,6 @@ class HEXPIRETIME_Test extends PredisCommandTestCase
         $expireAt = time() + 10;
         $this->assertSame([1, 1], $redis->hexpireat('hashkey', $expireAt, ['field1', 'field2']));
         $this->assertSame([$expireAt, $expireAt], $redis->hexpiretime('hashkey', ['field1', 'field2']));
-        $this->assertSame([], $redis->hexpiretime('wrongkey', ['field1']));
+        $this->assertSame([-2], $redis->hexpiretime('wrongkey', ['field1']));
     }
 }
