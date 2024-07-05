@@ -33,6 +33,7 @@ jobs:
           - '8.3'
         redis:
           - latest
+          - edge
 
     continue-on-error: ${{ matrix.php == '8.3' }}
 
