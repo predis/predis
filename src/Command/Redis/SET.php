@@ -26,4 +26,10 @@ class SET extends RedisCommand
     {
         return 'SET';
     }
+
+    public function setArguments(array $arguments)
+    {
+        parent::setArguments($arguments);
+        $this->filterArguments();
+    }
 }
