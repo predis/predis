@@ -108,7 +108,7 @@ class TSALTER_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisTimeSeriesVersion >= 1.12.0
+     * @requiresRedisTimeSeriesVersion >= 1.12.01
      */
     public function testAlterUpdatesExistingTimeSeriesWithIgnoreOption(): void
     {
@@ -126,11 +126,27 @@ class TSALTER_Test extends PredisCommandTestCase
 
         $alterArguments = (new AlterArguments())
             ->retentionMsecs(10000000)
+            ->duplicatePolicy(CommonArguments::POLICY_LAST)
             ->ignore(10, 10);
 
         $this->assertEquals(
             'OK',
             $redis->tsalter('temperature:2:32', $alterArguments)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1000, 27)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1005, 27)
+        );
+
+        $this->assertEquals(
+            1005,
+            $redis->tsadd('temperature:2:32', 1005, 38)
         );
     }
 

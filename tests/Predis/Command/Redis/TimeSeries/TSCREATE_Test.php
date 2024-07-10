@@ -99,7 +99,7 @@ class TSCREATE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisTimeSeriesVersion >= 1.12.0
+     * @requiresRedisTimeSeriesVersion >= 1.12.01
      */
     public function testCreatesTimeSeriesWithIgnoreOption(): void
     {
@@ -107,13 +107,28 @@ class TSCREATE_Test extends PredisCommandTestCase
 
         $arguments = (new CreateArguments())
             ->retentionMsecs(60000)
-            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->duplicatePolicy(CommonArguments::POLICY_LAST)
             ->labels('sensor_id', 2, 'area_id', 32)
             ->ignore(10, 10);
 
         $this->assertEquals(
             'OK',
             $redis->tscreate('temperature:2:32', $arguments)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1000, 27)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1005, 27)
+        );
+
+        $this->assertEquals(
+            1005,
+            $redis->tsadd('temperature:2:32', 1005, 38)
         );
     }
 

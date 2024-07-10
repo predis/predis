@@ -494,7 +494,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
     protected function isSatisfiedRedisModuleVersion(string $versionToCheck, string $module): bool
     {
         $currentVersion = $this->getRedisModuleVersion($this->modulesMapping[$module]['name']);
-        $versionToCheck = str_replace('.', '0', $versionToCheck);
+        $versionToCheck = str_replace('.', '', $versionToCheck);
 
         return $currentVersion >= (int) $versionToCheck;
     }

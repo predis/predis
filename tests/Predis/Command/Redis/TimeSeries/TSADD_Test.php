@@ -107,19 +107,32 @@ class TSADD_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisTimeSeriesVersion >= 1.12.0
+     * @requiresRedisTimeSeriesVersion >= 1.12.01
      */
     public function testAddSampleIntoTimeSeriesWithIgnoreArgument(): void
     {
         $redis = $this->getClient();
 
-        $addArguments = (new AddArguments())
+        $createArguments = (new CreateArguments())
             ->retentionMsecs(31536000000)
+            ->duplicatePolicy(CommonArguments::POLICY_LAST)
             ->ignore(10, 10);
 
+        $this->assertEquals('OK', $redis->tscreate('temperature:2:32', $createArguments));
+
         $this->assertEquals(
-            123123123123,
-            $redis->tsadd('temperature:2:32', 123123123123, 27, $addArguments)
+            1000,
+            $redis->tsadd('temperature:2:32', 1000, 27)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1005, 27)
+        );
+
+        $this->assertEquals(
+            1005,
+            $redis->tsadd('temperature:2:32', 1005, 38)
         );
     }
 
