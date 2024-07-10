@@ -123,7 +123,7 @@ class CommonArgumentsTest extends TestCase
     public function testIgnoreModifierThrowsExceptionOnNonPositiveValues(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Ignore does not accept non-positive values');
+        $this->expectExceptionMessage('Ignore does not accept negative values');
 
         $this->arguments->ignore(-1, -1);
     }

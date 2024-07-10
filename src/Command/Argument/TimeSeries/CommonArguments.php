@@ -55,7 +55,7 @@ class CommonArguments implements ArrayableArgument
     public function ignore(int $maxTimeDiff, float $maxValDiff): self
     {
         if ($maxTimeDiff < 0 || $maxValDiff < 0) {
-            throw new UnexpectedValueException('Ignore does not accept non-positive values');
+            throw new UnexpectedValueException('Ignore does not accept negative values');
         }
 
         array_push($this->arguments, 'IGNORE', $maxTimeDiff, $maxValDiff);

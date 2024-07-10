@@ -19,7 +19,6 @@ use Predis\Command\Argument\Search\SchemaFields\NumericField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
-use Predis\Response\ServerException;
 
 /**
  * @group commands

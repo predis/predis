@@ -61,7 +61,7 @@ class TSCREATE_Test extends PredisCommandTestCase
         $command = $this->getCommand();
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Ignore does not accept non-positive values');
+        $this->expectExceptionMessage('Ignore does not accept negative values');
 
         $command->setArguments(['key', 123123121321, 1.0, (new CreateArguments())->ignore(-2, -1)]);
     }
