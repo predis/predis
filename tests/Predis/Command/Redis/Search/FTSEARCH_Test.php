@@ -134,104 +134,6 @@ class FTSEARCH_Test extends PredisCommandTestCase
      * @return void
      * @requiresRediSearchVersion >= 2.9.0
      */
-    public function testSearchHashEmptyValues(): void
-    {
-        $redis = $this->getClient();
-
-        $hashResponse = $redis->hmset('test:1', ['text_empty' => '']);
-        $this->assertEquals('OK', $hashResponse);
-
-        $schema = [
-            new TextField(
-                'text_empty',
-                '',
-                false, false, false, '', 1, false, true
-            ),
-            new TextField(
-                'text_not_empty',
-                '',
-                false, false, false, '', 1, false, false
-            ),
-        ];
-
-        $createArgs = new CreateArguments();
-        $createArgs->prefix(['test:']);
-
-        $ftCreateResponse = $redis->ftcreate('idx', $schema, $createArgs);
-        $this->assertEquals('OK', $ftCreateResponse);
-
-        // Timeout to make sure that index created before search performed.
-        usleep(10000);
-
-        $searchArgs = new SearchArguments();
-        $searchArgs->dialect(4);
-
-        $this->assertSame(
-            [1, 'test:1', ['text_empty', '']],
-            $redis->ftsearch('idx', '@text_empty:("")', $searchArgs)
-        );
-
-        $this->expectException(ServerException::class);
-
-        $redis->ftsearch('idx', '@text_not_empty:("")', $searchArgs);
-    }
-
-    /**
-     * @group connected
-     * @group relay-resp3
-     * @return void
-     * @requiresRediSearchVersion >= 2.9.0
-     * @requiresRedisJsonVersion >= 1.0.0
-     */
-    public function testSearchJsonEmptyValues(): void
-    {
-        $redis = $this->getClient();
-
-        $hashResponse = $redis->jsonset('test:1', '$', '{"text_empty":""}');
-        $this->assertEquals('OK', $hashResponse);
-
-        $schema = [
-            new TextField(
-                '$.text_empty',
-                'text_empty',
-                false, false, false, '', 1, false, true
-            ),
-            new TextField(
-                '$.text_not_empty',
-                'text_not_empty',
-                false, false, false, '', 1, false, false
-            ),
-        ];
-
-        $createArgs = new CreateArguments();
-        $createArgs->on('JSON');
-        $createArgs->prefix(['test:']);
-
-        $ftCreateResponse = $redis->ftcreate('idx', $schema, $createArgs);
-        $this->assertEquals('OK', $ftCreateResponse);
-
-        // Timeout to make sure that index created before search performed.
-        usleep(10000);
-
-        $searchArgs = new SearchArguments();
-        $searchArgs->dialect(4);
-
-        $this->assertSame(
-            [1, 'test:1', ['$', '[{"text_empty":""}]']],
-            $redis->ftsearch('idx', '@text_empty:("")', $searchArgs)
-        );
-
-        $this->expectException(ServerException::class);
-
-        $redis->ftsearch('idx', '@text_not_empty:("")', $searchArgs);
-    }
-
-    /**
-     * @group connected
-     * @group relay-resp3
-     * @return void
-     * @requiresRediSearchVersion >= 2.9.0
-     */
     public function testGeoSearchQueriesIntersectsAndDisjoint(): void
     {
         $redis = $this->getClient();
@@ -250,9 +152,6 @@ class FTSEARCH_Test extends PredisCommandTestCase
 
         $ftCreateResponse = $redis->ftcreate('idx_geo', $schema, $ftCreateArguments);
         $this->assertEquals('OK', $ftCreateResponse);
-
-        // Timeout to make sure that index created before search performed.
-        usleep(10000);
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->params(['shape', 'POLYGON ((15 15, 75 15, 50 70, 20 40, 15 15))']);
@@ -344,6 +243,104 @@ class FTSEARCH_Test extends PredisCommandTestCase
                 'geo:doc_point2',
             ], $actualResponse
         );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.9.0
+     */
+    public function testSearchHashEmptyValues(): void
+    {
+        $redis = $this->getClient();
+
+        $hashResponse = $redis->hmset('test:1', ['text_empty' => '']);
+        $this->assertEquals('OK', $hashResponse);
+
+        $schema = [
+            new TextField(
+                'text_empty',
+                '',
+                false, false, false, '', 1, false, true
+            ),
+            new TextField(
+                'text_not_empty',
+                '',
+                false, false, false, '', 1, false, false
+            ),
+        ];
+
+        $createArgs = new CreateArguments();
+        $createArgs->prefix(['test:']);
+
+        $ftCreateResponse = $redis->ftcreate('idx', $schema, $createArgs);
+        $this->assertEquals('OK', $ftCreateResponse);
+
+        // Timeout to make sure that index created before search performed.
+        usleep(10000);
+
+        $searchArgs = new SearchArguments();
+        $searchArgs->dialect(4);
+
+        $this->assertSame(
+            [1, 'test:1', ['text_empty', '']],
+            $redis->ftsearch('idx', '@text_empty:("")', $searchArgs)
+        );
+
+        $this->expectException(ServerException::class);
+
+        $redis->ftsearch('idx', '@text_not_empty:("")', $searchArgs);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.9.0
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
+    public function testSearchJsonEmptyValues(): void
+    {
+        $redis = $this->getClient();
+
+        $hashResponse = $redis->jsonset('test:1', '$', '{"text_empty":""}');
+        $this->assertEquals('OK', $hashResponse);
+
+        $schema = [
+            new TextField(
+                '$.text_empty',
+                'text_empty',
+                false, false, false, '', 1, false, true
+            ),
+            new TextField(
+                '$.text_not_empty',
+                'text_not_empty',
+                false, false, false, '', 1, false, false
+            ),
+        ];
+
+        $createArgs = new CreateArguments();
+        $createArgs->on('JSON');
+        $createArgs->prefix(['test:']);
+
+        $ftCreateResponse = $redis->ftcreate('idx', $schema, $createArgs);
+        $this->assertEquals('OK', $ftCreateResponse);
+
+        // Timeout to make sure that index created before search performed.
+        usleep(10000);
+
+        $searchArgs = new SearchArguments();
+        $searchArgs->dialect(4);
+
+        $this->assertSame(
+            [1, 'test:1', ['$', '[{"text_empty":""}]']],
+            $redis->ftsearch('idx', '@text_empty:("")', $searchArgs)
+        );
+
+        $this->expectException(ServerException::class);
+
+        $redis->ftsearch('idx', '@text_not_empty:("")', $searchArgs);
     }
 
     public function argumentsProvider(): array
