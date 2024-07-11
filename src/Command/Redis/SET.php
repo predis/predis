@@ -29,7 +29,16 @@ class SET extends RedisCommand
 
     public function setArguments(array $arguments)
     {
+        foreach ($arguments as $index => $value) {
+            if ($index < 2) {
+                continue;
+            }
+
+            if (false === $value || null === $value) {
+                unset($arguments[$index]);
+            }
+        }
+
         parent::setArguments($arguments);
-        $this->filterArguments();
     }
 }
