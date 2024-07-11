@@ -131,7 +131,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRediSearchVersion >= 2.9.0
+     * @requiresRediSearchVersion >= 2.09.00
      */
     public function testGeoSearchQueriesIntersectsAndDisjoint(): void
     {
@@ -151,6 +151,9 @@ class FTSEARCH_Test extends PredisCommandTestCase
 
         $ftCreateResponse = $redis->ftcreate('idx_geo', $schema, $ftCreateArguments);
         $this->assertEquals('OK', $ftCreateResponse);
+
+        // Timeout to make sure that index created before search performed.
+        usleep(10000);
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->params(['shape', 'POLYGON ((15 15, 75 15, 50 70, 20 40, 15 15))']);
@@ -202,6 +205,9 @@ class FTSEARCH_Test extends PredisCommandTestCase
 
         $ftCreateResponse = $redis->ftcreate('idx_geo', $schema, $ftCreateArguments);
         $this->assertEquals('OK', $ftCreateResponse);
+
+        // Timeout to make sure that index created before search performed.
+        usleep(10000);
 
         $ftSearchArguments = new SearchArguments();
         $ftSearchArguments->params(['shape', 'POINT(25 25)']);

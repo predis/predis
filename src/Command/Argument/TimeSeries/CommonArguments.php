@@ -13,6 +13,7 @@
 namespace Predis\Command\Argument\TimeSeries;
 
 use Predis\Command\Argument\ArrayableArgument;
+use UnexpectedValueException;
 
 class CommonArguments implements ArrayableArgument
 {
@@ -40,6 +41,24 @@ class CommonArguments implements ArrayableArgument
     public function retentionMsecs(int $retentionPeriod): self
     {
         array_push($this->arguments, 'RETENTION', $retentionPeriod);
+
+        return $this;
+    }
+
+    /**
+     * Ignore samples with given time or value difference.
+     *
+     * @param  int   $maxTimeDiff Non-negative integer value in milliseconds
+     * @param  float $maxValDiff  Non-negative float value
+     * @return $this
+     */
+    public function ignore(int $maxTimeDiff, float $maxValDiff): self
+    {
+        if ($maxTimeDiff < 0 || $maxValDiff < 0) {
+            throw new UnexpectedValueException('Ignore does not accept negative values');
+        }
+
+        array_push($this->arguments, 'IGNORE', $maxTimeDiff, $maxValDiff);
 
         return $this;
     }
