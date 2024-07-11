@@ -91,7 +91,7 @@ class FTCREATE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRediSearchVersion >= 2.9.0
+     * @requiresRediSearchVersion >= 2.09.00
      */
     public function testCreatesSearchIndexWithFloat16Vector(): void
     {

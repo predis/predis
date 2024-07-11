@@ -122,6 +122,43 @@ class TSINCRBY_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.12.01
+     */
+    public function testIncrByCreateNewSampleWithIgnoreArgument(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals(
+            1000,
+            $redis->tsincrby(
+                'temperature:2:32',
+                27,
+                (new IncrByArguments())
+                    ->timestamp(1000)
+                    ->duplicatePolicy(CommonArguments::POLICY_LAST)
+                    ->ignore(10, 10)
+            )
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1000, 27)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1005, 27)
+        );
+
+        $this->assertEquals(
+            1005,
+            $redis->tsadd('temperature:2:32', 1005, 38)
+        );
+    }
+
+    /**
+     * @group connected
      * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
