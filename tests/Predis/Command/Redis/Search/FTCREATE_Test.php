@@ -13,6 +13,7 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\CreateArguments;
+use Predis\Command\Argument\Search\SchemaFields\GeoField;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
 use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
@@ -105,6 +106,43 @@ class FTCREATE_Test extends PredisCommandTestCase
             new VectorField('bfloat16',
                 'FLAT',
                 ['TYPE', 'BFLOAT16', 'DIM', 768, 'DISTANCE_METRIC', 'COSINE']
+            ),
+        ];
+
+        $actualResponse = $redis->ftcreate('index', $schema);
+
+        $this->assertEquals('OK', $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.09.00
+     */
+    public function testCreatesSearchIndexWithMissingAndEmptyFields(): void
+    {
+        $redis = $this->getClient();
+
+        $schema = [
+            new TextField(
+                'text_empty',
+                '',
+                false, false, false, '', 1, false, true
+            ),
+            new TagField('tag_empty',
+                '', false, false, ',', false, true
+            ),
+            new NumericField('num_missing', '', false, false, true),
+            new GeoField('geo_missing', '', false, false, true),
+            new TextField(
+                'text_empty_missing',
+                '',
+                false,
+                false, false, '', 1, false, true, true
+            ),
+            new TagField('tag_empty_missing',
+                '', false, false, ',', false, true, true
             ),
         ];
 

@@ -19,13 +19,15 @@ class GeoField extends AbstractField
      * @param string      $alias
      * @param bool|string $sortable
      * @param bool        $noIndex
+     * @param bool        $allowsMissing
      */
     public function __construct(
         string $identifier,
         string $alias = '',
         $sortable = self::NOT_SORTABLE,
-        bool $noIndex = false
+        bool $noIndex = false,
+        bool $allowsMissing = false
     ) {
-        $this->setCommonOptions('GEO', $identifier, $alias, $sortable, $noIndex);
+        $this->setCommonOptions('GEO', $identifier, $alias, $sortable, $noIndex, $allowsMissing);
     }
 }
