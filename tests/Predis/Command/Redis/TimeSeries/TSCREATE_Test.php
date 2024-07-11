@@ -16,6 +16,7 @@ use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
+use UnexpectedValueException;
 
 /**
  * @group commands
@@ -53,6 +54,20 @@ class TSCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group disconnected
+     * @return void
+     */
+    public function testFilterArgumentsThrowsExceptionOnNonPositiveValues(): void
+    {
+        $command = $this->getCommand();
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Ignore does not accept negative values');
+
+        $command->setArguments(['key', 123123121321, 1.0, (new CreateArguments())->ignore(-2, -1)]);
+    }
+
+    /**
+     * @group disconnected
      */
     public function testParseResponse(): void
     {
@@ -77,6 +92,43 @@ class TSCREATE_Test extends PredisCommandTestCase
         $this->assertEquals(
             'OK',
             $redis->tscreate('temperature:2:32', $arguments)
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.12.01
+     */
+    public function testCreatesTimeSeriesWithIgnoreOption(): void
+    {
+        $redis = $this->getClient();
+
+        $arguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_LAST)
+            ->labels('sensor_id', 2, 'area_id', 32)
+            ->ignore(10, 10);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:32', $arguments)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1000, 27)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1005, 27)
+        );
+
+        $this->assertEquals(
+            1005,
+            $redis->tsadd('temperature:2:32', 1005, 38)
         );
     }
 
@@ -117,6 +169,10 @@ class TSCREATE_Test extends PredisCommandTestCase
             'with DUPLICATE_POLICY modifier' => [
                 ['key', (new CreateArguments())->duplicatePolicy(CommonArguments::POLICY_FIRST)],
                 ['key', 'DUPLICATE_POLICY', CommonArguments::POLICY_FIRST],
+            ],
+            'with IGNORE modifier' => [
+                ['key', (new CreateArguments())->ignore(10, 1.1)],
+                ['key', 'IGNORE', 10, 1.1],
             ],
             'with all modifiers' => [
                 ['key', (new CreateArguments())->retentionMsecs(100)->encoding(CreateArguments::ENCODING_UNCOMPRESSED)->chunkSize(100)->duplicatePolicy(CommonArguments::POLICY_FIRST)],

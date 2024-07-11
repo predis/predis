@@ -16,6 +16,7 @@ use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
+use UnexpectedValueException;
 
 /**
  * @group commands
@@ -49,6 +50,20 @@ class TSADD_Test extends PredisCommandTestCase
         $command->setArguments($actualArguments);
 
         $this->assertSameValues($expectedArguments, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testFilterArgumentsThrowsExceptionOnNonPositiveValues(): void
+    {
+        $command = $this->getCommand();
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Ignore does not accept negative values');
+
+        $command->setArguments(['key', 123123121321, 1.0, (new AddArguments())->ignore(-2, -1)]);
     }
 
     /**
@@ -88,6 +103,39 @@ class TSADD_Test extends PredisCommandTestCase
         );
     }
 
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.12.01
+     */
+    public function testAddSampleIntoTimeSeriesWithIgnoreArgument(): void
+    {
+        $redis = $this->getClient();
+
+        $createArguments = (new CreateArguments())
+            ->retentionMsecs(31536000000)
+            ->duplicatePolicy(CommonArguments::POLICY_LAST)
+            ->ignore(10, 10);
+
+        $this->assertEquals('OK', $redis->tscreate('temperature:2:32', $createArguments));
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1000, 27)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1005, 27)
+        );
+
+        $this->assertEquals(
+            1005,
+            $redis->tsadd('temperature:2:32', 1005, 38)
+        );
+    }
+
     public function argumentsProvider(): array
     {
         return [
@@ -110,6 +158,10 @@ class TSADD_Test extends PredisCommandTestCase
             'with ON_DUPLICATE modifier' => [
                 ['key', 123123121321, 1.0, (new AddArguments())->onDuplicate(CommonArguments::POLICY_FIRST)],
                 ['key', 123123121321, 1.0, 'ON_DUPLICATE', CommonArguments::POLICY_FIRST],
+            ],
+            'with IGNORE modifier' => [
+                ['key', 123123121321, 1.0, (new AddArguments())->ignore(10, 1.1)],
+                ['key', 123123121321, 1.0, 'IGNORE', 10, 1.1],
             ],
             'with all modifiers' => [
                 ['key', 123123121321, 1.0, (new AddArguments())->retentionMsecs(100)->encoding(CommonArguments::ENCODING_UNCOMPRESSED)->chunkSize(100)->onDuplicate(CommonArguments::POLICY_FIRST)],
