@@ -117,13 +117,13 @@ class CommunicationExceptionTest extends PredisTestCase
      * @param int                                $code       Exception code.
      * @param Exception                          $inner      Inner exception.
      *
-     * @return \Predis\CommunicationException
+     * @return CommunicationException
      */
     protected function createMockException(
         Connection\NodeConnectionInterface $connection,
         string $message,
         int $code = 0,
-        Exception $inner = null
+        ?Exception $inner = null
     ) {
         return $this->getMockBuilder('Predis\CommunicationException')
             ->setConstructorArgs([$connection, $message, $code, $inner])

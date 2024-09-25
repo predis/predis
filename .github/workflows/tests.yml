@@ -28,12 +28,14 @@ jobs:
           - '8.1'
           - '8.2'
           - '8.3'
+          - '8.4'
         redis:
           - 3
           - 4
           - 5
           - 6
           - 7
+          - 7.4-rc2
 
     services:
       redis:
@@ -69,7 +71,7 @@ jobs:
         run: vendor/bin/phpunit --coverage-clover build/logs/clover-default.xml --coverage-filter ./src
 
       - name: Run tests using Relay
-        if: ${{ matrix.redis >= '6' }}
+        if: ${{ matrix.php != '8.4' && matrix.redis >= '6' }}
         run: vendor/bin/phpunit -c phpunit.relay.xml
 
       - name: Run tests using Relay with coverage

@@ -33,6 +33,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         $this->prefix = $prefix;
 
         $prefixFirst = static::class . '::first';
+        $prefixFirstTwo = static::class . '::firstTwo';
         $prefixAll = static::class . '::all';
         $prefixInterleaved = static::class . '::interleaved';
         $prefixSkipFirst = static::class . '::skipFirst';
@@ -93,6 +94,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'SDIFF' => $prefixAll,
             'SDIFFSTORE' => $prefixAll,
             'SMEMBERS' => $prefixFirst,
+            'SMISMEMBER' => $prefixFirst,
             'SRANDMEMBER' => $prefixFirst,
             'ZADD' => $prefixFirst,
             'ZINCRBY' => $prefixFirst,
@@ -103,6 +105,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'ZCARD' => $prefixFirst,
             'ZSCORE' => $prefixFirst,
             'ZREMRANGEBYSCORE' => $prefixFirst,
+
             /* ---------------- Redis 2.0 ---------------- */
             'SETEX' => $prefixFirst,
             'APPEND' => $prefixFirst,
@@ -132,6 +135,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'PSUBSCRIBE' => $prefixAll,
             'PUNSUBSCRIBE' => $prefixAll,
             'PUBLISH' => $prefixFirst,
+
             /* ---------------- Redis 2.2 ---------------- */
             'PERSIST' => $prefixFirst,
             'STRLEN' => $prefixFirst,
@@ -145,6 +149,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'BRPOPLPUSH' => $prefixSkipLast,
             'ZREVRANGEBYSCORE' => $prefixFirst,
             'WATCH' => $prefixAll,
+
             /* ---------------- Redis 2.6 ---------------- */
             'PTTL' => $prefixFirst,
             'PEXPIRE' => $prefixFirst,
@@ -157,6 +162,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'EVAL' => $prefixEvalKeys,
             'EVALSHA' => $prefixEvalKeys,
             'MIGRATE' => $prefixMigrate,
+
             /* ---------------- Redis 2.8 ---------------- */
             'SSCAN' => $prefixFirst,
             'ZSCAN' => $prefixFirst,
@@ -169,6 +175,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'ZREMRANGEBYLEX' => $prefixFirst,
             'ZREVRANGEBYLEX' => $prefixFirst,
             'BITPOS' => $prefixFirst,
+
             /* ---------------- Redis 3.2 ---------------- */
             'HSTRLEN' => $prefixFirst,
             'BITFIELD' => $prefixFirst,
@@ -178,6 +185,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'GEODIST' => $prefixFirst,
             'GEORADIUS' => $prefixGeoradius,
             'GEORADIUSBYMEMBER' => $prefixGeoradius,
+
             /* ---------------- Redis 5.0 ---------------- */
             'XADD' => $prefixFirst,
             'XRANGE' => $prefixFirst,
@@ -186,9 +194,15 @@ class KeyPrefixProcessor implements ProcessorInterface
             'XLEN' => $prefixFirst,
             'XACK' => $prefixFirst,
             'XTRIM' => $prefixFirst,
+            'ZPOPMIN' => $prefixFirst,
+            'ZPOPMAX' => $prefixFirst,
 
             /* ---------------- Redis 6.2 ---------------- */
             'GETDEL' => $prefixFirst,
+            'ZMSCORE' => $prefixFirst,
+            'LMOVE' => $prefixFirstTwo,
+            'BLMOVE' => $prefixFirstTwo,
+            'GEOSEARCH' => $prefixFirst,
 
             /* ---------------- Redis 7.0 ---------------- */
             'EXPIRETIME' => $prefixFirst,
@@ -384,6 +398,24 @@ class KeyPrefixProcessor implements ProcessorInterface
             $arguments[0] = "$prefix{$arguments[0]}";
             $command->setRawArguments($arguments);
         }
+    }
+
+    /**
+     * Applies the specified prefix only to the first two arguments.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function firstTwo(CommandInterface $command, $prefix)
+    {
+        $arguments = $command->getArguments();
+        $length = min(count($arguments), 2);
+
+        for ($i = 0; $i < $length; $i++) {
+            $arguments[$i] = "$prefix{$arguments[$i]}";
+        }
+
+        $command->setRawArguments($arguments);
     }
 
     /**

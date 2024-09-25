@@ -177,6 +177,45 @@ class SET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 2.6.12
+     */
+    public function testSetStringDoesNotFailWithExplicitlySetNullArguments(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals(
+            'OK', $redis->set('foo', 'barbar', null, null, null)
+        );
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.6.12
+     */
+    public function testSetNull(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals(
+            'OK', $redis->set('foo', null)
+        );
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.6.12
+     */
+    public function testSetFalse(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals(
+            'OK', $redis->set('foo', false)
+        );
+    }
+
+    /**
+     * @group connected
      * @group cluster
      * @requiresRedisVersion >= 6.0.0
      */
