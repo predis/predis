@@ -10,6 +10,7 @@
  * file that was distributed with this source code.
  */
 
+use PHPUnit\AssertSameWithPrecisionConstraint;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\OneOfConstraint;
 use PHPUnit\Util\Test as TestUtil;
@@ -20,7 +21,7 @@ use Predis\Connection;
 /**
  * Base test case class for the Predis test suite.
  */
-abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
+abstract class PredisTestCase extends PHPUnit\Framework\TestCase
 {
     protected $redisServerVersion;
     protected $redisJsonVersion;
@@ -73,7 +74,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return RedisCommandConstraint
      */
-    public function isRedisCommand($command = null, array $arguments = null): RedisCommandConstraint
+    public function isRedisCommand($command = null, ?array $arguments = null): RedisCommandConstraint
     {
         return new RedisCommandConstraint($command, $arguments);
     }
@@ -132,10 +133,24 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Asserts that two values (of the same type) have the same values with given precision.
+     *
+     * @param  mixed  $expected  Expected value
+     * @param  mixed  $actual    Actual value
+     * @param  int    $precision Precision value should be round to
+     * @param  string $message   Optional assertion message
+     * @return void
+     */
+    public function assertSameWithPrecision($expected, $actual, int $precision = 0, string $message = ''): void
+    {
+        $this->assertThat($actual, new AssertSameWithPrecisionConstraint($expected, $precision), $message);
+    }
+
+    /**
      * Asserts that a string matches a given regular expression.
      *
      * @throws ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     * @throws SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public static function assertMatchesRegularExpression(string $pattern, string $string, $message = ''): void
     {
@@ -153,6 +168,10 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getDefaultParametersArray(): array
     {
+        if ($this->isClusterTest()) {
+            return $this->prepareClusterEndpoints();
+        }
+
         return [
             'scheme' => 'tcp',
             'host' => constant('REDIS_SERVER_HOST'),
@@ -224,7 +243,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return Client
      */
-    protected function createClient(array $parameters = null, array $options = null, ?bool $flushdb = true): Client
+    protected function createClient(?array $parameters = null, ?array $options = null, ?bool $flushdb = true): Client
     {
         $parameters = array_merge(
             $this->getDefaultParametersArray(),
@@ -236,6 +255,15 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
             $options ?: [],
             getenv('USE_RELAY') ? ['connections' => 'relay'] : []
         );
+
+        if ($this->isClusterTest()) {
+            $options = array_merge(
+                [
+                    'cluster' => 'redis',
+                ],
+                $options
+            );
+        }
 
         $client = new Client($parameters, $options);
         $client->connect();
@@ -267,7 +295,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         if (!is_a($interface, '\Predis\Connection\NodeConnectionInterface', true)) {
             $method = __METHOD__;
 
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Argument `\$interface` for $method() expects a type implementing Predis\Connection\NodeConnectionInterface"
             );
         }
@@ -395,7 +423,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
      * decorates test methods while the version of the Redis server used to run
      * integration tests is retrieved directly from the server by using `INFO`.
      *
-     * @throws \PHPUnit\Framework\SkippedTestError When the required Redis server version is not met
+     * @throws PHPUnit\Framework\SkippedTestError When the required Redis server version is not met
      */
     protected function checkRequiredRedisServerVersion(): void
     {
@@ -466,7 +494,7 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
     protected function isSatisfiedRedisModuleVersion(string $versionToCheck, string $module): bool
     {
         $currentVersion = $this->getRedisModuleVersion($this->modulesMapping[$module]['name']);
-        $versionToCheck = str_replace('.', '0', $versionToCheck);
+        $versionToCheck = str_replace('.', '', $versionToCheck);
 
         return $currentVersion >= (int) $versionToCheck;
     }
@@ -536,5 +564,37 @@ abstract class PredisTestCase extends \PHPUnit\Framework\TestCase
         if (getenv('GITHUB_ACTIONS') || getenv('TRAVIS')) {
             $this->markTestSkipped($message);
         }
+    }
+
+    /**
+     * Check annotations if it's matches to cluster test scenario.
+     *
+     * @return bool
+     */
+    protected function isClusterTest(): bool
+    {
+        $annotations = TestUtil::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
+
+        return isset($annotations['method']['requiresRedisVersion'], $annotations['method']['group'])
+            && !empty($annotations['method']['requiresRedisVersion'])
+            && in_array('connected', $annotations['method']['group'], true)
+            && in_array('cluster', $annotations['method']['group'], true);
+    }
+
+    /**
+     * Parse comma-separated cluster endpoints and convert them into tcp strings.
+     *
+     * @return array
+     */
+    protected function prepareClusterEndpoints(): array
+    {
+        $endpoints = explode(',', constant('REDIS_CLUSTER_ENDPOINTS'));
+
+        return array_map(static function (string $elem) {
+            return 'tcp://' . $elem;
+        }, $endpoints);
     }
 }

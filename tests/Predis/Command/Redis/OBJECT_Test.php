@@ -82,7 +82,7 @@ class OBJECT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 2.2.3
+     * @requiresRedisVersion < 7.2.0
      */
     public function testObjectEncoding(): void
     {
@@ -90,6 +90,19 @@ class OBJECT_Test extends PredisCommandTestCase
 
         $redis->lpush('list:metavars', 'foo', 'bar');
         $this->assertMatchesRegularExpression('/[zip|quick]list/', $redis->object('ENCODING', 'list:metavars'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.2.0
+     */
+    public function testObjectEncodingReturnsUpdatedResponse(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->lpush('list:metavars', 'foo', 'bar');
+
+        $this->assertSame('listpack', $redis->object('ENCODING', 'list:metavars'));
     }
 
     /**

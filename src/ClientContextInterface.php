@@ -39,6 +39,7 @@ use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Redis\Container\ACL;
+use Predis\Command\Redis\Container\CLUSTER;
 use Predis\Command\Redis\Container\FunctionContainer;
 use Predis\Command\Redis\Container\Json\JSONDEBUG;
 use Predis\Command\Redis\Container\Search\FTCONFIG;
@@ -64,8 +65,8 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this randomkey()
  * @method $this rename($key, $target)
  * @method $this renamenx($key, $target)
- * @method $this scan($cursor, array $options = null)
- * @method $this sort($key, array $options = null)
+ * @method $this scan($cursor, ?array $options = null)
+ * @method $this sort($key, ?array $options = null)
  * @method $this sort_ro(string $key, ?string $byPattern = null, ?LimitOffsetCount $limit = null, array $getPatterns = [], ?string $sorting = null, bool $alpha = false)
  * @method $this ttl($key)
  * @method $this type($key)
@@ -162,7 +163,7 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this hmget($key, array $fields)
  * @method $this hmset($key, array $dictionary)
  * @method $this hrandfield(string $key, int $count = 1, bool $withValues = false)
- * @method $this hscan($key, $cursor, array $options = null)
+ * @method $this hscan($key, $cursor, ?array $options = null)
  * @method $this hset($key, $field, $value)
  * @method $this hsetnx($key, $field, $value)
  * @method $this hvals($key)
@@ -224,7 +225,7 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this spop($key, $count = null)
  * @method $this srandmember($key, $count = null)
  * @method $this srem($key, $member)
- * @method $this sscan($key, $cursor, array $options = null)
+ * @method $this sscan($key, $cursor, ?array $options = null)
  * @method $this sunion(array|string $keys)
  * @method $this sunionstore($destination, array|string $keys)
  * @method $this tdigestadd(string $key, float ...$value)
@@ -254,7 +255,7 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
  * @method $this tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method $this tsdeleterule(string $sourceKey, string $destKey)
- * @method $this tsget(string $key, GetArguments $arguments = null)
+ * @method $this tsget(string $key, ?GetArguments $arguments = null)
  * @method $this tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
  * @method $this tsinfo(string $key, ?InfoArguments $arguments = null)
  * @method $this tsmadd(mixed ...$keyTimestampValue)
@@ -276,22 +277,22 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this zmpop(array $keys, string $modifier = 'min', int $count = 1)
  * @method $this zmscore(string $key, string ...$member)
  * @method $this zrandmember(string $key, int $count = 1, bool $withScores = false)
- * @method $this zrange($key, $start, $stop, array $options = null)
- * @method $this zrangebyscore($key, $min, $max, array $options = null)
+ * @method $this zrange($key, $start, $stop, ?array $options = null)
+ * @method $this zrangebyscore($key, $min, $max, ?array $options = null)
  * @method $this zrangestore(string $destination, string $source, int|string $min, string|int $max, string|bool $by = false, bool $reversed = false, bool $limit = false, int $offset = 0, int $count = 0)
  * @method $this zrank($key, $member)
  * @method $this zrem($key, $member)
  * @method $this zremrangebyrank($key, $start, $stop)
  * @method $this zremrangebyscore($key, $min, $max)
- * @method $this zrevrange($key, $start, $stop, array $options = null)
- * @method $this zrevrangebyscore($key, $max, $min, array $options = null)
+ * @method $this zrevrange($key, $start, $stop, ?array $options = null)
+ * @method $this zrevrangebyscore($key, $max, $min, ?array $options = null)
  * @method $this zrevrank($key, $member)
  * @method $this zunion(array $keys, int[] $weights = [], string $aggregate = 'sum', bool $withScores = false)
  * @method $this zunionstore(string $destination, array $keys, int[] $weights = [], string $aggregate = 'sum')
  * @method $this zscore($key, $member)
- * @method $this zscan($key, $cursor, array $options = null)
- * @method $this zrangebylex($key, $start, $stop, array $options = null)
- * @method $this zrevrangebylex($key, $start, $stop, array $options = null)
+ * @method $this zscan($key, $cursor, ?array $options = null)
+ * @method $this zrangebylex($key, $start, $stop, ?array $options = null)
+ * @method $this zrevrangebylex($key, $start, $stop, ?array $options = null)
  * @method $this zremrangebylex($key, $min, $max)
  * @method $this zlexcount($key, $min, $max)
  * @method $this pexpiretime(string $key)
@@ -304,12 +305,14 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this exec()
  * @method $this multi()
  * @method $this unwatch()
+ * @method $this waitaof(int $numLocal, int $numReplicas, int $timeout)
  * @method $this watch($key)
  * @method $this eval($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this eval_ro(string $script, array $keys, ...$argument)
  * @method $this evalsha($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this evalsha_ro(string $sha1, array $keys, ...$argument)
  * @method $this script($subcommand, $argument = null)
+ * @method $this shutdown(?bool $noSave = null, bool $now = false, bool $force = false, bool $abort = false)
  * @method $this auth($password)
  * @method $this echo($message)
  * @method $this ping($message = null)
@@ -332,12 +335,13 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this geohash($key, array $members)
  * @method $this geopos($key, array $members)
  * @method $this geodist($key, $member1, $member2, $unit = null)
- * @method $this georadius($key, $longitude, $latitude, $radius, $unit, array $options = null)
- * @method $this georadiusbymember($key, $member, $radius, $unit, array $options = null)
+ * @method $this georadius($key, $longitude, $latitude, $radius, $unit, ?array $options = null)
+ * @method $this georadiusbymember($key, $member, $radius, $unit, ?array $options = null)
  * @method $this geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
+ * @property CLUSTER           $cluster
  * @property FunctionContainer $function
  * @property FTCONFIG          $ftconfig
  * @property FTCURSOR          $ftcursor

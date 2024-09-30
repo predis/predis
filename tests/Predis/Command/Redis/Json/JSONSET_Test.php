@@ -59,6 +59,7 @@ class JSONSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  string      $key
      * @param  string      $defaultJson

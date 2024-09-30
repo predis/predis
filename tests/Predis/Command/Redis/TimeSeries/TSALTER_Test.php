@@ -17,6 +17,7 @@ use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
+use UnexpectedValueException;
 
 /**
  * @group commands
@@ -54,6 +55,20 @@ class TSALTER_Test extends PredisCommandTestCase
 
     /**
      * @group disconnected
+     * @return void
+     */
+    public function testFilterArgumentsThrowsExceptionOnNonPositiveValues(): void
+    {
+        $command = $this->getCommand();
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Ignore does not accept negative values');
+
+        $command->setArguments(['key', 123123121321, 1.0, (new AlterArguments())->ignore(-2, -1)]);
+    }
+
+    /**
+     * @group disconnected
      */
     public function testParseResponse(): void
     {
@@ -62,6 +77,7 @@ class TSALTER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -85,6 +101,52 @@ class TSALTER_Test extends PredisCommandTestCase
         $this->assertEquals(
             'OK',
             $redis->tsalter('temperature:2:32', $alterArguments)
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.12.01
+     */
+    public function testAlterUpdatesExistingTimeSeriesWithIgnoreOption(): void
+    {
+        $redis = $this->getClient();
+
+        $arguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('sensor_id', 2, 'area_id', 32);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:32', $arguments)
+        );
+
+        $alterArguments = (new AlterArguments())
+            ->retentionMsecs(10000000)
+            ->duplicatePolicy(CommonArguments::POLICY_LAST)
+            ->ignore(10, 10);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tsalter('temperature:2:32', $alterArguments)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1000, 27)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1005, 27)
+        );
+
+        $this->assertEquals(
+            1005,
+            $redis->tsadd('temperature:2:32', 1005, 38)
         );
     }
 
@@ -121,6 +183,10 @@ class TSALTER_Test extends PredisCommandTestCase
             'with DUPLICATE_POLICY modifier' => [
                 ['key', (new AlterArguments())->duplicatePolicy(CommonArguments::POLICY_FIRST)],
                 ['key', 'DUPLICATE_POLICY', CommonArguments::POLICY_FIRST],
+            ],
+            'with IGNORE modifier' => [
+                ['key', (new AlterArguments())->ignore(10, 1.1)],
+                ['key', 'IGNORE', 10, 1.1],
             ],
             'with all modifiers' => [
                 ['key', (new AlterArguments())->retentionMsecs(100)->chunkSize(100)->duplicatePolicy(CommonArguments::POLICY_FIRST)],

@@ -33,6 +33,7 @@ class KeyPrefixProcessor implements ProcessorInterface
         $this->prefix = $prefix;
 
         $prefixFirst = static::class . '::first';
+        $prefixFirstTwo = static::class . '::firstTwo';
         $prefixAll = static::class . '::all';
         $prefixInterleaved = static::class . '::interleaved';
         $prefixSkipFirst = static::class . '::skipFirst';
@@ -93,6 +94,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'SDIFF' => $prefixAll,
             'SDIFFSTORE' => $prefixAll,
             'SMEMBERS' => $prefixFirst,
+            'SMISMEMBER' => $prefixFirst,
             'SRANDMEMBER' => $prefixFirst,
             'ZADD' => $prefixFirst,
             'ZINCRBY' => $prefixFirst,
@@ -103,6 +105,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'ZCARD' => $prefixFirst,
             'ZSCORE' => $prefixFirst,
             'ZREMRANGEBYSCORE' => $prefixFirst,
+
             /* ---------------- Redis 2.0 ---------------- */
             'SETEX' => $prefixFirst,
             'APPEND' => $prefixFirst,
@@ -132,6 +135,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'PSUBSCRIBE' => $prefixAll,
             'PUNSUBSCRIBE' => $prefixAll,
             'PUBLISH' => $prefixFirst,
+
             /* ---------------- Redis 2.2 ---------------- */
             'PERSIST' => $prefixFirst,
             'STRLEN' => $prefixFirst,
@@ -145,6 +149,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'BRPOPLPUSH' => $prefixSkipLast,
             'ZREVRANGEBYSCORE' => $prefixFirst,
             'WATCH' => $prefixAll,
+
             /* ---------------- Redis 2.6 ---------------- */
             'PTTL' => $prefixFirst,
             'PEXPIRE' => $prefixFirst,
@@ -157,6 +162,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'EVAL' => $prefixEvalKeys,
             'EVALSHA' => $prefixEvalKeys,
             'MIGRATE' => $prefixMigrate,
+
             /* ---------------- Redis 2.8 ---------------- */
             'SSCAN' => $prefixFirst,
             'ZSCAN' => $prefixFirst,
@@ -169,6 +175,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'ZREMRANGEBYLEX' => $prefixFirst,
             'ZREVRANGEBYLEX' => $prefixFirst,
             'BITPOS' => $prefixFirst,
+
             /* ---------------- Redis 3.2 ---------------- */
             'HSTRLEN' => $prefixFirst,
             'BITFIELD' => $prefixFirst,
@@ -178,6 +185,7 @@ class KeyPrefixProcessor implements ProcessorInterface
             'GEODIST' => $prefixFirst,
             'GEORADIUS' => $prefixGeoradius,
             'GEORADIUSBYMEMBER' => $prefixGeoradius,
+
             /* ---------------- Redis 5.0 ---------------- */
             'XADD' => $prefixFirst,
             'XRANGE' => $prefixFirst,
@@ -186,9 +194,120 @@ class KeyPrefixProcessor implements ProcessorInterface
             'XLEN' => $prefixFirst,
             'XACK' => $prefixFirst,
             'XTRIM' => $prefixFirst,
+            'ZPOPMIN' => $prefixFirst,
+            'ZPOPMAX' => $prefixFirst,
 
             /* ---------------- Redis 6.2 ---------------- */
             'GETDEL' => $prefixFirst,
+            'ZMSCORE' => $prefixFirst,
+            'LMOVE' => $prefixFirstTwo,
+            'BLMOVE' => $prefixFirstTwo,
+            'GEOSEARCH' => $prefixFirst,
+
+            /* ---------------- Redis 7.0 ---------------- */
+            'EXPIRETIME' => $prefixFirst,
+
+            /* RedisJSON */
+            'JSON.ARRAPPEND' => $prefixFirst,
+            'JSON.ARRINDEX' => $prefixFirst,
+            'JSON.ARRINSERT' => $prefixFirst,
+            'JSON.ARRLEN' => $prefixFirst,
+            'JSON.ARRPOP' => $prefixFirst,
+            'JSON.ARRTRIM' => $prefixFirst,
+            'JSON.CLEAR' => $prefixFirst,
+            'JSON.DEBUG MEMORY' => $prefixFirst,
+            'JSON.DEL' => $prefixFirst,
+            'JSON.FORGET' => $prefixFirst,
+            'JSON.GET' => $prefixFirst,
+            'JSON.MGET' => $prefixAll,
+            'JSON.NUMINCRBY' => $prefixFirst,
+            'JSON.OBJKEYS' => $prefixFirst,
+            'JSON.OBJLEN' => $prefixFirst,
+            'JSON.RESP' => $prefixFirst,
+            'JSON.SET' => $prefixFirst,
+            'JSON.STRAPPEND' => $prefixFirst,
+            'JSON.STRLEN' => $prefixFirst,
+            'JSON.TOGGLE' => $prefixFirst,
+            'JSON.TYPE' => $prefixFirst,
+
+            /* RedisBloom */
+            'BF.ADD' => $prefixFirst,
+            'BF.EXISTS' => $prefixFirst,
+            'BF.INFO' => $prefixFirst,
+            'BF.INSERT' => $prefixFirst,
+            'BF.LOADCHUNK' => $prefixFirst,
+            'BF.MADD' => $prefixFirst,
+            'BF.MEXISTS' => $prefixFirst,
+            'BF.RESERVE' => $prefixFirst,
+            'BF.SCANDUMP' => $prefixFirst,
+            'CF.ADD' => $prefixFirst,
+            'CF.ADDNX' => $prefixFirst,
+            'CF.COUNT' => $prefixFirst,
+            'CF.DEL' => $prefixFirst,
+            'CF.EXISTS' => $prefixFirst,
+            'CF.INFO' => $prefixFirst,
+            'CF.INSERT' => $prefixFirst,
+            'CF.INSERTNX' => $prefixFirst,
+            'CF.LOADCHUNK' => $prefixFirst,
+            'CF.MEXISTS' => $prefixFirst,
+            'CF.RESERVE' => $prefixFirst,
+            'CF.SCANDUMP' => $prefixFirst,
+            'CMS.INCRBY' => $prefixFirst,
+            'CMS.INFO' => $prefixFirst,
+            'CMS.INITBYDIM' => $prefixFirst,
+            'CMS.INITBYPROB' => $prefixFirst,
+            'CMS.QUERY' => $prefixFirst,
+            'TDIGEST.ADD' => $prefixFirst,
+            'TDIGEST.BYRANK' => $prefixFirst,
+            'TDIGEST.BYREVRANK' => $prefixFirst,
+            'TDIGEST.CDF' => $prefixFirst,
+            'TDIGEST.CREATE' => $prefixFirst,
+            'TDIGEST.INFO' => $prefixFirst,
+            'TDIGEST.MAX' => $prefixFirst,
+            'TDIGEST.MIN' => $prefixFirst,
+            'TDIGEST.QUANTILE' => $prefixFirst,
+            'TDIGEST.RANK' => $prefixFirst,
+            'TDIGEST.RESET' => $prefixFirst,
+            'TDIGEST.REVRANK' => $prefixFirst,
+            'TDIGEST.TRIMMED_MEAN' => $prefixFirst,
+            'TOPK.ADD' => $prefixFirst,
+            'TOPK.INCRBY' => $prefixFirst,
+            'TOPK.INFO' => $prefixFirst,
+            'TOPK.LIST' => $prefixFirst,
+            'TOPK.QUERY' => $prefixFirst,
+            'TOPK.RESERVE' => $prefixFirst,
+
+            /* RediSearch */
+            'FT.AGGREGATE' => $prefixFirst,
+            'FT.ALTER' => $prefixFirst,
+            'FT.CREATE' => $prefixFirst,
+            'FT.CURSOR DEL' => $prefixFirst,
+            'FT.CURSOR READ' => $prefixFirst,
+            'FT.DROPINDEX' => $prefixFirst,
+            'FT.EXPLAIN' => $prefixFirst,
+            'FT.INFO' => $prefixFirst,
+            'FT.PROFILE' => $prefixFirst,
+            'FT.SEARCH' => $prefixFirst,
+            'FT.SPELLCHECK' => $prefixFirst,
+            'FT.SYNDUMP' => $prefixFirst,
+            'FT.SYNUPDATE' => $prefixFirst,
+            'FT.TAGVALS' => $prefixFirst,
+
+            /* Redis TimeSeries */
+            'TS.ADD' => $prefixFirst,
+            'TS.ALTER' => $prefixFirst,
+            'TS.CREATE' => $prefixFirst,
+            'TS.DECRBY' => $prefixFirst,
+            'TS.DEL' => $prefixFirst,
+            'TS.GET' => $prefixFirst,
+            'TS.INCRBY' => $prefixFirst,
+            'TS.INFO' => $prefixFirst,
+            'TS.MGET' => $prefixFirst,
+            'TS.MRANGE' => $prefixFirst,
+            'TS.MREVRANGE' => $prefixFirst,
+            'TS.QUERYINDEX' => $prefixFirst,
+            'TS.RANGE' => $prefixFirst,
+            'TS.REVRANGE' => $prefixFirst,
         ];
     }
 
@@ -279,6 +398,24 @@ class KeyPrefixProcessor implements ProcessorInterface
             $arguments[0] = "$prefix{$arguments[0]}";
             $command->setRawArguments($arguments);
         }
+    }
+
+    /**
+     * Applies the specified prefix only to the first two arguments.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function firstTwo(CommandInterface $command, $prefix)
+    {
+        $arguments = $command->getArguments();
+        $length = min(count($arguments), 2);
+
+        for ($i = 0; $i < $length; $i++) {
+            $arguments[$i] = "$prefix{$arguments[$i]}";
+        }
+
+        $command->setRawArguments($arguments);
     }
 
     /**

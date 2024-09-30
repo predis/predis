@@ -61,8 +61,9 @@ class BFADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
-     * @requiresRedisBfVersion >= 1.0
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testAddGivenItemIntoBloomFilter(): void
     {
@@ -75,7 +76,8 @@ class BFADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisBfVersion >= 1.0
+     * @group relay-incompatible
+     * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {

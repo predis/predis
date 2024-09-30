@@ -225,7 +225,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithReplicationArgument(): void
     {
-        $replication = new Connection\Replication\MasterSlaveReplication();
+        $replication = new MasterSlaveReplication();
 
         $factory = new Connection\Factory();
         $replication->add($factory->create('tcp://host1?alias=master'));
@@ -912,7 +912,7 @@ class ClientTest extends PredisTestCase
      */
     public function testGetClientByMethodSupportsSelectingConnectionByCommand(): void
     {
-        $command = \Predis\Command\RawCommand::create('GET', 'key');
+        $command = Command\RawCommand::create('GET', 'key');
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
 
         $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
@@ -1209,7 +1209,7 @@ class ClientTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383');
 
-        $aggregate = new \Predis\Connection\Cluster\PredisCluster();
+        $aggregate = new Connection\Cluster\PredisCluster();
 
         $aggregate->add($connection1);
         $aggregate->add($connection2);
@@ -1251,6 +1251,36 @@ class ClientTest extends PredisTestCase
         $this->assertInstanceOf('\Predis\Client', $nodeClient = $iterator->current());
         $this->assertSame($connection, $nodeClient->getConnection());
         $this->assertSame('127.0.0.1:6381', $iterator->key());
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.2.0
+     */
+    public function testDoNoSetClientInfoOnConnection(): void
+    {
+        $client = new Client($this->getParameters());
+        $libName = $client->client('LIST')[0]['lib-name'];
+        $libVer = $client->client('LIST')[0]['lib-ver'];
+
+        $this->assertEmpty($libName);
+        $this->assertEmpty($libVer);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.2.0
+     */
+    public function testSetClientInfoOnConnectionWhenEnabled(): void
+    {
+        $client = new Client($this->getParameters(['client_info' => true]));
+        $libName = $client->client('LIST')[0]['lib-name'];
+        $libVer = $client->client('LIST')[0]['lib-ver'];
+
+        $this->assertSame('predis', $libName);
+        $this->assertSame(Client::VERSION, $libVer);
     }
 
     // ******************************************************************** //

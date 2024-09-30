@@ -109,6 +109,21 @@ class PredisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testFakeKeyCommandsWithOneKey(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = [];
+
+        foreach ($this->getExpectedCommands('keys-fake') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForSortCommand(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -310,7 +325,7 @@ class PredisStrategyTest extends PredisTestCase
      *
      * @return array
      */
-    protected function getExpectedCommands(string $type = null): array
+    protected function getExpectedCommands(?string $type = null): array
     {
         $commands = [
             /* commands operating on the key space */
@@ -327,6 +342,7 @@ class PredisStrategyTest extends PredisTestCase
             'SORT' => 'variable',
             'DUMP' => 'keys-first',
             'RESTORE' => 'keys-first',
+            'FLUSHDB' => 'keys-fake',
 
             /* commands operating on string values */
             'APPEND' => 'keys-first',
@@ -437,6 +453,9 @@ class PredisStrategyTest extends PredisTestCase
             'EVAL' => 'keys-script',
             'EVALSHA' => 'keys-script',
 
+            /* server */
+            'INFO' => 'keys-fake',
+
             /* commands performing geospatial operations */
             'GEOADD' => 'keys-first',
             'GEOHASH' => 'keys-first',
@@ -444,6 +463,9 @@ class PredisStrategyTest extends PredisTestCase
             'GEODIST' => 'keys-first',
             'GEORADIUS' => 'keys-georadius',
             'GEORADIUSBYMEMBER' => 'keys-georadius',
+
+            /* cluster */
+            'CLUSTER' => 'keys-fake',
         ];
 
         if (isset($type)) {

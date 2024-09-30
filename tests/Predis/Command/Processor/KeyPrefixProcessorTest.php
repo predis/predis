@@ -123,6 +123,37 @@ class KeyPrefixProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testPrefixFirstTwo(): void
+    {
+        $arguments = ['1st', '2nd', '3rd', '4th'];
+        $expected = ['prefix:1st', 'prefix:2nd', '3rd', '4th'];
+
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
+        $command->setRawArguments($arguments);
+
+        KeyPrefixProcessor::firstTwo($command, 'prefix:');
+        $this->assertSame($expected, $command->getArguments());
+
+        // One argument
+        $arguments = ['1st'];
+        $expected = ['prefix:1st'];
+
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
+        $command->setRawArguments($arguments);
+
+        KeyPrefixProcessor::firstTwo($command, 'prefix:');
+        $this->assertSame($expected, $command->getArguments());
+
+        // Empty arguments
+        $command = $this->getMockForAbstractClass('Predis\Command\Command');
+
+        KeyPrefixProcessor::firstTwo($command, 'prefix:');
+        $this->assertEmpty($command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testPrefixAll(): void
     {
         $arguments = ['1st', '2nd', '3rd', '4th'];
@@ -602,6 +633,10 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 ['key'],
                 ['prefix:key'],
             ],
+            ['SMISMEMBER',
+                ['key', 'member1', 'member2', 'member3'],
+                ['prefix:key', 'member1', 'member2', 'member3'],
+            ],
             ['SRANDMEMBER',
                 ['key', 1],
                 ['prefix:key', 1],
@@ -975,6 +1010,19 @@ class KeyPrefixProcessorTest extends PredisTestCase
             ],
             /* ---------------- Redis 6.2 ---------------- */
             ['GETDEL',
+                ['key'],
+                ['prefix:key'],
+            ],
+            ['LMOVE',
+                ['key:source', 'key:destination', 'left', 'right'],
+                ['prefix:key:source', 'prefix:key:destination', 'left', 'right'],
+            ],
+            ['BLMOVE',
+                ['key:source', 'key:destination', 'left', 'right', 10],
+                ['prefix:key:source', 'prefix:key:destination', 'left', 'right', 10],
+            ],
+            /* ---------------- Redis 7.0 ---------------- */
+            ['EXPIRETIME',
                 ['key'],
                 ['prefix:key'],
             ],

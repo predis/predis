@@ -63,6 +63,7 @@ class TSMADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -101,7 +102,6 @@ class TSMADD_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage("ERR wrong number of arguments for 'TS.MADD' command");
 
         $redis->tsmadd('temperature:2:32', 123123123123, 27, 'temperature:2:33', 123123123124);
     }

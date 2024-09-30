@@ -61,6 +61,7 @@ class FTPROFILE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @dataProvider queryProvider
      * @param  array $createArguments
      * @param  array $profileArguments

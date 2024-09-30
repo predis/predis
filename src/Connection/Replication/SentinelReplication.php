@@ -117,13 +117,13 @@ class SentinelReplication implements ReplicationInterface
      * @param string                     $service           Name of the service for autodiscovery.
      * @param array                      $sentinels         Sentinel servers connection parameters.
      * @param ConnectionFactoryInterface $connectionFactory Connection factory instance.
-     * @param ReplicationStrategy        $strategy          Replication strategy instance.
+     * @param ReplicationStrategy|null   $strategy          Replication strategy instance.
      */
     public function __construct(
         $service,
         array $sentinels,
         ConnectionFactoryInterface $connectionFactory,
-        ReplicationStrategy $strategy = null
+        ?ReplicationStrategy $strategy = null
     ) {
         $this->sentinels = $sentinels;
         $this->service = $service;
@@ -211,6 +211,7 @@ class SentinelReplication implements ReplicationInterface
             $this->master = $connection;
         } elseif ('sentinel' === $role) {
             $this->sentinels[] = $connection;
+
             // sentinels are not considered part of the pool.
             return;
         } else {
@@ -422,6 +423,11 @@ class SentinelReplication implements ReplicationInterface
             $flags = explode(',', $slave[9]);
 
             if (array_intersect($flags, ['s_down', 'o_down', 'disconnected'])) {
+                continue;
+            }
+
+            // ensure `master-link-status` is ok
+            if (isset($slave[31]) && $slave[31] === 'err') {
                 continue;
             }
 
