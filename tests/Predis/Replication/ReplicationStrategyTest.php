@@ -13,6 +13,8 @@
 namespace Predis\Replication;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Command\Argument\Geospatial\ByRadius;
+use Predis\Command\Argument\Geospatial\FromLonLat;
 use Predis\Command\CommandInterface;
 use PredisTestCase;
 
@@ -212,6 +214,22 @@ class ReplicationStrategyTest extends PredisTestCase
         $this->assertFalse(
             $strategy->isReadOperation($command),
             'GEORADIUSBYMEMBER with STOREDIST is expected to be a write operation.'
+        );
+    }
+
+
+    /**
+     * @group disconnected
+     */
+    public function testGeosearchCommand(): void
+    {
+        $commands = $this->getCommandFactory();
+        $strategy = new ReplicationStrategy();
+        $geoSearchArgs = ['key', new FromLonLat(1.1, 2.2), new ByRadius(1, 'km')];
+        $command = $commands->create('GEOSEARCH', $geoSearchArgs);
+        $this->assertTrue(
+            $strategy->isReadOperation($command),
+            'GEOSEARCH is expected to be a read operation.'
         );
     }
 
