@@ -93,11 +93,13 @@ class ZRANGE extends RedisCommand
         if ($this->withScores()) {
             $result = [];
 
-            for ($i = 0; $i < count($data); ++$i) {
-                if (is_array($data[$i])) {
-                    $result[$data[$i][0]] = $data[$i][1]; // Relay
-                } else {
-                    $result[$data[$i]] = $data[++$i];
+            if (is_countable($data)) {
+                for ($i = 0; $i < count($data); ++$i) {
+                    if (is_array($data[$i])) {
+                        $result[$data[$i][0]] = $data[$i][1]; // Relay
+                    } else {
+                        $result[$data[$i]] = $data[++$i];
+                    }
                 }
             }
 
