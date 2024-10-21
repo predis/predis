@@ -19,6 +19,7 @@ use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Response;
+use Predis\Transaction\Exception\TransactionException;
 use PredisTestCase;
 use RuntimeException;
 
@@ -848,6 +849,136 @@ class MultiExecTest extends PredisTestCase
 
         $this->assertIsArray($responses);
         $this->assertSame([['hijacked!', null]], $responses);
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @return void
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testExecutesTransactionAgainstCluster(): void
+    {
+        $redis = $this->getClient();
+
+        $response = $redis->transaction(function (MultiExec $tx) {
+            $tx->set('{foo}foo', 'value');
+            $tx->set('{foo}bar', 'value');
+            $tx->set('{foo}baz', 'value');
+        });
+
+        $this->assertEquals(['OK', 'OK', 'OK'], $response);
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @return void
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testThrowsExceptionOnDifferentHashSlots(): void
+    {
+        $redis = $this->getClient();
+
+        $this->expectException(AbortedMultiExecException::class);
+        $this->expectExceptionMessage(
+            'To be able to execute a transaction against cluster, all commands should operate on the same hash slot'
+        );
+
+        $redis->transaction(function (MultiExec $tx) {
+            $tx->set('foo_bar_baz', 'value');
+            $tx->set('{foo}bar', 'value');
+            $tx->set('{foo}baz', 'value');
+        });
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @return void
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testExecutesCASTransactionAgainstCluster(): void
+    {
+        $redis = $this->getClient();
+        $options = ['cas' => true, 'watch' => ['{foo}foo', '{foo}bar', '{foo}baz']];
+
+        $response = $redis->transaction($options, function (MultiExec $tx) {
+            $tx->multi();
+            $tx->set('{foo}foo', 'value');
+            $tx->set('{foo}bar', 'value');
+            $tx->set('{foo}baz', 'value');
+        });
+
+        $this->assertEquals(['OK', 'OK', 'OK'], $response);
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @return void
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testUNWATCHCurrentlyWATCHedKeys(): void
+    {
+        $redis = $this->getClient();
+        $options = ['cas' => true, 'watch' => ['{foo}foo', '{foo}bar', '{foo}baz']];
+
+        $response = $redis->transaction($options, function (MultiExec $tx) {
+            $tx->multi();
+            $tx->set('{foo}foo', 'value');
+            $tx->set('{foo}bar', 'value');
+            $tx->set('{foo}baz', 'value');
+            $tx->unwatch();
+        });
+
+        $this->assertEquals(['OK', 'OK', 'OK', 'OK'], $response);
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @return void
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testThrowsExceptionOnWATCHedKeysPointsToDifferentSlots(): void
+    {
+        $redis = $this->getClient();
+        $options = ['cas' => true, 'watch' => ['foo_bar_baz', '{foo}bar', '{foo}baz']];
+
+        $this->expectException(TransactionException::class);
+        $this->expectExceptionMessage("WATCHed keys should point to the same hash slot");
+
+        $redis->transaction($options, function (MultiExec $tx) {
+            $tx->multi();
+            $tx->set('{foo}foo', 'value');
+            $tx->set('{foo}bar', 'value');
+            $tx->set('{foo}baz', 'value');
+        });
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @return void
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testThrowsExceptionOnTransactionContextPointsToDifferentSlots(): void
+    {
+        $redis = $this->getClient();
+        $options = ['cas' => true, 'watch' => ['{foo}foo', '{foo}bar', '{foo}baz']];
+
+        $this->expectException(AbortedMultiExecException::class);
+        $this->expectExceptionMessage(
+            'To be able to execute a transaction against cluster, all commands should operate on the same hash slot'
+        );
+
+        $redis->transaction($options, function (MultiExec $tx) {
+            $tx->multi();
+            $tx->set('{foo}foo', 'value');
+            $tx->set('{foo}bar', 'value');
+            $tx->set('foo_bar_baz', 'value');
+        });
     }
 
     // ******************************************************************** //

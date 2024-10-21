@@ -49,4 +49,12 @@ interface StrategyInterface
      * @return DistributorInterface
      */
     public function getDistributor();
+
+    /**
+     * Checks if the specified array of keys will generate the same hash.
+     *
+     * @param array $keys
+     * @return bool
+     */
+    public function checkSameSlotForKeys(array $keys): bool;
 }

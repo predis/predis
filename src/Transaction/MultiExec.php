@@ -13,13 +13,13 @@
 namespace Predis\Transaction;
 
 use Exception;
+use Exception\TransactionException;
 use InvalidArgumentException;
 use Predis\ClientContextInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
-use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\RelayConnection;
 use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
@@ -27,6 +27,10 @@ use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Status as StatusResponse;
+use Predis\Transaction\Response\BypassTransactionResponse;
+use Predis\Transaction\Strategy\ConnectionStrategyResolver;
+use Predis\Transaction\Strategy\StrategyInterface;
+use Predis\Transaction\Strategy\StrategyResolverInterface;
 use Relay\Exception as RelayException;
 use Relay\Relay;
 use SplQueue;
@@ -48,16 +52,34 @@ class MultiExec implements ClientContextInterface
     protected $modeCAS = false;
 
     /**
-     * @param ClientInterface $client  Client instance used by the transaction.
-     * @param array|null      $options Initialization options.
+     * @var StrategyInterface $connectionStrategy
      */
-    public function __construct(ClientInterface $client, ?array $options = null)
+    protected $connectionStrategy;
+
+    /**
+     * @param ClientInterface $client Client instance used by the transaction.
+     * @param array|null $options Initialization options.
+     * @throws NotSupportedException
+     */
+    public function __construct(
+        ClientInterface $client,
+        ?array $options = null,
+        ?StrategyResolverInterface $strategyResolver = null
+    )
     {
         $this->assertClient($client);
 
         $this->client = $client;
         $this->state = new MultiExecState();
 
+        if (null === $strategyResolver) {
+            $strategyResolver = new ConnectionStrategyResolver();
+        }
+
+        $this->connectionStrategy = $strategyResolver->resolve(
+            $client->getConnection(),
+            $this->state
+        );
         $this->configure($client, $options ?: []);
         $this->reset();
     }
@@ -72,12 +94,6 @@ class MultiExec implements ClientContextInterface
      */
     private function assertClient(ClientInterface $client)
     {
-        if ($client->getConnection() instanceof ClusterInterface) {
-            throw new NotSupportedException(
-                'Cannot initialize a MULTI/EXEC transaction over cluster connections.'
-            );
-        }
-
         if (!$client->getCommandFactory()->supports('MULTI', 'EXEC', 'DISCARD')) {
             throw new NotSupportedException(
                 'MULTI, EXEC and DISCARD are not supported by the current command factory.'
@@ -142,7 +158,7 @@ class MultiExec implements ClientContextInterface
         $discarded = $this->state->isDiscarded();
 
         if (!$cas || ($cas && $discarded)) {
-            $this->call('MULTI');
+            $this->connectionStrategy->initializeTransaction();
 
             if ($discarded) {
                 $this->state->unflag(MultiExecState::CAS);
@@ -169,44 +185,6 @@ class MultiExec implements ClientContextInterface
     }
 
     /**
-     * Executes a Redis command bypassing the transaction logic.
-     *
-     * @param string $commandID Command ID.
-     * @param array  $arguments Arguments for the command.
-     *
-     * @return mixed
-     * @throws ServerException
-     */
-    protected function call($commandID, array $arguments = [])
-    {
-        try {
-            $response = $this->client->executeCommand(
-                $this->client->createCommand($commandID, $arguments)
-            );
-        } catch (ServerException $exception) {
-            if (!$this->client->getConnection() instanceof RelayConnection) {
-                throw $exception;
-            }
-
-            if (strcasecmp($commandID, 'EXEC') != 0) {
-                throw $exception;
-            }
-
-            if (!strpos($exception->getMessage(), 'RELAY_ERR_REDIS')) {
-                throw $exception;
-            }
-
-            return null;
-        }
-
-        if ($response instanceof ErrorResponseInterface) {
-            throw new ServerException($response->getMessage());
-        }
-
-        return $response;
-    }
-
-    /**
      * Executes the specified Redis command.
      *
      * @param CommandInterface $command Command instance.
@@ -219,11 +197,11 @@ class MultiExec implements ClientContextInterface
     {
         $this->initialize();
 
-        if ($this->state->isCAS()) {
-            return $this->client->executeCommand($command);
-        }
+        $response = $this->connectionStrategy->executeCommand($command);
 
-        $response = $this->client->getConnection()->executeCommand($command);
+        if ($response instanceof BypassTransactionResponse) {
+            return $response->getResponse();
+        }
 
         if ($response instanceof StatusResponse && $response == 'QUEUED') {
             $this->commands->enqueue($command);
@@ -257,7 +235,7 @@ class MultiExec implements ClientContextInterface
             throw new ClientException('Sending WATCH after MULTI is not allowed.');
         }
 
-        $response = $this->call('WATCH', is_array($keys) ? $keys : [$keys]);
+        $response = $this->connectionStrategy->watch(is_array($keys) ? $keys : [$keys]);
         $this->state->flag(MultiExecState::WATCH);
 
         return $response;
@@ -272,7 +250,7 @@ class MultiExec implements ClientContextInterface
     {
         if ($this->state->check(MultiExecState::INITIALIZED | MultiExecState::CAS)) {
             $this->state->unflag(MultiExecState::CAS);
-            $this->call('MULTI');
+            $this->connectionStrategy->multi();
         } else {
             $this->initialize();
         }
@@ -309,7 +287,11 @@ class MultiExec implements ClientContextInterface
     public function discard()
     {
         if ($this->state->isInitialized()) {
-            $this->call($this->state->isCAS() ? 'UNWATCH' : 'DISCARD');
+            if ($this->state->isCAS()) {
+                $this->connectionStrategy->unwatch();
+            } else {
+                $this->connectionStrategy->discard();
+            }
 
             $this->reset();
             $this->state->flag(MultiExecState::DISCARDED);
@@ -395,7 +377,7 @@ class MultiExec implements ClientContextInterface
                 return;
             }
 
-            $execResponse = $this->call('EXEC');
+            $execResponse = $this->connectionStrategy->executeTransaction();
 
             // The additional `false` check is needed for Relay,
             // let's hope it won't break anything

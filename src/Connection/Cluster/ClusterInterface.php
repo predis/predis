@@ -13,6 +13,7 @@
 namespace Predis\Connection\Cluster;
 
 use Predis\Connection\AggregateConnectionInterface;
+use Predis\Cluster\StrategyInterface;
 
 /**
  * Defines a cluster of Redis servers formed by aggregating multiple connection
@@ -20,4 +21,11 @@ use Predis\Connection\AggregateConnectionInterface;
  */
 interface ClusterInterface extends AggregateConnectionInterface
 {
+    /**
+     * Returns the underlying command hash strategy used to hash commands by
+     * using keys found in their arguments.
+     *
+     * @return StrategyInterface
+     */
+    public function getClusterStrategy(): StrategyInterface;
 }
