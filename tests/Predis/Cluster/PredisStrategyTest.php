@@ -466,12 +466,6 @@ class PredisStrategyTest extends PredisTestCase
 
             /* cluster */
             'CLUSTER' => 'keys-fake',
-
-            /* transaction */
-            'MULTI' => 'keys-fake',
-            'EXEC' => 'keys-fake',
-            'DISCARD' => 'keys-fake',
-            'WATCH' => 'keys-fake',
         ];
 
         if (isset($type)) {
