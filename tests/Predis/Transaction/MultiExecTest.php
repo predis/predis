@@ -781,7 +781,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group ext-relay
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.2.0
      */
     public function testIntegrationWritesOnWatchedKeysAbortTransaction(): void
@@ -801,6 +801,31 @@ class MultiExecTest extends PredisTestCase
         }
 
         $this->assertInstanceOf('Predis\Transaction\AbortedMultiExecException', $exception);
+        $this->assertSame('client2', $client1->get('sentinel'));
+    }
+
+    /**
+     * @group connected
+     * @group ext-relay
+     * @requiresRedisVersion >= 2.2.0
+     */
+    public function testRelayIntegrationWritesOnWatchedKeysAbortTransaction(): void
+    {
+        $exception = null;
+        $client1 = $this->getClient();
+        $client2 = $this->getClient();
+
+        try {
+            $client1->transaction(['watch' => 'sentinel'], function ($tx) use ($client2) {
+                $tx->set('sentinel', 'client1');
+                $tx->get('sentinel');
+                $client2->set('sentinel', 'client2');
+            });
+        } catch (Response\ServerException $ex) {
+            $exception = $ex;
+        }
+
+        $this->assertInstanceOf(Response\ServerException::class, $exception);
         $this->assertSame('client2', $client1->get('sentinel'));
     }
 
