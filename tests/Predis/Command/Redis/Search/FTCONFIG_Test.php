@@ -91,7 +91,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion < 7.9.0
+     * @requiresRedisVersion < 7.3.0
      */
     public function testSetGivenRediSearchConfigurationParameter(): void
     {
@@ -116,7 +116,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion < 7.9.0
+     * @requiresRedisVersion < 7.3.0
      */
     public function testGetReturnsGivenRediSearchConfigurationParameter(): void
     {
@@ -143,7 +143,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion < 7.9.0
+     * @requiresRedisVersion < 7.3.0
      */
     public function testHelpReturnsGivenRediSearchConfigurationDescription(): void
     {
@@ -166,7 +166,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion < 7.9.0
+     * @requiresRedisVersion < 7.3.0
      */
     public function testSetThrowsExceptionOnNonExistingOption(): void
     {
