@@ -22,7 +22,7 @@ class SpaceTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use Space;
 
             public static $spaceArgumentPositionOffset = 0;

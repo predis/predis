@@ -24,7 +24,7 @@ class DbTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use DB;
 
             public static $dbArgumentPositionOffset = 0;
