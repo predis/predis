@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Transaction\Strategy;
 
 use PHPUnit\Framework\TestCase;
@@ -7,7 +17,6 @@ use Predis\Command\CommandInterface;
 use Predis\Command\Redis\EXEC;
 use Predis\Command\Redis\MULTI;
 use Predis\Command\Redis\SET;
-use Predis\Command\Redis\WATCH;
 use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Response\ErrorInterface;
 use Predis\Response\Status;
@@ -103,7 +112,7 @@ class ClusterConnectionStrategyTest extends TestCase
 
         $this->assertInstanceOf(ErrorInterface::class, $response);
         $this->assertSame(
-            "To be able to execute a transaction against cluster, all commands should operate on the same hash slot",
+            'To be able to execute a transaction against cluster, all commands should operate on the same hash slot',
             $response->getMessage()
         );
     }
@@ -129,8 +138,8 @@ class ClusterConnectionStrategyTest extends TestCase
         $resp1 = $strategy->executeCommand($this->mockCommand);
         $resp2 = $strategy->executeCommand($this->mockCommand);
 
-        $this->assertEquals("QUEUED", $resp1);
-        $this->assertEquals("QUEUED", $resp2);
+        $this->assertEquals('QUEUED', $resp1);
+        $this->assertEquals('QUEUED', $resp2);
     }
 
     /**
@@ -247,7 +256,7 @@ class ClusterConnectionStrategyTest extends TestCase
         $this->assertEquals('ERR', $strategy->multi());
 
         $this->expectException(TransactionException::class);
-        $this->expectExceptionMessage("Transaction context should be initialized first");
+        $this->expectExceptionMessage('Transaction context should be initialized first');
 
         $strategy->executeCommand(new SET());
 

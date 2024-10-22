@@ -670,7 +670,6 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
         return $this->slotmap;
     }
 
-
     /**
      * {@inheritDoc}
      */

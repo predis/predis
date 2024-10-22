@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Transaction\Strategy;
 
 use Predis\Command\CommandInterface;
@@ -17,7 +27,7 @@ interface StrategyInterface
     /**
      * Executes a given command in a transaction context.
      *
-     * @param CommandInterface $command
+     * @param  CommandInterface     $command
      * @return mixed
      * @throws TransactionException
      */
@@ -26,8 +36,8 @@ interface StrategyInterface
     /**
      * Executes previously opened transaction context.
      *
-     * @throws TransactionException
      * @return mixed
+     * @throws TransactionException
      */
     public function executeTransaction();
 
@@ -41,9 +51,9 @@ interface StrategyInterface
     /**
      * Enable WATCH for given keys.
      *
-     * @param array $keys
-     * @throws TransactionException
+     * @param  array                $keys
      * @return mixed
+     * @throws TransactionException
      */
     public function watch(array $keys);
 

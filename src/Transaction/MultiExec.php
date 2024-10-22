@@ -13,14 +13,12 @@
 namespace Predis\Transaction;
 
 use Exception;
-use Exception\TransactionException;
 use InvalidArgumentException;
 use Predis\ClientContextInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
-use Predis\Connection\RelayConnection;
 use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error;
@@ -52,21 +50,20 @@ class MultiExec implements ClientContextInterface
     protected $modeCAS = false;
 
     /**
-     * @var StrategyInterface $connectionStrategy
+     * @var StrategyInterface
      */
     protected $connectionStrategy;
 
     /**
-     * @param ClientInterface $client Client instance used by the transaction.
-     * @param array|null $options Initialization options.
+     * @param  ClientInterface       $client  Client instance used by the transaction.
+     * @param  array|null            $options Initialization options.
      * @throws NotSupportedException
      */
     public function __construct(
         ClientInterface $client,
         ?array $options = null,
         ?StrategyResolverInterface $strategyResolver = null
-    )
-    {
+    ) {
         $this->assertClient($client);
 
         $this->client = $client;

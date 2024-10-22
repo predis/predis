@@ -191,7 +191,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'MULTI' => [$this, 'getFakeKey'],
             'EXEC' => [$this, 'getFakeKey'],
             'DISCARD' => [$this, 'getFakeKey'],
-            'WATCH' => [$this, 'getFakeKey']
+            'WATCH' => [$this, 'getFakeKey'],
         ];
     }
 
