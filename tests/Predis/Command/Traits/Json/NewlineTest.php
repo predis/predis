@@ -22,7 +22,7 @@ class NewlineTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use Newline;
 
             public static $newlineArgumentPositionOffset = 0;

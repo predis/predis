@@ -24,7 +24,7 @@ class GetTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use Get;
 
             public static $getArgumentPositionOffset = 0;

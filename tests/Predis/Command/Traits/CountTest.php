@@ -24,7 +24,7 @@ class CountTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use Count;
 
             public static $countArgumentPositionOffset = 2;
