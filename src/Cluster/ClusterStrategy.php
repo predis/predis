@@ -186,12 +186,6 @@ abstract class ClusterStrategy implements StrategyInterface
             'TFCALLASYNC' => [$this, 'getFakeKey'],
             /* cluster */
             'CLUSTER' => [$this, 'getFakeKey'],
-
-            /* transaction */
-            'MULTI' => [$this, 'getFakeKey'],
-            'EXEC' => [$this, 'getFakeKey'],
-            'DISCARD' => [$this, 'getFakeKey'],
-            'WATCH' => [$this, 'getFakeKey'],
         ];
     }
 
