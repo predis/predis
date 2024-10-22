@@ -781,6 +781,7 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group ext-relay
      * @requiresRedisVersion >= 2.2.0
      */
     public function testIntegrationWritesOnWatchedKeysAbortTransaction(): void
