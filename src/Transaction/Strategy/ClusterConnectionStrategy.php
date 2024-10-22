@@ -133,6 +133,7 @@ class ClusterConnectionStrategy implements StrategyInterface
 
         // Begin transaction
         if ('OK' != $this->setSlotAndExecute($multi)) {
+            $this->slot = null;
             return null;
         }
 
@@ -142,6 +143,7 @@ class ClusterConnectionStrategy implements StrategyInterface
             $command = $this->commandsQueue->dequeue();
 
             if ('QUEUED' != $this->setSlotAndExecute($command)) {
+                $this->slot = null;
                 return null;
             }
         }
