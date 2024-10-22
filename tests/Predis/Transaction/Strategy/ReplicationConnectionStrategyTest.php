@@ -1,10 +1,21 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Transaction\Strategy;
 
 use PHPUnit\Framework\TestCase;
 use Predis\Command\CommandInterface;
 use Predis\Connection\Replication\ReplicationInterface;
+use Predis\Transaction\MultiExecState;
 
 class ReplicationConnectionStrategyTest extends TestCase
 {
@@ -35,7 +46,7 @@ class ReplicationConnectionStrategyTest extends TestCase
             ->with($this->mockCommand)
             ->willReturn('OK');
 
-        $strategy = new ReplicationConnectionStrategy($this->mockConnection);
+        $strategy = new ReplicationConnectionStrategy($this->mockConnection, new MultiExecState());
 
         $this->assertEquals('OK', $strategy->executeCommand($this->mockCommand));
     }

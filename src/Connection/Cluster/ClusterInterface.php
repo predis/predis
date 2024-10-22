@@ -12,8 +12,8 @@
 
 namespace Predis\Connection\Cluster;
 
-use Predis\Connection\AggregateConnectionInterface;
 use Predis\Cluster\StrategyInterface;
+use Predis\Connection\AggregateConnectionInterface;
 
 /**
  * Defines a cluster of Redis servers formed by aggregating multiple connection

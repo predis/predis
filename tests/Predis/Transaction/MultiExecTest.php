@@ -947,7 +947,7 @@ class MultiExecTest extends PredisTestCase
         $options = ['cas' => true, 'watch' => ['foo_bar_baz', '{foo}bar', '{foo}baz']];
 
         $this->expectException(TransactionException::class);
-        $this->expectExceptionMessage("WATCHed keys should point to the same hash slot");
+        $this->expectExceptionMessage('WATCHed keys should point to the same hash slot');
 
         $redis->transaction($options, function (MultiExec $tx) {
             $tx->multi();

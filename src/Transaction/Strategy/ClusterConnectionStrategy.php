@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Transaction\Strategy;
 
 use Predis\Command\CommandInterface;
@@ -15,18 +25,17 @@ use Predis\Transaction\Exception\TransactionException;
 use Predis\Transaction\MultiExecState;
 use SplQueue;
 
-
 class ClusterConnectionStrategy implements StrategyInterface
 {
     /**
-     * @var ClusterInterface $connection
+     * @var ClusterInterface
      */
     private $connection;
 
     /**
      * Server-matching slot of the current transaction.
      *
-     * @var ?int $slot
+     * @var ?int
      */
     private $slot;
 
@@ -34,14 +43,14 @@ class ClusterConnectionStrategy implements StrategyInterface
      * In cluster environment it needs to be queued to ensure
      * that all commands will point to the same node.
      *
-     * @var SplQueue $commandsQueue
+     * @var SplQueue
      */
     private $commandsQueue;
 
     /**
      * Shows if transaction context was initialized.
      *
-     * @var bool $isInitialized
+     * @var bool
      */
     private $isInitialized = false;
 
@@ -69,7 +78,7 @@ class ClusterConnectionStrategy implements StrategyInterface
     public function executeCommand(CommandInterface $command)
     {
         if (!$this->isInitialized) {
-            throw new TransactionException("Transaction context should be initialized first");
+            throw new TransactionException('Transaction context should be initialized first');
         }
 
         $commandSlot = $this->clusterStrategy->getSlot($command);
@@ -84,14 +93,14 @@ class ClusterConnectionStrategy implements StrategyInterface
 
         if (is_int($commandSlot) && $commandSlot !== $this->slot) {
             return new Error(
-                "To be able to execute a transaction against cluster, all commands should operate on the same hash slot"
+                'To be able to execute a transaction against cluster, all commands should operate on the same hash slot'
             );
         }
 
         $this->commandsQueue->enqueue($command);
-        return new Status("QUEUED");
-    }
 
+        return new Status('QUEUED');
+    }
 
     /**
      * {@inheritDoc}
@@ -114,7 +123,7 @@ class ClusterConnectionStrategy implements StrategyInterface
     public function executeTransaction()
     {
         if (!$this->isInitialized) {
-            throw new TransactionException("Transaction context should be initialized first");
+            throw new TransactionException('Transaction context should be initialized first');
         }
 
         $exec = new EXEC();
@@ -164,7 +173,7 @@ class ClusterConnectionStrategy implements StrategyInterface
     public function watch(array $keys)
     {
         if (!$this->clusterStrategy->checkSameSlotForKeys($keys)) {
-            throw new TransactionException("WATCHed keys should point to the same hash slot");
+            throw new TransactionException('WATCHed keys should point to the same hash slot');
         }
 
         $this->slot = $this->clusterStrategy->getSlotByKey($keys[0]);
@@ -200,7 +209,7 @@ class ClusterConnectionStrategy implements StrategyInterface
     /**
      * Assigns slot to a command and executes.
      *
-     * @param CommandInterface $command
+     * @param  CommandInterface $command
      * @return mixed
      */
     private function setSlotAndExecute(CommandInterface $command)

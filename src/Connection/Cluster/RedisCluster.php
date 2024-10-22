@@ -639,7 +639,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         return $this->slotmap;
     }
 
-
     /**
      * {@inheritDoc}
      */

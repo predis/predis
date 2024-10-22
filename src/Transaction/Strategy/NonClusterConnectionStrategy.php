@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2023 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Transaction\Strategy;
 
 use Predis\Command\CommandInterface;
@@ -22,7 +32,7 @@ use Predis\Transaction\Response\BypassTransactionResponse;
 abstract class NonClusterConnectionStrategy implements StrategyInterface
 {
     /**
-     * @var NodeConnectionInterface|ReplicationInterface $connection
+     * @var NodeConnectionInterface|ReplicationInterface
      */
     protected $connection;
 
@@ -41,7 +51,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function initializeTransaction(): bool
     {
@@ -49,7 +59,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function executeCommand(CommandInterface $command)
     {
@@ -61,7 +71,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function executeTransaction()
     {
@@ -69,7 +79,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function multi()
     {
@@ -77,7 +87,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function watch(array $keys)
     {
@@ -88,7 +98,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function unwatch()
     {
@@ -96,7 +106,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function discard()
     {
@@ -106,7 +116,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     /**
      * Executes a Redis command bypassing the transaction logic.
      *
-     * @param CommandInterface $command
+     * @param  CommandInterface          $command
      * @return BypassTransactionResponse
      * @throws ServerException
      */

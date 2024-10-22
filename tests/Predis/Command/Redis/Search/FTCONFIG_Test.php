@@ -91,7 +91,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRediSearchVersion >= 1.0.0
+     * @requiresRediSearchVersion <= 2.10.5
      */
     public function testSetGivenRediSearchConfigurationParameter(): void
     {
@@ -104,7 +104,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRediSearchVersion >= 1.0.0
+     * @requiresRediSearchVersion <= 2.10.5
      */
     public function testGetReturnsGivenRediSearchConfigurationParameter(): void
     {
@@ -118,7 +118,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRediSearchVersion >= 1.0.0
+     * @requiresRediSearchVersion <= 2.10.5
      */
     public function testHelpReturnsGivenRediSearchConfigurationDescription(): void
     {
@@ -141,7 +141,7 @@ class FTCONFIG_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRediSearchVersion >= 1.0.0
+     * @requiresRediSearchVersion <= 2.10.5
      */
     public function testSetThrowsExceptionOnNonExistingOption(): void
     {

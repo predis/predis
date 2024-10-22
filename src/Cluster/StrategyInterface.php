@@ -53,7 +53,7 @@ interface StrategyInterface
     /**
      * Checks if the specified array of keys will generate the same hash.
      *
-     * @param array $keys
+     * @param  array $keys
      * @return bool
      */
     public function checkSameSlotForKeys(array $keys): bool;
