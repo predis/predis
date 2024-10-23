@@ -24,7 +24,7 @@ class TimeoutTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use Timeout;
 
             public static $timeoutArgumentPositionOffset = 0;

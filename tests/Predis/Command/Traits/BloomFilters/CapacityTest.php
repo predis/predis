@@ -24,7 +24,7 @@ class CapacityTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use Capacity;
 
             public static $capacityArgumentPositionOffset = 0;

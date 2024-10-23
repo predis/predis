@@ -24,7 +24,7 @@ class WithHashTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use WithHash;
 
             public static $withHashArgumentPositionOffset = 0;
