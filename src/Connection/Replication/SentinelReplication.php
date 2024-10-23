@@ -385,7 +385,7 @@ class SentinelReplication implements ReplicationInterface
         );
 
         if ($payload === null) {
-            throw new ServerException('ERR No such master with that name');
+            throw new ServerException("ERR No such master with that name: $service");
         }
 
         if ($payload instanceof ErrorResponseInterface) {
