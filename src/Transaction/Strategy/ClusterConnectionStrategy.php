@@ -23,6 +23,7 @@ use Predis\Response\Error;
 use Predis\Response\Status;
 use Predis\Transaction\Exception\TransactionException;
 use Predis\Transaction\MultiExecState;
+use Relay\Relay;
 use SplQueue;
 
 class ClusterConnectionStrategy implements StrategyInterface
@@ -130,10 +131,12 @@ class ClusterConnectionStrategy implements StrategyInterface
 
         /** @var MULTI $multi */
         $multi = $this->commandsQueue->dequeue();
+        $multiResp = $this->setSlotAndExecute($multi);
 
         // Begin transaction
-        if ('OK' != $this->setSlotAndExecute($multi)) {
+        if (('OK' != $multiResp) && !$multiResp instanceof Relay) {
             $this->slot = null;
+
             return null;
         }
 
@@ -141,9 +144,11 @@ class ClusterConnectionStrategy implements StrategyInterface
         while (!$this->commandsQueue->isEmpty()) {
             /** @var CommandInterface $command */
             $command = $this->commandsQueue->dequeue();
+            $commandResp = $this->setSlotAndExecute($command);
 
-            if ('QUEUED' != $this->setSlotAndExecute($command)) {
+            if (('QUEUED' != $commandResp) && !$commandResp instanceof Relay) {
                 $this->slot = null;
+
                 return null;
             }
         }
