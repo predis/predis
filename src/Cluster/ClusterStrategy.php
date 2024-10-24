@@ -445,13 +445,9 @@ abstract class ClusterStrategy implements StrategyInterface
     }
 
     /**
-     * Checks if the specified array of keys will generate the same hash.
-     *
-     * @param array $keys Array of keys.
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    protected function checkSameSlotForKeys(array $keys)
+    public function checkSameSlotForKeys(array $keys): bool
     {
         if (!$count = count($keys)) {
             return false;
@@ -465,8 +461,6 @@ abstract class ClusterStrategy implements StrategyInterface
             if ($currentSlot !== $nextSlot) {
                 return false;
             }
-
-            $currentSlot = $nextSlot;
         }
 
         return true;

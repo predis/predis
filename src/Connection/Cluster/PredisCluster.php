@@ -190,12 +190,9 @@ class PredisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
-     * Returns the underlying command hash strategy used to hash commands by
-     * using keys found in their arguments.
-     *
-     * @return StrategyInterface
+     * {@inheritDoc}
      */
-    public function getClusterStrategy()
+    public function getClusterStrategy(): StrategyInterface
     {
         return $this->strategy;
     }
