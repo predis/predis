@@ -14,6 +14,7 @@ namespace Predis\Configuration\Option;
 
 use InvalidArgumentException;
 use Predis\Cluster\RedisStrategy;
+use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Cluster\PredisCluster;
 use Predis\Connection\Cluster\RedisCluster;
@@ -59,7 +60,14 @@ class Cluster extends Aggregate
             case 'redis':
             case 'redis-cluster':
                 return function ($parameters, $options, $option) {
-                    return new RedisCluster($options->connections, new RedisStrategy($options->crc16));
+                    $factory = $options->connections;
+                    $replicaSelector = $options->readonly;
+                    if ($replicaSelector !== null) {
+                        // Send READONLY command to any cluster node during connection using init commands
+                        $factory->setDefaultParameters($factory->getDefaultParameters() + ['readonly' => true]);
+                    }
+
+                    return new RedisCluster($factory, new RedisStrategy($options->crc16), $replicaSelector);
                 };
 
             case 'predis':

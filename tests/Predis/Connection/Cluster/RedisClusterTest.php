@@ -15,7 +15,8 @@ namespace Predis\Connection\Cluster;
 use Iterator;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Cluster;
-use Predis\Command;
+use Predis\Cluster\RedisStrategy;
+use Predis\Command\RawCommand;
 use Predis\Connection;
 use Predis\Response;
 use PredisTestCase;
@@ -656,11 +657,11 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection3);
 
         $this->assertSame('value:1001', $cluster->executeCommand(
-            Command\RawCommand::create('get', 'node:1001')
+            RawCommand::create('get', 'node:1001')
         ));
 
         $this->assertSame('value:5001', $cluster->executeCommand(
-            Command\RawCommand::create('get', 'node:5001')
+            RawCommand::create('get', 'node:5001')
         ));
     }
 
@@ -732,7 +733,7 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection3);
 
         $this->assertSame('value:1001', $cluster->executeCommand(
-            Command\RawCommand::create('get', 'node:1001')
+            RawCommand::create('get', 'node:1001')
         ));
     }
 
@@ -754,7 +755,7 @@ class RedisClusterTest extends PredisTestCase
         $cluster = new RedisCluster($factory);
 
         $cluster->executeCommand(
-            Command\RawCommand::create('get', 'node:1001')
+            RawCommand::create('get', 'node:1001')
         );
     }
 
@@ -1217,7 +1218,7 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAskSlotMapToRedisClusterOnMovedResponseByDefault(string $movedErrorMessage): void
     {
-        $cmdGET = Command\RawCommand::create('GET', 'node:1001');
+        $cmdGET = RawCommand::create('GET', 'node:1001');
         $rspMOVED = new Response\Error($movedErrorMessage);
         $rspSlotsArray = [
             [0,  8191, ['127.0.0.1', 6379]],
@@ -1326,7 +1327,7 @@ class RedisClusterTest extends PredisTestCase
     {
         $clusterDownError = new Response\Error('CLUSTERDOWN');
 
-        $command = Command\RawCommand::create('get', 'node:1001');
+        $command = RawCommand::create('get', 'node:1001');
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->exactly(3))
@@ -1357,7 +1358,7 @@ class RedisClusterTest extends PredisTestCase
 
         $clusterDownError = new Response\Error('CLUSTERDOWN');
 
-        $command = Command\RawCommand::create('get', 'node:1001');
+        $command = RawCommand::create('get', 'node:1001');
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
         $connection1->expects($this->exactly(3))
@@ -1454,5 +1455,141 @@ class RedisClusterTest extends PredisTestCase
         $this->AssertEqualsWithDelta($expectedTime, $totalTime, 1, 'Unexpected execution time');
 
         $this->assertCount(16384, $cluster->getSlotMap());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetConnectionByCommandWithoutReadonlyMode(): void
+    {
+        $command = new RawCommand('GET', ['key']);
+
+        $masterConnection1 = '127.0.0.1:6381';
+        $masterConnection2 = '127.0.0.1:6382';
+        $masterConnection3 = '127.0.0.1:6383';
+        $slotsmap = [
+            [0, 5460, explode(':', $masterConnection1), []],
+            [5461, 10922, explode(':', $masterConnection2), []],
+            [10923, 16383, explode(':', $masterConnection3), []],
+        ];
+
+        $connection1 = $this->getMockConnection('tcp://' . $masterConnection1);
+        $connection1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'CLUSTER', ['SLOTS']
+            ))
+            ->willReturn($slotsmap);
+
+        $cluster = new RedisCluster(new Connection\Factory(), new RedisStrategy());
+        $cluster->add($connection1);
+        $cluster->askSlotMap($connection1);
+
+        $this->assertSame($masterConnection3, (string) $cluster->getConnectionByCommand($command));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetConnectionByCommandInReadonlyMode(): void
+    {
+        $command = new RawCommand('GET', ['key']);
+
+        $masterConnection1 = '127.0.0.1:6381';
+        $masterConnection2 = '127.0.0.1:6382';
+        $masterConnection3 = '127.0.0.1:6383';
+        $replicaConnection1 = '127.0.0.1:6391';
+        $replicaConnection2 = '127.0.0.1:6392';
+        $replicaConnection3 = '127.0.0.1:6393';
+        $slotsmap = [
+            [0, 5460, explode(':', $masterConnection1), explode(':', $replicaConnection1)],
+            [5461, 10922, explode(':', $masterConnection2), explode(':', $replicaConnection2)],
+            [10923, 16383, explode(':', $masterConnection3), explode(':', $replicaConnection3)],
+        ];
+
+        $connection1 = $this->getMockConnection('tcp://' . $masterConnection1);
+        $connection1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'CLUSTER', ['SLOTS']
+            ))
+            ->willReturn($slotsmap);
+
+        $replicaSelector = new Cluster\RedisReplicaSelector();
+        $cluster = new RedisCluster(new Connection\Factory(), new RedisStrategy(), $replicaSelector);
+        $cluster->add($connection1);
+        $cluster->askSlotMap($connection1);
+
+        $this->assertSame($replicaConnection3, (string) $cluster->getConnectionByCommand($command));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetConnectionByCommandInReadonlyModeForMutatingOperation(): void
+    {
+        $masterConnection1 = '127.0.0.1:6381';
+        $masterConnection2 = '127.0.0.1:6382';
+        $masterConnection3 = '127.0.0.1:6383';
+        $replicaConnection1 = '127.0.0.1:6391';
+        $replicaConnection2 = '127.0.0.1:6392';
+        $replicaConnection3 = '127.0.0.1:6393';
+        $slotsmap = [
+            [0, 5460, explode(':', $masterConnection1), explode(':', $replicaConnection1)],
+            [5461, 10922, explode(':', $masterConnection2), explode(':', $replicaConnection2)],
+            [10923, 16383, explode(':', $masterConnection3), explode(':', $replicaConnection3)],
+        ];
+
+        $connection1 = $this->getMockConnection('tcp://' . $masterConnection1);
+        $connection1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'CLUSTER', ['SLOTS']
+            ))
+            ->willReturn($slotsmap);
+
+        $replicaSelector = new Cluster\RedisReplicaSelector();
+        $cluster = new RedisCluster(new Connection\Factory(), new RedisStrategy(), $replicaSelector);
+        $cluster->add($connection1);
+        $cluster->askSlotMap($connection1);
+
+        $command = new RawCommand('SET', ['key', 'value']);
+
+        $this->assertSame($masterConnection3, (string) $cluster->getConnectionByCommand($command));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testGetConnectionByCommandInReadonlyModeWithoutAnyReplica(): void
+    {
+        $command = new RawCommand('GET', ['key']);
+
+        $masterConnection1 = '127.0.0.1:6381';
+        $masterConnection2 = '127.0.0.1:6382';
+        $masterConnection3 = '127.0.0.1:6383';
+        $slotsmap = [
+            [0, 5460, explode(':', $masterConnection1), []],
+            [5461, 10922, explode(':', $masterConnection2), []],
+            [10923, 16383, explode(':', $masterConnection3), []],
+        ];
+
+        $connection1 = $this->getMockConnection('tcp://' . $masterConnection1);
+        $connection1
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'CLUSTER', ['SLOTS']
+            ))
+            ->willReturn($slotsmap);
+
+        $replicaSelector = new Cluster\RedisReplicaSelector();
+        $cluster = new RedisCluster(new Connection\Factory(), new RedisStrategy(), $replicaSelector);
+        $cluster->add($connection1);
+        $cluster->askSlotMap($connection1);
+
+        $this->assertSame($masterConnection3, (string) $cluster->getConnectionByCommand($command));
     }
 }

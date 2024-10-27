@@ -12,6 +12,7 @@
 
 namespace Predis\Configuration;
 
+use Predis\Cluster\RedisReplicaSelector;
 use Predis\Command\Processor\ProcessorInterface;
 
 /**
@@ -22,6 +23,7 @@ use Predis\Command\Processor\ProcessorInterface;
  * @property ProcessorInterface                  $prefix      Key prefixing strategy using the supplied string as prefix
  * @property \Predis\Command\FactoryInterface    $commands    Command factory for creating Redis commands
  * @property callable                            $replication Aggregate connection initializer for replication
+ * @property RedisReplicaSelector|null           $readonly    Enables the sending of read operations to replicas
  */
 interface OptionsInterface
 {

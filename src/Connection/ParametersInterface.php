@@ -35,6 +35,7 @@ namespace Predis\Connection;
  * @property bool   $cache              (Relay only) Whether to use in-memory caching.
  * @property string $serializer         (Relay only) Serializer used for data serialization.
  * @property string $compression        (Relay only) Algorithm used for data compression.
+ * @property string $readonly           (Redis Cluster only) Allow sending of read operations to replica nodes.
  */
 interface ParametersInterface
 {

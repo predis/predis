@@ -190,5 +190,11 @@ class Factory implements FactoryInterface
                 new RawCommand('SELECT', [$parameters->database])
             );
         }
+
+        if ($parameters->readonly ?? false) {
+            $connection->addConnectCommand(
+                new RawCommand('READONLY')
+            );
+        }
     }
 }
