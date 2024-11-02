@@ -16,14 +16,14 @@ use Predis\Cluster\ReadConnectionSelector;
 use Predis\Command\Processor\ProcessorInterface;
 
 /**
- * @property callable                            $aggregate   Custom aggregate connection initializer
- * @property callable                            $cluster     Aggregate connection initializer for clustering
- * @property \Predis\Connection\FactoryInterface $connections Connection factory for creating new connections
- * @property bool                                $exceptions  Toggles exceptions in client for -ERR responses
- * @property ProcessorInterface                  $prefix      Key prefixing strategy using the supplied string as prefix
- * @property \Predis\Command\FactoryInterface    $commands    Command factory for creating Redis commands
- * @property callable                            $replication Aggregate connection initializer for replication
- * @property ReadConnectionSelector|null         $readonly    Enables the sending of read operations to master or replica nodes
+ * @property callable                            $aggregate           Custom aggregate connection initializer
+ * @property callable                            $cluster             Aggregate connection initializer for clustering
+ * @property \Predis\Connection\FactoryInterface $connections         Connection factory for creating new connections
+ * @property bool                                $exceptions          Toggles exceptions in client for -ERR responses
+ * @property ProcessorInterface                  $prefix              Key prefixing strategy using the supplied string as prefix
+ * @property \Predis\Command\FactoryInterface    $commands            Command factory for creating Redis commands
+ * @property callable                            $replication         Aggregate connection initializer for replication
+ * @property ReadConnectionSelector|null         $scaleReadOperations Enables the sending of read operations to master or replica nodes
  */
 interface OptionsInterface
 {
