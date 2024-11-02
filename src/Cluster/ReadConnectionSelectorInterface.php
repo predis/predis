@@ -14,10 +14,12 @@ declare(strict_types=1);
 
 namespace Predis\Cluster;
 
+use Predis\Command\CommandInterface;
+
 /**
- * Configures a replica selector used by the redis-cluster connection backend.
+ * Configures a connection selector for read operations used by the redis-cluster connection backend.
  */
-interface ReplicasSelectorInterface
+interface ReadConnectionSelectorInterface
 {
     /**
      * Adds a link between master and replica connections.
@@ -26,13 +28,14 @@ interface ReplicasSelectorInterface
      * @param  string $masterConnectionId  Master node connection ID
      * @return void
      */
-    public function addReplica(string $replicaConnectionId, string $masterConnectionId): void;
+    public function add(string $replicaConnectionId, string $masterConnectionId): void;
 
     /**
-     * Returns a random replica's connection ID if the provided operation is read-only.
+     * Returns a connection ID for read operation if the provided command is read-only.
      *
-     * @param  string      $masterConnectionId Master node connection ID
+     * @param  CommandInterface $command            Redis command
+     * @param  string           $masterConnectionId Master node connection ID
      * @return string|null
      */
-    public function getReplicaId(string $masterConnectionId): ?string;
+    public function get(CommandInterface $command, string $masterConnectionId): ?string;
 }

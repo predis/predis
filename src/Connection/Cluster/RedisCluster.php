@@ -17,13 +17,12 @@ use Countable;
 use IteratorAggregate;
 use OutOfBoundsException;
 use Predis\ClientException;
+use Predis\Cluster\ReadConnectionSelectorInterface;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
-use Predis\Cluster\ReplicasSelectorInterface;
 use Predis\Cluster\SlotMap;
 use Predis\Cluster\StrategyInterface;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
-use Predis\Command\ReadonlyOperationDetector;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
@@ -66,28 +65,24 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $retryLimit = 5;
     private $retryInterval = 10;
     /**
-     * @var ReplicasSelectorInterface
+     * @var ReadConnectionSelectorInterface
      */
-    private $replicaSelector;
-    private $readonlyOperationDetector;
+    private $readConnectionSelector;
 
     /**
-     * @param FactoryInterface               $connections     Optional connection factory.
-     * @param StrategyInterface|null         $strategy        Optional cluster strategy.
-     * @param ReplicasSelectorInterface|null $replicaSelector Optional redis cluster's replica selector
+     * @param FactoryInterface                     $connections            Optional connection factory.
+     * @param StrategyInterface|null               $strategy               Optional cluster strategy.
+     * @param ReadConnectionSelectorInterface|null $readConnectionSelector Optional read operations connection selector
      */
     public function __construct(
         FactoryInterface $connections,
         ?StrategyInterface $strategy = null,
-        ?ReplicasSelectorInterface $replicaSelector = null
+        ?ReadConnectionSelectorInterface $readConnectionSelector = null
     ) {
         $this->connections = $connections;
         $this->strategy = $strategy ?: new RedisClusterStrategy();
         $this->slotmap = new SlotMap();
-        $this->replicaSelector = $replicaSelector;
-        if ($replicaSelector !== null) {
-            $this->readonlyOperationDetector = new ReadonlyOperationDetector();
-        }
+        $this->readConnectionSelector = $readConnectionSelector;
     }
 
     /**
@@ -307,14 +302,14 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 
             $this->slotmap->setSlots($start, $end, $masterConnectionId);
 
-            if ($this->replicaSelector !== null) {
+            if ($this->readConnectionSelector !== null) {
                 $replicas = array_slice($slots, 3);
                 foreach ($replicas as $replica) {
                     if (count($replica) < 2) {
                         continue;
                     }
-                    $replicaConnectionID = "{$replica[0]}:{$replica[1]}";
-                    $this->replicaSelector->addReplica($replicaConnectionID, $masterConnectionId);
+                    $replicaConnectionId = "{$replica[0]}:{$replica[1]}";
+                    $this->readConnectionSelector->add($replicaConnectionId, $masterConnectionId);
                 }
             }
         }
@@ -382,22 +377,18 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
 
         $connection = $this->slots[$slot] ?? $this->getConnectionBySlot($slot);
 
-        if ($this->replicaSelector === null) {
+        if ($this->readConnectionSelector === null) {
             return $connection;
         }
 
-        if (null === $this->readonlyOperationDetector || !$this->readonlyOperationDetector->detect($command)) {
+        $readConnectionId = $this->readConnectionSelector->get($command, (string) $connection);
+        if (!$readConnectionId) {
             return $connection;
         }
 
-        $replicaConnectionId = $this->replicaSelector->getReplicaId((string) $connection);
-        if (!$replicaConnectionId) {
-            return $connection;
-        }
-
-        if (!$connection = $this->getConnectionById($replicaConnectionId)) {
-            $connection = $this->createConnection($replicaConnectionId);
-            $this->pool[$replicaConnectionId] = $connection;
+        if (!$connection = $this->getConnectionById($readConnectionId)) {
+            $connection = $this->createConnection($readConnectionId);
+            $this->pool[$readConnectionId] = $connection;
         }
 
         return $connection;

@@ -289,7 +289,7 @@ class ClusterTest extends PredisTestCase
             ->method('__get')
             ->withConsecutive(
                 ['connections'],
-                ['readonly'],
+                ['scaleReadOperations'],
                 ['crc16']
             )
             ->willReturnOnConsecutiveCalls(
@@ -317,7 +317,7 @@ class ClusterTest extends PredisTestCase
             ->method('__get')
             ->withConsecutive(
                 ['connections'],
-                ['readonly'],
+                ['scaleReadOperations'],
                 ['crc16']
             )
             ->willReturnOnConsecutiveCalls(

@@ -32,7 +32,7 @@ class Options implements OptionsInterface
         'exceptions' => Option\Exceptions::class,
         'prefix' => Option\Prefix::class,
         'crc16' => Option\CRC16::class,
-        'readonly' => Option\ReadonlyReplicas::class,
+        'scaleReadOperations' => Option\ScaleReadOperations::class,
     ];
 
     /** @var array */

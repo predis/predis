@@ -19,23 +19,23 @@ namespace Predis\Connection;
  * each connection backend class (please refer to their specific documentation),
  * but the most common parameters used through the library are:
  *
- * @property string $scheme             Connection scheme, such as 'tcp' or 'unix'.
- * @property string $host               IP address or hostname of Redis.
- * @property int    $port               TCP port on which Redis is listening to.
- * @property string $path               Path of a UNIX domain socket file.
- * @property string $alias              Alias for the connection.
- * @property float  $timeout            Timeout for the connect() operation.
- * @property float  $read_write_timeout Timeout for read() and write() operations.
- * @property bool   $persistent         Leaves the connection open after a GC collection.
- * @property string $password           Password to access Redis (see the AUTH command).
- * @property string $database           Database index (see the SELECT command).
- * @property bool   $async_connect      Performs the connect() operation asynchronously.
- * @property bool   $tcp_nodelay        Toggles the Nagle's algorithm for coalescing.
- * @property bool   $client_info        Whether to set LIB-NAME and LIB-VER when connecting.
- * @property bool   $cache              (Relay only) Whether to use in-memory caching.
- * @property string $serializer         (Relay only) Serializer used for data serialization.
- * @property string $compression        (Relay only) Algorithm used for data compression.
- * @property string $readonly           (Redis Cluster only) Allow sending of read operations to replica nodes.
+ * @property string $scheme              Connection scheme, such as 'tcp' or 'unix'.
+ * @property string $host                IP address or hostname of Redis.
+ * @property int    $port                TCP port on which Redis is listening to.
+ * @property string $path                Path of a UNIX domain socket file.
+ * @property string $alias               Alias for the connection.
+ * @property float  $timeout             Timeout for the connect() operation.
+ * @property float  $read_write_timeout  Timeout for read() and write() operations.
+ * @property bool   $persistent          Leaves the connection open after a GC collection.
+ * @property string $password            Password to access Redis (see the AUTH command).
+ * @property string $database            Database index (see the SELECT command).
+ * @property bool   $async_connect       Performs the connect() operation asynchronously.
+ * @property bool   $tcp_nodelay         Toggles the Nagle's algorithm for coalescing.
+ * @property bool   $client_info         Whether to set LIB-NAME and LIB-VER when connecting.
+ * @property bool   $cache               (Relay only) Whether to use in-memory caching.
+ * @property string $serializer          (Relay only) Serializer used for data serialization.
+ * @property string $compression         (Relay only) Algorithm used for data compression.
+ * @property string $scaleReadOperations (Redis Cluster only) Allow sending of read operations to master or replica nodes.
  */
 interface ParametersInterface
 {

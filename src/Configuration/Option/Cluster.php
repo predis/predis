@@ -61,13 +61,13 @@ class Cluster extends Aggregate
             case 'redis-cluster':
                 return function ($parameters, $options, $option) {
                     $factory = $options->connections;
-                    $replicaSelector = $options->readonly;
-                    if ($replicaSelector !== null) {
+                    $readConnectionSelector = $options->scaleReadOperations;
+                    if ($readConnectionSelector !== null) {
                         // Send READONLY command to any cluster node during connection using init commands
                         $factory->setDefaultParameters($factory->getDefaultParameters() + ['readonly' => true]);
                     }
 
-                    return new RedisCluster($factory, new RedisStrategy($options->crc16), $replicaSelector);
+                    return new RedisCluster($factory, new RedisStrategy($options->crc16), $readConnectionSelector);
                 };
 
             case 'predis':

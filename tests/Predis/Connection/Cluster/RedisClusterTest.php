@@ -1517,7 +1517,7 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn($slotsmap);
 
-        $replicaSelector = new Cluster\RedisReplicaSelector();
+        $replicaSelector = new Cluster\ReadConnectionSelector();
         $cluster = new RedisCluster(new Connection\Factory(), new RedisStrategy(), $replicaSelector);
         $cluster->add($connection1);
         $cluster->askSlotMap($connection1);
@@ -1551,7 +1551,7 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn($slotsmap);
 
-        $replicaSelector = new Cluster\RedisReplicaSelector();
+        $replicaSelector = new Cluster\ReadConnectionSelector();
         $cluster = new RedisCluster(new Connection\Factory(), new RedisStrategy(), $replicaSelector);
         $cluster->add($connection1);
         $cluster->askSlotMap($connection1);
@@ -1585,7 +1585,7 @@ class RedisClusterTest extends PredisTestCase
             ))
             ->willReturn($slotsmap);
 
-        $replicaSelector = new Cluster\RedisReplicaSelector();
+        $replicaSelector = new Cluster\ReadConnectionSelector();
         $cluster = new RedisCluster(new Connection\Factory(), new RedisStrategy(), $replicaSelector);
         $cluster->add($connection1);
         $cluster->askSlotMap($connection1);
