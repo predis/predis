@@ -151,14 +151,16 @@ $client = new Predis\Client($parameters, ['prefix' => 'sample:']);
 Options are managed using a mini DI-alike container and their values can be lazily initialized only
 when needed. The client options supported by default in Predis are:
 
-  - `prefix`: prefix string applied to every key found in commands.
-  - `exceptions`: whether the client should throw or return responses upon Redis errors.
-  - `connections`: list of connection backends or a connection factory instance.
-  - `cluster`: specifies a cluster backend (`predis`, `redis` or callable).
-  - `replication`: specifies a replication backend (`predis`, `sentinel` or callable).
-  - `aggregate`: configures the client with a custom aggregate connection (callable).
-  - `parameters`: list of default connection parameters for aggregate connections.
-  - `commands`: specifies a command factory instance to use through the library.
+- `prefix`: prefix string applied to every key found in commands.
+- `exceptions`: whether the client should throw or return responses upon Redis errors.
+- `connections`: list of connection backends or a connection factory instance.
+- `cluster`: specifies a cluster backend (`predis`, `redis` or callable).
+- `replication`: specifies a replication backend (`predis`, `sentinel` or callable).
+- `aggregate`: configures the client with a custom aggregate connection (callable).
+- `parameters`: list of default connection parameters for aggregate connections.
+- `commands`: specifies a command factory instance to use through the library.
+- `scaleReadOperations`:enables the scaling of read operations between master and replica nodes (see the "Cluster"
+  section for more details).
 
 Users can also provide custom options with values or callable objects (for lazy initialization) that
 are stored in the options container for later use through the library.
@@ -196,6 +198,24 @@ client options set to `redis`:
 ```php
 $parameters = ['tcp://10.0.0.1', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
 $options    = ['cluster' => 'redis'];
+
+$client = new Predis\Client($parameters, $options);
+```
+
+#### Scaling of read operation in Redis Cluster mode ####
+
+Due to the nature of Redis Cluster, the client sends all the queries to the master node by default. There are two
+available modes for scaling read operations between the master and replicas or just between replicas:
+
+- `replicas` - send read operations to replicas nodes only
+- `random` - send read operations to master and replicas nodes
+
+```php
+$parameters = ['tcp://10.0.0.1', 'tcp://10.0.0.2', 'tcp://10.0.0.3'];
+$options    = [
+    'cluster' => 'redis',
+    'scaleReadOperations' => 'replicas', // or 'random'
+];
 
 $client = new Predis\Client($parameters, $options);
 ```
