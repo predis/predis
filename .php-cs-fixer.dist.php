@@ -1,5 +1,7 @@
 <?php
 
+use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
+
 $PREDIS_HEADER = <<<EOS
 This file is part of the Predis package.
 
@@ -11,6 +13,7 @@ file that was distributed with this source code.
 EOS;
 
 return (new PhpCsFixer\Config)
+    ->setParallelConfig(ParallelConfigFactory::detect())
     ->setRules([
         '@PHP71Migration' => true,
         'header_comment' => ['header' => $PREDIS_HEADER],
