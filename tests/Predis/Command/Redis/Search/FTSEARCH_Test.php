@@ -16,6 +16,7 @@ use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\SchemaFields\AbstractField;
 use Predis\Command\Argument\Search\SchemaFields\GeoShapeField;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
+use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
@@ -224,6 +225,59 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
 
         $redis->ftsearch('idx', '@text_not_empty:("")', $searchArgs);
+    }
+
+    public function testSearchWithEnhancedMatchingCapabilities(): void
+    {
+        $redis = $this->getClient();
+
+        $hashResponse = $redis->hmset(
+            'test:1', 'uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', 5
+        );
+        $this->assertEquals('OK', $hashResponse);
+
+        $ftCreateArguments = new CreateArguments();
+        $ftCreateArguments->prefix(['test:']);
+
+        $schema = [
+            new TagField('uuid'),
+            new TagField('email'),
+            new NumericField('num'),
+        ];
+
+        $ftCreateResponse = $redis->ftcreate('idx_hash', $schema, $ftCreateArguments);
+        $this->assertEquals('OK', $ftCreateResponse);
+
+        $ftSearchArguments = new SearchArguments();
+        $ftSearchArguments->params(['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie']);
+        $ftSearchArguments->dialect(4);
+
+        $actualResponse = $redis->ftsearch(
+            'idx_hash', '@uuid:{$uuid}', $ftSearchArguments
+        );
+
+        $this->assertSame([
+            1, 'test:1',
+            ['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', '5']], $actualResponse
+        );
+
+        $actualResponse = $redis->ftsearch(
+            'idx_hash', '@email:{$email}', $ftSearchArguments
+        );
+
+        $this->assertSame([
+            1, 'test:1',
+            ['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', '5']], $actualResponse
+        );
+
+        $actualResponse = $redis->ftsearch(
+            'idx_hash', '@num:[5]', $ftSearchArguments
+        );
+
+        $this->assertSame([
+            1, 'test:1',
+            ['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', '5']], $actualResponse
+        );
     }
 
     /**

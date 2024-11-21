@@ -22,7 +22,7 @@ class ExpansionTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use Expansion;
 
             public static $expansionArgumentPositionOffset = 0;

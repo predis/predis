@@ -108,7 +108,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Redis cluster
-        uses: isbang/compose-action@v1.4.1
+        uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: .github/workflows/cluster/docker-compose.yml
 

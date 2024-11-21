@@ -22,7 +22,7 @@ class NxXxArgumentTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use NxXxArgument;
 
             public static $nxXxArgumentPositionOffset = 0;

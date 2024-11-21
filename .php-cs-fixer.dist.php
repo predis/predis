@@ -25,6 +25,7 @@ return (new PhpCsFixer\Config)
         'single_line_throw' => false,
         'concat_space' => ['spacing' => 'one'],
         'increment_style' => false,
+        'trailing_comma_in_multiline' => ['after_heredoc' => true, 'elements' => ['array_destructuring', 'arrays']]
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()

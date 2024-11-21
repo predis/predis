@@ -24,7 +24,7 @@ class NoCreateTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use NoCreate;
 
             public static $noCreateArgumentPositionOffset = 0;

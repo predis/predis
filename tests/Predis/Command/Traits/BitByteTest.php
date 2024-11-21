@@ -21,7 +21,7 @@ class BitByteTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use BitByte;
 
             public function getId()
