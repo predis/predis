@@ -52,6 +52,10 @@ class NumericFieldTest extends TestCase
                 ['field_name', '', AbstractField::NOT_SORTABLE, true],
                 ['field_name', 'NUMERIC', 'NOINDEX'],
             ],
+            'with INDEXMISSING modifier' => [
+                ['field_name', '', AbstractField::NOT_SORTABLE, false, true],
+                ['field_name', 'NUMERIC', 'INDEXMISSING'],
+            ],
         ];
     }
 }

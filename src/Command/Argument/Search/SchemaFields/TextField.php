@@ -23,6 +23,8 @@ class TextField extends AbstractField
      * @param string      $phonetic
      * @param int         $weight
      * @param bool        $withSuffixTrie
+     * @param bool        $allowsEmpty
+     * @param bool        $allowsMissing
      */
     public function __construct(
         string $identifier,
@@ -32,9 +34,11 @@ class TextField extends AbstractField
         bool $noStem = false,
         string $phonetic = '',
         int $weight = 1,
-        bool $withSuffixTrie = false
+        bool $withSuffixTrie = false,
+        bool $allowsEmpty = false,
+        bool $allowsMissing = false
     ) {
-        $this->setCommonOptions('TEXT', $identifier, $alias, $sortable, $noIndex);
+        $this->setCommonOptions('TEXT', $identifier, $alias, $sortable, $noIndex, $allowsMissing);
 
         if ($noStem) {
             $this->fieldArguments[] = 'NOSTEM';
@@ -52,6 +56,10 @@ class TextField extends AbstractField
 
         if ($withSuffixTrie) {
             $this->fieldArguments[] = 'WITHSUFFIXTRIE';
+        }
+
+        if ($allowsEmpty) {
+            $this->fieldArguments[] = 'INDEXEMPTY';
         }
     }
 }

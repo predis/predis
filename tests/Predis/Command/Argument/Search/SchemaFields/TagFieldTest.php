@@ -52,6 +52,14 @@ class TagFieldTest extends TestCase
                 ['field_name', '', AbstractField::NOT_SORTABLE, true],
                 ['field_name', 'TAG', 'NOINDEX'],
             ],
+            'with INDEXEMPTY modifier' => [
+                ['field_name', '', AbstractField::NOT_SORTABLE, false, ',', false, true],
+                ['field_name', 'TAG', 'INDEXEMPTY'],
+            ],
+            'with INDEXMISSING modifier' => [
+                ['field_name', '', AbstractField::NOT_SORTABLE, false, ',', false, false, true],
+                ['field_name', 'TAG', 'INDEXMISSING'],
+            ],
         ];
     }
 }
