@@ -227,6 +227,12 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $redis->ftsearch('idx', '@text_not_empty:("")', $searchArgs);
     }
 
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.09.00
+     */
     public function testSearchWithEnhancedMatchingCapabilities(): void
     {
         $redis = $this->getClient();
