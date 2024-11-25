@@ -23,28 +23,28 @@ class SlotRange implements Countable
     /**
      * Maximum number of slots in a Redis cluster is 16384.
      */
-    public const MAX_SLOTS = 0x3FFF;
+    const MAX_SLOTS = 0x3FFF;
 
     /**
      * Starting slot of the range.
      *
      * @var int
      */
-    protected int $start;
+    protected $start;
 
     /**
      * Ending slot of the range.
      *
      * @var int
      */
-    protected int $end;
+    protected $end;
 
     /**
      * Connection to the server hosting this slot range.
      *
      * @var string
      */
-    protected string $connection;
+    protected $connection;
 
     public function __construct(int $start, int $end, string $connection)
     {

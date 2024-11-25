@@ -29,7 +29,7 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
      *
      * @var SlotRange[]
      */
-    private array $slotRanges = [];
+    private $slotRanges = [];
 
     /**
      * Checks if the given slot is valid.
