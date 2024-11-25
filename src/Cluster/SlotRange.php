@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2024 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -23,7 +23,7 @@ class SlotRange implements Countable
     /**
      * Maximum number of slots in a Redis cluster is 16384.
      */
-    const MAX_SLOTS = 0x3FFF;
+    public const MAX_SLOTS = 0x3FFF;
 
     /**
      * Starting slot of the range.

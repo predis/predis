@@ -85,7 +85,9 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
     {
         return array_reduce(
             $this->slotRanges,
-            fn ($carry, SlotRange $slotRange) => $carry + $slotRange->toArray(),
+            function ($carry, $slotRange) {
+                return $carry + $slotRange->toArray();
+            },
             []
         );
     }
@@ -98,7 +100,9 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
     public function getNodes()
     {
         return array_unique(array_map(
-            fn (SlotRange $slotRange) => $slotRange->getConnection(),
+            function ($slotRange) {
+                return $slotRange->getConnection();
+            },
             $this->slotRanges
         ));
     }
@@ -186,7 +190,9 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
 
         return array_reduce(
             $intersections,
-            fn ($carry, SlotRange $slotRange) => $carry + $slotRange->toArray(),
+            function ($carry, $slotRange) {
+                return $carry + $slotRange->toArray();
+            },
             []
         );
     }
@@ -279,7 +285,9 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
     public function count()
     {
         return array_sum(array_map(
-            fn (SlotRange $slotRange) => $slotRange->count(),
+            function ($slotRange) {
+                return $slotRange->count();
+            },
             $this->slotRanges
         ));
     }
@@ -360,7 +368,13 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
     {
         usort(
             $slotRanges,
-            fn (SlotRange $a, SlotRange $b) => $a->getStart() <=> $b->getStart()
+            function (SlotRange $a, SlotRange $b) {
+                if ($a->getStart() == $b->getStart()) {
+                    return 0;
+                }
+
+                return $a->getStart() < $b->getStart() ? -1 : 1;
+            }
         );
     }
 
@@ -375,7 +389,9 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
     {
         return array_values(array_filter(
             $slotRanges,
-            fn (SlotRange $slotRange) => !($slotRange instanceof NullSlotRange)
+            function ($slotRange) {
+                return !($slotRange instanceof NullSlotRange);
+            }
         ));
     }
 
