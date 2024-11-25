@@ -1,5 +1,26 @@
 ## Changelog
 
+## v2.3.0 (2024-11-21)
+### Added
+- Added `GeoShapeField` field (#1467)
+- Added hash expiration commands (#1456)
+- Added support for time series `IGNORE` filter (#1458)
+- Added `XREAD` commands (#1459)
+- Added `NOVALUES` argument support to `HSCAN` (#1459)
+- Added support for search `INDEXMISSING` and `INDEXEMPTY` arguments (#1464)
+
+### Changed
+- Explicitly mark nullable parameters as nullable (#1448)
+- Filter out available replicas based on link status flag (#1440)
+- Respect `prefix` for `ZPOPMIN`, `ZPOPMAX`, `ZMSCORE`, `LMOVE`, `BLMOVE`, `SMISMEMBER` and `GEOSEARCH` (#1451, #1453, #1455, #1468)
+
+### Fixed
+- Fixed Relay support when using Redis Cluster (#1397)
+- Fixed `cmsincrby()` type annotation (#1333)
+- Fixed `set()` type annotation (#1394)
+- Fixed operator precedence in connection factory (#1405)
+- Fixed a bug with `null` arguments in `set()` method (#1470, #1471)
+
 ## v2.2.2 (2023-09-13)
 
 ### Added
