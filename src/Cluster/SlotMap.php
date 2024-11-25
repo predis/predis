@@ -148,7 +148,7 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
             $results[] = new SlotRange(
                 max($gap->getStart(), $targetSlotRange->getStart()),
                 min($gap->getEnd(), $targetSlotRange->getEnd()),
-                $targetSlotRange->getConnection(),
+                $targetSlotRange->getConnection()
             );
         }
 
