@@ -59,48 +59,13 @@ class SlotRangeTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testPropertySettersAndGetters()
+    public function testPropertySetters()
     {
         $range = new SlotRange(2000, 5000, 'c1');
 
         $this->assertEquals(2000, $range->getStart());
         $this->assertEquals(5000, $range->getEnd());
         $this->assertEquals('c1', $range->getConnection());
-
-        $range->setStart(3000);
-        $this->assertEquals(3000, $range->getStart());
-
-        $range->setEnd(8000);
-        $this->assertEquals(8000, $range->getEnd());
-
-        $range->setConnection('c2');
-        $this->assertEquals('c2', $range->getConnection());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testSetStartThrowExceptionOnInvalidSlotRange(): void
-    {
-        $this->expectException('OutOfBoundsException');
-        $this->expectExceptionMessage('Invalid slot range start, range: 5000-3000');
-
-        $range = new SlotRange(1000, 3000, 'c1');
-
-        $range->setStart(5000);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testSetEndThrowExceptionOnInvalidSlotRange(): void
-    {
-        $this->expectException('OutOfBoundsException');
-        $this->expectExceptionMessage('Invalid slot range end, range: 1000-100');
-
-        $range = new SlotRange(1000, 3000, 'c1');
-
-        $range->setEnd(100);
     }
 
     /**
@@ -116,29 +81,6 @@ class SlotRangeTest extends PredisTestCase
 
         $this->assertFalse($range->hasSlot(1000));
         $this->assertFalse($range->hasSlot(5000));
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testCopy()
-    {
-        $range = new SlotRange(1000, 3000, 'c1');
-
-        $copy = $range->copy();
-
-        $this->assertInstanceOf(SlotRange::class, $copy);
-        $this->assertEquals(1000, $copy->getStart());
-        $this->assertEquals(3000, $copy->getEnd());
-        $this->assertEquals('c1', $copy->getConnection());
-
-        $this->assertEquals($range, $copy);
-        $this->assertNotSame($range, $copy);
-
-        $range->setStart(1500);
-        $this->assertNotEquals($range, $copy);
-        $this->assertEquals(1500, $range->getStart());
-        $this->assertEquals(1000, $copy->getStart());
     }
 
     /**

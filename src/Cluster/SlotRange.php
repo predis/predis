@@ -100,54 +100,6 @@ class SlotRange implements Countable
     }
 
     /**
-     * Sets the start slot index of this range.
-     *
-     * @param int $start
-     *
-     * @return static
-     */
-    public function setStart(int $start)
-    {
-        if (!static::isValidRange($start, $this->end)) {
-            throw new OutOfBoundsException("Invalid slot range start, range: {$start}-{$this->end}");
-        }
-        $this->start = $start;
-
-        return $this;
-    }
-
-    /**
-     * Sets the end slot index of this range.
-     *
-     * @param int $end
-     *
-     * @return static
-     */
-    public function setEnd(int $end)
-    {
-        if (!static::isValidRange($this->start, $end)) {
-            throw new OutOfBoundsException("Invalid slot range end, range: {$this->start}-{$end}");
-        }
-        $this->end = $end;
-
-        return $this;
-    }
-
-    /**
-     * Sets the connection to the server hosting this slot range.
-     *
-     * @param string $connection
-     *
-     * @return static
-     */
-    public function setConnection(string $connection)
-    {
-        $this->connection = $connection;
-
-        return $this;
-    }
-
-    /**
      * Checks if the specific slot is contained in this range.
      *
      * @param int $slot
@@ -157,16 +109,6 @@ class SlotRange implements Countable
     public function hasSlot(int $slot)
     {
         return $this->start <= $slot && $this->end >= $slot;
-    }
-
-    /**
-     * Returns a copy of this range.
-     *
-     * @return SlotRange
-     */
-    public function copy(): SlotRange
-    {
-        return clone $this;
     }
 
     /**
