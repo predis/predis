@@ -324,7 +324,7 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Fill gaps between slot ranges with NullSlotRange object.
+     * Get gaps between sorted slot ranges with NullSlotRange object.
      *
      * @param SlotRange[] $slotRanges
      *
@@ -378,23 +378,6 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
                 return $a->getStart() < $b->getStart() ? -1 : 1;
             }
         );
-    }
-
-    /**
-     * Filter out null slot ranges from the given array of slot ranges.
-     *
-     * @param SlotRange[] $slotRanges
-     *
-     * @return SlotRange[]
-     */
-    protected function filterSlotRanges(array $slotRanges)
-    {
-        return array_values(array_filter(
-            $slotRanges,
-            function ($slotRange) {
-                return !($slotRange instanceof NullSlotRange);
-            }
-        ));
     }
 
     /**
