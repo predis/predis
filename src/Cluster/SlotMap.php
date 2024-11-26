@@ -17,7 +17,9 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use OutOfBoundsException;
+use Predis\Connection\NodeConnectionInterface;
 use ReturnTypeWillChange;
+use Traversable;
 
 /**
  * Compact slot map for redis-cluster.
