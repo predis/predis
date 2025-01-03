@@ -94,6 +94,25 @@ class WATCH_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
+    public function testWatchMultipleKeysAsListAbortsTransactionOnExternalWriteOperations(): void
+    {
+        $redis1 = $this->getClient();
+        $redis2 = $this->getClient();
+
+        $redis1->mset('foo', 'bar', 'hoge', 'piyo');
+
+        $this->assertEquals('OK', $redis1->watch(['foo', 'hoge']));
+        $this->assertEquals('OK', $redis1->multi());
+        $this->assertEquals('QUEUED', $redis1->set('hoge', 'bar'));
+        $this->assertEquals('OK', $redis2->set('hoge', 'hijacked'));
+        $this->assertNull($redis1->exec());
+        $this->assertSame('hijacked', $redis1->get('hoge'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.2.0
+     */
     public function testCanWatchNotYetExistingKeys(): void
     {
         $redis1 = $this->getClient();
