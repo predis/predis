@@ -17,11 +17,11 @@ use Predis\ClientException;
 use Predis\Command\RawCommand;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
-use PredisTestCase;
-use Relay\Relay;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use PredisTestCase;
 use ReflectionClass;
 use Relay\Exception as RelayException;
+use Relay\Relay;
 
 /**
  * @group ext-relay

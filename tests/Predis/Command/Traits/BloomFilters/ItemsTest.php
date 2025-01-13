@@ -23,7 +23,7 @@ class ItemsTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use Items;
 
             public static $itemsArgumentPositionOffset = 0;

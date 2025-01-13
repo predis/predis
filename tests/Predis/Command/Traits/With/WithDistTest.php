@@ -24,7 +24,7 @@ class WithDistTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use WithDist;
 
             public static $withDistArgumentPositionOffset = 0;
