@@ -95,7 +95,7 @@ class JSONGET_Test extends PredisCommandTestCase
 
         $redis->jsonset('key', '$', '{"key1":"value1","key2":"value2"}');
         $this->assertSame(
-            '[{"key1":"value1","key2":"value2"}]',
+            '{"key1":"value1","key2":"value2"}',
             $redis->jsonget('key')
         );
     }
