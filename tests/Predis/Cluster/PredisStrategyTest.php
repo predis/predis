@@ -234,6 +234,21 @@ class PredisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForSUnsubscribeCommand(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = [];
+
+        foreach ($this->getExpectedCommands('keys-sunsubscribe') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForScriptCommand(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -466,6 +481,16 @@ class PredisStrategyTest extends PredisTestCase
 
             /* cluster */
             'CLUSTER' => 'keys-fake',
+
+            /* sharded pubsub */
+            'SSUBSCRIBE' => 'keys-all',
+            'SUNSUBSCRIBE' => 'keys-sunsubscribe',
+            'SPUBLISH' => 'keys-first',
+
+            /* gears */
+            'TFUNCTION' => 'keys-fake',
+            'TFCALL' => 'keys-fake',
+            'TFCALLASYNC' => 'keys-fake',
         ];
 
         if (isset($type)) {
