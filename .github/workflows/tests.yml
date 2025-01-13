@@ -159,7 +159,7 @@ jobs:
           - '8.1'
           - '8.2'
         redis:
-          - edge
+          - latest
 
     steps:
       - name: Checkout
