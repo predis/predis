@@ -293,6 +293,7 @@ class RelayConnectionTest extends PredisTestCase
     {
         $this->expectException('Predis\Connection\ConnectionException');
         $this->expectExceptionMessage('`SELECT` failed: ERR invalid DB index [tcp://127.0.0.1:6379]');
+        $relayMock = $this->getMockBuilder(Relay::class)->getMock();
 
         $cmdSelect = RawCommand::create('SELECT', '1000');
 
@@ -300,7 +301,7 @@ class RelayConnectionTest extends PredisTestCase
         $connection = $this
             ->getMockBuilder($this->getConnectionClass())
             ->onlyMethods(['executeCommand', 'createResource'])
-            ->setConstructorArgs([new Parameters()])
+            ->setConstructorArgs([new Parameters(), $relayMock])
             ->getMock();
         $connection
             ->method('executeCommand')
@@ -399,7 +400,7 @@ class RelayConnectionTest extends PredisTestCase
         /** @var RelayConnection&MockObject $connection */
         $connection = $this
             ->getMockBuilder($this->getConnectionClass())
-            ->onlyMethods(['createResource', 'createClient'])
+            ->onlyMethods(['createResource'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -436,7 +437,7 @@ class RelayConnectionTest extends PredisTestCase
         /** @var RelayConnection&MockObject $connection */
         $connection = $this
             ->getMockBuilder($this->getConnectionClass())
-            ->onlyMethods(['createResource', 'createClient'])
+            ->onlyMethods(['createResource'])
             ->disableOriginalConstructor()
             ->getMock();
 
