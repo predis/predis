@@ -71,7 +71,7 @@ class TSINFO_Test extends PredisCommandTestCase
         $expectedResponse = ['totalSamples', 0, 'memoryUsage', 4239, 'firstTimestamp', 0, 'lastTimestamp', 0,
             'retentionTime', 60000, 'chunkCount', 1, 'chunkSize', 4096, 'chunkType', 'compressed', 'duplicatePolicy',
             'max', 'labels', [['sensor_id', '2'], ['area_id', '32']], 'sourceKey', null, 'rules', [],
-            "ignoreMaxTimeDiff", 0, "ignoreMaxValDiff", 0];
+            'ignoreMaxTimeDiff', 0, 'ignoreMaxValDiff', 0];
 
         $arguments = (new CreateArguments())
             ->retentionMsecs(60000)
