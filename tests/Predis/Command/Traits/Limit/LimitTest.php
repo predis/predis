@@ -24,7 +24,7 @@ class LimitTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use Limit;
 
             public static $limitArgumentPositionOffset = 0;
