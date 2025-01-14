@@ -7,7 +7,7 @@
 [![Build status][ico-build]][link-actions]
 [![Coverage Status][ico-coverage]][link-coverage]
 
-A flexible and feature-complete [Redis](http://redis.io) and [Valkey](https://github.com/valkey-io/valkey) client for PHP 7.2 and newer.
+A flexible and feature-complete [Redis](http://redis.io) / [Valkey](https://github.com/valkey-io/valkey) client for PHP 7.2 and newer.
 
 More details about this project can be found on the [frequently asked questions](FAQ.md).
 
