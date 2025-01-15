@@ -184,8 +184,6 @@ abstract class ClusterStrategy implements StrategyInterface
             'TFUNCTION' => [$this, 'getFakeKey'],
             'TFCALL' => [$this, 'getFakeKey'],
             'TFCALLASYNC' => [$this, 'getFakeKey'],
-            /* cluster */
-            'CLUSTER' => [$this, 'getFakeKey'],
         ];
     }
 

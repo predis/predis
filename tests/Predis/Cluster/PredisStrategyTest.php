@@ -479,9 +479,6 @@ class PredisStrategyTest extends PredisTestCase
             'GEORADIUS' => 'keys-georadius',
             'GEORADIUSBYMEMBER' => 'keys-georadius',
 
-            /* cluster */
-            'CLUSTER' => 'keys-fake',
-
             /* sharded pubsub */
             'SSUBSCRIBE' => 'keys-all',
             'SUNSUBSCRIBE' => 'keys-sunsubscribe',
