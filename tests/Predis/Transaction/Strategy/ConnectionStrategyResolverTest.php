@@ -12,8 +12,10 @@
 
 namespace Predis\Transaction\Strategy;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\ConnectionInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Transaction\MultiExecState;
@@ -31,6 +33,20 @@ class ConnectionStrategyResolverTest extends TestCase
         $resolver = new ConnectionStrategyResolver();
 
         $this->assertInstanceOf($expectedStrategy, $resolver->resolve($connection, new MultiExecState()));
+    }
+
+    /**
+     * @return void
+     */
+    public function testResolveThrowsExceptionOnNonExistingCOnnection(): void
+    {
+        $connection = $this->getMockBuilder(ConnectionInterface::class)->getMock();
+        $resolver = new ConnectionStrategyResolver();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot resolve strategy associated with this connection type');
+
+        $resolver->resolve($connection, new MultiExecState());
     }
 
     public function connectionProvider(): array
