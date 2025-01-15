@@ -12,7 +12,7 @@
 
 namespace Predis\Connection\Cluster;
 
-use Predis\Command\CommandInterface;
+use Predis\Cluster\StrategyInterface;
 use Predis\Connection\AggregateConnectionInterface;
 
 /**
@@ -22,10 +22,10 @@ use Predis\Connection\AggregateConnectionInterface;
 interface ClusterInterface extends AggregateConnectionInterface
 {
     /**
-     * Executes given command on each connection from connection pool.
+     * Returns the underlying command hash strategy used to hash commands by
+     * using keys found in their arguments.
      *
-     * @param  CommandInterface $command
-     * @return array
+     * @return StrategyInterface
      */
-    public function executeCommandOnEachNode(CommandInterface $command): array;
+    public function getClusterStrategy(): StrategyInterface;
 }

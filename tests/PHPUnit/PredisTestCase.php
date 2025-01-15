@@ -497,7 +497,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
         $currentVersion = $this->getRedisModuleVersion($this->modulesMapping[$module]['name']);
         $versionToCheck = str_replace('.', '0', $versionToCheck);
 
-        return $currentVersion >= (int) $versionToCheck;
+        return (int) $currentVersion >= (int) $versionToCheck;
     }
 
     /**
