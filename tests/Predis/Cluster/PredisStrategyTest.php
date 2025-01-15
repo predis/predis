@@ -113,7 +113,7 @@ class PredisStrategyTest extends PredisTestCase
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
-        $arguments = [];
+        $arguments = ['1', '2'];
 
         foreach ($this->getExpectedCommands('keys-fake') as $commandID) {
             $command = $commands->create($commandID, $arguments);
