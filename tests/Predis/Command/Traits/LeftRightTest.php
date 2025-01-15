@@ -22,7 +22,7 @@ class LeftRightTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use LeftRight;
 
             public static $leftRightArgumentPositionOffset = 0;

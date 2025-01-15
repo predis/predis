@@ -22,7 +22,7 @@ class IndentTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class() extends RedisCommand {
+        $this->testClass = new class extends RedisCommand {
             use Indent;
 
             public static $indentArgumentPositionOffset = 0;

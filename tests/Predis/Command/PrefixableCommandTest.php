@@ -20,7 +20,7 @@ class PrefixableCommandTest extends PredisTestCase
 
     protected function setUp(): void
     {
-        $this->testClass = new class() extends PrefixableCommand {
+        $this->testClass = new class extends PrefixableCommand {
             public function getId()
             {
                 return 'test';

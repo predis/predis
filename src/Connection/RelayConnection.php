@@ -161,6 +161,18 @@ class RelayConnection extends AbstractConnection
     /**
      * {@inheritdoc}
      */
+    public function getIdentifier()
+    {
+        try {
+            return $this->client->endpointId();
+        } catch (RelayException $ex) {
+            return parent::getIdentifier();
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function executeCommand(CommandInterface $command)
     {
         if (!$this->client->isConnected()) {
@@ -177,7 +189,13 @@ class RelayConnection extends AbstractConnection
                 ? $this->client->{$name}(...$command->getArguments())
                 : $this->client->rawCommand($name, ...$command->getArguments());
         } catch (RelayException $ex) {
-            throw $this->onCommandError($ex, $command);
+            $exception = $this->onCommandError($ex, $command);
+
+            if ($exception instanceof ErrorResponseInterface) {
+                return $exception;
+            }
+
+            throw $exception;
         }
     }
 
@@ -189,15 +207,15 @@ class RelayConnection extends AbstractConnection
         $code = $exception->getCode();
         $message = $exception->getMessage();
 
-        if (strpos($message, 'RELAY_ERR_IO')) {
+        if (strpos($message, 'RELAY_ERR_IO') !== false) {
             return new ConnectionException($this, $message, $code, $exception);
         }
 
-        if (strpos($message, 'RELAY_ERR_REDIS')) {
+        if (strpos($message, 'RELAY_ERR_REDIS') !== false) {
             return new ServerException($message, $code, $exception);
         }
 
-        if (strpos($message, 'RELAY_ERR_WRONGTYPE') && strpos($message, "Got reply-type 'status'")) {
+        if (strpos($message, 'RELAY_ERR_WRONGTYPE') !== false && strpos($message, "Got reply-type 'status'") !== false) {
             $message = 'Operation against a key holding the wrong kind of value';
         }
 

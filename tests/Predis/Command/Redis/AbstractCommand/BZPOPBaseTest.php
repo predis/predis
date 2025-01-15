@@ -26,7 +26,7 @@ class BZPOPBaseTest extends PredisTestCase
     {
         parent::setUp();
 
-        $this->testCommand = new class() extends BZPOPBase {
+        $this->testCommand = new class extends BZPOPBase {
             public function getId(): string
             {
                 return 'test';
