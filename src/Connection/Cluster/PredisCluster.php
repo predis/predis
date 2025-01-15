@@ -17,7 +17,6 @@ use Countable;
 use IteratorAggregate;
 use Predis\Cluster\PredisStrategy;
 use Predis\Cluster\StrategyInterface;
-use Predis\Command\Command;
 use Predis\Command\CommandInterface;
 use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\NodeConnectionInterface;
