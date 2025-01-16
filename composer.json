@@ -1,7 +1,7 @@
 {
     "name": "predis/predis",
     "type": "library",
-    "description": "A flexible and feature-complete Redis / Valkey client for PHP.",
+    "description": "A flexible and feature-complete Redis/Valkey client for PHP.",
     "keywords": ["nosql", "redis", "predis"],
     "homepage": "http://github.com/predis/predis",
     "license": "MIT",
