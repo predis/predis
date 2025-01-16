@@ -330,17 +330,23 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      * Creates a new connection instance from the given connection ID.
      *
      * @param string $connectionID Identifier for the connection.
+     * @param CommandInterface|null $command Optional command instance.
      *
      * @return NodeConnectionInterface
      */
-    protected function createConnection($connectionID)
+    protected function createConnection($connectionID, CommandInterface $command = null)
     {
         $separator = strrpos($connectionID, ':');
 
-        return $this->connections->create([
+        $config = [
             'host' => substr($connectionID, 0, $separator),
             'port' => substr($connectionID, $separator + 1),
-        ]);
+        ];
+        if ($command) {
+            $config['scheme'] = $this->getConnectionByCommand($command)->getParameters()->scheme;
+        }
+
+        return $this->connections->create($config);
     }
 
     /**
@@ -473,7 +479,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         }
 
         if (!$connection = $this->getConnectionById($connectionID)) {
-            $connection = $this->createConnection($connectionID);
+            $connection = $this->createConnection($connectionID, $command);
         }
 
         if ($this->useClusterSlots) {
@@ -499,7 +505,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
         [$slot, $connectionID] = explode(' ', $details, 2);
 
         if (!$connection = $this->getConnectionById($connectionID)) {
-            $connection = $this->createConnection($connectionID);
+            $connection = $this->createConnection($connectionID, $command);
         }
 
         $connection->executeCommand(RawCommand::create('ASKING'));
