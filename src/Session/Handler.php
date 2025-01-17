@@ -28,6 +28,7 @@ class Handler implements SessionHandlerInterface
 {
     protected $client;
     protected $ttl;
+    protected $prefix;
 
     /**
      * @param ClientInterface $client  Fully initialized client instance.
@@ -41,6 +42,10 @@ class Handler implements SessionHandlerInterface
             $this->ttl = (int) $options['gc_maxlifetime'];
         } else {
             $this->ttl = ini_get('session.gc_maxlifetime');
+        }
+
+        if (isset($options['prefix'])) {
+            $this->prefix = (string) $options['prefix'];
         }
     }
 
@@ -92,7 +97,7 @@ class Handler implements SessionHandlerInterface
     #[ReturnTypeWillChange]
     public function read($session_id)
     {
-        if ($data = $this->client->get($session_id)) {
+        if ($data = $this->client->get($this->prefix . $session_id)) {
             return $data;
         }
 
@@ -107,7 +112,7 @@ class Handler implements SessionHandlerInterface
     #[ReturnTypeWillChange]
     public function write($session_id, $session_data)
     {
-        $this->client->setex($session_id, $this->ttl, $session_data);
+        $this->client->setex($this->prefix . $session_id, $this->ttl, $session_data);
 
         return true;
     }
@@ -119,7 +124,7 @@ class Handler implements SessionHandlerInterface
     #[ReturnTypeWillChange]
     public function destroy($session_id)
     {
-        $this->client->del($session_id);
+        $this->client->del($this->prefix . $session_id);
 
         return true;
     }
