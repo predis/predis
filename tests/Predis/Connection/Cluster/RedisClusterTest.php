@@ -646,6 +646,7 @@ class RedisClusterTest extends PredisTestCase
             ->expects($this->once())
             ->method('create')
             ->with([
+                'scheme' => 'tcp',
                 'host' => '127.0.0.1',
                 'port' => '9381',
             ])
