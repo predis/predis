@@ -1127,6 +1127,56 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testNotTCPMovedResponseWithConnectionNotInPool(): void
+    {
+        $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6381');
+
+        $command = $this->getCommandFactory()->create('get', ['node:1001']);
+
+        $connection1 = $this->getMockConnection('tls://127.0.0.1:6379');
+        $connection1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($command)
+            ->willReturn($movedResponse);
+
+        $connection2 = $this->getMockConnection('tls://127.0.0.1:6380');
+        $connection2
+            ->expects($this->never())
+            ->method('executeCommand');
+
+        $connection3 = $this->getMockConnection('tls://127.0.0.1:6381');
+        $connection3
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->with($command)
+            ->willReturnOnConsecutiveCalls('foobar', 'foobar');
+
+        /** @var Connection\FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with([
+                'host' => '127.0.0.1',
+                'port' => '6381',
+            ])
+            ->willReturn($connection3);
+
+        $cluster = new RedisCluster($factory);
+        $cluster->useClusterSlots(false);
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+
+        $this->assertSame('foobar', $cluster->executeCommand($command));
+        $this->assertSame('foobar', $cluster->executeCommand($command));
+        $this->assertCount(3, $cluster);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testParseIPv6AddresseAndPortPairInRedirectionPayload(): void
     {
         $movedResponse = new Response\Error('MOVED 1970 2001:db8:0:f101::2:6379');
