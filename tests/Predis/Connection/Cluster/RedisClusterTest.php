@@ -319,12 +319,14 @@ class RedisClusterTest extends PredisTestCase
             ->withConsecutive(
                 [
                     [
+                        'scheme' => 'tcp',
                         'host' => '127.0.0.1',
                         'port' => '6383',
                     ],
                 ],
                 [
                     [
+                        'scheme' => 'tcp',
                         'host' => '127.0.0.1',
                         'port' => '6384',
                     ],
@@ -710,6 +712,7 @@ class RedisClusterTest extends PredisTestCase
             ->expects($this->once())
             ->method('create')
             ->with([
+                'scheme' => 'tcp',
                 'host' => '127.0.0.1',
                 'port' => '9381',
             ])
@@ -1109,6 +1112,7 @@ class RedisClusterTest extends PredisTestCase
             ->expects($this->once())
             ->method('create')
             ->with([
+                'scheme' => 'tcp',
                 'host' => '127.0.0.1',
                 'port' => '6381',
             ])
@@ -1159,6 +1163,7 @@ class RedisClusterTest extends PredisTestCase
             ->expects($this->once())
             ->method('create')
             ->with([
+                'scheme' => 'tls',
                 'host' => '127.0.0.1',
                 'port' => '6381',
             ])
@@ -1204,6 +1209,7 @@ class RedisClusterTest extends PredisTestCase
             ->expects($this->once())
             ->method('create')
             ->with([
+                'scheme' => 'tcp',
                 'host' => '2001:db8:0:f101::2',
                 'port' => '6379',
             ])
@@ -1301,6 +1307,7 @@ class RedisClusterTest extends PredisTestCase
             ->expects($this->once())
             ->method('create')
             ->with([
+                'scheme' => 'tcp',
                 'host' => '127.0.0.1',
                 'port' => '6380',
             ])
