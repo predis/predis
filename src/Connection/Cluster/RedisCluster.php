@@ -337,16 +337,14 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     {
         $separator = strrpos($connectionID, ':');
 
-        $connection = current($this->pool);
-        if ($connection instanceof NodeConnectionInterface) {
-            $parameters = $connection->getParameters();
-            $parameters->host = substr($connectionID, 0, $separator);
-            $parameters->port = substr($connectionID, $separator + 1);
-        } else {
-            $parameters = [
-                'host' => substr($connectionID, 0, $separator),
-                'port' => substr($connectionID, $separator + 1),
-            ];
+        $parameters = [
+            'host' => substr($connectionID, 0, $separator),
+            'port' => substr($connectionID, $separator + 1),
+        ];
+
+        $existConnection = current($this->pool);
+        if ($existConnection instanceof NodeConnectionInterface) {
+            $parameters = array_merge($existConnection->getParameters()->toArray(), $parameters);
         }
 
         return $this->connections->create($parameters);
