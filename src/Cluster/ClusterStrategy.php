@@ -163,6 +163,8 @@ abstract class ClusterStrategy implements StrategyInterface
             /* scripting */
             'EVAL' => [$this, 'getKeyFromScriptingCommands'],
             'EVALSHA' => [$this, 'getKeyFromScriptingCommands'],
+            'EVAL_RO' => [$this, 'getKeyFromScriptingCommands'],
+            'EVALSHA_RO' => [$this, 'getKeyFromScriptingCommands'],
 
             /* server */
             'INFO' => [$this, 'getFakeKey'],
