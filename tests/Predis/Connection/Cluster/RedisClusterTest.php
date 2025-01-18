@@ -649,6 +649,7 @@ class RedisClusterTest extends PredisTestCase
                 'scheme' => 'tcp',
                 'host' => '127.0.0.1',
                 'port' => '9381',
+                'persistent' => false,
             ])
             ->willReturn($connection4);
 
@@ -716,6 +717,7 @@ class RedisClusterTest extends PredisTestCase
                 'scheme' => 'tcp',
                 'host' => '127.0.0.1',
                 'port' => '9381',
+                'persistent' => false,
             ])
             ->willReturn($connection4);
 
@@ -1027,6 +1029,7 @@ class RedisClusterTest extends PredisTestCase
                 'scheme' => 'tcp',
                 'host' => '127.0.0.1',
                 'port' => '6381',
+                'persistent' => false,
             ])
             ->willReturn($connection3);
 
@@ -1116,6 +1119,7 @@ class RedisClusterTest extends PredisTestCase
                 'scheme' => 'tcp',
                 'host' => '127.0.0.1',
                 'port' => '6381',
+                'persistent' => false,
             ])
             ->willReturn($connection3);
 
@@ -1167,6 +1171,7 @@ class RedisClusterTest extends PredisTestCase
                 'scheme' => 'tls',
                 'host' => '127.0.0.1',
                 'port' => '6381',
+                'persistent' => false,
             ])
             ->willReturn($connection3);
 
@@ -1213,6 +1218,7 @@ class RedisClusterTest extends PredisTestCase
                 'scheme' => 'tcp',
                 'host' => '2001:db8:0:f101::2',
                 'port' => '6379',
+                'persistent' => false,
             ])
             ->willReturn($connection2);
 
@@ -1311,6 +1317,7 @@ class RedisClusterTest extends PredisTestCase
                 'scheme' => 'tcp',
                 'host' => '127.0.0.1',
                 'port' => '6380',
+                'persistent' => false,
             ])
             ->willReturn($connection2);
 
