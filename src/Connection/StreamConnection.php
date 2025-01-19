@@ -218,11 +218,11 @@ class StreamConnection extends AbstractConnection
         } else {
             $rtn_context_option = stream_context_set_option($resource, ['ssl' => $options]);
         }
-        
+
         if (!$rtn_context_option) {
             $this->onConnectionError('Error while setting SSL context options');
         }
-        
+
         if (!stream_socket_enable_crypto($resource, true, $options['crypto_type'])) {
             $this->onConnectionError('Error while switching to encrypted communication');
         }
