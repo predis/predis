@@ -211,15 +211,11 @@ class StreamConnection extends AbstractConnection
             $options['crypto_type'] = STREAM_CRYPTO_METHOD_TLS_CLIENT;
         }
 
-        $rtn_context_option = false;
+        $context_options = function_exists('stream_context_set_options')
+            ? stream_context_set_options($resource, ['ssl' => $options])
+            : stream_context_set_option($resource, ['ssl' => $options]);
 
-        if (version_compare(PHP_VERSION, '8.4.0') >= 0) {
-            $rtn_context_option = stream_context_set_options($resource, ['ssl' => $options]);
-        } else {
-            $rtn_context_option = stream_context_set_option($resource, ['ssl' => $options]);
-        }
-
-        if (!$rtn_context_option) {
+        if (!$context_options) {
             $this->onConnectionError('Error while setting SSL context options');
         }
 
