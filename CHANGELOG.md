@@ -1,5 +1,9 @@
 ## Changelog
 
+## Unreleased
+### Fixed
+- Fixed PHP 8.4 compatibility with `stream_context_set_option()`
+
 ## v2.3.0 (2024-11-21)
 ### Added
 - Added `GeoShapeField` field (#1467)
