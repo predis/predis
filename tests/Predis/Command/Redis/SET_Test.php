@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\ClientException;
+
 /**
  * @group commands
  * @group realm-string
@@ -199,6 +201,23 @@ class SET_Test extends PredisCommandTestCase
         $this->assertEquals(
             'OK', $redis->set('foo', null)
         );
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.6.12
+     */
+    public function testNamedArguments(): void
+    {
+        if (PHP_VERSION_ID < 80000) {
+            $this->markTestSkipped('Named arguments require PHP 8.0 or newer');
+        }
+
+        $this->expectException(ClientException::class);
+        $this->expectExceptionMessage('Named arguments are not supported.');
+
+        $redis = $this->getClient();
+        $redis->set('foo', value: null); // would fail without named arguments validation
     }
 
     /**
