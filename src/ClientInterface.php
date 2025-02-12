@@ -375,6 +375,8 @@ use Predis\Response\Status;
  * @property FTCURSOR          $ftcursor
  * @property JSONDEBUG         $jsondebug
  * @property ACL               $acl
+ *
+ * @no-named-arguments
  */
 interface ClientInterface
 {
