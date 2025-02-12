@@ -12,8 +12,6 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\ClientException;
-
 /**
  * @group commands
  * @group realm-string
