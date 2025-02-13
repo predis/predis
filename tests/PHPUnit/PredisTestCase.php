@@ -596,7 +596,8 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
             $this->getName(false)
         );
 
-        return in_array('realm-stack', $annotations['class']['group'], true);
+        return isset($annotations['class']['group'])
+        && in_array('realm-stack', $annotations['class']['group'], true);
     }
 
     /**
