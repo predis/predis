@@ -54,6 +54,13 @@ jobs:
           if [[ -v redis_stack_version_mapping[${{ matrix.redis }}] ]]; then
             echo "REDIS_IMAGE_NAME=redislabs/client-libs-test:${redis_stack_version_mapping[${{ matrix.redis }}]}" >> $GITHUB_ENV
             echo "DOCKER_SERVICE=redis-clients" >> $GITHUB_ENV
+
+            redis_major_version=$(echo "${{ matrix.redis }}" | grep -oP '^\d+')
+
+            # Some configuration options available since Redis > 7
+            if (( redis_major_version < 7 )); then
+              export REDIS_EXTRA_ARGS="--tls-auth-clients optional --save ''"
+            fi
           else
             echo "REDIS_IMAGE_NAME=redis:${{ matrix.redis }}" >> $GITHUB_ENV
             echo "DOCKER_SERVICE=redis-official" >> $GITHUB_ENV
