@@ -44,22 +44,22 @@ jobs:
         run: |
 
           # Mapping of original redis versions, to client test containers.
-          declare -A redis_stack_version_mapping=(
+          declare -A redis_clients_version_mapping=(
             ["8.0"]="8.0-M04-pre"
             ["7.4"]="7.4.2"
             ["7.2"]="7.2.7"
             ["6.2"]="6.2.17"
           )
 
-          if [[ -v redis_stack_version_mapping[${{ matrix.redis }}] ]]; then
-            echo "REDIS_IMAGE_NAME=redislabs/client-libs-test:${redis_stack_version_mapping[${{ matrix.redis }}]}" >> $GITHUB_ENV
+          if [[ -v redis_clients_version_mapping[${{ matrix.redis }}] ]]; then
+            echo "REDIS_IMAGE_NAME=redislabs/client-libs-test:${redis_clients_version_mapping[${{ matrix.redis }}]}" >> $GITHUB_ENV
             echo "DOCKER_SERVICE=redis-clients" >> $GITHUB_ENV
 
             redis_major_version=$(echo "${{ matrix.redis }}" | grep -oP '^\d+')
 
             # Some configuration options available since Redis > 7
             if (( redis_major_version < 7 )); then
-              export REDIS_EXTRA_ARGS="--tls-auth-clients optional --save ''"
+              echo 'REDIS_EXTRA_ARGS="--tls-auth-clients optional --save ''"' >> $GITHUB_ENV
             fi
           else
             echo "REDIS_IMAGE_NAME=redis:${{ matrix.redis }}" >> $GITHUB_ENV
