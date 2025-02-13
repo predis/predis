@@ -52,21 +52,21 @@ jobs:
           )
 
           if [[ -v redis_stack_version_mapping[${{ matrix.redis }}] ]]; then
-            echo "REDIS_IMAGE_NAME=redislabs/client-libs-test:${redis_stack_version_mapping[$REDIS_VERSION]}" >> $GITHUB_ENV
+            echo "REDIS_IMAGE_NAME=redislabs/client-libs-test:${redis_stack_version_mapping[${{ matrix.redis }}]}" >> $GITHUB_ENV
             echo "DOCKER_SERVICE=clients" >> $GITHUB_ENV
           else
             echo "REDIS_IMAGE_NAME=redis:${{ matrix.redis }}" >> $GITHUB_ENV
             echo "DOCKER_SERVICE=official" >> $GITHUB_ENV
           fi
 
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Run Redis image
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: .github/workflows/standalone/docker-compose.yml
           services: ${{ env.DOCKER_SERVICE }}
-
-      - name: Checkout repository
-        uses: actions/checkout@v3
 
       - name: Setup PHP with Composer and extensions
         uses: shivammathur/setup-php@v2
