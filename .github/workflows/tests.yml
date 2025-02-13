@@ -53,10 +53,10 @@ jobs:
 
           if [[ -v redis_stack_version_mapping[${{ matrix.redis }}] ]]; then
             echo "REDIS_IMAGE_NAME=redislabs/client-libs-test:${redis_stack_version_mapping[${{ matrix.redis }}]}" >> $GITHUB_ENV
-            echo "DOCKER_SERVICE=clients" >> $GITHUB_ENV
+            echo "DOCKER_SERVICE=redis-clients" >> $GITHUB_ENV
           else
             echo "REDIS_IMAGE_NAME=redis:${{ matrix.redis }}" >> $GITHUB_ENV
-            echo "DOCKER_SERVICE=official" >> $GITHUB_ENV
+            echo "DOCKER_SERVICE=redis-official" >> $GITHUB_ENV
           fi
 
       - name: Checkout repository
