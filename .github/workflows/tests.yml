@@ -75,12 +75,19 @@ jobs:
           compose-file: .github/workflows/docker-compose.yml
           services: ${{ env.DOCKER_SERVICE }}
 
+      - name: Run Redis stack image
+        uses: hoverkraft-tech/compose-action@v2.0.1
+        if: ${{ matrix.redis == '7.4' }}
+        with:
+          compose-file: .github/workflows/docker-compose.yml
+          services: redis-stack
+
       - name: Run Redis cluster image
         uses: hoverkraft-tech/compose-action@v2.0.1
         if: ${{ matrix.redis == '7.4' }}
         with:
           compose-file: .github/workflows/docker-compose.yml
-          services: cluster
+          services: redis-cluster
 
       - name: Setup PHP with Composer and extensions
         uses: shivammathur/setup-php@v2
@@ -111,16 +118,22 @@ jobs:
         if: ${{ matrix.php == '8.1' && matrix.redis == '7.4' }}
         run: vendor/bin/phpunit -c phpunit.relay.xml --coverage-clover build/logs/clover-relay.xml --coverage-filter ./src
 
+      - name: Run stack tests
+        if: ${{ matrix.redis == '7.4' }}
+        run: vendor/bin/phpunit --group realm-stack
+
+      - name: Run stack tests using Relay
+        if: ${{ matrix.redis == '7.4' }}
+        run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml
+
       - name: Run tests against cluster
         if: ${{ matrix.redis == '7.4' }}
         run: |
-          sleep 5 # make sure that docker image is setup
           vendor/bin/phpunit --group cluster
 
       - name: Run tests against cluster using Relay
         if: ${{ matrix.redis == '7.4' }}
         run: |
-          sleep 5 # make sure nodes are stable and fully joined
           vendor/bin/phpunit -c phpunit.relay.xml --group cluster
 
       - name: Send coverage to Coveralls

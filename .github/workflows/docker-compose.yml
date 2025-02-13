@@ -34,7 +34,7 @@ services:
       - clients
       - standalone
 
-  cluster:
+  redis-cluster:
     image: ${REDIS_CLUSTER_IMAGE_NAME:-redislabs/client-libs-test:7.4.2}
     container_name: redis-cluster
     environment:
@@ -52,3 +52,18 @@ services:
     profiles:
       - clients
       - cluster
+
+  redis-stack:
+    image: ${REDIS_STACK_IMAGE_NAME:-redislabs/client-libs-test:rs-7.4.0-v2}
+    container_name: redis-stack
+    ports:
+      - "6479:6379"
+    environment:
+      - REDIS_CLUSTER=no
+      - PORT=6379
+    command: ${REDIS_EXTRA_ARGS:---enable-debug-command yes --enable-module-command yes --save ""}
+    volumes:
+      - "./dockers/redis-stack:/redis/work"
+    profiles:
+      - clients
+      - stack
