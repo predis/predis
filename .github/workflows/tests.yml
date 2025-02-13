@@ -72,7 +72,7 @@ jobs:
       - name: Run Redis image
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          compose-file: .github/workflows/standalone/docker-compose.yml
+          compose-file: .github/workflows/docker-compose.yml
           services: ${{ env.DOCKER_SERVICE }}
 
       - name: Setup PHP with Composer and extensions
@@ -137,7 +137,8 @@ jobs:
       - name: Run Redis cluster
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          compose-file: .github/workflows/cluster/docker-compose.yml
+          compose-file: .github/workflows/docker-compose.yml
+          services: cluster
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
