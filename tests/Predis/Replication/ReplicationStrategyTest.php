@@ -217,7 +217,6 @@ class ReplicationStrategyTest extends PredisTestCase
         );
     }
 
-
     /**
      * @group disconnected
      */
