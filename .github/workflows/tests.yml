@@ -56,11 +56,10 @@ jobs:
             echo "DOCKER_SERVICE=redis-clients" >> $GITHUB_ENV
 
             redis_major_version=$(echo "${{ matrix.redis }}" | grep -oP '^\d+')
-            echo "$redis_major_version"
 
             # Some configuration options available since Redis > 7
             if (( redis_major_version < 7 )); then
-              echo 'REDIS_EXTRA_ARGS="--tls-auth-clients optional --save ''"' >> $GITHUB_ENV
+              echo "REDIS_EXTRA_ARGS="--tls-auth-clients optional --save ''"" >> $GITHUB_ENV
             fi
           else
             echo "REDIS_IMAGE_NAME=redis:${{ matrix.redis }}" >> $GITHUB_ENV
