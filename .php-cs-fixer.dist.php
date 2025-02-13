@@ -11,6 +11,11 @@ file that was distributed with this source code.
 EOS;
 
 $fixer = new PhpCsFixer\Config;
+
+$fixer->setParallelConfig(
+    \PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect()
+);
+
 $fixer->setRules([
     '@PHP71Migration' => true,
     'header_comment' => ['header' => $PREDIS_HEADER],
@@ -34,9 +39,5 @@ $fixer->setRules([
             ->in(__DIR__ . '/src')
             ->in(__DIR__ . '/tests')
     );
-
-if (PHP_VERSION_ID >= 70400) {
-    $fixer->setParallelConfig(\PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect());
-}
 
 return $fixer;
