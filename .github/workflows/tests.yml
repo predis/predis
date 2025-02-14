@@ -72,21 +72,21 @@ jobs:
       - name: Run Redis standalone image
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          compose-file: .github/workflows/docker-compose.yml
+          compose-file: docker-compose.yml
           services: ${{ env.DOCKER_SERVICE }}
 
       - name: Run Redis stack image
         uses: hoverkraft-tech/compose-action@v2.0.1
         if: ${{ matrix.redis == '7.4' }}
         with:
-          compose-file: .github/workflows/docker-compose.yml
+          compose-file: docker-compose.yml
           services: redis-stack
 
       - name: Run Redis cluster image
         uses: hoverkraft-tech/compose-action@v2.0.1
         if: ${{ matrix.redis == '7.4' }}
         with:
-          compose-file: .github/workflows/docker-compose.yml
+          compose-file: docker-compose.yml
           services: redis-cluster
 
       - name: Setup PHP with Composer and extensions
