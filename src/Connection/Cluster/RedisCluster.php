@@ -347,7 +347,6 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
             $existParameters = $existConnection->getParameters();
             $parameters['scheme'] = $existParameters->scheme ?? 'tcp';
             $parameters['persistent'] = $existParameters->persistent ?? false;
-            // TODO::other parameters can be added here
         }
 
         return $this->connections->create($parameters);
