@@ -274,6 +274,7 @@ class ReplicationStrategy
             'GEODIST' => true,
             'GEORADIUS' => [$this, 'isGeoradiusReadOnly'],
             'GEORADIUSBYMEMBER' => [$this, 'isGeoradiusReadOnly'],
+            'GEOSEARCH' => true,
         ];
     }
 
