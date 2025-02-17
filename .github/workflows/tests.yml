@@ -22,17 +22,9 @@ jobs:
       matrix:
         php:
           - '7.2'
-          - '7.3'
-          - '7.4'
-          - '8.0'
-          - '8.1'
-          - '8.2'
           - '8.3'
           - '8.4'
         redis:
-          - 3
-          - 4
-          - 5
           - '6.2'
           - '7.2'
           - '7.4'
@@ -60,9 +52,6 @@ jobs:
             if (( redis_major_version < 7 )); then
               echo "REDIS_EXTRA_ARGS="--tls-auth-clients optional --save ''"" >> $GITHUB_ENV
             fi
-          else
-            echo "REDIS_IMAGE_NAME=redis:${{ matrix.redis }}" >> $GITHUB_ENV
-            echo "DOCKER_SERVICE=redis-official" >> $GITHUB_ENV
           fi
 
       - name: Checkout repository
@@ -71,21 +60,21 @@ jobs:
       - name: Start Redis standalone image
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          compose-file: .github/docker-compose.yml
+          compose-file: docker-compose.yml
           services: ${{ env.DOCKER_SERVICE }}
 
       - name: Start Redis stack image
         uses: hoverkraft-tech/compose-action@v2.0.1
         if: ${{ matrix.redis == '7.4' }}
         with:
-          compose-file: .github/docker-compose.yml
+          compose-file: docker-compose.yml
           services: redis-stack
 
       - name: Start Redis cluster image
         uses: hoverkraft-tech/compose-action@v2.0.1
         if: ${{ matrix.redis == '7.4' }}
         with:
-          compose-file: .github/docker-compose.yml
+          compose-file: docker-compose.yml
           services: redis-cluster
 
       - name: Setup PHP

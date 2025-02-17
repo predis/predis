@@ -2,21 +2,6 @@
 
 services:
 
-  redis-official:
-    image: ${REDIS_IMAGE_NAME:-redis:7.4}
-    container_name: redis-standalone
-    healthcheck:
-      test: ["CMD", "redis-cli", "PING"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-    ports:
-      - "6379:6379"
-    profiles:
-      - all
-      - official
-      - standalone
-
   redis-clients:
     image: ${REDIS_IMAGE_NAME:-redislabs/client-libs-test:7.4.2}
     container_name: redis-standalone
