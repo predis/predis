@@ -322,7 +322,7 @@ class RedisClusterTest extends PredisTestCase
                         'scheme' => 'tcp',
                         'host' => '127.0.0.1',
                         'port' => '6383',
-                        'persistent' => false
+                        'persistent' => false,
                     ],
                 ],
                 [
@@ -330,7 +330,7 @@ class RedisClusterTest extends PredisTestCase
                         'scheme' => 'tcp',
                         'host' => '127.0.0.1',
                         'port' => '6384',
-                        'persistent' => false
+                        'persistent' => false,
                     ],
                 ]
             )
