@@ -54,6 +54,9 @@ jobs:
             if (( redis_major_version < 7 )); then
               echo "REDIS_EXTRA_ARGS="--tls-auth-clients optional --save ''"" >> $GITHUB_ENV
             fi
+          else
+            echo "REDIS_IMAGE_NAME=redis:${{ matrix.redis }}" >> $GITHUB_ENV
+            echo "DOCKER_SERVICE=redis-official" >> $GITHUB_ENV
           fi
 
       - name: Checkout repository
