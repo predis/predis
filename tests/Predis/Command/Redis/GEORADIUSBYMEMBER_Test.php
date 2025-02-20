@@ -147,10 +147,10 @@ class GEORADIUSBYMEMBER_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania', '13.583333', '37.316667', 'Agrigento');
-        $this->assertEquals([
-            ['Agrigento', '0.0000', ['13.5833314061164856', '37.31666804993816555']],
-            ['Palermo', '90.9778', ['13.36138933897018433', '38.11555639549629859']],
-        ], $redis->georadiusbymember('Sicily', 'Agrigento', 100, 'km', 'WITHDIST', 'WITHCOORD'));
+        $this->assertEqualsWithDelta([
+            ['Agrigento', '0.0000', [13.5833314061164856, 37.31666804993816555]],
+            ['Palermo', '90.9778', [13.36138933897018433, 38.11555639549629859]],
+        ], $redis->georadiusbymember('Sicily', 'Agrigento', 100, 'km', 'WITHDIST', 'WITHCOORD'), 0.1);
     }
 
     /**

@@ -17,6 +17,7 @@
 - Explicitly mark nullable parameters as nullable (#1448)
 - Filter out available replicas based on link status flag (#1440)
 - Respect `prefix` for `ZPOPMIN`, `ZPOPMAX`, `ZMSCORE`, `LMOVE`, `BLMOVE`, `SMISMEMBER` and `GEOSEARCH` (#1451, #1453, #1455, #1468)
+- Updated test infrastructure (#1510)
 
 ### Fixed
 - Fixed Relay support when using Redis Cluster (#1397)

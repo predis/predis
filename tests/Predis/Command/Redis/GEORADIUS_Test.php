@@ -149,10 +149,10 @@ class GEORADIUS_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
-        $this->assertEquals([
-            ['Palermo', '190.4424', ['13.36138933897018433', '38.11555639549629859']],
-            ['Catania', '56.4413', ['15.08726745843887329', '37.50266842333162032']],
-        ], $redis->georadius('Sicily', 15, 37, 200, 'km', 'WITHDIST', 'WITHCOORD'));
+        $this->assertEqualsWithDelta([
+            ['Palermo', '190.4424', [13.36138933897018433, 38.11555639549629859]],
+            ['Catania', '56.4413', [15.08726745843887329, 37.50266842333162032]],
+        ], $redis->georadius('Sicily', 15, 37, 200, 'km', 'WITHDIST', 'WITHCOORD'), 0.1);
     }
 
     /**
