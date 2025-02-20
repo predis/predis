@@ -198,9 +198,9 @@ class StreamFactory implements StreamFactoryInterface
             (isset($parameters->persistent) && $parameters->persistent)
             && (isset($parameters->conn_uid) && $parameters->conn_uid)
         ) {
-            $conn_uid = "/" . $parameters->conn_uid;
+            $conn_uid = '/' . $parameters->conn_uid;
         } else {
-            $conn_uid = "";
+            $conn_uid = '';
         }
 
         // Needs to create multiple persistent connections to the same resource

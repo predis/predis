@@ -1331,8 +1331,8 @@ class ClientTest extends PredisTestCase
         $client1 = new Client($this->getParameters(['database' => 14, 'persistent' => true]));
         $client2 = new Client($this->getParameters(['database' => 15, 'persistent' => true]));
 
-        $client1->set('foo', "bar");
-        $client2->set('foo', "baz");
+        $client1->set('foo', 'bar');
+        $client2->set('foo', 'baz');
 
         $this->assertSame('bar', $client1->get('foo'));
         $this->assertSame('baz', $client2->get('foo'));
@@ -1354,8 +1354,8 @@ class ClientTest extends PredisTestCase
             ['cluster' => 'redis', 'parameters' => ['persistent' => true]]
         );
 
-        $client1->set('{shard1}foo', "bar");
-        $client2->set('{shard2}foo', "baz");
+        $client1->set('{shard1}foo', 'bar');
+        $client2->set('{shard2}foo', 'baz');
 
         $this->assertSame('bar', $client1->get('{shard1}foo'));
         $this->assertSame('baz', $client2->get('{shard2}foo'));
