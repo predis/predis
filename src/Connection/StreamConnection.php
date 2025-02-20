@@ -59,6 +59,7 @@ class StreamConnection extends AbstractConnection
     public function __construct(ParametersInterface $parameters, ?StreamFactoryInterface $factory = null)
     {
         parent::__construct($parameters);
+        $this->parameters->conn_uid = spl_object_hash($this);
 
         $this->streamFactory = $factory ?? new StreamFactory();
     }

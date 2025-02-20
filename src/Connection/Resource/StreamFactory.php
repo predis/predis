@@ -194,6 +194,18 @@ class StreamFactory implements StreamFactoryInterface
         $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0);
         $context = stream_context_create(['socket' => ['tcp_nodelay' => (bool) $parameters->tcp_nodelay]]);
 
+        if (
+            (isset($parameters->persistent) && $parameters->persistent)
+            && (isset($parameters->conn_uid) && $parameters->conn_uid)
+        ) {
+            $conn_uid = "/" . $parameters->conn_uid;
+        } else {
+            $conn_uid = "";
+        }
+
+        // Needs to create multiple persistent connections to the same resource
+        $address = $address . $conn_uid;
+
         if (!$resource = @stream_socket_client($address, $errno, $errstr, $timeout, $flags, $context)) {
             $this->onInitializationError($resource, $parameters, trim($errstr), $errno);
         }
