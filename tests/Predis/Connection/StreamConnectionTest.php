@@ -94,7 +94,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $this->mockStreamFactory
             ->expects($this->once())
             ->method('createStream')
-            ->with(new Parameters())
+            ->withAnyParameters()
             ->willReturn($this->mockStream);
 
         $this->mockStream
@@ -190,7 +190,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $this->mockStreamFactory
             ->expects($this->once())
             ->method('createStream')
-            ->with(new Parameters())
+            ->withAnyParameters()
             ->willReturn($this->mockStream);
 
         $this->mockStream
@@ -215,7 +215,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $this->mockStreamFactory
             ->expects($this->once())
             ->method('createStream')
-            ->with(new Parameters())
+            ->withAnyParameters()
             ->willReturn($this->mockStream);
 
         $this->mockStream
@@ -241,7 +241,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $this->mockStreamFactory
             ->expects($this->once())
             ->method('createStream')
-            ->with(new Parameters())
+            ->withAnyParameters()
             ->willReturn($this->mockStream);
 
         $this->mockStream
@@ -265,7 +265,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $this->mockStreamFactory
             ->expects($this->once())
             ->method('createStream')
-            ->with(new Parameters())
+            ->withAnyParameters()
             ->willReturn($this->mockStream);
 
         $this->mockStream
@@ -480,7 +480,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $this->mockStreamFactory
             ->expects($this->once())
             ->method('createStream')
-            ->with(new Parameters())
+            ->withAnyParameters()
             ->willReturn($this->mockStream);
 
         $this->mockStream
@@ -503,7 +503,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $this->mockStreamFactory
             ->expects($this->once())
             ->method('createStream')
-            ->with(new Parameters())
+            ->withAnyParameters()
             ->willReturn($this->mockStream);
 
         $this->mockStream
