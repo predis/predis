@@ -24,7 +24,13 @@ class FTSPELLCHECK extends RedisCommand
     public function setArguments(array $arguments)
     {
         [$index, $query] = $arguments;
-        $commandArguments = [];
+
+        if (!empty($arguments[2]) && !in_array("DIALECT", $arguments[2]->toArray())) {
+            // Default dialect is 2
+            $arguments[2]->dialect(2);
+        }
+
+        $commandArguments = ['DIALECT', 2];
 
         if (!empty($arguments[2])) {
             $commandArguments = $arguments[2]->toArray();
