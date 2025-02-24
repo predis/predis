@@ -30,7 +30,13 @@ class FTAGGREGATE extends RedisCommand
     public function setArguments(array $arguments)
     {
         [$index, $query] = $arguments;
-        $commandArguments = (!empty($arguments[2])) ? $arguments[2]->toArray() : [];
+
+        if (!empty($arguments[2]) && !in_array("DIALECT", $arguments[2]->toArray())) {
+            // Default dialect is 2
+            $arguments[2]->dialect(2);
+        }
+
+        $commandArguments = (!empty($arguments[2])) ? $arguments[2]->toArray() : ['DIALECT', 2];
 
         parent::setArguments(array_merge(
             [$index, $query],
