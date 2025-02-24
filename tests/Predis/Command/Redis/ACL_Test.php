@@ -227,6 +227,7 @@ class ACL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 7.9.0
      */
