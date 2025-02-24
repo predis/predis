@@ -143,7 +143,7 @@ class ACL_Test extends PredisCommandTestCase
         $redis = $this->getClient();
         $allCategories = $redis->acl->cat();
 
-        foreach (["bloom", "cuckoo", "cms", "topk", "tdigest", "search", "timeseries", "json"] as $category) {
+        foreach (['bloom', 'cuckoo', 'cms', 'topk', 'tdigest', 'search', 'timeseries', 'json'] as $category) {
             $this->assertContains($category, $allCategories);
         }
     }
@@ -163,12 +163,12 @@ class ACL_Test extends PredisCommandTestCase
             $redis->acl->setUser(
                 'testUser',
                 'reset',
-                "nopass",
-                "on"
+                'nopass',
+                'on'
             )
         );
 
-        $this->assertEquals('OK', $redis->auth("testUser", ""));
+        $this->assertEquals('OK', $redis->auth('testUser', ''));
 
         $this->expectException(ServerException::class);
         $redis->ftcreate('test', [new TextField('foo')]);
@@ -239,12 +239,12 @@ class ACL_Test extends PredisCommandTestCase
             $redis->acl->setUser(
                 'testUser',
                 'reset',
-                "nopass",
-                "on"
+                'nopass',
+                'on'
             )
         );
 
-        $this->assertEquals('OK', $redis->auth("testUser", ""));
+        $this->assertEquals('OK', $redis->auth('testUser', ''));
 
         $this->expectException(ServerException::class);
         $redis->ftcreate('test', [new TextField('foo')]);
