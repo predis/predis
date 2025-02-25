@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Response\ServerException;
 
 class ACL_Test extends PredisCommandTestCase
@@ -158,6 +159,174 @@ class ACL_Test extends PredisCommandTestCase
         foreach (['flags', 'passwords', 'commands', 'keys', 'channels'] as $key) {
             $this->assertContains($key, $redis->acl->getUser('alan'));
         }
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.9.0
+     */
+    public function testModuleCategoriesAppearsInListOfAllCategories(): void
+    {
+        $redis = $this->getClient();
+        $allCategories = $redis->acl->cat();
+
+        foreach (['bloom', 'cuckoo', 'cms', 'topk', 'tdigest', 'search', 'timeseries', 'json'] as $category) {
+            $this->assertContains($category, $allCategories);
+        }
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @return void
+     * @requiresRedisVersion >= 7.9.0
+     */
+    public function testSetModuleCommandPrivileges(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser(
+                'testUser',
+                'reset',
+                'nopass',
+                'on'
+            )
+        );
+
+        $this->assertEquals('OK', $redis->auth('testUser', ''));
+
+        $this->expectException(ServerException::class);
+        $redis->ftcreate('test', [new TextField('foo')]);
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser(
+                'testUser',
+                '+ft.create',
+                '+ft.search'
+            )
+        );
+
+        $this->assertEquals('OK', $redis->ftcreate('test', [new TextField('foo')]));
+        $this->assertEmpty($redis->ftsearch('test', '*'));
+
+        $this->expectException(ServerException::class);
+        $redis->jsonset('test', '$', '{"key":"value"}');
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser(
+                'testUser',
+                '+json.set'
+            )
+        );
+
+        $this->assertEquals('OK', $redis->jsonset('test', '$', '{"key":"value"}'));
+
+        $this->expectException(ServerException::class);
+        $redis->bfadd('test', 'value');
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser(
+                'testUser',
+                '+bf.add'
+            )
+        );
+
+        $this->assertEquals(1, $redis->bfadd('test', 'value'));
+
+        $this->expectException(ServerException::class);
+        $redis->tsadd('test', time(), 0.01);
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser(
+                'testUser',
+                '+ts.add'
+            )
+        );
+
+        $this->assertEquals(1, $redis->tsadd('test', time(), 0.01));
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @return void
+     * @requiresRedisVersion >= 7.9.0
+     */
+    public function testSetModuleCategoryPrivileges(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser(
+                'testUser',
+                'reset',
+                'nopass',
+                'on'
+            )
+        );
+
+        $this->assertEquals('OK', $redis->auth('testUser', ''));
+
+        $this->expectException(ServerException::class);
+        $redis->ftcreate('test', [new TextField('foo')]);
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser(
+                'testUser',
+                '+@search'
+            )
+        );
+
+        $this->assertEquals('OK', $redis->ftcreate('test', [new TextField('foo')]));
+        $this->assertEmpty($redis->ftsearch('test', '*'));
+
+        $this->expectException(ServerException::class);
+        $redis->jsonset('test', '$', '{"key":"value"}');
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser(
+                'testUser',
+                '+@json'
+            )
+        );
+
+        $this->assertEquals('OK', $redis->jsonset('test', '$', '{"key":"value"}'));
+
+        $this->expectException(ServerException::class);
+        $redis->bfadd('test', 'value');
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser(
+                'testUser',
+                '+@bloom'
+            )
+        );
+
+        $this->assertEquals(1, $redis->bfadd('test', 'value'));
+
+        $this->expectException(ServerException::class);
+        $redis->tsadd('test', time(), 0.01);
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser(
+                'testUser',
+                '+@timeseries'
+            )
+        );
+
+        $this->assertEquals(1, $redis->tsadd('test', time(), 0.01));
     }
 
     /**

@@ -496,6 +496,23 @@ class PipelineTest extends PredisTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testIntegrationWithFluentInterfaceResp3(): void
+    {
+        $pipeline = $this->getClient(['protocol' => 3])->pipeline();
+
+        $results = $pipeline
+            ->echo('one')
+            ->echo('two')
+            ->echo('three')
+            ->execute();
+
+        $this->assertSame(['one', 'two', 'three'], $results);
+    }
+
+    /**
+     * @group connected
      */
     public function testIntegrationWithCallableBlock(): void
     {

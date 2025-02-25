@@ -167,6 +167,7 @@ class StreamTest extends TestCase
 
     /**
      * @return void
+     * @requires PHP < 8.3
      */
     public function testSeekThrowsExceptionOnIncorrectOffset(): void
     {
@@ -177,6 +178,21 @@ class StreamTest extends TestCase
         $this->expectExceptionMessage('Unable to seek stream from offset 10 to whence 1');
 
         $stream->seek(10, 1);
+    }
+
+    /**
+     * @return void
+     * @requires PHP > 8.3
+     */
+    public function testSeekThrowsExceptionOnIncorrectOffsetAndWhence(): void
+    {
+        $handle = fopen('php://temp', 'rb+');
+        $stream = new Stream($handle);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unable to seek stream from offset 10 to whence 100');
+
+        $stream->seek(10, 100);
     }
 
     /**

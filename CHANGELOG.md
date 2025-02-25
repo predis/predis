@@ -1,5 +1,9 @@
 ## Changelog
 
+## Unreleased
+### Fixed
+- Fixed PHP 8.4 compatibility with `stream_context_set_option()`
+
 ## v3.0.0-alpha1 (2024-01-19)
 
 Predis v3.0 introduces support for new communication protocol [RESP3](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md) and [new features](README.md#resp3) based on it.
@@ -19,11 +23,24 @@ Predis v3.0 introduces support for new communication protocol [RESP3](https://gi
 - Added support for `XINFO` commands (#1331)
 - Added support for Redis Gears triggered functions API (#1348)
 
+## v2.3.0 (2024-11-21)
+### Added
+- Added `GeoShapeField` field (#1467)
+- Added hash expiration commands (#1456)
+- Added support for time series `IGNORE` filter (#1458)
+- Added `XREAD` commands (#1459)
+- Added `NOVALUES` argument support to `HSCAN` (#1459)
+- Added support for search `INDEXMISSING` and `INDEXEMPTY` arguments (#1464)
+
+### Changed
+- Explicitly mark nullable parameters as nullable (#1448)
+- Filter out available replicas based on link status flag (#1440)
+- Respect `prefix` for `ZPOPMIN`, `ZPOPMAX`, `ZMSCORE`, `LMOVE`, `BLMOVE`, `SMISMEMBER` and `GEOSEARCH` (#1451, #1453, #1455, #1468)
+- Updated test infrastructure (#1510)
+-
 ## v2.2.0 (2023-06-14)
 
 Predis v2.2.0 introduces official support for [Redis Stack](https://redis.io/docs/stack/) as well as a [Relay](https://github.com/cachewerk/relay) integration for substantially [faster read performance](https://github.com/predis/predis/wiki/Using-Relay).
-
-## v2.2.0-RC1 (2023-05-09)
 
 ### Added
 - Added support for [Relay](https://github.com/predis/predis/wiki/Using-Relay) (#1263)
