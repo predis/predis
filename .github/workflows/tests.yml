@@ -105,7 +105,7 @@ jobs:
         run: vendor/bin/phpunit --coverage-php build/cov/coverage-predis.cov --coverage-filter ./src
 
       - name: Run tests using Relay
-        if: ${{ matrix.php != '8.4' || matrix.redis != '7.4' }}
+        if: ${{ matrix.php != '8.4' || matrix.redis >= '6.2' }}
         run: vendor/bin/phpunit -c phpunit.relay.xml
 
       - name: Run tests using Relay with coverage
