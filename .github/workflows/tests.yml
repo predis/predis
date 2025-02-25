@@ -88,7 +88,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: relay
-          coverage: ${{ (matrix.php == '8.1' && matrix.redis == '7.4') && 'xdebug' || 'none' }}
+          coverage: ${{ (matrix.php == '8.4' && matrix.redis == '7.4') && 'xdebug' || 'none' }}
 
       - name: Install Composer dependencies
         uses: ramsey/composer-install@v2
