@@ -167,6 +167,7 @@ class StreamTest extends TestCase
 
     /**
      * @return void
+     * @requires PHP < 8.3
      */
     public function testSeekThrowsExceptionOnIncorrectOffset(): void
     {
