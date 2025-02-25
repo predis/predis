@@ -105,7 +105,7 @@ jobs:
         run: vendor/bin/phpunit --coverage-php build/cov/coverage-predis.cov --coverage-filter ./src
 
       - name: Run tests using Relay
-        if: ${{ matrix.redis == '7.4' }}
+        if: ${{ matrix.php != '8.4' || matrix.redis != '7.4' }}
         run: vendor/bin/phpunit -c phpunit.relay.xml
 
       - name: Run tests using Relay with coverage
@@ -113,7 +113,7 @@ jobs:
         run: vendor/bin/phpunit -c phpunit.relay.xml --coverage-php build/cov/coverage-relay.cov --coverage-filter ./src
 
       - name: Run stack tests
-        if: ${{ matrix.redis == '7.4' }}
+        if: ${{ matrix.php != '8.4' || matrix.redis != '7.4' }}
         run: vendor/bin/phpunit --group realm-stack
 
       - name: Run stack tests with coverage
@@ -121,7 +121,7 @@ jobs:
         run: vendor/bin/phpunit --group realm-stack --coverage-php build/cov/coverage-stack.cov --coverage-filter ./src
 
       - name: Run stack tests using Relay
-        if: ${{ matrix.redis == '7.4' }}
+        if: ${{ matrix.php != '8.4' || matrix.redis != '7.4' }}
         run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml
 
       - name: Run stack tests using Relay with coverage
@@ -129,7 +129,7 @@ jobs:
         run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml --coverage-php build/cov/coverage-stack-relay.cov --coverage-filter ./src
 
       - name: Run tests against cluster
-        if: ${{ matrix.redis == '7.4' }}
+        if: ${{ matrix.php != '8.4' || matrix.redis != '7.4' }}
         run: |
           vendor/bin/phpunit --group cluster
 
@@ -139,7 +139,7 @@ jobs:
           vendor/bin/phpunit --group cluster --coverage-php build/cov/coverage-cluster.cov --coverage-filter ./src
 
       - name: Run tests against cluster using Relay
-        if: ${{ matrix.redis == '7.4' }}
+        if: ${{ matrix.php != '8.4' || matrix.redis != '7.4' }}
         run: |
           vendor/bin/phpunit -c phpunit.relay.xml --group cluster
 
