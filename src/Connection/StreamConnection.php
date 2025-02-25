@@ -36,6 +36,15 @@ use Predis\Response\Status as StatusResponse;
 class StreamConnection extends AbstractConnection
 {
     /**
+     * @param ParametersInterface $parameters
+     */
+    public function __construct(ParametersInterface $parameters)
+    {
+        parent::__construct($parameters);
+        $this->parameters->conn_uid = spl_object_hash($this);
+    }
+
+    /**
      * Disconnects from the server and destroys the underlying resource when the
      * garbage collector kicks in only if the connection has not been marked as
      * persistent.
@@ -104,6 +113,18 @@ class StreamConnection extends AbstractConnection
     {
         $timeout = (isset($parameters->timeout) ? (float) $parameters->timeout : 5.0);
         $context = stream_context_create(['socket' => ['tcp_nodelay' => (bool) $parameters->tcp_nodelay]]);
+
+        if (
+            (isset($parameters->persistent) && $parameters->persistent)
+            && (isset($parameters->conn_uid) && $parameters->conn_uid)
+        ) {
+            $conn_uid = '/' . $parameters->conn_uid;
+        } else {
+            $conn_uid = '';
+        }
+
+        // Needs to create multiple persistent connections to the same resource
+        $address = $address . $conn_uid;
 
         if (!$resource = @stream_socket_client($address, $errno, $errstr, $timeout, $flags, $context)) {
             $this->onConnectionError(trim($errstr), $errno);

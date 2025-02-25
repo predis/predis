@@ -127,23 +127,6 @@ class StreamConnectionTest extends PredisConnectionTestCase
      * @group connected
      * @requires PHP 5.4
      */
-    public function testPersistentConnectionsToSameNodeShareResource(): void
-    {
-        $connection1 = $this->createConnectionWithParams(['persistent' => true]);
-        $connection2 = $this->createConnectionWithParams(['persistent' => true]);
-
-        $this->assertPersistentConnection($connection1);
-        $this->assertPersistentConnection($connection2);
-
-        $this->assertSame($connection1->getResource(), $connection2->getResource());
-
-        $connection1->disconnect();
-    }
-
-    /**
-     * @group connected
-     * @requires PHP 5.4
-     */
     public function testPersistentConnectionsToSameNodeDoNotShareResourceUsingDifferentPersistentID(): void
     {
         $connection1 = $this->createConnectionWithParams(['persistent' => 'conn1']);
