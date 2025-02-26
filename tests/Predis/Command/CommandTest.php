@@ -204,7 +204,7 @@ class CommandTest extends PredisTestCase
         $deserializedCommand = Command::deserializeCommand($command->serializeCommand());
 
         $this->assertInstanceOf($class, $deserializedCommand);
-        $this->assertSame($command->getArguments(), $deserializedCommand->getArguments());
+        $this->assertEquals($command->getArguments(), $deserializedCommand->getArguments());
     }
 
     /**

@@ -23,6 +23,12 @@ class FTSPELLCHECK extends RedisCommand
 
     public function setArguments(array $arguments)
     {
+        // If command already deserialized, bypass logic.
+        if (in_array("DIALECT", $arguments)) {
+            parent::setArguments($arguments);
+            return;
+        }
+
         [$index, $query] = $arguments;
 
         if (!empty($arguments[2]) && !in_array("DIALECT", $arguments[2]->toArray())) {
