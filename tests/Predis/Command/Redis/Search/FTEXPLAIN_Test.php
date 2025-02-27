@@ -105,7 +105,10 @@ EOT;
         $this->assertEquals('OK', $redis->ftcreate('index', $schema));
         $this->assertEquals(
             $expectedResponse,
-            $redis->ftexplain('index', '(foo bar)|(hello world) @date:[100 200]|@date:[500 +inf]')
+            $redis->ftexplain(
+                'index', '(foo bar)|(hello world) @date:[100 200]|@date:[500 +inf]',
+                (new ExplainArguments())->dialect(1)
+            )
         );
     }
 
@@ -113,6 +116,7 @@ EOT;
      * @group connected
      * @return void
      * @requiresRediSearchVersion >= 2.8.0
+     * @requiresRedisVersion >= 7.5.0
      */
     public function testExplainReturnsExecutionPlanForGivenQueryResp3(): void
     {
@@ -179,7 +183,7 @@ EOT;
         return [
             'with default arguments' => [
                 ['index', 'query', null],
-                ['index', 'query'],
+                ['index', 'query', 'DIALECT', 2],
             ],
             'with DIALECT' => [
                 ['index', 'query', (new ExplainArguments())->dialect('dialect')],
