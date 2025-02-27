@@ -172,18 +172,18 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->ftcreate('test', [
             new VectorField(
                 'v', 'HNSW',
-                ["TYPE", "FLOAT32", "DIM", 2, "DISTANCE_METRIC", "L2"]
-            )
+                ['TYPE', 'FLOAT32', 'DIM', 2, 'DISTANCE_METRIC', 'L2']
+            ),
         ]));
 
         $this->sleep(0.1);
 
-        $redis->hset("a", "v", "aaaaaaaa");
-        $redis->hset("b", "v", "aaaabaaa");
-        $redis->hset("c", "v", "aaaaabaa");
+        $redis->hset('a', 'v', 'aaaaaaaa');
+        $redis->hset('b', 'v', 'aaaabaaa');
+        $redis->hset('c', 'v', 'aaaaabaa');
 
         $searchArguments = new SearchArguments();
-        $searchArguments->params(["vec", "aaaaaaaa"]);
+        $searchArguments->params(['vec', 'aaaaaaaa']);
 
         $ftSearch = new FTSEARCH();
         $ftSearch->setArguments(['test', '*=>[KNN 2 @v $vec]', $searchArguments]);
@@ -214,22 +214,22 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $createArguments->prefix(['test:']);
 
         $this->assertEquals('OK', $redis->ftcreate('test', [
-            new TextField("name"),
-            new TextField("lastname"),
+            new TextField('name'),
+            new TextField('lastname'),
         ], $createArguments));
 
         $this->sleep(0.1);
 
-        $redis->hset("test:1", "name", "James");
-        $redis->hset("test:1", "lastname", "Brown");
+        $redis->hset('test:1', 'name', 'James');
+        $redis->hset('test:1', 'lastname', 'Brown');
 
-        # Query with default DIALECT 2
+        // Query with default DIALECT 2
         $this->assertEquals(1, $redis->ftsearch('test', '@name: James Brown')[0]);
 
         $searchArguments = new SearchArguments();
         $searchArguments->dialect(1);
 
-        # Query with explicit DIALECT 1
+        // Query with explicit DIALECT 1
         $this->assertEquals(
             0,
             $redis->ftsearch('test', '@name: James Brown', $searchArguments)[0]
