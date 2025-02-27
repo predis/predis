@@ -18,7 +18,10 @@ use Predis\Command\Redis\CuckooFilter\CFADD;
 use Predis\Command\Redis\GET;
 use Predis\Command\Redis\Json\JSONSET;
 use Predis\Command\Redis\MGET;
+use Predis\Command\Redis\Search\FTAGGREGATE;
+use Predis\Command\Redis\Search\FTEXPLAIN;
 use Predis\Command\Redis\Search\FTSEARCH;
+use Predis\Command\Redis\Search\FTSPELLCHECK;
 use Predis\Command\Redis\TDigest\TDIGESTADD;
 use Predis\Command\Redis\TimeSeries\TSGET;
 use Predis\Command\Redis\TopK\TOPKQUERY;
@@ -252,7 +255,19 @@ class CommandTest extends PredisTestCase
             ],
             'FTSEARCH' => [
                 FTSEARCH::class,
-                ['key', 'value'],
+                ['key', 'value', 'DIALECT', '2'],
+            ],
+            'FTAGGREGATE' => [
+                FTAGGREGATE::class,
+                ['key', 'value', 'DIALECT', '2'],
+            ],
+            'FTSPELLCHECK' => [
+                FTSPELLCHECK::class,
+                ['key', 'value', 'DIALECT', '2'],
+            ],
+            'FTEXPLAIN' => [
+                FTEXPLAIN::class,
+                ['key', 'value', 'DIALECT', '2'],
             ],
             'TDIGESTADD' => [
                 TDIGESTADD::class,
