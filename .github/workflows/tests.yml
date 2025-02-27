@@ -27,11 +27,11 @@ jobs:
           - '8.3'
           - '8.4'
         redis:
-          - 4.0
-          - 6.2
-          - 7.2
-          - 7.4
-          - 8.0
+          - '4.0'
+          - '6.2'
+          - '7.2'
+          - '7.4'
+          - '8.0'
 
     steps:
 
@@ -80,7 +80,7 @@ jobs:
       - name: Start Redis stack image
         id: stack_infra
         uses: hoverkraft-tech/compose-action@v2.0.1
-        if: ${{ matrix.redis >= 6.2 && matrix.redis < 8.0}}
+        if: ${{ matrix.redis >= '6.2' && matrix.redis < '8.0' }}
         with:
           compose-file: .github/docker-compose.yml
           services: redis-stack
@@ -88,7 +88,7 @@ jobs:
       - name: Start Redis cluster image
         id: cluster_infra
         uses: hoverkraft-tech/compose-action@v2.0.1
-        if: ${{ matrix.redis > 4.0 }}
+        if: ${{ matrix.redis > '4.0' }}
         with:
           compose-file: .github/docker-compose.yml
           services: redis-cluster
@@ -123,7 +123,7 @@ jobs:
         run: vendor/bin/phpunit -c phpunit.relay.xml --coverage-php build/cov/coverage-relay.cov --coverage-filter ./src
 
       - name: Run stack tests
-        if: ${{ matrix.php != '8.4' && matrix.redis != 7.4 && steps.stack_infra.conclusion == 'success' }}
+        if: ${{ matrix.php != '8.4' && matrix.redis != '7.4' && steps.stack_infra.conclusion == 'success' }}
         run: vendor/bin/phpunit --group realm-stack
 
       - name: Run stack tests with coverage
@@ -139,7 +139,7 @@ jobs:
         run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml --coverage-php build/cov/coverage-stack-relay.cov --coverage-filter ./src
 
       - name: Run tests against cluster
-        if: ${{ matrix.php != '8.4' && matrix.redis != 7.4 && steps.cluster_infra.conclusion == 'success' }}
+        if: ${{ matrix.php != '8.4' && matrix.redis != '7.4' && steps.cluster_infra.conclusion == 'success' }}
         run: |
           vendor/bin/phpunit --group cluster
 
