@@ -27,11 +27,11 @@ jobs:
           - '8.3'
           - '8.4'
         redis:
-          - '4.0'
-          - '6.2'
-          - '7.2'
-          - '7.4'
-          - '8.0'
+          - 4.0
+          - 6.2
+          - 7.2
+          - 7.4
+          - 8.0
 
     steps:
 
@@ -45,8 +45,16 @@ jobs:
             ["6.2"]="6.2.17"
           )
 
+          # Mapping of redis version to stack version
+          declare -A redis_stack_version_mapping=(
+            ["7.4"]="rs-7.4.0-v3"
+            ["7.2"]="rs-7.2.0-v15"
+            ["6.2"]="rs-6.2.6-v19"
+          )
+
           if [[ -v redis_clients_version_mapping[${{ matrix.redis }}] ]]; then
             echo "REDIS_IMAGE_NAME=redislabs/client-libs-test:${redis_clients_version_mapping[${{ matrix.redis }}]}" >> $GITHUB_ENV
+            echo "REDIS_STACK_IMAGE_NAME=redislabs/client-libs-test:${redis_stack_version_mapping[${{ matrix.redis }}]}" >> $GITHUB_ENV
             echo "DOCKER_SERVICE=redis-clients" >> $GITHUB_ENV
 
             redis_major_version=$(echo "${{ matrix.redis }}" | grep -oP '^\d+')
@@ -70,15 +78,17 @@ jobs:
           services: ${{ env.DOCKER_SERVICE }}
 
       - name: Start Redis stack image
+        id: stack_infra
         uses: hoverkraft-tech/compose-action@v2.0.1
-        if: ${{ matrix.redis == '7.4' }}
+        if: ${{ matrix.redis >= 6.2 && matrix.redis < 8.0}}
         with:
           compose-file: .github/docker-compose.yml
           services: redis-stack
 
       - name: Start Redis cluster image
+        id: cluster_infra
         uses: hoverkraft-tech/compose-action@v2.0.1
-        if: ${{ matrix.redis == '7.4' }}
+        if: ${{ matrix.redis > 4.0 }}
         with:
           compose-file: .github/docker-compose.yml
           services: redis-cluster
@@ -113,11 +123,11 @@ jobs:
         run: vendor/bin/phpunit -c phpunit.relay.xml --coverage-php build/cov/coverage-relay.cov --coverage-filter ./src
 
       - name: Run stack tests
-        if: ${{ matrix.php != '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php != '8.4' && matrix.redis != 7.4 && steps.stack_infra.conclusion == 'success' }}
         run: vendor/bin/phpunit --group realm-stack
 
       - name: Run stack tests with coverage
-        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' && steps.stack_infra.conclusion == 'success' }}
         run: vendor/bin/phpunit --group realm-stack --coverage-php build/cov/coverage-stack.cov --coverage-filter ./src
 
       - name: Run stack tests using Relay
@@ -129,12 +139,12 @@ jobs:
         run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml --coverage-php build/cov/coverage-stack-relay.cov --coverage-filter ./src
 
       - name: Run tests against cluster
-        if: ${{ matrix.php != '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php != '8.4' && matrix.redis != 7.4 && steps.cluster_infra.conclusion == 'success' }}
         run: |
           vendor/bin/phpunit --group cluster
 
       - name: Run tests against cluster with coverage
-        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' && steps.cluster_infra.conclusion == 'success' }}
         run: |
           vendor/bin/phpunit --group cluster --coverage-php build/cov/coverage-cluster.cov --coverage-filter ./src
 
