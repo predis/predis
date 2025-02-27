@@ -51,7 +51,7 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
         $command = $this->getCommand();
         $command->setArguments($actualArguments);
 
-        $this->assertSameValues($expectedArguments, $command->getArguments());
+        $this->assertEquals($expectedArguments, $command->getArguments());
     }
 
     /**
@@ -204,7 +204,7 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
             ],
             'with SORTBY modifier' => [
                 ['index', 'query', (new AggregateArguments())->sortBy(2, 'property1', 'ASC', 'property2', 'DESC')],
-                ['index', 'query', 'SORTBY', 2, 'property1', 'ASC', 'property2', 'DESC', 'MAX', 2, 'DIALECT', 2],
+                ['index', 'query', 'SORTBY', 4, 'property1', 'ASC', 'property2', 'DESC', 'MAX', 2, 'DIALECT', 2],
             ],
             'with APPLY modifier' => [
                 ['index', 'query', (new AggregateArguments())->apply('expression', 'name')],
