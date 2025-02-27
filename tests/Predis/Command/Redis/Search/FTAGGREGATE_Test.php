@@ -45,6 +45,7 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      * @dataProvider argumentsProvider
+     * @requires PHP >= 7.2
      */
     public function testFilterArguments(array $actualArguments, array $expectedArguments): void
     {

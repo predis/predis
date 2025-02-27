@@ -116,7 +116,7 @@ EOT;
      * @group connected
      * @return void
      * @requiresRediSearchVersion >= 2.8.0
-     * @requiresRedisVersion >= 7.3.0
+     * @requiresRedisVersion >= 7.5.0
      */
     public function testExplainReturnsExecutionPlanForGivenQueryResp3(): void
     {
