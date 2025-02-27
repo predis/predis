@@ -12,6 +12,7 @@
 
 namespace Predis\Command;
 
+use Predis\ClientException;
 use Predis\Command\Processor\ProcessorChain;
 use Predis\Command\Processor\ProcessorInterface;
 use PredisTestCase;
@@ -166,6 +167,20 @@ class RedisFactoryTest extends PredisTestCase
         $this->assertInstanceOf('Predis\Command\CommandInterface', $command);
         $this->assertEquals('SET', $command->getId());
         $this->assertEquals($arguments, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCreateCommandWithNamedArguments(): void
+    {
+        $this->expectException(ClientException::class);
+        $this->expectExceptionMessage('Named arguments are not supported.');
+
+        $factory = new RedisFactory();
+
+        $arguments = ['foo', 'value' => 'bar'];
+        $factory->create('set', $arguments);
     }
 
     /**
