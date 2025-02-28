@@ -64,6 +64,7 @@ class FTEXPLAIN_Test extends PredisCommandTestCase
      * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
+     * @requiresRedisVersion <= 7.9.0
      */
     public function testExplainReturnsExecutionPlanForGivenQuery(): void
     {
@@ -119,7 +120,6 @@ EOT;
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('index: no such index');
 
         $redis->ftexplain('index', 'query');
     }

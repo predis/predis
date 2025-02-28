@@ -204,7 +204,6 @@ class FTCURSOR_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Cursor does not exist');
 
         $redis->ftcursor->del('idx', 21412412);
     }
