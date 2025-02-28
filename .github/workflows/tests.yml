@@ -62,7 +62,11 @@ jobs:
             # Some configuration options available since Redis > 7
             if (( redis_major_version < 7 )); then
               echo "REDIS_EXTRA_ARGS="--tls-auth-clients optional --save ''"" >> $GITHUB_ENV
+            else
+              # Since 8.0 modules are bundled with core
+              echo "REDIS_STACK_SERVER_PORT=6379" >> $GITHUB_ENV
             fi
+
           else
             echo "REDIS_IMAGE_NAME=redis:${{ matrix.redis }}" >> $GITHUB_ENV
             echo "DOCKER_SERVICE=redis-official" >> $GITHUB_ENV
@@ -123,7 +127,7 @@ jobs:
         run: vendor/bin/phpunit -c phpunit.relay.xml --coverage-php build/cov/coverage-relay.cov --coverage-filter ./src
 
       - name: Run stack tests
-        if: ${{ matrix.php != '8.4' && matrix.redis != '7.4' && steps.stack_infra.conclusion == 'success' }}
+        if: ${{ matrix.php != '8.4' && matrix.redis >= '6.2' && matrix.redis != '7.4' }}
         run: vendor/bin/phpunit --group realm-stack
 
       - name: Run stack tests with coverage
