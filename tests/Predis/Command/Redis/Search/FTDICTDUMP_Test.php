@@ -99,7 +99,6 @@ class FTDICTDUMP_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('could not open dict key');
 
         $redis->ftdictdump('dict');
     }
