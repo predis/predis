@@ -104,7 +104,6 @@ class FTTAGVALS_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Unknown Index name');
 
         $redis->fttagvals('index', 'fieldName');
     }

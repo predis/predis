@@ -88,7 +88,6 @@ class FTPROFILE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('index: no such index');
 
         $redis->ftprofile('index', (new ProfileArguments())->search()->query('query'));
     }

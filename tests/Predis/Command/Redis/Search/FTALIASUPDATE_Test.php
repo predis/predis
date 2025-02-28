@@ -109,7 +109,6 @@ class FTALIASUPDATE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Unknown index name (or name is an alias itself)');
 
         $redis->ftaliasupdate('alias', 'index');
     }

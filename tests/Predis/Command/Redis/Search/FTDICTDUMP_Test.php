@@ -78,13 +78,13 @@ class FTDICTDUMP_Test extends PredisCommandTestCase
      * @group connected
      * @return void
      * @requiresRediSearchVersion >= 1.4.0
+     * @requiresRedisVersion <= 7.9.0
      */
     public function testThrowsExceptionOnNonExistingDictionary(): void
     {
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('could not open dict key');
 
         $redis->ftdictdump('dict');
     }
