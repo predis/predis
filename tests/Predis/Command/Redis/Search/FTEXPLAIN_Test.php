@@ -169,6 +169,42 @@ EOT;
 
     /**
      * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     * @requiresRedisVersion > 7.3.0
+     */
+    public function testExplainReturnsExecutionPlanForGivenQueryWithDialect2(): void
+    {
+        $redis = $this->getClient();
+        $expectedResponse = <<<EOT
+INTERSECT {
+  @name:UNION {
+    @name:james
+    @name:+jame(expanded)
+    @name:jame(expanded)
+  }
+  UNION {
+    brown
+    +brown(expanded)
+  }
+}
+
+EOT;
+
+        $schema = [new TextField('name')];
+
+        $this->assertEquals('OK', $redis->ftcreate('index', $schema));
+        $this->assertEquals(
+            $expectedResponse,
+            $redis->ftexplain(
+                'index',
+                '@name: James Brown'
+            )
+        );
+    }
+
+    /**
+     * @group connected
      * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
