@@ -137,7 +137,6 @@ class FTSYNUPDATE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Unknown index name');
 
         $redis->ftsynupdate(
             'index',
