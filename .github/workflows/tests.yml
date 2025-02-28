@@ -127,7 +127,7 @@ jobs:
         run: vendor/bin/phpunit -c phpunit.relay.xml --coverage-php build/cov/coverage-relay.cov --coverage-filter ./src
 
       - name: Run stack tests
-        if: ${{ matrix.php != '8.4' && matrix.redis >= '6.2' && matrix.redis != '7.4' }}
+        if: ${{ (matrix.php != '8.4' || matrix.redis != '7.4') && matrix.redis >= '6.2' }}
         run: vendor/bin/phpunit --group realm-stack
 
       - name: Run stack tests with coverage
@@ -143,7 +143,7 @@ jobs:
         run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml --coverage-php build/cov/coverage-stack-relay.cov --coverage-filter ./src
 
       - name: Run tests against cluster
-        if: ${{ matrix.php != '8.4' && matrix.redis != '7.4' && steps.cluster_infra.conclusion == 'success' }}
+        if: ${{ (matrix.php != '8.4' || matrix.redis != '7.4') && steps.cluster_infra.conclusion == 'success' }}
         run: |
           vendor/bin/phpunit --group cluster
 
