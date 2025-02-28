@@ -93,6 +93,7 @@ class FTDICTDUMP_Test extends PredisCommandTestCase
      * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.4.0
+     * @requiresRedisVersion <= 7.9.0
      */
     public function testThrowsExceptionOnNonExistingDictionary(): void
     {
