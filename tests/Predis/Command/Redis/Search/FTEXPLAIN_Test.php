@@ -198,7 +198,8 @@ EOT;
             $expectedResponse,
             $redis->ftexplain(
                 'index',
-                '@name: James Brown'
+                '@name: James Brown',
+                (new ExplainArguments())->language()
             )
         );
     }
