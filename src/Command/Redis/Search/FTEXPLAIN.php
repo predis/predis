@@ -42,11 +42,7 @@ class FTEXPLAIN extends RedisCommand
             $arguments[2]->dialect(2);
         }
 
-        $commandArguments = ['DIALECT', 2];
-
-        if (!empty($arguments[2])) {
-            $commandArguments = $arguments[2]->toArray();
-        }
+        $commandArguments = (!empty($arguments[2])) ? $arguments[2]->toArray() : ['DIALECT', 2];
 
         parent::setArguments(array_merge(
             [$index, $query],
