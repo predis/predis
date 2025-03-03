@@ -28,12 +28,21 @@ class FTEXPLAIN extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        [$index, $query] = $arguments;
-        $commandArguments = [];
+        // If command already deserialized, bypass logic.
+        if (in_array('DIALECT', $arguments)) {
+            parent::setArguments($arguments);
 
-        if (!empty($arguments[2])) {
-            $commandArguments = $arguments[2]->toArray();
+            return;
         }
+
+        [$index, $query] = $arguments;
+
+        if (!empty($arguments[2]) && !in_array('DIALECT', $arguments[2]->toArray())) {
+            // Default dialect is 2
+            $arguments[2]->dialect(2);
+        }
+
+        $commandArguments = (!empty($arguments[2])) ? $arguments[2]->toArray() : ['DIALECT', 2];
 
         parent::setArguments(array_merge(
             [$index, $query],

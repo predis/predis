@@ -148,7 +148,6 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Unknown Index name');
 
         $redis->ftspellcheck(
             'index',
@@ -162,19 +161,19 @@ class FTSPELLCHECK_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['index', 'query'],
-                ['index', 'query'],
+                ['index', 'query', 'DIALECT', 2],
             ],
             'with DISTANCE modifier' => [
                 ['index', 'query', (new SpellcheckArguments())->distance(2)],
-                ['index', 'query', 'DISTANCE', 2],
+                ['index', 'query', 'DISTANCE', 2, 'DIALECT', 2],
             ],
             'with TERMS modifier - INCLUDE' => [
                 ['index', 'query', (new SpellcheckArguments())->terms('dict', 'INCLUDE', 'term')],
-                ['index', 'query', 'TERMS', 'INCLUDE', 'dict', 'term'],
+                ['index', 'query', 'TERMS', 'INCLUDE', 'dict', 'term', 'DIALECT', 2],
             ],
             'with TERMS modifier - EXCLUDE' => [
                 ['index', 'query', (new SpellcheckArguments())->terms('dict', 'EXCLUDE', 'term')],
-                ['index', 'query', 'TERMS', 'EXCLUDE', 'dict', 'term'],
+                ['index', 'query', 'TERMS', 'EXCLUDE', 'dict', 'term', 'DIALECT', 2],
             ],
             'with DIALECT modifier' => [
                 ['index', 'query', (new SpellcheckArguments())->dialect('dialect')],

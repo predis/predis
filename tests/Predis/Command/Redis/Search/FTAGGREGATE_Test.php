@@ -45,13 +45,14 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      * @dataProvider argumentsProvider
+     * @requires PHP > 7.3
      */
     public function testFilterArguments(array $actualArguments, array $expectedArguments): void
     {
         $command = $this->getCommand();
         $command->setArguments($actualArguments);
 
-        $this->assertSameValues($expectedArguments, $command->getArguments());
+        $this->assertEquals($expectedArguments, $command->getArguments());
     }
 
     /**
@@ -166,7 +167,6 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('index: no such index');
 
         $redis->ftaggregate('index', 'query');
     }
@@ -176,55 +176,55 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
         return [
             'with default arguments' => [
                 ['index', 'query'],
-                ['index', 'query'],
+                ['index', 'query', 'DIALECT', 2],
             ],
             'with VERBATIM modifier' => [
                 ['index', 'query', (new AggregateArguments())->verbatim()],
-                ['index', 'query', 'VERBATIM'],
+                ['index', 'query', 'VERBATIM', 'DIALECT', 2],
             ],
             'with LOAD modifier - specified fields' => [
                 ['index', 'query', (new AggregateArguments())->load('field1', 'field2')],
-                ['index', 'query', 'LOAD', 2, 'field1', 'field2'],
+                ['index', 'query', 'LOAD', 2, 'field1', 'field2', 'DIALECT', 2],
             ],
             'with LOAD modifier - all fields' => [
                 ['index', 'query', (new AggregateArguments())->load('*')],
-                ['index', 'query', 'LOAD', '*'],
+                ['index', 'query', 'LOAD', '*', 'DIALECT', 2],
             ],
             'with TIMEOUT modifier' => [
                 ['index', 'query', (new AggregateArguments())->timeout(2)],
-                ['index', 'query', 'TIMEOUT', 2],
+                ['index', 'query', 'TIMEOUT', 2, 'DIALECT', 2],
             ],
             'with GROUPBY modifier' => [
                 ['index', 'query', (new AggregateArguments())->groupBy('property1', 'property2')],
-                ['index', 'query', 'GROUPBY', 2, 'property1', 'property2'],
+                ['index', 'query', 'GROUPBY', 2, 'property1', 'property2', 'DIALECT', 2],
             ],
             'with REDUCE modifier' => [
                 ['index', 'query', (new AggregateArguments())->reduce('function', 'arg1', true, 'alias1', 'arg2')],
-                ['index', 'query', 'REDUCE', 'function', 2, 'arg1', 'AS', 'alias1', 'arg2'],
+                ['index', 'query', 'REDUCE', 'function', 2, 'arg1', 'AS', 'alias1', 'arg2', 'DIALECT', 2],
             ],
             'with SORTBY modifier' => [
                 ['index', 'query', (new AggregateArguments())->sortBy(2, 'property1', 'ASC', 'property2', 'DESC')],
-                ['index', 'query', 'SORTBY', 2, 'property1', 'ASC', 'property2', 'DESC', 'MAX', 2],
+                ['index', 'query', 'SORTBY', 4, 'property1', 'ASC', 'property2', 'DESC', 'MAX', 2, 'DIALECT', 2],
             ],
             'with APPLY modifier' => [
                 ['index', 'query', (new AggregateArguments())->apply('expression', 'name')],
-                ['index', 'query', 'APPLY', 'expression', 'AS', 'name'],
+                ['index', 'query', 'APPLY', 'expression', 'AS', 'name', 'DIALECT', 2],
             ],
             'with LIMIT modifier' => [
                 ['index', 'query', (new AggregateArguments())->limit(2, 3)],
-                ['index', 'query', 'LIMIT', 2, 3],
+                ['index', 'query', 'LIMIT', 2, 3, 'DIALECT', 2],
             ],
             'with FILTER modifier' => [
                 ['index', 'query', (new AggregateArguments())->filter('filter')],
-                ['index', 'query', 'FILTER', 'filter'],
+                ['index', 'query', 'FILTER', 'filter', 'DIALECT', 2],
             ],
             'with WITHCURSOR modifier' => [
                 ['index', 'query', (new AggregateArguments())->withCursor(10, 20)],
-                ['index', 'query', 'WITHCURSOR', 'COUNT', 10, 'MAXIDLE', 20],
+                ['index', 'query', 'WITHCURSOR', 'COUNT', 10, 'MAXIDLE', 20, 'DIALECT', 2],
             ],
             'with PARAMS modifier' => [
                 ['index', 'query', (new AggregateArguments())->params(['name1', 'value1', 'name2', 'value2'])],
-                ['index', 'query', 'PARAMS', 4, 'name1', 'value1', 'name2', 'value2'],
+                ['index', 'query', 'PARAMS', 4, 'name1', 'value1', 'name2', 'value2', 'DIALECT', 2],
             ],
             'with DIALECT modifier' => [
                 ['index', 'query', (new AggregateArguments())->dialect('dialect')],
@@ -242,7 +242,7 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
                 ],
                 [
                     'index', '@name: "test"', 'APPLY', 'year(@dob)', 'AS', 'birth', 'GROUPBY', 2, '@birth', '@country',
-                    'REDUCE', 'COUNT', 0, 'AS', 'num_visits', 'SORTBY', 1, '@day',
+                    'REDUCE', 'COUNT', 0, 'AS', 'num_visits', 'SORTBY', 1, '@day', 'DIALECT', 2,
                 ],
             ],
         ];

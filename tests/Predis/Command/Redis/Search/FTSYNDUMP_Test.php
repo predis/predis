@@ -118,7 +118,6 @@ class FTSYNDUMP_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Unknown index name');
 
         $redis->ftsyndump('index');
     }

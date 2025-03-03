@@ -328,6 +328,19 @@ BUFFER;
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 7.9.0
+     */
+    public function testExposeSearchInformation(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertArrayHasKey('search', $redis->info('modules')['Modules']);
+        $this->assertNotEmpty($redis->info('search'));
+        $this->assertArrayHasKey('search', $redis->info('everything')['Modules']);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion < 2.6.0
      */
     public function testReturnsAnArrayOfInfoOnOlderRedisVersions(): void

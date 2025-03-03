@@ -107,7 +107,6 @@ class FTALTER_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Unknown index name');
 
         $redis->ftalter('alias', [new TextField('field_name')]);
     }

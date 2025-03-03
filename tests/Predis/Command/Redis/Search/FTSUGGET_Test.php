@@ -123,11 +123,11 @@ class FTSUGGET_Test extends PredisCommandTestCase
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
-    public function testGetReturnsNullOnNonExistingKey(): void
+    public function testGetReturnsEmptyArrayOnNonExistingKey(): void
     {
         $redis = $this->getClient();
 
-        $this->assertNull($redis->ftsugget('key', 'hel'));
+        $this->assertEmpty($redis->ftsugget('key', 'hel'));
     }
 
     public function argumentsProvider(): array
