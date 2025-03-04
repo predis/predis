@@ -27,7 +27,7 @@ Predis v3.0 introduces support for new communication protocol [RESP3](https://gi
 - Added support for transactions for clustered connections (#1497)
   - MultiExec class is extended with new optional dependency that resolves a specific strategy based on connection type
   - Strategies define a behaviour for specific connections allowing decoupling MultiExec abstraction from it
-  - Transactions for clustered are combined with pipeline approach to be able to resolve expected hash-slot and
+  - Transactions for clustered connections are combined with pipeline approach to be able to resolve expected hash-slot and
   ensure that all keys in transaction context operates on the same hash slot to exclude partial transaction execution
 
 ## v2.3.0 (2024-11-21)
