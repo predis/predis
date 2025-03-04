@@ -12,8 +12,8 @@ Predis v3.0 introduces support for new communication protocol [RESP3](https://gi
 - Refactored Relay integration (#1423)
 - Changed interface of `CLIENT` command (#1337)
 - Changed interfaces for commands to support Redis 6.2—7.0 arguments (#1330)
-- Extended ClusterInterface with new `getClusterStrategy()` method
-- Extended StrategyInterface with new `checkSameSlotForKeys()` method that previously was protected
+- Extended ClusterInterface with new `getClusterStrategy()` method (#1497)
+- Extended StrategyInterface with new `checkSameSlotForKeys()` method that previously was protected (#1497)
 
 ### Added
 - Added support for RESP3 communication protocol (#1047)
