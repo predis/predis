@@ -344,14 +344,12 @@ hash slot, due to this limitation it's recommended to use `{}` syntax to make su
 slot. Apart from it no additional configuration needed on a client side.
 
 ```php
-<?php
-
 $redis = $this->getClient();
 
 $response = $redis->transaction(function (MultiExec $tx) {
-     $tx->set('{foo}foo', 'value');
-     $tx->set('{foo}bar', 'value');
-     $tx->set('{foo}baz', 'value');
+    $tx->set('{foo}foo', 'value');
+    $tx->set('{foo}bar', 'value');
+    $tx->set('{foo}baz', 'value');
 });
 
 // ['OK', 'OK', 'OK']
