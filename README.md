@@ -336,6 +336,25 @@ This abstraction can perform check-and-set operations thanks to `WATCH` and `UNW
 automatic retries of transactions aborted by Redis when `WATCH`ed keys are touched. For an example
 of a transaction using CAS you can see [the following example](examples/transaction_using_cas.php).
 
+#### Support for clustered connections ####
+
+Since Predis v3.0 transactions could be used with clustered connections. However, it has some limitations due to the
+fact that Redis doesn't support distributed transactions. All keys in the transaction context should operate on the same
+hash slot, due to this limitation it's recommended to use `{}` syntax to make sure that all keys will be mapped to the same hash
+slot. Apart from it no additional configuration needed on a client side.
+
+```php
+$redis = $this->getClient();
+
+$response = $redis->transaction(function (MultiExec $tx) {
+    $tx->set('{foo}foo', 'value');
+    $tx->set('{foo}bar', 'value');
+    $tx->set('{foo}baz', 'value');
+});
+
+// ['OK', 'OK', 'OK']
+```
+
 
 ### Adding new commands ###
 
