@@ -1283,6 +1283,44 @@ class ClientTest extends PredisTestCase
         $this->assertSame(Client::VERSION, $libVer);
     }
 
+    /**
+     * @group connected
+     */
+    public function testClientsCreateDifferentPersistentConnections(): void
+    {
+        $client1 = new Client($this->getParameters(['database' => 14, 'persistent' => true]));
+        $client2 = new Client($this->getParameters(['database' => 15, 'persistent' => true]));
+
+        $client1->set('foo', 'bar');
+        $client2->set('foo', 'baz');
+
+        $this->assertSame('bar', $client1->get('foo'));
+        $this->assertSame('baz', $client2->get('foo'));
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 2.0.0
+     */
+    public function testClusterClientsCreateDifferentPersistentConnections(): void
+    {
+        $client1 = new Client(
+            $this->getDefaultParametersArray(),
+            ['cluster' => 'redis', 'parameters' => ['persistent' => true]]
+        );
+        $client2 = new Client(
+            $this->getDefaultParametersArray(),
+            ['cluster' => 'redis', 'parameters' => ['persistent' => true]]
+        );
+
+        $client1->set('{shard1}foo', 'bar');
+        $client2->set('{shard2}foo', 'baz');
+
+        $this->assertSame('bar', $client1->get('{shard1}foo'));
+        $this->assertSame('baz', $client2->get('{shard2}foo'));
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

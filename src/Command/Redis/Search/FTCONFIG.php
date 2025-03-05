@@ -13,8 +13,12 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Command as RedisCommand;
+use Predis\Command\Redis\CONFIG;
 
 /**
+ * @deprecated FT.CONFIG GET and SET is deprecated since Redis 8.0.
+ * @see CONFIG if you want to manipulate search configuration
+ *
  * @see https://redis.io/commands/ft.config-get/
  * @see https://redis.io/commands/ft.config-set/
  *
