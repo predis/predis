@@ -63,14 +63,6 @@ class Stream implements StreamInterface
     }
 
     /**
-     * Closes the stream on garbage collection cleaning.
-     */
-    public function __destruct()
-    {
-        $this->close();
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function __toString(): string
