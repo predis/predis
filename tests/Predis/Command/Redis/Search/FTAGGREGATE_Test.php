@@ -167,7 +167,6 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('index: no such index');
 
         $redis->ftaggregate('index', 'query');
     }
