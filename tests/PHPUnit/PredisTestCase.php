@@ -176,7 +176,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
         return [
             'scheme' => 'tcp',
             'host' => constant('REDIS_SERVER_HOST'),
-            'port' => ($this->isStackTest()) ? constant('REDIS_STACK_SERVER_PORT') : constant('REDIS_SERVER_PORT'),
+            'port' => ($this->isStackTest()) ? getenv('REDIS_STACK_SERVER_PORT') : constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
         ];
     }

@@ -236,6 +236,78 @@ class FTSEARCH_Test extends PredisCommandTestCase
         );
     }
 
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisVersion >= 7.9.0
+     */
+    public function testVectorSearchWithInt8Types(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->ftcreate('test', [
+            new VectorField(
+                'v', 'HNSW',
+                ['TYPE', 'INT8', 'DIM', 2, 'DISTANCE_METRIC', 'L2']
+            ),
+        ]));
+
+        $this->sleep(0.1);
+
+        $a = [1.5, 10];
+        $b = [123, 100];
+        $c = [1, 1];
+
+        $redis->hset('a', 'v', pack('c*', ...$a));
+        $redis->hset('b', 'v', pack('c*', ...$b));
+        $redis->hset('c', 'v', pack('c*', ...$c));
+
+        $searchArguments = new SearchArguments();
+        $searchArguments->params(['vec', pack('c*', ...$a)]);
+
+        $this->assertEquals(
+            2,
+            $redis->ftsearch('test', '*=>[KNN 2 @v $vec]', $searchArguments)[0]
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisVersion >= 7.9.0
+     */
+    public function testVectorSearchWithUInt8Types(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->ftcreate('test', [
+            new VectorField(
+                'v', 'HNSW',
+                ['TYPE', 'UINT8', 'DIM', 2, 'DISTANCE_METRIC', 'L2']
+            ),
+        ]));
+
+        $this->sleep(0.1);
+
+        $a = [1.5, 10];
+        $b = [123, 100];
+        $c = [1, 1];
+
+        $redis->hset('a', 'v', pack('C*', ...$a));
+        $redis->hset('b', 'v', pack('C*', ...$b));
+        $redis->hset('c', 'v', pack('C*', ...$c));
+
+        $searchArguments = new SearchArguments();
+        $searchArguments->params(['vec', pack('C*', ...$a)]);
+
+        $this->assertEquals(
+            2,
+            $redis->ftsearch('test', '*=>[KNN 2 @v $vec]', $searchArguments)[0]
+        );
+    }
+
     public function argumentsProvider(): array
     {
         return [
