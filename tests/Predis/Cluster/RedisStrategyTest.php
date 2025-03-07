@@ -141,7 +141,7 @@ class RedisStrategyTest extends PredisTestCase
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
-        $arguments = ['arg1', 'arg2'];
+        $arguments = ['1', '2'];
 
         foreach ($this->getExpectedCommands('keys-fake') as $commandID) {
             $command = $commands->create($commandID, $arguments);

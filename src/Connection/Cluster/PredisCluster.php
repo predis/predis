@@ -17,7 +17,6 @@ use Countable;
 use IteratorAggregate;
 use Predis\Cluster\PredisStrategy;
 use Predis\Cluster\StrategyInterface;
-use Predis\Command\Command;
 use Predis\Command\CommandInterface;
 use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\NodeConnectionInterface;
@@ -214,12 +213,9 @@ class PredisCluster extends AbstractAggregateConnection implements ClusterInterf
     }
 
     /**
-     * Returns the underlying command hash strategy used to hash commands by
-     * using keys found in their arguments.
-     *
-     * @return StrategyInterface
+     * {@inheritDoc}
      */
-    public function getClusterStrategy()
+    public function getClusterStrategy(): StrategyInterface
     {
         return $this->strategy;
     }
