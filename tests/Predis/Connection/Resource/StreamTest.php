@@ -406,6 +406,19 @@ class StreamTest extends TestCase
         $this->assertNull($stream->getMetadata());
     }
 
+    /**
+     * @return void
+     */
+    public function testDoNotCloseResourceOnObjectDestruction(): void
+    {
+        $handle = fopen('php://temp', 'rb+');
+        $stream = new Stream($handle);
+        unset($stream);
+
+        $this->assertTrue(is_resource($handle));
+        fclose($handle);
+    }
+
     public function writableModeProvider(): array
     {
         return [

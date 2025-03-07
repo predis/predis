@@ -1336,6 +1336,8 @@ class ClientTest extends PredisTestCase
 
         $this->assertSame('bar', $client1->get('foo'));
         $this->assertSame('baz', $client2->get('foo'));
+        $client1->disconnect();
+        $client2->disconnect();
     }
 
     /**
@@ -1359,6 +1361,8 @@ class ClientTest extends PredisTestCase
 
         $this->assertSame('bar', $client1->get('{shard1}foo'));
         $this->assertSame('baz', $client2->get('{shard2}foo'));
+        $client1->disconnect();
+        $client2->disconnect();
     }
 
     /**
