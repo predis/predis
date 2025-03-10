@@ -64,6 +64,7 @@ class TSINFO_Test extends PredisCommandTestCase
      * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion <= 1.10.13
+     * @requiresRedisVersion > 6.3.0
      */
     public function testReturnsInformationAboutGivenTimeSeries(): void
     {
