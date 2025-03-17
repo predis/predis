@@ -44,6 +44,7 @@ use Predis\Command\Redis\Container\FunctionContainer;
 use Predis\Command\Redis\Container\Json\JSONDEBUG;
 use Predis\Command\Redis\Container\Search\FTCONFIG;
 use Predis\Command\Redis\Container\Search\FTCURSOR;
+use Predis\Command\Redis\HGETEX;
 use Predis\Command\Redis\HSETEX;
 
 /**
@@ -163,7 +164,7 @@ use Predis\Command\Redis\HSETEX;
  * @method $this hpexpireat(string $key, int $unixTimeMilliseconds, array $fields, string $flag = null)
  * @method $this hpexpiretime(string $key, array $fields)
  * @method $this hget($key, $field)
- * @method $this hgetex(string $key, array $fields, string $modifier = '')
+ * @method $this hgetex(string $key, array $fields, string $modifier = HGETEX::NULL)
  * @method $this hgetall($key)
  * @method $this hgetdel(string $key, array $fields)
  * @method $this hincrby($key, $field, $increment)
