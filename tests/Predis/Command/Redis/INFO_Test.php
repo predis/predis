@@ -319,6 +319,8 @@ BUFFER;
      */
     public function testExposeSearchInformation(): void
     {
+        $this->markTestSkipped('Skipped due to a bug in 8.0-M05. Should be removed in the next version.');
+
         $redis = $this->getClient();
 
         $this->assertArrayHasKey('search', $redis->info('modules')['Modules']);
