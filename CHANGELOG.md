@@ -16,6 +16,7 @@
 - Added testing with 8.0 (#1510)
 - Added test coverage for compatibility with Redis 8.0 (#1513)
 - Added missing FT._LIST and BITFIELD_RO commands (#1521)
+- Added missing types for commands API (#1522)
 
 ## v2.3.0 (2024-11-21)
 ### Added
