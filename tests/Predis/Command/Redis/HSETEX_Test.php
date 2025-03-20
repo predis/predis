@@ -151,7 +151,6 @@ class HSETEX_Test extends PredisCommandTestCase
      * @param  array  $arguments
      * @param  string $expectedExceptionMessage
      * @return void
-     * @requiresRedisVersion >= 7.9.0
      */
     public function testThrowsExceptionOnUnexpectedValueGiven(
         array $arguments,
