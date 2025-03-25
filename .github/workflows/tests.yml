@@ -38,7 +38,7 @@ jobs:
         run: |
           # Mapping of original redis versions to client test containers
           declare -A redis_clients_version_mapping=(
-            ["8.0"]="8.0-M04-pre"
+            ["8.0"]="8.0-M05-pre"
             ["7.4"]="7.4.2"
             ["7.2"]="7.2.7"
             ["6.2"]="6.2.17"

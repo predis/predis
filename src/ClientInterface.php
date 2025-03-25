@@ -45,6 +45,8 @@ use Predis\Command\Redis\Container\FunctionContainer;
 use Predis\Command\Redis\Container\Json\JSONDEBUG;
 use Predis\Command\Redis\Container\Search\FTCONFIG;
 use Predis\Command\Redis\Container\Search\FTCURSOR;
+use Predis\Command\Redis\HGETEX;
+use Predis\Command\Redis\HSETEX;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\Status;
@@ -92,6 +94,7 @@ use Predis\Response\Status;
  * @method int               bitcount(string $key, $start = null, $end = null, string $index = 'byte')
  * @method int               bitop($operation, $destkey, $key)
  * @method array|null        bitfield(string $key, $subcommand, ...$subcommandArg)
+ * @method array|null        bitfield_ro(string $key, ?array $encodingOffsetMap = null)
  * @method int               bitpos(string $key, $bit, $start = null, $end = null, string $index = 'byte')
  * @method array             blmpop(int $timeout, array $keys, string $modifier = 'left', int $count = 1)
  * @method array             bzpopmax(array $keys, int $timeout)
@@ -120,6 +123,7 @@ use Predis\Response\Status;
  * @method Status            failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method mixed             fcall(string $function, array $keys, ...$args)
  * @method mixed             fcall_ro(string $function, array $keys, ...$args)
+ * @method array             ft_list()
  * @method array             ftaggregate(string $index, string $query, ?AggregateArguments $arguments = null)
  * @method Status            ftaliasadd(string $alias, string $index)
  * @method Status            ftaliasdel(string $alias)
@@ -171,7 +175,9 @@ use Predis\Response\Status;
  * @method array|null        hpexpireat(string $key, int $unixTimeMilliseconds, array $fields, string $flag = null)
  * @method array|null        hpexpiretime(string $key, array $fields)
  * @method string|null       hget(string $key, string $field)
+ * @method array|null        hgetex(string $key, array $fields, string $modifier = HGETEX::NULL, int|bool $modifierValue = false)
  * @method array             hgetall(string $key)
+ * @method array             hgetdel(string $key, array $fields)
  * @method int               hincrby(string $key, string $field, int $increment)
  * @method string            hincrbyfloat(string $key, string $field, int|float $increment)
  * @method array             hkeys(string $key)
@@ -181,6 +187,7 @@ use Predis\Response\Status;
  * @method array             hrandfield(string $key, int $count = 1, bool $withValues = false)
  * @method array             hscan(string $key, $cursor, ?array $options = null)
  * @method int               hset(string $key, string $field, string $value)
+ * @method int               hsetex(string $key, array $fieldValueMap, string $setModifier = HSETEX::SET_NULL, string $ttlModifier = HSETEX::TTL_NULL, int|bool $ttlModifierValue = false)
  * @method int               hsetnx(string $key, string $field, string $value)
  * @method array|null        httl(string $key, array $fields)
  * @method array|null        hpttl(string $key, array $fields)

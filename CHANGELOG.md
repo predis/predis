@@ -1,8 +1,24 @@
 ## Changelog
 
-## Unreleased
+## v2.4.0-RC1 (2024-11-21)
+### Added
+- Added new hash-field expiration commands (#1520)
+- Added missing `FT._LIST` and `BITFIELD_RO` commands (#1521)
+
+### Changed
+- Update `WATCH` command to accept `string|string[]` (#1476)
+- Optimize cluster slotmap with compact slot range object (#1493)
+
 ### Fixed
-- Fixed PHP 8.4 compatibility with `stream_context_set_option()`
+- Fixed `EVAL_RO` cluster support (#1449)
+- Fixed PHP 8.4 compatibility with `stream_context_set_option()` (#1503)
+- Prevent named arguments runtime failure (#1509)
+- Mark `GEOSEARCH` as read-only to ensure execution on replica (#1481)
+
+### Maintenance
+- Added CI testing with Redis 8.0 (#1510)
+- Added test coverage for compatibility with Redis 8.0 (#1513)
+- Use parallel on PHP-CS-Fixer (#1489)
 
 ## v2.3.0 (2024-11-21)
 ### Added

@@ -81,65 +81,17 @@ An exception to this rule is [`SORT`](http://redis.io/commands/sort) for which m
 
 ## When should I use Relay? ##
 
-If you care about performance, __always__. [Relay](https://github.com/cachewerk/relay) is free to use.
+If you care about performance, __always__. [Relay][relay] is free to use.
 
 ## When should I use PhpRedis? ###
 
-Predis is fast enough when Redis is located on the same machine as PHP, more on that later.
+Predis is fast enough when Redis is located on the same machine as PHP.
 
-[PhpRedis](https://github.com/phpredis/phpredis) (and Relay) perform significantly better when
-network I/O is involved, due to their ability to compress data by ~75%. Fewer bytes and received
-sent over the network [means faster operations](https://akalongman.medium.com/phpredis-vs-predis-comparison-on-real-production-data-a819b48cbadb),
-and potentially cost savings when network traffic isn't free (e.g. AWS ElastiCache Inter-AZ transfer costs).
+[PhpRedis][phpredis] and [Relay][relay] perform significantly better when network I/O is involved,
+due to its ability to compress data by ~75%. Fewer bytes and received sent over the network
+[means faster operations][performance], and potentially cost savings when network traffic isn't
+free (e.g. AWS ElastiCache Inter-AZ transfer costs).
 
-## Predis is a pure-PHP implementation: it can not be fast enough! ##
-
-It really depends, but most of the times the answer is: _yes, it is fast enough_. I will give you a
-couple of easy numbers with a simple test that uses a single client and is executed by PHP 5.5.6
-against a local instance of Redis 2.8 that runs under Ubuntu 13.10 on a Intel Q6600:
-
-```
-21000 SET/sec using 12 bytes for both key and value.
-21000 GET/sec while retrieving the very same values.
-0.130 seconds to fetch 30000 keys using _KEYS *_.
-```
-
-How does it compare with [__PhpRedis__](http://github.com/phpredis/phpredis), a nice C extension
-providing an efficient client for Redis?
-
-```
-30100 SET/sec using 12 bytes for both key and value
-29400 GET/sec while retrieving the very same values
-0.035 seconds to fetch 30000 keys using "KEYS *"".
-```
-
-Wow __PhpRedis__ seems much faster! Well, we are comparing a C extension with a pure-PHP library so
-lower numbers are quite expected but there is a fundamental flaw in them: is this really how you are
-going to use Redis in your application? Are you really going to send thousands of commands using a
-for-loop on each page request using a single client instance? If so... well I guess you are probably
-doing something wrong. Also, if you need to `SET` or `GET` multiple keys you should definitely use
-commands such as `MSET` and `MGET`. You can also use pipelining to get more performances when this
-technique can be used.
-
-There is one more thing: we have tested the overhead of Predis by connecting on a localhost instance
-of Redis but how these numbers change when we hit the physical network by connecting to remote Redis
-instances?
-
-```
-Using Predis:
-3200 SET/sec using 12 bytes for both key and value
-3200 GET/sec while retrieving the very same values
-0.132 seconds to fetch 30000 keys using "KEYS *".
-
-Using PhpRedis:
-3500 SET/sec using 12 bytes for both key and value
-3500 GET/sec while retrieving the very same values
-0.045 seconds to fetch 30000 keys using "KEYS *".
-```
-
-There you go, you get almost the same average numbers and the reason is simple: network latency is a
-real performance killer and you cannot do (almost) anything about that. As a disclaimer, remember
-that we are measuring the overhead of client libraries implementations and the effects of network
-round-trip times, so we are not really measuring how fast Redis is. Redis shines best with thousands
-of concurrent clients doing requests! Also, actual performances should be measured according to how
-your application will use Redis.
+[phpredis]: https://github.com/phpredis/phpredis
+[relay]: [https://github.com/phpredis/phpredis](https://github.com/cachewerk/relay)
+[performance]: https://akalongman.medium.com/phpredis-vs-predis-comparison-on-real-production-data-a819b48cbadb
