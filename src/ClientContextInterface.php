@@ -259,6 +259,7 @@ use Predis\Command\Redis\HSETEX;
  * @method $this tdigestrevrank(string $key, float ...$value)
  * @method $this tdigesttrimmed_mean(string $key, float $lowCutQuantile, float $highCutQuantile)
  * @method $this topkadd(string $key, ...$items)
+ * @method $this topkcount(string $key, ...$items)
  * @method $this topkincrby(string $key, ...$itemIncrement)
  * @method $this topkinfo(string $key)
  * @method $this topklist(string $key, bool $withCount = false)
