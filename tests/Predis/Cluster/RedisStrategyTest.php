@@ -506,11 +506,6 @@ class RedisStrategyTest extends PredisTestCase
             'SSUBSCRIBE' => 'keys-all',
             'SUNSUBSCRIBE' => 'keys-sunsubscribe',
             'SPUBLISH' => 'keys-first',
-
-            /* gears */
-            'TFUNCTION' => 'keys-fake',
-            'TFCALL' => 'keys-fake',
-            'TFCALLASYNC' => 'keys-fake',
         ];
 
         if (isset($type)) {
