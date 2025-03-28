@@ -247,8 +247,6 @@ use Predis\Command\Container\XGROUP;
  * @method $this tdigestreset(string $key)
  * @method $this tdigestrevrank(string $key, float ...$value)
  * @method $this tdigesttrimmed_mean(string $key, float $lowCutQuantile, float $highCutQuantile)
- * @method $this tfcall(string $libraryName, string $functionName, array $keys = [], array $arguments = [])
- * @method $this tfcallasync(string $libraryName, string $functionName, array $keys = [], array $arguments = [])
  * @method $this topkadd(string $key, ...$items)
  * @method $this topkincrby(string $key, ...$itemIncrement)
  * @method $this topkinfo(string $key)
@@ -354,7 +352,6 @@ use Predis\Command\Container\XGROUP;
  * @property JSONDEBUG $jsondebug
  * @property ACL       $acl
  * @property XGROUP    $xgroup
- * @property TFUNCTION $tfunction
  */
 interface ClientContextInterface
 {

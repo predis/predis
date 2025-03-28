@@ -179,11 +179,6 @@ abstract class ClusterStrategy implements StrategyInterface
             'SSUBSCRIBE' => $getKeyFromAllArguments,
             'SUNSUBSCRIBE' => [$this, 'getKeyFromSUnsubscribeCommand'],
             'SPUBLISH' => $getKeyFromFirstArgument,
-
-            /* gears */
-            'TFUNCTION' => [$this, 'getFakeKey'],
-            'TFCALL' => [$this, 'getFakeKey'],
-            'TFCALLASYNC' => [$this, 'getFakeKey'],
         ];
     }
 
