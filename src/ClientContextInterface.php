@@ -44,7 +44,6 @@ use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
 use Predis\Command\Container\Search\FTCURSOR;
-use Predis\Command\Container\TFUNCTION;
 use Predis\Command\Container\XGROUP;
 
 /**
