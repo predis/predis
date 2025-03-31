@@ -110,7 +110,7 @@ class TSINFO_Test extends PredisCommandTestCase
             $redis->tscreate('temperature:2:32', $arguments)
         );
 
-        # Timeout so key will be created.
+        // Timeout so key will be created.
         $this->sleep(0.1);
 
         $this->assertEquals($expectedResponse, $redis->tsinfo('temperature:2:32'));
