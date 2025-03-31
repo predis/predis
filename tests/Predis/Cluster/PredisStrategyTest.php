@@ -501,7 +501,6 @@ class PredisStrategyTest extends PredisTestCase
             'SUNSUBSCRIBE' => 'keys-sunsubscribe',
             'SPUBLISH' => 'keys-first',
 
-
             /* cluster */
             'CLUSTER' => 'keys-fake',
         ];

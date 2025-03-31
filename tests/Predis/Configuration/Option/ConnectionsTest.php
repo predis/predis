@@ -96,7 +96,11 @@ class ConnectionsTest extends PredisTestCase
             ->with('parameters')
             ->willReturn(true);
 
-        $options->parameters = ['foo' => 'bar'];
+        $options
+            ->expects($this->once())
+            ->method('__get')
+            ->with('parameters')
+            ->willReturn(['foo' => 'bar']);
 
         $option = new Connections();
         $factory = $option->filter($options, 'relay');

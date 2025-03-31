@@ -207,7 +207,6 @@ class SET_Test extends PredisCommandTestCase
         $this->assertNull($redis->set('foofoo', 'barbar', 'XX'));
     }
 
-
     /**
      * @group connected
      * @requiresRedisVersion >= 2.6.12

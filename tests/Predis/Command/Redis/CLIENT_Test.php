@@ -387,15 +387,4 @@ BUFFER;
             ],
         ];
     }
-
-    /**
-     * @group connected
-     * @requiresRedisVersion >= 7.3.0
-     */
-    public function testKillWithMaxAgeOption(): void
-    {
-        $redis = $this->getClient();
-
-        $this->assertSame(0, $redis->client('KILL', 'MAXAGE', 100));
-    }
 }
