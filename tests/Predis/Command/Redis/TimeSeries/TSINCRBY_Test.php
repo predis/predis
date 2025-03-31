@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -151,6 +151,44 @@ class TSINCRBY_Test extends PredisCommandTestCase
         $this->assertEquals(
             123123123123,
             $redis->tsincrby('temperature:2:32', 27, (new IncrByArguments())->timestamp(123123123123))
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.12.01
+     */
+    public function testIncrByCreateNewSampleWithIgnoreArgument(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals(
+            1000,
+            $redis->tsincrby(
+                'temperature:2:32',
+                27,
+                (new IncrByArguments())
+                    ->timestamp(1000)
+                    ->duplicatePolicy(CommonArguments::POLICY_LAST)
+                    ->ignore(10, 10)
+            )
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1000, 27)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1005, 27)
+        );
+
+        $this->assertEquals(
+            1005,
+            $redis->tsadd('temperature:2:32', 1005, 38)
         );
     }
 

@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,11 +13,15 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\CreateArguments;
+use Predis\Command\Argument\Search\SchemaFields\AbstractField;
+use Predis\Command\Argument\Search\SchemaFields\GeoShapeField;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
+use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Argument\Search\SchemaFields\VectorField;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
+use Predis\Response\ServerException;
 
 /**
  * @group commands
@@ -305,6 +309,286 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->assertEquals(
             2,
             $redis->ftsearch('test', '*=>[KNN 2 @v $vec]', $searchArguments)[0]
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.09.00
+     */
+    public function testSearchHashEmptyValues(): void
+    {
+        $redis = $this->getClient();
+
+        $hashResponse = $redis->hmset('test:1', ['text_empty' => '']);
+        $this->assertEquals('OK', $hashResponse);
+
+        $schema = [
+            new TextField(
+                'text_empty',
+                '',
+                false, false, false, '', 1, false, true
+            ),
+            new TextField(
+                'text_not_empty',
+                '',
+                false, false, false, '', 1, false, false
+            ),
+        ];
+
+        $createArgs = new CreateArguments();
+        $createArgs->prefix(['test:']);
+
+        $ftCreateResponse = $redis->ftcreate('idx', $schema, $createArgs);
+        $this->assertEquals('OK', $ftCreateResponse);
+
+        // Timeout to make sure that index created before search performed.
+        usleep(10000);
+
+        $searchArgs = new SearchArguments();
+        $searchArgs->dialect(4);
+
+        $this->assertSame(
+            [1, 'test:1', ['text_empty', '']],
+            $redis->ftsearch('idx', '@text_empty:("")', $searchArgs)
+        );
+
+        $this->expectException(ServerException::class);
+
+        $redis->ftsearch('idx', '@text_not_empty:("")', $searchArgs);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.09.00
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
+    public function testSearchJsonEmptyValues(): void
+    {
+        $redis = $this->getClient();
+
+        $hashResponse = $redis->jsonset('test:1', '$', '{"text_empty":""}');
+        $this->assertEquals('OK', $hashResponse);
+
+        $schema = [
+            new TextField(
+                '$.text_empty',
+                'text_empty',
+                false, false, false, '', 1, false, true
+            ),
+            new TextField(
+                '$.text_not_empty',
+                'text_not_empty',
+                false, false, false, '', 1, false, false
+            ),
+        ];
+
+        $createArgs = new CreateArguments();
+        $createArgs->on('JSON');
+        $createArgs->prefix(['test:']);
+
+        $ftCreateResponse = $redis->ftcreate('idx', $schema, $createArgs);
+        $this->assertEquals('OK', $ftCreateResponse);
+
+        // Timeout to make sure that index created before search performed.
+        usleep(10000);
+
+        $searchArgs = new SearchArguments();
+        $searchArgs->dialect(4);
+
+        $this->assertSame(
+            [1, 'test:1', ['$', '[{"text_empty":""}]']],
+            $redis->ftsearch('idx', '@text_empty:("")', $searchArgs)
+        );
+
+        $this->expectException(ServerException::class);
+
+        $redis->ftsearch('idx', '@text_not_empty:("")', $searchArgs);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.09.00
+     */
+    public function testSearchWithEnhancedMatchingCapabilities(): void
+    {
+        $redis = $this->getClient();
+
+        $hashResponse = $redis->hmset(
+            'test:1', 'uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', 5
+        );
+        $this->assertEquals('OK', $hashResponse);
+
+        $ftCreateArguments = new CreateArguments();
+        $ftCreateArguments->prefix(['test:']);
+
+        $schema = [
+            new TagField('uuid'),
+            new TagField('email'),
+            new NumericField('num'),
+        ];
+
+        $ftCreateResponse = $redis->ftcreate('idx_hash', $schema, $ftCreateArguments);
+        $this->assertEquals('OK', $ftCreateResponse);
+
+        $ftSearchArguments = new SearchArguments();
+        $ftSearchArguments->params(['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie']);
+        $ftSearchArguments->dialect(4);
+
+        $actualResponse = $redis->ftsearch(
+            'idx_hash', '@uuid:{$uuid}', $ftSearchArguments
+        );
+
+        $this->assertSame([
+            1, 'test:1',
+            ['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', '5']], $actualResponse
+        );
+
+        $actualResponse = $redis->ftsearch(
+            'idx_hash', '@email:{$email}', $ftSearchArguments
+        );
+
+        $this->assertSame([
+            1, 'test:1',
+            ['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', '5']], $actualResponse
+        );
+
+        $actualResponse = $redis->ftsearch(
+            'idx_hash', '@num:[5]', $ftSearchArguments
+        );
+
+        $this->assertSame([
+            1, 'test:1',
+            ['uuid', '3d3586fe-0416-4572-8ce', 'email', 'adriano@acme.com.ie', 'num', '5']], $actualResponse
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.09.00
+     */
+    public function testGeoSearchQueriesIntersectsAndDisjoint(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->hset('geo:doc_point1', 'g', 'POINT (10 10)');
+        $redis->hset('geo:doc_point2', 'g', 'POINT (50 50)');
+        $redis->hset('geo:doc_polygon1', 'g', 'POLYGON ((20 20, 25 35, 35 25, 20 20))');
+        $redis->hset('geo:doc_polygon2', 'g', 'POLYGON ((60 60, 65 75, 70 70, 65 55, 60 60))');
+
+        $ftCreateArguments = new CreateArguments();
+        $ftCreateArguments->prefix(['geo:']);
+
+        $schema = [
+            new GeoShapeField('g', '', AbstractField::NOT_SORTABLE, false, GeoShapeField::COORD_FLAT),
+        ];
+
+        $ftCreateResponse = $redis->ftcreate('idx_geo', $schema, $ftCreateArguments);
+        $this->assertEquals('OK', $ftCreateResponse);
+
+        // Timeout to make sure that index created before search performed.
+        usleep(10000);
+
+        $ftSearchArguments = new SearchArguments();
+        $ftSearchArguments->params(['shape', 'POLYGON ((15 15, 75 15, 50 70, 20 40, 15 15))']);
+        $ftSearchArguments->noContent();
+        $ftSearchArguments->dialect(3);
+
+        $actualResponse = $redis->ftsearch('idx_geo', '@g:[intersects $shape]', $ftSearchArguments);
+        $this->assertSameValues(
+            [
+                2,
+                'geo:doc_polygon1',
+                'geo:doc_point2',
+            ], $actualResponse
+        );
+
+        $actualResponse = $redis->ftsearch('idx_geo', '@g:[disjoint $shape]', $ftSearchArguments);
+        $this->assertSameValues(
+            [
+                2,
+                'geo:doc_polygon2',
+                'geo:doc_point1',
+            ], $actualResponse
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.09.00
+     */
+    public function testGeoSearchQueriesContainsAndWithin(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->hset('geo:doc_point1', 'g', 'POINT (10 10)');
+        $redis->hset('geo:doc_point2', 'g', 'POINT (50 50)');
+        $redis->hset('geo:doc_polygon1', 'g', 'POLYGON ((20 20, 25 35, 35 25, 20 20))');
+        $redis->hset('geo:doc_polygon2', 'g', 'POLYGON ((60 60, 65 75, 70 70, 65 55, 60 60))');
+
+        $ftCreateArguments = new CreateArguments();
+        $ftCreateArguments->prefix(['geo:']);
+
+        $schema = [
+            new GeoShapeField('g', '',
+                AbstractField::NOT_SORTABLE, false, GeoShapeField::COORD_FLAT
+            ),
+        ];
+
+        $ftCreateResponse = $redis->ftcreate('idx_geo', $schema, $ftCreateArguments);
+        $this->assertEquals('OK', $ftCreateResponse);
+
+        // Timeout to make sure that index created before search performed.
+        usleep(10000);
+
+        $ftSearchArguments = new SearchArguments();
+        $ftSearchArguments->params(['shape', 'POINT(25 25)']);
+        $ftSearchArguments->noContent();
+        $ftSearchArguments->dialect(3);
+
+        $actualResponse = $redis->ftsearch('idx_geo', '@g:[contains $shape]', $ftSearchArguments);
+        $this->assertSameValues(
+            [
+                1,
+                'geo:doc_polygon1',
+            ], $actualResponse
+        );
+
+        $ftSearchArguments = new SearchArguments();
+        $ftSearchArguments->params(['shape', 'POLYGON((24 24, 24 26, 25 25, 24 24))']);
+        $ftSearchArguments->noContent();
+        $ftSearchArguments->dialect(3);
+
+        $actualResponse = $redis->ftsearch('idx_geo', '@g:[contains $shape]', $ftSearchArguments);
+        $this->assertSameValues(
+            [
+                1,
+                'geo:doc_polygon1',
+            ], $actualResponse
+        );
+
+        $ftSearchArguments = new SearchArguments();
+        $ftSearchArguments->params(['shape', 'POLYGON((15 15, 75 15, 50 70, 20 40, 15 15))']);
+        $ftSearchArguments->noContent();
+        $ftSearchArguments->dialect(3);
+
+        $actualResponse = $redis->ftsearch('idx_geo', '@g:[within $shape]', $ftSearchArguments);
+        $this->assertSameValues(
+            [
+                2,
+                'geo:doc_polygon1',
+                'geo:doc_point2',
+            ], $actualResponse
         );
     }
 

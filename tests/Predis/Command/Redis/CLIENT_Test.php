@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -267,6 +267,18 @@ BUFFER;
     }
 
     /**
+     * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testSetNoEvictModeForCurrentConnection(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->client('NO-EVICT', 'ON'));
+        $this->assertEquals('OK', $redis->client('NO-EVICT', 'OFF'));
+    }
+
+    /**
      * @return array
      */
     public function invalidConnectionNameProvider()
@@ -374,5 +386,16 @@ BUFFER;
                 ['SETINFO'],
             ],
         ];
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.3.0
+     */
+    public function testKillWithMaxAgeOption(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertSame(0, $redis->client('KILL', 'MAXAGE', 100));
     }
 }
