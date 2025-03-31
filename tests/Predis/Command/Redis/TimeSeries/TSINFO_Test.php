@@ -89,8 +89,10 @@ class TSINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
-     * @requiresRedisTimeSeriesVersion >= 1.10.0
+     * @requiresRedisTimeSeriesVersion <= 1.10.13
+     * @requiresRedisVersion > 6.3.0
      */
     public function testReturnsInformationAboutGivenTimeSeriesResp3(): void
     {
@@ -98,7 +100,7 @@ class TSINFO_Test extends PredisCommandTestCase
         $expectedResponse = ['totalSamples' => 0, 'memoryUsage' => 4239, 'firstTimestamp' => 0, 'lastTimestamp' => 0,
             'retentionTime' => 60000, 'chunkCount' => 1, 'chunkSize' => 4096, 'chunkType' => 'compressed',
             'duplicatePolicy' => 'max', 'labels' => ['sensor_id' => '2', 'area_id' => '32'], 'sourceKey' => null, 'rules' => [],
-            'ignoreMaxTimeDiff' => 0, 'ignoreMaxValDiff' => 0.0];
+            'ignoreMaxTimeDiff' => 0, 'ignoreMaxValDiff' => 0];
 
         $arguments = (new CreateArguments())
             ->retentionMsecs(60000)
@@ -109,9 +111,6 @@ class TSINFO_Test extends PredisCommandTestCase
             'OK',
             $redis->tscreate('temperature:2:32', $arguments)
         );
-
-        // Timeout so key will be created.
-        $this->sleep(0.1);
 
         $this->assertEquals($expectedResponse, $redis->tsinfo('temperature:2:32'));
     }
