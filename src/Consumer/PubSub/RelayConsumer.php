@@ -25,7 +25,7 @@ class RelayConsumer extends Consumer
      * @param string   ...$channel One or more channel names.
      * @param callable $callback   The message callback.
      */
-    public function subscribe($channel) // @phpstan-ignore-line
+    public function subscribe(string ...$channel) // @phpstan-ignore-line
     {
         $channels = func_get_args();
         $callback = array_pop($channels);
