@@ -146,9 +146,9 @@ class Consumer extends AbstractConsumer
     /**
      * Subscribes to the specified channels.
      *
-     * @param string ...$channel One or more channel names.
+     * @param string ...$channels One or more channel names.
      */
-    public function subscribe($channel /* , ... */)
+    public function subscribe(string ...$channels)
     {
         $this->writeRequest(self::SUBSCRIBE, func_get_args());
         $this->statusFlags |= self::STATUS_SUBSCRIBED;

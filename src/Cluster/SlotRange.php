@@ -66,7 +66,7 @@ class SlotRange implements Countable
      */
     public static function isValidRange($first, $last)
     {
-        return $first >= 0 && $first <= self::MAX_SLOTS && $last >= 0x0000 && $last <= self::MAX_SLOTS && $first <= $last;
+        return $first >= 0x0000 && $first <= self::MAX_SLOTS && $last >= 0x0000 && $last <= self::MAX_SLOTS && $first <= $last;
     }
 
     /**
