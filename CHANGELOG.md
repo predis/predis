@@ -7,6 +7,7 @@
 ### Breaking Changes
 - Remove deprecated Triggers & Functions support (#1524)
 - Changed default DIALECT to 2 (#1516)
+- Added support for transactions for clustered connections (#1497)
 - Implemented PSR-7 compatible stream abstraction (#1450)
 - Improved pipeline abstractions (#1438)
 - Improved connection handshake session (#1431)
