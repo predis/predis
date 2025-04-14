@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -264,6 +264,21 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForEvalReadOnlyCommand(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = ['%SCRIPT%', ['key:1'], 'value1'];
+
+        foreach ($this->getExpectedCommands('keys-script-ro') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForScriptCommand(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -490,6 +505,8 @@ class RedisStrategyTest extends PredisTestCase
             /* scripting */
             'EVAL' => 'keys-script',
             'EVALSHA' => 'keys-script',
+            'EVAL_RO' => 'keys-script-ro',
+            'EVALSHA_RO' => 'keys-script-ro',
 
             /* server */
             'INFO' => 'keys-fake',
@@ -506,6 +523,9 @@ class RedisStrategyTest extends PredisTestCase
             'SSUBSCRIBE' => 'keys-all',
             'SUNSUBSCRIBE' => 'keys-sunsubscribe',
             'SPUBLISH' => 'keys-first',
+
+            /* cluster */
+            'CLUSTER' => 'keys-fake',
         ];
 
         if (isset($type)) {

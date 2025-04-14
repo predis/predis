@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -92,6 +92,8 @@ class RelayConnection extends AbstractConnection
      */
     public function __construct(ParametersInterface $parameters, Relay $client)
     {
+        $this->assertExtensions();
+
         $this->parameters = $this->assertParameters($parameters);
         $this->client = $client;
     }
@@ -112,6 +114,56 @@ class RelayConnection extends AbstractConnection
         if ($this->client->isConnected()) {
             $this->client->close();
         }
+    }
+
+    /**
+     * Checks if the Relay extension is loaded in PHP.
+     */
+    private function assertExtensions()
+    {
+        if (!extension_loaded('relay')) {
+            throw new NotSupportedException(
+                'The "relay" extension is required by this connection backend.'
+            );
+        }
+    }
+
+    /**
+     * Creates a new instance of the client.
+     *
+     * @return Relay
+     */
+    private function createClient()
+    {
+        $client = new Relay();
+
+        // throw when errors occur and return `null` for non-existent keys
+        $client->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
+
+        // use reply literals
+        $client->setOption(Relay::OPT_REPLY_LITERAL, true);
+
+        // disable Relay's command/connection retry
+        $client->setOption(Relay::OPT_MAX_RETRIES, 0);
+
+        // whether to use in-memory caching
+        $client->setOption(Relay::OPT_USE_CACHE, $this->parameters->cache ?? true);
+
+        // set data serializer
+        $client->setOption(Relay::OPT_SERIALIZER, constant(sprintf(
+            '%s::SERIALIZER_%s',
+            Relay::class,
+            strtoupper($this->parameters->serializer ?? 'none')
+        )));
+
+        // set data compression algorithm
+        $client->setOption(Relay::OPT_COMPRESSION, constant(sprintf(
+            '%s::COMPRESSION_%s',
+            Relay::class,
+            strtoupper($this->parameters->compression ?? 'none')
+        )));
+
+        return $client;
     }
 
     /**
@@ -250,6 +302,14 @@ class RelayConnection extends AbstractConnection
     public function writeRequest(CommandInterface $command)
     {
         throw new NotSupportedException('The "relay" extension does not support writing requests.');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function readResponse(CommandInterface $command)
+    {
+        throw new NotSupportedException('The "relay" extension does not support reading responses.');
     }
 
     /**

@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,9 +13,11 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\CreateArguments;
+use Predis\Command\Argument\Search\SchemaFields\GeoField;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
 use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
+use Predis\Command\Argument\Search\SchemaFields\VectorField;
 use Predis\Command\Redis\PredisCommandTestCase;
 
 /**
@@ -107,6 +109,69 @@ class FTCREATE_Test extends PredisCommandTestCase
         $arguments->stopWords(['hello', 'world']);
 
         $actualResponse = $redis->ftcreate('index', $schema, $arguments);
+
+        $this->assertEquals('OK', $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.09.00
+     */
+    public function testCreatesSearchIndexWithFloat16Vector(): void
+    {
+        $redis = $this->getClient();
+
+        $schema = [
+            new VectorField('float16',
+                'FLAT',
+                ['TYPE', 'FLOAT16', 'DIM', 768, 'DISTANCE_METRIC', 'COSINE']
+            ),
+            new VectorField('bfloat16',
+                'FLAT',
+                ['TYPE', 'BFLOAT16', 'DIM', 768, 'DISTANCE_METRIC', 'COSINE']
+            ),
+        ];
+
+        $actualResponse = $redis->ftcreate('index', $schema);
+
+        $this->assertEquals('OK', $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRediSearchVersion >= 2.09.00
+     */
+    public function testCreatesSearchIndexWithMissingAndEmptyFields(): void
+    {
+        $redis = $this->getClient();
+
+        $schema = [
+            new TextField(
+                'text_empty',
+                '',
+                false, false, false, '', 1, false, true
+            ),
+            new TagField('tag_empty',
+                '', false, false, ',', false, true
+            ),
+            new NumericField('num_missing', '', false, false, true),
+            new GeoField('geo_missing', '', false, false, true),
+            new TextField(
+                'text_empty_missing',
+                '',
+                false,
+                false, false, '', 1, false, true, true
+            ),
+            new TagField('tag_empty_missing',
+                '', false, false, ',', false, true, true
+            ),
+        ];
+
+        $actualResponse = $redis->ftcreate('index', $schema);
 
         $this->assertEquals('OK', $actualResponse);
     }

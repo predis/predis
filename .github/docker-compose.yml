@@ -4,7 +4,7 @@ services:
 
   redis-official:
     image: ${REDIS_IMAGE_NAME:-redis:7.4}
-    container_name: redis-standalone
+    container_name: redis-official
     healthcheck:
       test: [ "CMD", "redis-cli", "PING" ]
       interval: 10s

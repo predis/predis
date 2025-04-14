@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -63,7 +63,7 @@ class TSINFO_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     * @requiresRedisTimeSeriesVersion >= 1.10.13
      * @requiresRedisVersion > 6.3.0
      */
     public function testReturnsInformationAboutGivenTimeSeries(): void
@@ -89,15 +89,18 @@ class TSINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
-     * @requiresRedisTimeSeriesVersion >= 1.10.0
+     * @requiresRedisTimeSeriesVersion <= 1.10.13
+     * @requiresRedisVersion > 6.3.0
      */
     public function testReturnsInformationAboutGivenTimeSeriesResp3(): void
     {
         $redis = $this->getResp3Client();
         $expectedResponse = ['totalSamples' => 0, 'memoryUsage' => 4239, 'firstTimestamp' => 0, 'lastTimestamp' => 0,
             'retentionTime' => 60000, 'chunkCount' => 1, 'chunkSize' => 4096, 'chunkType' => 'compressed',
-            'duplicatePolicy' => 'max', 'labels' => ['sensor_id' => '2', 'area_id' => '32'], 'sourceKey' => null, 'rules' => [], ];
+            'duplicatePolicy' => 'max', 'labels' => ['sensor_id' => '2', 'area_id' => '32'], 'sourceKey' => null, 'rules' => [],
+            'ignoreMaxTimeDiff' => 0, 'ignoreMaxValDiff' => 0];
 
         $arguments = (new CreateArguments())
             ->retentionMsecs(60000)

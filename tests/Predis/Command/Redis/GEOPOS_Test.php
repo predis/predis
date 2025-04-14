@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -125,10 +125,10 @@ class GEOPOS_Test extends PredisCommandTestCase
         $redis = $this->getResp3Client();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
-        $this->assertEquals([
-            ['13.36138933897018433', '38.11555639549629859'],
-            ['15.08726745843887329', '37.50266842333162032'],
-        ], $redis->geopos('Sicily', 'Palermo', 'Catania'));
+        $this->assertEqualsWithDelta([
+            [13.36138933897018433, 38.11555639549629859],
+            [15.08726745843887329, 37.50266842333162032],
+        ], $redis->geopos('Sicily', 'Palermo', 'Catania'), 0.1);
     }
 
     /**

@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -126,6 +126,25 @@ class WATCH_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis2->set('foo', 'hijacked'));
         $this->assertNull($redis1->exec());
         $this->assertSame('hijacked', $redis1->get('foo'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.2.0
+     */
+    public function testWatchMultipleKeysAsListAbortsTransactionOnExternalWriteOperations(): void
+    {
+        $redis1 = $this->getClient();
+        $redis2 = $this->getClient();
+
+        $redis1->mset('foo', 'bar', 'hoge', 'piyo');
+
+        $this->assertEquals('OK', $redis1->watch(['foo', 'hoge']));
+        $this->assertEquals('OK', $redis1->multi());
+        $this->assertEquals('QUEUED', $redis1->set('hoge', 'bar'));
+        $this->assertEquals('OK', $redis2->set('hoge', 'hijacked'));
+        $this->assertNull($redis1->exec());
+        $this->assertSame('hijacked', $redis1->get('hoge'));
     }
 
     /**
