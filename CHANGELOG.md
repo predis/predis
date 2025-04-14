@@ -6,11 +6,13 @@
 
 ### Breaking Changes
 - Remove deprecated Triggers & Functions support (#1524)
-- Changed default DIALECT to 2 (#1516)
-- Added support for transactions for clustered connections (#1497)
+- Changed default `DIALECT` to 2 (#1516)
 - Implemented PSR-7 compatible stream abstraction (#1450)
 - Improved pipeline abstractions (#1438)
 - Improved connection handshake (#1431)
+- Added support for transactions for clustered connections (#1497)
+- Extended ClusterInterface with new `getClusterStrategy()` method (#1497)
+- Extended StrategyInterface with new `checkSameSlotForKeys()` method that previously was protected (#1497)
 
 ### Added
 - Added Redis 7.4 `XREAD` and `HSCAN` interface changes (#1452)
@@ -27,8 +29,6 @@ Predis v3.0 introduces support for new communication protocol [RESP3](https://gi
 - Refactored Relay integration (#1423)
 - Changed interface of `CLIENT` command (#1337)
 - Changed interfaces for commands to support Redis 6.2—7.0 arguments (#1330)
-- Extended ClusterInterface with new `getClusterStrategy()` method (#1497)
-- Extended StrategyInterface with new `checkSameSlotForKeys()` method that previously was protected (#1497)
 
 ### Added
 - Added support for RESP3 communication protocol (#1047)
