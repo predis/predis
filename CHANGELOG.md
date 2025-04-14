@@ -5,22 +5,18 @@
 ## v3.0.0-RC1 (2025-04-14)
 
 ### Breaking Changes
-- Remove deprecated Triggers & Functions support (#1524)
-- Changed default DIALECT to 2 (#1516)
+- Remove deprecated triggers and functions support (#1524)
+- Changed default search `DIALECT` to `2` (#1516)
 - Implemented PSR-7 compatible stream abstraction (#1450)
 - Improved pipeline abstractions (#1438)
-- Improved connection handshake session (#1431)
+- Improved connection handshake (#1431)
 
 ### Added
+- Added Redis 7.4 `XREAD` and `HSCAN` interface changes (#1452)
 - Added support for transactions for clustered connections (#1497)
-  - MultiExec class is extended with new optional dependency that resolves a specific strategy based on connection type
-  - Strategies define a behaviour for specific connections allowing decoupling MultiExec abstraction from it
-  - Transactions for clustered connections are combined with pipeline approach to be able to resolve expected hash-slot and
-    ensure that all keys in transaction context operates on the same hash slot to exclude partial transaction execution
-- Added Redis 7.4 commands interface changes (#1452)
 
 ### Fixed
-- fix: Bug with single persistent connection to the same resource (#1512)
+- Fixed single persistent connection using the same resource (#1512)
 
 ## v3.0.0-alpha1 (2024-01-19)
 
