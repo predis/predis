@@ -187,7 +187,7 @@ jobs:
 
       - name: Check for CHANGELOG entry
         run:  |
-          FILES_CHANGED=$(git diff --name-only origin/develop...HEAD | grep -E 'CHANGELOG\.md' -c)
+          FILES_CHANGED=$(git diff | grep -E 'CHANGELOG\.md' -c)
           if [ "$FILES_CHANGED" != "1" ]; then
             echo "CHANGELOG.md was not updated";
             exit 1;
