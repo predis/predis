@@ -186,8 +186,10 @@ jobs:
           fetch-depth: 0
 
       - name: Check for CHANGELOG entry
+        env:
+          TARGET: ${{ github.event.pull_request.base.ref }}
         run:  |
-          FILES_CHANGED=$(git diff | grep -E 'CHANGELOG\.md' -c)
+          FILES_CHANGED=$(git diff --name-only origin/$TARGET...HEAD | grep -E 'CHANGELOG\.md' -c)
           if [ "$FILES_CHANGED" != "1" ]; then
             echo "CHANGELOG.md was not updated";
             exit 1;
