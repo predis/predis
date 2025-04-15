@@ -254,7 +254,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
                 }
 
                 if (!$connection = $this->getRandomConnection()) {
-                    throw new ClientException('No connections left in the pool for `CLUSTER SLOTS`. original exception:' . $exception->getMessage());
+                    throw new ClientException('No connections left in the pool for `CLUSTER SLOTS` ('.$exception->getMessage().')');
                 }
 
                 usleep($retryAfter * 1000);
