@@ -322,7 +322,6 @@ class RedisClusterTest extends PredisTestCase
                         'scheme' => 'tcp',
                         'host' => '127.0.0.1',
                         'port' => '6383',
-                        'slots' => '0-5460',
                     ],
                 ],
                 [
@@ -330,7 +329,6 @@ class RedisClusterTest extends PredisTestCase
                         'scheme' => 'tcp',
                         'host' => '127.0.0.1',
                         'port' => '6384',
-                        'slots' => '0-5460',
                     ],
                 ]
             )
