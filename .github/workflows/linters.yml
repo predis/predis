@@ -165,3 +165,30 @@ jobs:
 
       - name: Search for misspellings
         run: $(python -m site --user-base)/bin/codespell
+
+  changelog:
+
+    name: Changelog
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    if: >-
+      github.event_name == 'pull_request' &&
+      !contains(github.event.head_commit.message, 'nochangelog') &&
+      !contains(github.event.head_commit.message, 'no-changelog') &&
+      !contains(github.event.head_commit.message, 'no changelog') &&
+      !contains(github.event.pull_request.labels.*.name, 'no-changelog')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for CHANGELOG entry
+        run:  |
+          FILES_CHANGED=$(git diff | grep -E 'CHANGELOG\.md' -c)
+          if [ "$FILES_CHANGED" != "1" ]; then
+            echo "CHANGELOG.md was not updated";
+            exit 1;
+          fi;
