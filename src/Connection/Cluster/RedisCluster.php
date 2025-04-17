@@ -254,7 +254,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
                 }
 
                 if (!$connection = $this->getRandomConnection()) {
-                    throw new ClientException('No connections left in the pool for `CLUSTER SLOTS`');
+                    throw new ClientException('No connections left in the pool for `CLUSTER SLOTS` (' . $exception->getMessage() . ')');
                 }
 
                 usleep($retryAfter * 1000);
@@ -337,10 +337,19 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     {
         $separator = strrpos($connectionID, ':');
 
-        return $this->connections->create([
+        $parameters = [
             'host' => substr($connectionID, 0, $separator),
             'port' => substr($connectionID, $separator + 1),
-        ]);
+        ];
+
+        $existConnection = current($this->pool);
+        if ($existConnection instanceof NodeConnectionInterface) {
+            $existParameters = $existConnection->getParameters()->toArray();
+            unset($existParameters['alias'], $existParameters['slots']);
+            $parameters = array_merge($existParameters, $parameters);
+        }
+
+        return $this->connections->create($parameters);
     }
 
     /**
