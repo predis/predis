@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## v3.0.0-RC1 (2025-04-14)
+## v3.0.0-RC1 (2025-04-17)
 
 ### Breaking Changes
 - Remove deprecated Triggers & Functions support (#1524)
