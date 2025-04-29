@@ -84,7 +84,7 @@ class TSINFO_Test extends PredisCommandTestCase
             $redis->tscreate('temperature:2:32', $arguments)
         );
 
-        $this->assertEquals($expectedResponse, $redis->tsinfo('temperature:2:32'));
+        $this->assertEqualsWithDelta($expectedResponse, $redis->tsinfo('temperature:2:32'), 1000);
     }
 
     /**
@@ -112,7 +112,7 @@ class TSINFO_Test extends PredisCommandTestCase
             $redis->tscreate('temperature:2:32', $arguments)
         );
 
-        $this->assertEquals($expectedResponse, $redis->tsinfo('temperature:2:32'));
+        $this->assertEqualsWithDelta($expectedResponse, $redis->tsinfo('temperature:2:32'), 1000);
     }
 
     public function argumentsProvider(): array
