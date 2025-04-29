@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+## v3.0.0-RC1 (2025-04-17)
+
+### Breaking Changes
+- Remove deprecated Triggers & Functions support (#1524)
+- Changed default `DIALECT` to 2 (#1516)
+- Implemented PSR-7 compatible stream abstraction (#1450)
+- Improved pipeline abstractions (#1438)
+- Improved connection handshake (#1431)
+- Added support for transactions for clustered connections (#1497)
+- Extended ClusterInterface with new `getClusterStrategy()` method (#1497)
+- Extended StrategyInterface with new `checkSameSlotForKeys()` method that previously was protected (#1497)
+
+### Added
+- Added Redis 7.4 `XREAD` and `HSCAN` interface changes (#1452)
+- Added support for transactions for clustered connections (#1497)
+
+### Fixed
+- Fixed single persistent connection using the same resource (#1512)
+
 ## v3.0.0-alpha1 (2024-01-19)
 
 Predis v3.0 introduces support for new communication protocol [RESP3](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md) and [new features](README.md#resp3) based on it.
@@ -10,8 +29,6 @@ Predis v3.0 introduces support for new communication protocol [RESP3](https://gi
 - Refactored Relay integration (#1423)
 - Changed interface of `CLIENT` command (#1337)
 - Changed interfaces for commands to support Redis 6.2—7.0 arguments (#1330)
-- Extended ClusterInterface with new `getClusterStrategy()` method (#1497)
-- Extended StrategyInterface with new `checkSameSlotForKeys()` method that previously was protected (#1497)
 
 ### Added
 - Added support for RESP3 communication protocol (#1047)
@@ -22,11 +39,6 @@ Predis v3.0 introduces support for new communication protocol [RESP3](https://gi
 - Added support for `XAUTOCLAIM` command (#1328)
 - Added support for `XINFO` commands (#1331)
 - Added support for Redis Gears triggered functions API (#1348)
-- Added support for transactions for clustered connections (#1497)
-  - MultiExec class is extended with new optional dependency that resolves a specific strategy based on connection type
-  - Strategies define a behaviour for specific connections allowing decoupling MultiExec abstraction from it
-  - Transactions for clustered connections are combined with pipeline approach to be able to resolve expected hash-slot and
-  ensure that all keys in transaction context operates on the same hash slot to exclude partial transaction execution
 
 ## v2.4.0-RC1 (2024-11-21)
 ### Added
