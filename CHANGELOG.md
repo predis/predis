@@ -4,6 +4,9 @@
 ### Fixed
 - Fixed protocol loss during redis cluster `MOVED` / `ASK`
 
+### Maintenance
+- Updated Redis 8.0 testing image (#1532)
+
 ## v2.4.0-RC1 (2024-11-21)
 ### Added
 - Added new hash-field expiration commands (#1520)
