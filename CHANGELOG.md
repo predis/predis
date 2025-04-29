@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Maintenance
+- Updated Redis 8.0 testing image (#1531)
+
 ## v3.0.0-RC1 (2025-04-17)
 
 ### Breaking Changes
