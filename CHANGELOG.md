@@ -1,13 +1,6 @@
 ## Changelog
 
-## Unreleased
-### Fixed
-- Fixed protocol loss during redis cluster `MOVED` / `ASK`
-
-### Maintenance
-- Updated Redis 8.0 testing image (#1532)
-
-## v2.4.0-RC1 (2024-11-21)
+## v2.4.0 (2025-04-30)
 ### Added
 - Added new hash-field expiration commands (#1520)
 - Added missing `FT._LIST` and `BITFIELD_RO` commands (#1521)
@@ -21,6 +14,7 @@
 - Fixed PHP 8.4 compatibility with `stream_context_set_option()` (#1503)
 - Prevent named arguments runtime failure (#1509)
 - Mark `GEOSEARCH` as read-only to ensure execution on replica (#1481)
+- Fixed protocol loss during redis cluster `MOVED` / `ASK` (#1530)
 
 ### Maintenance
 - Added CI testing with Redis 8.0 (#1510)
