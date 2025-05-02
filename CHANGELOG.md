@@ -1,30 +1,25 @@
 ## Changelog
 
 ## v3.0.0 (2025-05-02)
-
-Predis v3.0 introduces support for [RESP3](README.md#resp3) and its features and an improved [Relay](https://github.com/predis/predis/wiki/Using-Relay) integration.
-
 ### Added
+- ⚠️ Added support for transactions for clustered connections (#1497)
 - Added support for RESP3 communication protocol (#1047)
-- Added support for [Push notifications](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md#push-type) (#1316)
+- Added support for RESP3 push notifications (#1316)
 - Added support for Sharded Pub/Sub (#1303)
 - Added support for `XGROUP` commands (#1324)
 - Added support for `XREADGROUP` command (#1327)
 - Added support for `XAUTOCLAIM` command (#1328)
 - Added support for `XINFO` commands (#1331)
-- Added Redis 7.4 `XREAD` and `HSCAN` interface changes (#1452)
-- ⚠️ Added support for transactions for clustered connections (#1497)
+- Added support for Redis 7.4 `XREAD` and `HSCAN` interface changes (#1452)
 
 ### Changed
 - ⚠️ Refactored Relay integration (#1423)
 - ⚠️ Changed interface of `CLIENT` command (#1337)
 - ⚠️ Changed interfaces for commands to support Redis 6.2 — 7.0 arguments (#1330)
-- ⚠️ Changed default `DIALECT` to 2 (#1516)
+- ⚠️ Changed default search `DIALECT` to `2` (#1516)
 - ⚠️ Implemented PSR-7 compatible stream abstraction (#1450)
 - ⚠️ Improved pipeline abstractions (#1438)
 - ⚠️ Improved connection handshake (#1431)
-- ⚠️ Extended `ClusterInterface` with new `getClusterStrategy()` method (#1497)
-- ⚠️ Extended `StrategyInterface` with new `checkSameSlotForKeys()` method that previously was protected (#1497)
 
 ### Fixed
 - Fixed single persistent connection using the same resource (#1512)
