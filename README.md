@@ -468,7 +468,7 @@ implementation of the standard connection classes available in the `Predis\Conne
 ## RESP3 ##
 
 ### Connection ###
-To establish the connection using RESP3 protocol, you need to set parameter `protocol => 3`. Default protocol is still RESP2.
+To establish the connection using the [RESP3](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md) protocol, you need to set parameter `protocol => 3`. The default protocol is RESP2.
 
 You can pass parameter as configuration option in array or as a query parameter in `redis_url`
 
@@ -506,6 +506,7 @@ $client = new \Predis\Client(['protocol' => 3]);
 // RESP3 introduces new double type, that corresponds to PHP float.
 var_dump($client->geopos('my_geo', ['member1']));
 ```
+
 #### Aggregate types ####
 In RESP3 new aggregate type [Map](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md#map-type)
 was introduced, that represents the sequence of field-value pairs. So it simplifies parsing, since we don't need to specify
@@ -514,6 +515,7 @@ parsing strategy per command (RESP2) and instead relies on the type defined by p
 In most cases RESP2 responses shouldn't differ from RESP3, since we added additional parsing for those
 command that return field-value pairs. However, since RESP2 requires additional parsing, it could be that some commands
 had lack of it and return unhandled responses. In this case there would be difference like this:
+
 ```php
 $client = new \Predis\Client();
 

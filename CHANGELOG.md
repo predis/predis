@@ -1,49 +1,30 @@
 ## Changelog
 
-## Unreleased
-
-### Maintenance
-- Updated Redis 8.0 testing image (#1531)
-
-## v3.0.0-RC1 (2025-04-17)
-
-### Breaking Changes
-- Remove deprecated Triggers & Functions support (#1524)
-- Changed default `DIALECT` to 2 (#1516)
-- Implemented PSR-7 compatible stream abstraction (#1450)
-- Improved pipeline abstractions (#1438)
-- Improved connection handshake (#1431)
-- Added support for transactions for clustered connections (#1497)
-- Extended ClusterInterface with new `getClusterStrategy()` method (#1497)
-- Extended StrategyInterface with new `checkSameSlotForKeys()` method that previously was protected (#1497)
-
+## v3.0.0 (2025-05-02)
 ### Added
-- Added Redis 7.4 `XREAD` and `HSCAN` interface changes (#1452)
-- Added support for transactions for clustered connections (#1497)
-
-### Fixed
-- Fixed single persistent connection using the same resource (#1512)
-
-## v3.0.0-alpha1 (2024-01-19)
-
-Predis v3.0 introduces support for new communication protocol [RESP3](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md) and [new features](README.md#resp3) based on it.
-
-### Breaking Changes
-- Refactored Relay integration (#1423)
-- Changed interface of `CLIENT` command (#1337)
-- Changed interfaces for commands to support Redis 6.2—7.0 arguments (#1330)
-
-### Added
+- ⚠️ Added support for transactions for clustered connections (#1497)
 - Added support for RESP3 communication protocol (#1047)
-- Added support for [Push notifications](https://github.com/redis/redis-specifications/blob/master/protocol/RESP3.md#push-type) (#1316)
+- Added support for RESP3 push notifications (#1316)
 - Added support for Sharded Pub/Sub (#1303)
 - Added support for `XGROUP` commands (#1324)
 - Added support for `XREADGROUP` command (#1327)
 - Added support for `XAUTOCLAIM` command (#1328)
 - Added support for `XINFO` commands (#1331)
-- Added support for Redis Gears triggered functions API (#1348)
+- Added support for Redis 7.4 `XREAD` and `HSCAN` interface changes (#1452)
 
-## v2.4.0-RC1 (2024-11-21)
+### Changed
+- ⚠️ Refactored Relay integration (#1423)
+- ⚠️ Changed interface of `CLIENT` command (#1337)
+- ⚠️ Changed interfaces for commands to support Redis 6.2 — 7.0 arguments (#1330)
+- ⚠️ Changed default search `DIALECT` to `2` (#1516)
+- ⚠️ Implemented PSR-7 compatible stream abstraction (#1450)
+- ⚠️ Improved pipeline abstractions (#1438)
+- ⚠️ Improved connection handshake (#1431)
+
+### Fixed
+- Fixed single persistent connection using the same resource (#1512)
+
+## v2.4.0 (2025-04-30)
 ### Added
 - Added new hash-field expiration commands (#1520)
 - Added missing `FT._LIST` and `BITFIELD_RO` commands (#1521)
@@ -57,6 +38,7 @@ Predis v3.0 introduces support for new communication protocol [RESP3](https://gi
 - Fixed PHP 8.4 compatibility with `stream_context_set_option()` (#1503)
 - Prevent named arguments runtime failure (#1509)
 - Mark `GEOSEARCH` as read-only to ensure execution on replica (#1481)
+- Fixed protocol loss during redis cluster `MOVED` / `ASK` (#1530)
 
 ### Maintenance
 - Added CI testing with Redis 8.0 (#1510)
