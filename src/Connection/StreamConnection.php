@@ -318,7 +318,12 @@ class StreamConnection extends AbstractConnection
 
                 $auth = new RawCommand('AUTH', [$parameters->username, $parameters->password]);
                 $response = $this->executeCommand($auth);
-                $this->handleOnConnectResponse($response, $auth);
+
+                if ($response instanceof ErrorResponseInterface) {
+                    $this->executeCommand(
+                        new RawCommand('AUTH', [$parameters->password])
+                    );
+                }
             }
 
             $setName = new RawCommand('CLIENT', ['SETNAME', 'predis']);

@@ -3,7 +3,7 @@
 services:
 
   redis-official:
-    image: ${REDIS_IMAGE_NAME:-redis:7.4}
+    image: ${REDIS_IMAGE_NAME:-redis:4.0}
     container_name: redis-official
     healthcheck:
       test: [ "CMD", "redis-cli", "PING" ]
