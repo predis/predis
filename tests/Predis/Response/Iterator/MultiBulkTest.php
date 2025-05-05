@@ -29,7 +29,7 @@ class MultiBulkTest extends PredisTestCase
      */
     public function testIterableMultibulk(): void
     {
-        $this->markTestSkipped("Skipped due to a bug. See MultiBulk::__destruct()");
+        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
@@ -60,7 +60,7 @@ class MultiBulkTest extends PredisTestCase
      */
     public function testDropWithFalseConsumesResponseFromUnderlyingConnection(): void
     {
-        $this->markTestSkipped("Skipped due to a bug. See MultiBulk::__destruct()");
+        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
@@ -77,7 +77,7 @@ class MultiBulkTest extends PredisTestCase
      */
     public function testDropWithTrueDropsUnderlyingConnection(): void
     {
-        $this->markTestSkipped("Skipped due to a bug. See MultiBulk::__destruct()");
+        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
@@ -94,7 +94,7 @@ class MultiBulkTest extends PredisTestCase
      */
     public function testGarbageCollectorDropsUnderlyingConnection(): void
     {
-        $this->markTestSkipped("Skipped due to a bug. See MultiBulk::__destruct()");
+        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
@@ -127,7 +127,7 @@ class MultiBulkTest extends PredisTestCase
 
         if (isset($parameters->password) && strlen($parameters->password)) {
             if (!isset($parameters->username) || !strlen($parameters->username)) {
-                $parameters->username = "default";
+                $parameters->username = 'default';
             }
 
             $connection->addConnectCommand(

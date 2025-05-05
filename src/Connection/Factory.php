@@ -168,7 +168,7 @@ class Factory implements FactoryInterface
             $cmdAuthArgs = [$parameters->protocol, 'AUTH'];
 
             if (!isset($parameters->username) || !strlen($parameters->username)) {
-                $parameters->username = "default";
+                $parameters->username = 'default';
             }
 
             array_push($cmdAuthArgs, $parameters->username, $parameters->password);

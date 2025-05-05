@@ -25,7 +25,7 @@ use RuntimeException;
 
 /**
  * @method StreamConnection createConnection(bool $initialize = false)
- * @method StreamConnection createConnectionWithParams($parameters, $initialize = false)
+ * @method StreamConnection createConnectionWithParams($parameters, $initialize = false, bool $noAuth = false)
  */
 class StreamConnectionTest extends PredisConnectionTestCase
 {
@@ -904,7 +904,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
     {
         $failedCommand = new RawCommand('HELLO', ['FOOBAR', 'AUTH', 'foobar']);
 
-        $connection = $this->createConnection();
+        $connection = $this->createConnectionWithParams(['password' => ''], false, true);
         $connection->addConnectCommand($failedCommand);
 
         $this->expectException(ConnectionException::class);

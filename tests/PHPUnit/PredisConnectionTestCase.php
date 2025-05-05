@@ -541,9 +541,9 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      *
      * @return NodeConnectionInterface
      */
-    protected function createConnection(bool $initialize = false): NodeConnectionInterface
+    protected function createConnection(bool $initialize = false, bool $noAuth = false): NodeConnectionInterface
     {
-        return $this->createConnectionWithParams([], $initialize);
+        return $this->createConnectionWithParams([], $initialize, $noAuth);
     }
 
     /**
@@ -554,8 +554,11 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      *
      * @return NodeConnectionInterface
      */
-    protected function createConnectionWithParams($parameters, $initialize = false): NodeConnectionInterface
-    {
+    protected function createConnectionWithParams(
+        $parameters,
+        $initialize = false,
+        bool $noAuth = false
+    ): NodeConnectionInterface {
         $class = $this->getConnectionClass();
         $commands = $this->getCommandFactory();
 
@@ -565,17 +568,19 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
         $connection = new $class($parameters);
 
-        if (isset($parameters->password) && strlen($parameters->password)) {
-            if (!isset($parameters->username) || !strlen($parameters->username)) {
-                $parameters->username = "default";
-            }
+        if (!$noAuth) {
+            if (isset($parameters->password) && strlen($parameters->password)) {
+                if (!isset($parameters->username) || !strlen($parameters->username)) {
+                    $parameters->username = 'default';
+                }
 
-            $connection->addConnectCommand(
-                new RawCommand(
-                    'HELLO',
-                    [$parameters->protocol, 'AUTH', $parameters->username, $parameters->password]
-                )
-            );
+                $connection->addConnectCommand(
+                    new RawCommand(
+                        'HELLO',
+                        [$parameters->protocol, 'AUTH', $parameters->username, $parameters->password]
+                    )
+                );
+            }
         }
 
         if ($initialize) {

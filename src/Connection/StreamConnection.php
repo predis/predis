@@ -322,9 +322,13 @@ class StreamConnection extends AbstractConnection
 
                 // If Redis < 6.2
                 if ($response instanceof ErrorResponseInterface) {
-                    $this->executeCommand(
+                    $response = $this->executeCommand(
                         new RawCommand('AUTH', [$parameters->password])
                     );
+
+                    if ($response instanceof ErrorResponseInterface) {
+                        $this->onConnectionError("Failed: {$response->getMessage()}");
+                    }
                 }
             }
 

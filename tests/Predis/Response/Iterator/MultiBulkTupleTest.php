@@ -63,7 +63,7 @@ class MultiBulkTupleTest extends PredisTestCase
      */
     public function testIterableMultibulk(): void
     {
-        $this->markTestSkipped("Skipped due to a bug. See MultiBulk::__destruct()");
+        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
@@ -97,7 +97,7 @@ class MultiBulkTupleTest extends PredisTestCase
      */
     public function testGarbageCollectorDropsUnderlyingConnection(): void
     {
-        $this->markTestSkipped("Skipped due to a bug. See MultiBulk::__destruct()");
+        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
@@ -129,10 +129,9 @@ class MultiBulkTupleTest extends PredisTestCase
 
         $connection = new CompositeStreamConnection($parameters, $protocol);
 
-
         if (isset($parameters->password) && strlen($parameters->password)) {
             if (!isset($parameters->username) || !strlen($parameters->username)) {
-                $parameters->username = "default";
+                $parameters->username = 'default';
             }
 
             $connection->addConnectCommand(
