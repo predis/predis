@@ -1,5 +1,9 @@
 ## Changelog
 
+## Unreleased
+### Changed
+- Handle `LOADING` errors from Sentinel replicas (#1536)
+
 ## v3.0.0 (2025-05-02)
 ### Added
 - ⚠️ Added support for transactions for clustered connections (#1497)
