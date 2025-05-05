@@ -14,6 +14,7 @@ namespace Predis\Connection;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
 use PredisTestCase;
 
 /**
@@ -563,6 +564,19 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         }
 
         $connection = new $class($parameters);
+
+        if (isset($parameters->password) && strlen($parameters->password)) {
+            if (!isset($parameters->username) || !strlen($parameters->username)) {
+                $parameters->username = "default";
+            }
+
+            $connection->addConnectCommand(
+                new RawCommand(
+                    'HELLO',
+                    [$parameters->protocol, 'AUTH', $parameters->username, $parameters->password]
+                )
+            );
+        }
 
         if ($initialize) {
             $connection->addConnectCommand(
