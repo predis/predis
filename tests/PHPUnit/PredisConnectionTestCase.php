@@ -588,7 +588,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
             );
         }
 
-        $connection->connect();
         return $connection;
     }
 }
