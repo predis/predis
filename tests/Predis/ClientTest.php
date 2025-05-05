@@ -1343,6 +1343,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group connected
      * @group cluster
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testClusterClientsCreateDifferentPersistentConnections(): void

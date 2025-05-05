@@ -1,4 +1,8 @@
 ## Changelog
+## Unreleased
+
+### Fixed
+- fix(auth): Adds default user if only password used for authentication (#1535)
 
 ## v3.0.0 (2025-05-02)
 ### Added
