@@ -167,10 +167,11 @@ class Factory implements FactoryInterface
         if (isset($parameters->password) && strlen($parameters->password)) {
             $cmdAuthArgs = [$parameters->protocol, 'AUTH'];
 
-            isset($parameters->username) && strlen($parameters->username)
-                ? array_push($cmdAuthArgs, $parameters->username, $parameters->password)
-                : $cmdAuthArgs[] = $parameters->password;
+            if (!isset($parameters->username) || !strlen($parameters->username)) {
+                $parameters->username = "default";
+            }
 
+            array_push($cmdAuthArgs, $parameters->username, $parameters->password);
             array_push($cmdAuthArgs, 'SETNAME', 'predis');
 
             $connection->addConnectCommand(
