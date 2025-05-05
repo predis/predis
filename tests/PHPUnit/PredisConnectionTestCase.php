@@ -502,6 +502,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
+            'password' => getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD'),
             'read_write_timeout' => 2,
         ];
     }
