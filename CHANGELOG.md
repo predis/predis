@@ -1,5 +1,12 @@
 ## Changelog
 
+## Unreleased
+### Added
+- Added test for handling LOADING response in Sentinel replication (#1536)
+
+### Fixed
+- Fixed handling of LOADING errors from replica nodes (#1536)
+
 ## v3.0.0 (2025-05-02)
 ### Added
 - ⚠️ Added support for transactions for clustered connections (#1497)
