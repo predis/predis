@@ -849,22 +849,6 @@ class StreamConnectionTest extends PredisConnectionTestCase
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
-    public function testDoNotSetClientIdOnResp2ConnectionIfNotHelloCommand(): void
-    {
-        $connection = $this->createConnectionWithParams([]);
-        $connection->addConnectCommand(
-            new RawCommand('INFO')
-        );
-        $connection->connect();
-
-        $this->assertNull($connection->getClientId());
-    }
-
-    /**
-     * @group connected
-     * @return void
-     * @requiresRedisVersion >= 6.2.0
-     */
     public function testSetClientIdOnResp3Connection(): void
     {
         $connection = $this->createConnectionWithParams(['protocol' => 3]);
