@@ -127,7 +127,6 @@ class ZREVRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testReturnsElementsInRange(): void
     {
@@ -150,7 +149,6 @@ class ZREVRANGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requiresRedisVersion >= 6.0.0
-     * @group relay-incompatible
      */
     public function testReturnsElementsInRangeResp3(): void
     {

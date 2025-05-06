@@ -90,7 +90,6 @@ class BFMADD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
