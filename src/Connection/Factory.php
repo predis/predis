@@ -164,10 +164,10 @@ class Factory implements FactoryInterface
     {
         $parameters = $connection->getParameters();
 
-        if (isset($parameters->password) && strlen($parameters->password)) {
+        if (!empty($parameters->password)) {
             $cmdAuthArgs = [$parameters->protocol, 'AUTH'];
 
-            if (!isset($parameters->username) || !strlen($parameters->username)) {
+            if (empty($parameters->username)) {
                 $parameters->username = 'default';
             }
 

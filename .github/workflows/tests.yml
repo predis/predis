@@ -156,11 +156,13 @@ jobs:
       - name: Run tests against cluster using Relay
         if: ${{ matrix.php != '8.4' && matrix.redis == '7.4' }}
         run: |
+          sleep 5
           vendor/bin/phpunit -c phpunit.relay.xml --group cluster
 
       - name: Run tests against cluster using Relay with coverage
         if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
         run: |
+          sleep 5
           vendor/bin/phpunit -c phpunit.relay.xml --group cluster --coverage-php build/cov/coverage-cluster-relay.cov --coverage-filter ./src
 
       - name: Merge coverage reports
