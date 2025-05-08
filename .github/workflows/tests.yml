@@ -129,6 +129,14 @@ jobs:
         if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
         run: vendor/bin/phpunit -c phpunit.relay.xml --coverage-php build/cov/coverage-relay.cov --coverage-filter ./src
 
+      - name: Run tests against unprotected Redis
+        if: ${{ matrix.php != '8.4' || matrix.redis != '7.4' }}
+        run: vendor/bin/phpunit --group unprotected
+
+      - name: Run tests with coverage
+        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
+        run: vendor/bin/phpunit --group unprotected --coverage-php build/cov/coverage-unprotected.cov --coverage-filter ./src
+
       - name: Run stack tests
         if: ${{ (matrix.php != '8.4' || matrix.redis != '7.4') && matrix.redis >= '7.2' }}
         run: vendor/bin/phpunit --group realm-stack
