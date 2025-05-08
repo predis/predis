@@ -80,6 +80,7 @@ jobs:
 
       - name: Start Redis unprotected image
         uses: hoverkraft-tech/compose-action@v2.0.1
+        if: ${{ matrix.redis > '4.0' }}
         with:
           compose-file: .github/docker-compose.yml
           services: redis-unprotected
@@ -133,7 +134,7 @@ jobs:
         if: ${{ matrix.php != '8.4' || matrix.redis != '7.4' }}
         run: vendor/bin/phpunit --group unprotected
 
-      - name: Run tests with coverage
+      - name: Run tests against unprotected Redis with coverage
         if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
         run: vendor/bin/phpunit --group unprotected --coverage-php build/cov/coverage-unprotected.cov --coverage-filter ./src
 
