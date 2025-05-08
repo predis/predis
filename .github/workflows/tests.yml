@@ -78,6 +78,12 @@ jobs:
           compose-file: .github/docker-compose.yml
           services: ${{ env.DOCKER_SERVICE }}
 
+      - name: Start Redis unprotected image
+        uses: hoverkraft-tech/compose-action@v2.0.1
+        with:
+          compose-file: .github/docker-compose.yml
+          services: redis-unprotected
+
       - name: Start Redis stack image
         id: stack_infra
         uses: hoverkraft-tech/compose-action@v2.0.1

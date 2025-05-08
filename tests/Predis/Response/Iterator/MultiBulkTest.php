@@ -14,7 +14,6 @@ namespace Predis\Response\Iterator;
 
 use Predis\Client;
 use Predis\ClientInterface;
-use Predis\Command\RawCommand;
 use Predis\Connection\CompositeStreamConnection;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 use PredisTestCase;
@@ -26,10 +25,10 @@ class MultiBulkTest extends PredisTestCase
 {
     /**
      * @group connected
+     * @group unprotected
      */
     public function testIterableMultibulk(): void
     {
-        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
@@ -57,10 +56,10 @@ class MultiBulkTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      */
     public function testDropWithFalseConsumesResponseFromUnderlyingConnection(): void
     {
-        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
@@ -74,10 +73,10 @@ class MultiBulkTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      */
     public function testDropWithTrueDropsUnderlyingConnection(): void
     {
-        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
@@ -91,10 +90,10 @@ class MultiBulkTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      */
     public function testGarbageCollectorDropsUnderlyingConnection(): void
     {
-        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->rpush('metavars', 'foo', 'hoge', 'lol');
 
@@ -124,19 +123,6 @@ class MultiBulkTest extends PredisTestCase
         $protocol->useIterableMultibulk(true);
 
         $connection = new CompositeStreamConnection($parameters, $protocol);
-
-        if (isset($parameters->password) && strlen($parameters->password)) {
-            if (!isset($parameters->username) || !strlen($parameters->username)) {
-                $parameters->username = 'default';
-            }
-
-            $connection->addConnectCommand(
-                new RawCommand(
-                    'HELLO',
-                    [$parameters->protocol, 'AUTH', $parameters->username, $parameters->password]
-                )
-            );
-        }
 
         $client = new Client($connection);
         $client->connect();

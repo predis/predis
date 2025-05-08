@@ -39,6 +39,24 @@ services:
       - clients
       - standalone
 
+  redis-unprotected:
+    image: ${REDIS_IMAGE_NAME:-redislabs/client-libs-test:7.4.2}
+    container_name: redis-unprotected
+    environment:
+      - TLS_ENABLED=no
+      - REDIS_CLUSTER=no
+      - PORT=6379
+      - TLS_PORT=6666
+    command: ${REDIS_EXTRA_ARGS:---enable-debug-command yes --enable-module-command yes --tls-auth-clients optional --save ""}
+    ports:
+      - 6380:6379
+    volumes:
+      - "./dockers/unprotected:/redis/work"
+    profiles:
+      - all
+      - clients
+      - unprotected
+
   redis-cluster:
     image: ${REDIS_IMAGE_NAME:-redislabs/client-libs-test:7.4.2}
     container_name: redis-cluster

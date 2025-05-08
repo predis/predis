@@ -14,7 +14,6 @@ namespace Predis\Response\Iterator;
 
 use Predis\Client;
 use Predis\ClientInterface;
-use Predis\Command\RawCommand;
 use Predis\Connection\CompositeStreamConnection;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
@@ -60,10 +59,10 @@ class MultiBulkTupleTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      */
     public function testIterableMultibulk(): void
     {
-        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
@@ -94,10 +93,10 @@ class MultiBulkTupleTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      */
     public function testGarbageCollectorDropsUnderlyingConnection(): void
     {
-        $this->markTestSkipped('Skipped due to a bug. See MultiBulk::__destruct()');
         $client = $this->getClient();
         $client->zadd('metavars', 1, 'foo', 2, 'hoge', 3, 'lol');
 
@@ -128,19 +127,6 @@ class MultiBulkTupleTest extends PredisTestCase
         $protocol->useIterableMultibulk(true);
 
         $connection = new CompositeStreamConnection($parameters, $protocol);
-
-        if (isset($parameters->password) && strlen($parameters->password)) {
-            if (!isset($parameters->username) || !strlen($parameters->username)) {
-                $parameters->username = 'default';
-            }
-
-            $connection->addConnectCommand(
-                new RawCommand(
-                    'HELLO',
-                    [$parameters->protocol, 'AUTH', $parameters->username, $parameters->password]
-                )
-            );
-        }
 
         $client = new Client($connection);
         $client->connect();

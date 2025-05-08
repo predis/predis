@@ -172,12 +172,23 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
             return $this->prepareClusterEndpoints();
         }
 
+        $password = getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD');
+
+        if ($this->isStackTest()) {
+            $port = getenv('REDIS_STACK_SERVER_PORT');
+        } elseif ($this->isUnprotectedTest()) {
+            $port = constant('REDIS_UNPROTECTED_SERVER_PORT');
+            $password = '';
+        } else {
+            $port = constant('REDIS_SERVER_PORT');
+        }
+
         return [
             'scheme' => 'tcp',
             'host' => constant('REDIS_SERVER_HOST'),
-            'port' => ($this->isStackTest()) ? getenv('REDIS_STACK_SERVER_PORT') : constant('REDIS_SERVER_PORT'),
+            'port' => $port,
             'database' => constant('REDIS_SERVER_DBNUM'),
-            'password' => getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD'),
+            'password' => $password,
         ];
     }
 
@@ -603,6 +614,22 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
 
         return isset($annotations['class']['group'])
         && in_array('realm-stack', $annotations['class']['group'], true);
+    }
+
+    /**
+     * Check annotations if it's matches to unprotected test scenario.
+     *
+     * @return bool
+     */
+    protected function isUnprotectedTest(): bool
+    {
+        $annotations = TestUtil::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
+
+        return isset($annotations['method']['group'])
+            && in_array('unprotected', $annotations['method']['group'], true);
     }
 
     /**

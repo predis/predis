@@ -29,6 +29,7 @@
             <group>cluster</group>
             <group>gears</group>
             <group>gears-cluster</group>
+            <group>unprotected</group>
             <!-- <group>connected</group> -->
             <!-- <group>disconnected</group> -->
             <!-- <group>commands</group> -->
@@ -45,6 +46,7 @@
     <php>
         <const name="REDIS_SERVER_HOST" value="127.0.0.1" />
         <const name="REDIS_SERVER_PORT" value="6379" />
+        <const name="REDIS_UNPROTECTED_SERVER_PORT" value="6380" />
         <const name="REDIS_SERVER_DBNUM" value="0" />
         <const name="REDIS_PASSWORD" value="foobar" />
         <env name="USE_RELAY" value="false" />
