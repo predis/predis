@@ -28,6 +28,9 @@
 ### Fixed
 - Fixed single persistent connection using the same resource (#1512)
 
+### Maintenance
+- Revisit incompatible tests against Relay (#1537)
+
 ## v2.4.0 (2025-04-30)
 ### Added
 - Added new hash-field expiration commands (#1520)

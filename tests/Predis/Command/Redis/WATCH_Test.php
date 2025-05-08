@@ -17,7 +17,6 @@ use Predis\Command\PrefixableCommand;
 /**
  * @group commands
  * @group realm-transaction
- * @group relay-incompatible
  */
 class WATCH_Test extends PredisCommandTestCase
 {
@@ -92,6 +91,7 @@ class WATCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.2.0
      */
     public function testAbortsTransactionOnExternalWriteOperations(): void
@@ -111,6 +111,7 @@ class WATCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 6.0.0
      */
     public function testAbortsTransactionOnExternalWriteOperationsResp3(): void
@@ -130,6 +131,7 @@ class WATCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.2.0
      */
     public function testWatchMultipleKeysAsListAbortsTransactionOnExternalWriteOperations(): void
@@ -149,6 +151,7 @@ class WATCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.2.0
      */
     public function testCanWatchNotYetExistingKeys(): void
@@ -171,7 +174,7 @@ class WATCH_Test extends PredisCommandTestCase
     public function testThrowsExceptionWhenCallingInsideTransaction(): void
     {
         $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessage('ERR WATCH inside MULTI is not allowed');
+        $this->expectExceptionMessage('WATCH inside MULTI is not allowed');
 
         $redis = $this->getClient();
 
