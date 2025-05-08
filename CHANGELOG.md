@@ -4,6 +4,10 @@
 ### Fixed
 - fix(auth): Adds default user if only password used for authentication (#1535)
 
+## Unreleased
+### Maintenance
+- Testing with Redis 8.0.1 (#1538)
+
 ## v3.0.0 (2025-05-02)
 ### Added
 - ⚠️ Added support for transactions for clustered connections (#1497)
