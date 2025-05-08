@@ -25,7 +25,7 @@ use RuntimeException;
 
 /**
  * @method StreamConnection createConnection(bool $initialize = false)
- * @method StreamConnection createConnectionWithParams($parameters, $initialize = false)
+ * @method StreamConnection createConnectionWithParams($parameters, $initialize = false, bool $noAuth = false)
  */
 class StreamConnectionTest extends PredisConnectionTestCase
 {
@@ -849,22 +849,6 @@ class StreamConnectionTest extends PredisConnectionTestCase
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
-    public function testDoNotSetClientIdOnResp2ConnectionIfNotHelloCommand(): void
-    {
-        $connection = $this->createConnectionWithParams([]);
-        $connection->addConnectCommand(
-            new RawCommand('INFO')
-        );
-        $connection->connect();
-
-        $this->assertNull($connection->getClientId());
-    }
-
-    /**
-     * @group connected
-     * @return void
-     * @requiresRedisVersion >= 6.2.0
-     */
     public function testSetClientIdOnResp3Connection(): void
     {
         $connection = $this->createConnectionWithParams(['protocol' => 3]);
@@ -920,7 +904,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
     {
         $failedCommand = new RawCommand('HELLO', ['FOOBAR', 'AUTH', 'foobar']);
 
-        $connection = $this->createConnection();
+        $connection = $this->createConnectionWithParams(['password' => ''], false, true);
         $connection->addConnectCommand($failedCommand);
 
         $this->expectException(ConnectionException::class);

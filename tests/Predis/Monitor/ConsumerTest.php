@@ -211,6 +211,7 @@ class ConsumerTest extends PredisTestCase
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
+            'password' => getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD'),
             // Prevents suite from handing on broken test
             'read_write_timeout' => 2,
         ];

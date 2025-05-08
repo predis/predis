@@ -25,6 +25,7 @@ class MultiBulkTest extends PredisTestCase
 {
     /**
      * @group connected
+     * @group unprotected
      */
     public function testIterableMultibulk(): void
     {
@@ -55,6 +56,7 @@ class MultiBulkTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      */
     public function testDropWithFalseConsumesResponseFromUnderlyingConnection(): void
     {
@@ -71,6 +73,7 @@ class MultiBulkTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      */
     public function testDropWithTrueDropsUnderlyingConnection(): void
     {
@@ -87,6 +90,7 @@ class MultiBulkTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      */
     public function testGarbageCollectorDropsUnderlyingConnection(): void
     {

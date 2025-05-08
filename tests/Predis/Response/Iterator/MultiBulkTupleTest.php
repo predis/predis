@@ -59,6 +59,7 @@ class MultiBulkTupleTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      */
     public function testIterableMultibulk(): void
     {
@@ -92,6 +93,7 @@ class MultiBulkTupleTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      */
     public function testGarbageCollectorDropsUnderlyingConnection(): void
     {

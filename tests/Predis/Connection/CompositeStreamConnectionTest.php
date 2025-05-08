@@ -69,6 +69,7 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
         /** @var CompositeConnectionInterface */
         $connection = $this->createConnection(true);
         $commands = $this->getCommandFactory();
+        $connection->connect();
 
         $connection->getProtocol()->useIterableMultibulk(true);
 
