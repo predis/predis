@@ -1,5 +1,9 @@
 ## Changelog
 
+## Unreleased
+### Maintenance
+- Testing with Redis 8.0.1 (#1538)
+
 ## v3.0.0 (2025-05-02)
 ### Added
 - ⚠️ Added support for transactions for clustered connections (#1497)
