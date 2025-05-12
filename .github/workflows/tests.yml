@@ -131,7 +131,7 @@ jobs:
         run: vendor/bin/phpunit -c phpunit.relay.xml --coverage-php build/cov/coverage-relay.cov --coverage-filter ./src
 
       - name: Run tests against unprotected Redis
-        if: ${{ matrix.php != '8.4' || matrix.redis != '7.4' }}
+        if: ${{ (matrix.php != '8.4' || matrix.redis != '7.4') &&  matrix.redis > '4.0'}}
         run: vendor/bin/phpunit --group unprotected
 
       - name: Run tests against unprotected Redis with coverage
