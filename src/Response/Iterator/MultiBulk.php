@@ -40,8 +40,6 @@ class MultiBulk extends MultiBulkIterator
      */
     public function __destruct()
     {
-        // TODO: Disconnect on every iterator makes it fail during handshake
-        // TODO: (e.g connect() iterates over commands and eventually disconnects which kill the resource and makes connection broken)
         $this->drop(true);
     }
 

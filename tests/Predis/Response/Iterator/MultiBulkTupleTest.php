@@ -14,6 +14,7 @@ namespace Predis\Response\Iterator;
 
 use Predis\Client;
 use Predis\ClientInterface;
+use Predis\Command\RawCommand;
 use Predis\Connection\CompositeStreamConnection;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
@@ -59,7 +60,6 @@ class MultiBulkTupleTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group unprotected
      */
     public function testIterableMultibulk(): void
     {
@@ -93,7 +93,6 @@ class MultiBulkTupleTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group unprotected
      */
     public function testGarbageCollectorDropsUnderlyingConnection(): void
     {
@@ -127,6 +126,12 @@ class MultiBulkTupleTest extends PredisTestCase
         $protocol->useIterableMultibulk(true);
 
         $connection = new CompositeStreamConnection($parameters, $protocol);
+        $connection->addConnectCommand(
+            new RawCommand(
+                'AUTH',
+                ['default', getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD')]
+            )
+        );
 
         $client = new Client($connection);
         $client->connect();
