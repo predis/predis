@@ -18,7 +18,6 @@ use Predis\Consumer\Push\PushResponse;
 /**
  * @group commands
  * @group realm-pubsub
- * @group relay-incompatible
  */
 class UNSUBSCRIBE_Test extends PredisCommandTestCase
 {
@@ -98,6 +97,7 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testDoesNotSwitchToSubscribeMode(): void
@@ -110,6 +110,7 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 6.0.0
      */
     public function testDoesNotSwitchToSubscribeModeResp3(): void
@@ -123,6 +124,7 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testUnsubscribesFromNotSubscribedChannels(): void
@@ -134,6 +136,7 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testUnsubscribesFromSubscribedChannels(): void
@@ -146,6 +149,7 @@ class UNSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testUnsubscribesFromAllSubscribedChannels(): void

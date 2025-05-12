@@ -18,7 +18,6 @@ use Predis\Consumer\Push\PushResponse;
 /**
  * @group commands
  * @group realm-pubsub
- * @group relay-incompatible
  */
 class SUBSCRIBE_Test extends PredisCommandTestCase
 {
@@ -98,6 +97,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsTheFirstSubscribedChannelDetails(): void
@@ -109,6 +109,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 6.0.0
      */
     public function testReturnsTheFirstSubscribedChannelDetailsResp3(): void
@@ -121,6 +122,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendSubscribeAfterSubscribe(): void
@@ -133,6 +135,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendPsubscribeAfterSubscribe(): void
@@ -145,6 +148,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendUnsubscribeAfterSubscribe(): void
@@ -158,6 +162,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendPunsubscribeAfterSubscribe(): void
@@ -171,6 +176,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendQuitAfterSubscribe(): void
@@ -184,6 +190,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCannotSendOtherCommandsAfterSubscribe(): void

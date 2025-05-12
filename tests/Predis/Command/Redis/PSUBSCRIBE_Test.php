@@ -18,7 +18,6 @@ use Predis\Consumer\Push\PushResponse;
 /**
  * @group commands
  * @group realm-pubsub
- * @group relay-incompatible
  */
 class PSUBSCRIBE_Test extends PredisCommandTestCase
 {
@@ -40,6 +39,7 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group disconnected
+     * @group relay-incompatible
      */
     public function testFilterArguments(): void
     {
@@ -98,6 +98,7 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsTheFirstPsubscribedChannelDetails(): void
@@ -109,6 +110,7 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 6.0.0
      */
     public function testReturnsTheFirstPsubscribedChannelDetailsResp3(): void
@@ -121,6 +123,7 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendPsubscribeAfterPsubscribe(): void
@@ -133,6 +136,7 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendSubscribeAfterPsubscribe(): void
@@ -145,6 +149,7 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendUnsubscribeAfterPsubscribe(): void
@@ -158,6 +163,7 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendPunsubscribeAfterPsubscribe(): void
@@ -171,6 +177,7 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendQuitAfterPsubscribe(): void
@@ -184,6 +191,7 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCannotSendOtherCommandsAfterPsubscribe(): void
