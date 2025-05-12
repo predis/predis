@@ -123,7 +123,7 @@ class MultiBulkTest extends PredisTestCase
         $connection->addConnectCommand(
             new RawCommand(
                 'AUTH',
-                ['default', getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD')]
+                [getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD')]
             )
         );
 
