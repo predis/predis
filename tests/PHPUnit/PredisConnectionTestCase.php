@@ -156,7 +156,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testDisconnectForcesDisconnection(): void
     {
@@ -183,7 +182,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testGetResourceForcesConnection(): void
     {
@@ -265,7 +263,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testWritesCommandToServer(): void
     {
@@ -287,7 +284,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testReadsCommandFromServer(): void
     {
@@ -310,7 +306,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testIsAbleToWriteMultipleCommandsAndReadThemBackForPipelining(): void
     {
@@ -377,7 +372,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testReadsStatusResponses(): void
     {
@@ -398,7 +392,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testReadsBulkResponses(): void
     {
@@ -416,7 +409,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testReadsIntegerResponses(): void
     {
@@ -431,7 +423,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testReadsErrorResponsesAsResponseErrorObjects(): void
     {
@@ -449,7 +440,6 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testReadsMultibulkResponsesAsArrays(): void
     {
