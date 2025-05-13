@@ -307,7 +307,7 @@ class FactoryTest extends PredisTestCase
             ->expects($this->exactly(4))
             ->method('addConnectCommand')
             ->withConsecutive(
-                [$this->isRedisCommand('HELLO', [2, 'AUTH', 'foobar', 'SETNAME', 'predis'])],
+                [$this->isRedisCommand('HELLO', [2, 'AUTH', 'default', 'foobar', 'SETNAME', 'predis'])],
                 [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
                 [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])],
                 [$this->isRedisCommand('SELECT', ['0'])]
@@ -338,7 +338,7 @@ class FactoryTest extends PredisTestCase
         $connection->expects($this->exactly(3))
             ->method('addConnectCommand')
             ->withConsecutive(
-                [$this->isRedisCommand('HELLO', [2, 'AUTH', 'foobar', 'SETNAME', 'predis'])],
+                [$this->isRedisCommand('HELLO', [2, 'AUTH', 'default', 'foobar', 'SETNAME', 'predis'])],
                 [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
                 [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])]
             );
