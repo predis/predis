@@ -14,6 +14,7 @@ namespace Predis\Response\Iterator;
 
 use Predis\Client;
 use Predis\ClientInterface;
+use Predis\Command\RawCommand;
 use Predis\Connection\CompositeStreamConnection;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 use PredisTestCase;
@@ -119,6 +120,12 @@ class MultiBulkTest extends PredisTestCase
         $protocol->useIterableMultibulk(true);
 
         $connection = new CompositeStreamConnection($parameters, $protocol);
+        $connection->addConnectCommand(
+            new RawCommand(
+                'AUTH',
+                [getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD')]
+            )
+        );
 
         $client = new Client($connection);
         $client->connect();

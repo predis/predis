@@ -14,6 +14,7 @@ namespace Predis\Connection;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
 use PredisTestCase;
 
 /**
@@ -492,6 +493,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
+            'password' => getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD'),
             'read_write_timeout' => 2,
         ];
     }
@@ -529,9 +531,9 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      *
      * @return NodeConnectionInterface
      */
-    protected function createConnection(bool $initialize = false): NodeConnectionInterface
+    protected function createConnection(bool $initialize = false, bool $noAuth = false): NodeConnectionInterface
     {
-        return $this->createConnectionWithParams([], $initialize);
+        return $this->createConnectionWithParams([], $initialize, $noAuth);
     }
 
     /**
@@ -542,8 +544,11 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      *
      * @return NodeConnectionInterface
      */
-    protected function createConnectionWithParams($parameters, $initialize = false): NodeConnectionInterface
-    {
+    protected function createConnectionWithParams(
+        $parameters,
+        $initialize = false,
+        bool $noAuth = false
+    ): NodeConnectionInterface {
         $class = $this->getConnectionClass();
         $commands = $this->getCommandFactory();
 
@@ -552,6 +557,21 @@ abstract class PredisConnectionTestCase extends PredisTestCase
         }
 
         $connection = new $class($parameters);
+
+        if (!$noAuth) {
+            if (isset($parameters->password) && strlen($parameters->password)) {
+                if (!isset($parameters->username) || !strlen($parameters->username)) {
+                    $parameters->username = 'default';
+                }
+
+                $connection->addConnectCommand(
+                    new RawCommand(
+                        'HELLO',
+                        [$parameters->protocol, 'AUTH', $parameters->username, $parameters->password]
+                    )
+                );
+            }
+        }
 
         if ($initialize) {
             $connection->addConnectCommand(

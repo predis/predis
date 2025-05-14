@@ -1,4 +1,8 @@
 ## Changelog
+## Unreleased
+
+### Fixed
+- fix(auth): Adds default user if only password used for authentication (#1535)
 
 ## Unreleased
 ### Maintenance

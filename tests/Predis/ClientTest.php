@@ -1380,6 +1380,46 @@ class ClientTest extends PredisTestCase
         $this->assertSame('value', $client->get('key'));
     }
 
+    /**
+     * @group connected
+     * @group unprotected
+     * @requiresRedisVersion >= 2.0.0
+     * @return void
+     */
+    public function testClientAuthenticationAgainstUnprotectedServer(): void
+    {
+        $client = new Client($this->getParameters());
+
+        $this->assertEquals('OK', $client->set('key', 'value'));
+        $this->assertSame('value', $client->get('key'));
+
+        // AUTH doesn't throw exception if no authentication requires.
+        $clientWithPassword = new Client($this->getParameters(
+            ['password' => getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD')])
+        );
+        $this->assertEquals('OK', $clientWithPassword->set('key', 'value'));
+        $this->assertSame('value', $clientWithPassword->get('key'));
+
+        $this->assertEquals(
+            'OK',
+            $client->acl->setUser(
+                'test_user',
+                'on',
+                '>foobar',
+                'allcommands',
+                'allkeys'
+            )
+        );
+
+        $clientTestUser = new Client($this->getParameters(
+            ['username' => 'test_user', 'password' => 'foobar'])
+        );
+        $this->assertEquals('test_user', $clientTestUser->acl->whoami());
+        $this->assertEquals('OK', $clientTestUser->set('key', 'value'));
+        $this->assertSame('value', $clientTestUser->get('key'));
+        $this->assertEquals(1, $clientTestUser->acl->delUser('test_user'));
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

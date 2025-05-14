@@ -17,8 +17,10 @@ use Predis\Response\Status;
 /**
  * @method array  cat(string $category = null)
  * @method Status dryRun(string $username, string $command, ...$arguments)
+ * @method int    delUser(string ...$username)
  * @method array  getUser(string $username)
  * @method Status setUser(string $username, string ...$rules)
+ * @method string whoami()
  */
 class ACL extends AbstractContainer
 {
