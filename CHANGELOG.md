@@ -1,12 +1,9 @@
 ## Changelog
-## Unreleased
+
+## v3.0.1 (2025-05-16)
 
 ### Fixed
-- fix(auth): Adds default user if only password used for authentication (#1535)
-
-## Unreleased
-### Maintenance
-- Testing with Redis 8.0.1 (#1538)
+- Send `default` user if only password is used for authentication (#1535)
 
 ## v3.0.0 (2025-05-02)
 ### Added
