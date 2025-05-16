@@ -1,7 +1,11 @@
 ## Changelog
 
-## v3.0.1 (2025-05-16)
+## Unreleased
+### Added
+### Changed
+### Fixed
 
+## v3.0.1 (2025-05-16)
 ### Fixed
 - Send `default` user if only password is used for authentication (#1535)
 
