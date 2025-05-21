@@ -316,9 +316,13 @@ class StreamConnection extends AbstractConnection
             if (in_array('AUTH', $failedCommand->getArguments(), true)) {
                 $parameters = $this->getParameters();
 
-                $auth = new RawCommand('AUTH', [$parameters->username, $parameters->password]);
+                // If Redis <= 6.0
+                $auth = new RawCommand('AUTH', [$parameters->password]);
                 $response = $this->executeCommand($auth);
-                $this->handleOnConnectResponse($response, $auth);
+
+                if ($response instanceof ErrorResponseInterface) {
+                    $this->onConnectionError("Failed: {$response->getMessage()}");
+                }
             }
 
             $setName = new RawCommand('CLIENT', ['SETNAME', 'predis']);

@@ -1,8 +1,13 @@
 ## Changelog
 
 ## Unreleased
-### Maintenance
-- Testing with Redis 8.0.1 (#1538)
+### Added
+### Changed
+### Fixed
+
+## v3.0.1 (2025-05-16)
+### Fixed
+- Send `default` user if only password is used for authentication (#1535)
 
 ### Changed
 - Handle `LOADING` errors from Sentinel replicas (#1536)
