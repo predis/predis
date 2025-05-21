@@ -715,6 +715,9 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
         while ($retries <= $this->retryLimit) {
             try {
                 $response = $this->getConnectionByCommand($command)->$method($command);
+                if ($response instanceof Error && $response->getErrorType() === 'LOADING') {
+                    throw new ConnectionException($this->current, $response->getMessage());
+                }
                 break;
             } catch (CommunicationException $exception) {
                 $this->wipeServerList();
