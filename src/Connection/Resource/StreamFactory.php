@@ -168,7 +168,11 @@ class StreamFactory implements StreamFactoryInterface
             $options['crypto_type'] = STREAM_CRYPTO_METHOD_TLS_CLIENT;
         }
 
-        if (!stream_context_set_option($resource, ['ssl' => $options])) {
+        $context_options = function_exists('stream_context_set_options')
+            ? stream_context_set_options($resource, ['ssl' => $options])
+            : stream_context_set_option($resource, ['ssl' => $options]);
+
+        if (!$context_options) {
             $this->onInitializationError($resource, $parameters, 'Error while setting SSL context options');
         }
 
