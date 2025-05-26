@@ -1,9 +1,8 @@
 ## Changelog
 
 ## Unreleased
-### Added
-### Changed
 ### Fixed
+- Fixed PHP 8.4 deprecated call to `stream_context_set_option()`
 
 ## v3.0.1 (2025-05-16)
 ### Fixed
