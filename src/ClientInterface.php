@@ -300,7 +300,7 @@ use Predis\Response\Status;
  * @method array|null        xread(int $count = null, int $block = null, array $streams = null, string ...$id)
  * @method int               zadd(string $key, array $membersAndScoresDictionary)
  * @method int               zcard(string $key)
- * @method string            zcount(string $key, int|string $min, int|string $max)
+ * @method int               zcount(string $key, int|string $min, int|string $max)
  * @method array             zdiff(array $keys, bool $withScores = false)
  * @method int               zdiffstore(string $destination, array $keys)
  * @method string            zincrby(string $key, int $increment, string $member)

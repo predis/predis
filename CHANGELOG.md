@@ -1,5 +1,9 @@
 ## Changelog
 
+## Unreleased
+### Fixed
+- Fixed return type for `ZCOUNT` to be `int`
+
 ## v2.4.0 (2025-04-30)
 ### Added
 - Added new hash-field expiration commands (#1520)
