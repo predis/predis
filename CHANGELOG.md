@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Fixed
-- Fixed PHP 8.4 deprecated call to `stream_context_set_option()`
+- Fixed PHP 8.4 deprecated call to `stream_context_set_option()` (#1545)
 - Fixed return type for `ZCOUNT` to be `int` (#1547)
 
 ## v3.0.1 (2025-05-16)
