@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Fixed
-- Fixed return type for `ZCOUNT` to be `int`
+- Fixed return type for `ZCOUNT` to be `int` (#1546)
 
 ## v2.4.0 (2025-04-30)
 ### Added
