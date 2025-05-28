@@ -3,6 +3,7 @@
 ## Unreleased
 ### Fixed
 - Fixed PHP 8.4 deprecated call to `stream_context_set_option()`
+- fix(stream): Fixed return type to match function signature (#1548)
 
 ## v3.0.1 (2025-05-16)
 ### Fixed
