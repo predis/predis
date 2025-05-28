@@ -1,6 +1,9 @@
 ## Changelog
 
 ## Unreleased
+### Changed
+- Handle and retry `LOADING` errors from Sentinel replicas (#1536)
+
 ### Fixed
 - Fixed PHP 8.4 deprecated call to `stream_context_set_option()` (#1545)
 - Fixed return type for `ZCOUNT` to be `int` (#1547)
