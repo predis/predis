@@ -15,6 +15,7 @@ namespace Predis\Connection;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Predis\Command\RawCommand;
+use Predis\CommunicationException;
 use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Connection\Resource\StreamFactoryInterface;
 use Predis\Consumer\Push\PushResponse;
@@ -463,7 +464,7 @@ class StreamConnectionTest extends PredisConnectionTestCase
 
         $connection = new StreamConnection($parameters, $this->mockStreamFactory);
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(CommunicationException::class);
         $this->expectExceptionMessage('Stream is already at the end');
 
         $connection->read();
