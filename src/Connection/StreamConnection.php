@@ -145,7 +145,7 @@ class StreamConnection extends AbstractConnection
         $stream = $this->getResource();
 
         if ($stream->eof()) {
-            $this->onStreamError(new RuntimeException('Stream is already at the end'), '');
+            $this->onStreamError(new RuntimeException('', 1), 'Stream is already at the end');
         }
 
         try {
