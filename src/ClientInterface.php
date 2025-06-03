@@ -347,7 +347,7 @@ use Predis\Response\Status;
  * @method mixed             multi()
  * @method mixed             unwatch()
  * @method array             unsubscribe(string ...$channels)
- * @method bool              vadd(string $key, string|array $vector, string $elem, ?int $dim = null, bool $cas = false, ?string $quant = VADD::QUANT_DEFAULT, ?int $bef = null, string|array $attributes = null, ?int $numlinks = null)
+ * @method bool              vadd(string $key, string|array $vector, string $elem, int $dim = null, bool $cas = false, string $quant = VADD::QUANT_DEFAULT, int $bef = null, string|array $attributes = null, int $numlinks = null)
  * @method int               vcard(string $key)
  * @method int               vdim(string $key)
  * @method array             vemb(string $key, string $elem, bool $raw = false)
