@@ -87,7 +87,7 @@ class VEMB_Test extends PredisCommandTestCase
         }
 
         // no RAW response
-        if ($quantisation !== VADD::$QUANT_BIN) {
+        if ($quantisation !== VADD::QUANT_BIN) {
             $this->assertEqualsWithDelta([0.1, 0.2, 0.3, 0.4], $redis->vemb('key', 'elem1'), 0.1);
         } else {
             // Binary quantisation stores any vector > 0 as 1 and < 0 as 0
@@ -119,7 +119,7 @@ class VEMB_Test extends PredisCommandTestCase
         }
 
         // no RAW response
-        if ($quantisation !== VADD::$QUANT_BIN) {
+        if ($quantisation !== VADD::QUANT_BIN) {
             $this->assertEqualsWithDelta([0.1, 0.2, 0.3, 0.4], $redis->vemb('key', 'elem1'), 0.1);
         } else {
             // Binary quantisation stores any vector > 0 as 1 and < 0 as 0
@@ -143,6 +143,6 @@ class VEMB_Test extends PredisCommandTestCase
 
     public function quantisationProvider(): array
     {
-        return [[VADD::$QUANT_DEFAULT], [VADD::$QUANT_Q8], [VADD::$QUANT_BIN], [VADD::$QUANT_NOQUANT]];
+        return [[VADD::QUANT_DEFAULT], [VADD::QUANT_Q8], [VADD::QUANT_BIN], [VADD::QUANT_NOQUANT]];
     }
 }

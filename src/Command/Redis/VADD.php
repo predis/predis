@@ -17,10 +17,10 @@ use UnexpectedValueException;
 
 class VADD extends RedisCommand
 {
-    public static $QUANT_DEFAULT;
-    public static $QUANT_NOQUANT = 'NOQUANT';
-    public static $QUANT_BIN = 'BIN';
-    public static $QUANT_Q8 = 'Q8';
+    const QUANT_DEFAULT = null;
+    const QUANT_NOQUANT = 'NOQUANT';
+    const QUANT_BIN = 'BIN';
+    const QUANT_Q8 = 'Q8';
 
     /**
      * {@inheritDoc}

@@ -60,7 +60,7 @@ class VADD_Test extends PredisCommandTestCase
 
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Attributes arguments should be a JSON string or associative array');
-        $command->setArguments(['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_DEFAULT, null, 1000]);
+        $command->setArguments(['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::QUANT_DEFAULT, null, 1000]);
     }
 
     /**
@@ -95,19 +95,19 @@ class VADD_Test extends PredisCommandTestCase
         );
         // With quantisation
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem4', 10, true, VADD::$QUANT_Q8)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem4', 10, true, VADD::QUANT_Q8)
         );
         // With attributes as JSON
         $this->assertTrue(
             $redis->vadd(
-                'key', [0.1, 0.2, 0.3, 0.4], 'elem5', 10, true, VADD::$QUANT_Q8, null,
+                'key', [0.1, 0.2, 0.3, 0.4], 'elem5', 10, true, VADD::QUANT_Q8, null,
                 '{"key1":"value1","key2":"value2"}'
             )
         );
         // With attributes as associative array
         $this->assertTrue(
             $redis->vadd(
-                'key', [0.1, 0.2, 0.3, 0.4], 'elem6', 10, true, VADD::$QUANT_Q8, null,
+                'key', [0.1, 0.2, 0.3, 0.4], 'elem6', 10, true, VADD::QUANT_Q8, null,
                 ['key1' => 'value1', 'key2' => 'value2']
             )
         );
@@ -136,19 +136,19 @@ class VADD_Test extends PredisCommandTestCase
         );
         // With quantisation
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem4', 10, true, VADD::$QUANT_Q8)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem4', 10, true, VADD::QUANT_Q8)
         );
         // With attributes as JSON
         $this->assertTrue(
             $redis->vadd(
-                'key', [0.1, 0.2, 0.3, 0.4], 'elem5', 10, true, VADD::$QUANT_Q8, null,
+                'key', [0.1, 0.2, 0.3, 0.4], 'elem5', 10, true, VADD::QUANT_Q8, null,
                 '{"key1":"value1","key2":"value2"}'
             )
         );
         // With attributes as associative array
         $this->assertTrue(
             $redis->vadd(
-                'key', [0.1, 0.2, 0.3, 0.4], 'elem6', 10, true, VADD::$QUANT_Q8, null,
+                'key', [0.1, 0.2, 0.3, 0.4], 'elem6', 10, true, VADD::QUANT_Q8, null,
                 ['key1' => 'value1', 'key2' => 'value2']
             )
         );
@@ -174,38 +174,38 @@ class VADD_Test extends PredisCommandTestCase
                 ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'CAS'],
             ],
             'with quantisation - NOQUANT' => [
-                ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_NOQUANT],
+                ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::QUANT_NOQUANT],
                 ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'NOQUANT'],
             ],
             'with quantisation - BIN' => [
-                ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_BIN],
+                ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::QUANT_BIN],
                 ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'BIN'],
             ],
             'with quantisation - Q8' => [
-                ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_Q8],
+                ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::QUANT_Q8],
                 ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'Q8'],
             ],
             'with EF' => [
-                ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_DEFAULT, 10],
+                ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::QUANT_DEFAULT, 10],
                 ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'EF', 10],
             ],
             'with SETATTR - JSON string' => [
                 [
-                    'key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_DEFAULT, null,
+                    'key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::QUANT_DEFAULT, null,
                     '{"key1":"value1","key2":"value2"}',
                 ],
                 ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'SETATTR', '{"key1":"value1","key2":"value2"}'],
             ],
             'with SETATTR - associative array' => [
                 [
-                    'key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_DEFAULT, null,
+                    'key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::QUANT_DEFAULT, null,
                     ['key1' => 'value1', 'key2' => 'value2'],
                 ],
                 ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'SETATTR', '{"key1":"value1","key2":"value2"}'],
             ],
             'with numlinks' => [
                 [
-                    'key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_DEFAULT, null, null, 10,
+                    'key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::QUANT_DEFAULT, null, null, 10,
                 ],
                 ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'M', 10],
             ],

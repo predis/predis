@@ -326,7 +326,7 @@ use Predis\Command\Redis\VADD;
  * @method $this unwatch()
  * @method $this waitaof(int $numLocal, int $numReplicas, int $timeout)
  * @method $this unsubscribe(string ...$channels)
- * @method $this vadd(string $key, string|array $vector, string $elem, ?int $dim = null, bool $cas = false, ?string $quant = VADD::$QUANT_DEFAULT, ?int $BEF = null, ?string|array $attributes = null, ?int $numlinks = null)
+ * @method $this vadd(string $key, string|array $vector, string $elem, ?int $dim = null, bool $cas = false, ?string $quant = VADD::QUANT_DEFAULT, ?int $BEF = null, ?string|array $attributes = null, ?int $numlinks = null)
  * @method $this vcard(string $key)
  * @method $this vdim(int $key)
  * @method $this vemb(string $key, string $elem, bool $raw = false)
