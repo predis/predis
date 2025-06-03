@@ -1,14 +1,23 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Command\Redis\Utils\VectorUtility;
 
 class VEMB_Test extends PredisCommandTestCase
 {
-
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -16,7 +25,7 @@ class VEMB_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -25,8 +34,8 @@ class VEMB_Test extends PredisCommandTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testFilterArguments(array $actualArguments, array $expectedArguments): void
@@ -70,7 +79,7 @@ class VEMB_Test extends PredisCommandTestCase
 
         // RAW response
         foreach ($redis->vemb('key', 'elem1', true) as $key => $value) {
-            if ($key <= 1){
+            if ($key <= 1) {
                 $this->assertTrue(is_string($value));
             } else {
                 $this->assertTrue(is_float($value));
@@ -78,7 +87,7 @@ class VEMB_Test extends PredisCommandTestCase
         }
 
         // no RAW response
-        if ($quantisation !== VADD::$QUANT_BIN){
+        if ($quantisation !== VADD::$QUANT_BIN) {
             $this->assertEqualsWithDelta([0.1, 0.2, 0.3, 0.4], $redis->vemb('key', 'elem1'), 0.1);
         } else {
             // Binary quantisation stores any vector > 0 as 1 and < 0 as 0
@@ -102,7 +111,7 @@ class VEMB_Test extends PredisCommandTestCase
 
         // RAW response
         foreach ($redis->vemb('key', 'elem1', true) as $key => $value) {
-            if ($key <= 1){
+            if ($key <= 1) {
                 $this->assertTrue(is_string($value));
             } else {
                 $this->assertTrue(is_float($value));
@@ -110,7 +119,7 @@ class VEMB_Test extends PredisCommandTestCase
         }
 
         // no RAW response
-        if ($quantisation !== VADD::$QUANT_BIN){
+        if ($quantisation !== VADD::$QUANT_BIN) {
             $this->assertEqualsWithDelta([0.1, 0.2, 0.3, 0.4], $redis->vemb('key', 'elem1'), 0.1);
         } else {
             // Binary quantisation stores any vector > 0 as 1 and < 0 as 0
@@ -128,7 +137,7 @@ class VEMB_Test extends PredisCommandTestCase
             'with RAW' => [
                 ['key', 'elem', true],
                 ['key', 'elem', 'RAW'],
-            ]
+            ],
         ];
     }
 

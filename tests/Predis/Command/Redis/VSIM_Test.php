@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Command\Redis\Utils\VectorUtility;
@@ -7,7 +17,7 @@ use Predis\Command\Redis\Utils\VectorUtility;
 class VSIM_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class VSIM_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -24,8 +34,8 @@ class VSIM_Test extends PredisCommandTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testFilterArguments(array $actualArguments, array $expectedArguments): void
@@ -195,7 +205,7 @@ class VSIM_Test extends PredisCommandTestCase
         return [
             'with default arguments - vector as array' => [
                 ['key', [0.1, 0.2, 0.3, 0.4]],
-                ['key', 'VALUES', 4 , 0.1, 0.2, 0.3, 0.4],
+                ['key', 'VALUES', 4, 0.1, 0.2, 0.3, 0.4],
             ],
             'with default arguments - vector as blob' => [
                 ['key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4])],

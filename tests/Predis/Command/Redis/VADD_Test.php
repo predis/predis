@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Command\Redis\Utils\VectorUtility;
@@ -25,8 +35,8 @@ class VADD_Test extends PredisCommandTestCase
 
     /**
      * @dataProvider argumentsProvider
-     * @param array $actualArguments
-     * @param array $expectedArguments
+     * @param  array $actualArguments
+     * @param  array $expectedArguments
      * @return void
      */
     public function testFilterArguments(array $actualArguments, array $expectedArguments): void
@@ -45,11 +55,11 @@ class VADD_Test extends PredisCommandTestCase
         $command = $this->getCommand();
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Vector should be rather 32 bit floating blob or array of floatings");
+        $this->expectExceptionMessage('Vector should be rather 32 bit floating blob or array of floatings');
         $command->setArguments(['key', 1000, 'elem']);
 
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage("Attributes arguments should be a JSON string or associative array");
+        $this->expectExceptionMessage('Attributes arguments should be a JSON string or associative array');
         $command->setArguments(['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_DEFAULT, null, 1000]);
     }
 
@@ -149,55 +159,55 @@ class VADD_Test extends PredisCommandTestCase
         return [
             'with default args - blob string' => [
                 ['key', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'elem'],
-                ['key', 'FP32', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'elem']
+                ['key', 'FP32', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'elem'],
             ],
             'with default args - floatings array' => [
                 ['key', [0.1, 0.2, 0.3], 'elem'],
-                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem']
+                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem'],
             ],
             'with REDUCE' => [
                 ['key', [0.1, 0.2, 0.3], 'elem', 10],
-                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'REDUCE', 10]
+                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'REDUCE', 10],
             ],
             'with CAS' => [
                 ['key', [0.1, 0.2, 0.3], 'elem', null, true],
-                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'CAS']
+                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'CAS'],
             ],
             'with quantisation - NOQUANT' => [
                 ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_NOQUANT],
-                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'NOQUANT']
+                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'NOQUANT'],
             ],
             'with quantisation - BIN' => [
                 ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_BIN],
-                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'BIN']
+                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'BIN'],
             ],
             'with quantisation - Q8' => [
                 ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_Q8],
-                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'Q8']
+                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'Q8'],
             ],
             'with EF' => [
                 ['key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_DEFAULT, 10],
-                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'EF', 10]
+                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'EF', 10],
             ],
             'with SETATTR - JSON string' => [
                 [
                     'key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_DEFAULT, null,
-                    '{"key1":"value1","key2":"value2"}'
+                    '{"key1":"value1","key2":"value2"}',
                 ],
-                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'SETATTR', '{"key1":"value1","key2":"value2"}']
+                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'SETATTR', '{"key1":"value1","key2":"value2"}'],
             ],
             'with SETATTR - associative array' => [
                 [
                     'key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_DEFAULT, null,
-                    ['key1' => 'value1', 'key2' => 'value2']
+                    ['key1' => 'value1', 'key2' => 'value2'],
                 ],
-                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'SETATTR', '{"key1":"value1","key2":"value2"}']
+                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'SETATTR', '{"key1":"value1","key2":"value2"}'],
             ],
             'with numlinks' => [
                 [
-                    'key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_DEFAULT, null, null, 10
+                    'key', [0.1, 0.2, 0.3], 'elem', null, false, VADD::$QUANT_DEFAULT, null, null, 10,
                 ],
-                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'M', 10]
+                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'M', 10],
             ],
         ];
     }
