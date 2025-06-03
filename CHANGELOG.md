@@ -7,6 +7,7 @@
 ### Fixed
 - Fixed PHP 8.4 deprecated call to `stream_context_set_option()` (#1545)
 - Fixed return type for `ZCOUNT` to be `int` (#1547)
+- fix(stream): Fixed throwing `CommunicationException` when stream is EOF (#1548)
 
 ## v3.0.1 (2025-05-16)
 ### Fixed
