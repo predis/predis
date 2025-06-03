@@ -1,7 +1,7 @@
 ## Changelog
 
 ## Unreleased
-### Added
+### Experimental
 - feat(commands): Add support for VectorSet commands (#1550)
 ### Changed
 - Handle and retry `LOADING` errors from Sentinel replicas (#1536)
