@@ -48,7 +48,7 @@ class VINFO_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $this->assertEquals(1, $this->getCommand()->parseResponse(1));
+        $this->assertEquals(['key' => 'value'], $this->getCommand()->parseResponse(['key', 'value']));
     }
 
     /**

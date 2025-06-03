@@ -167,7 +167,7 @@ class VADD_Test extends PredisCommandTestCase
             ],
             'with REDUCE' => [
                 ['key', [0.1, 0.2, 0.3], 'elem', 10],
-                ['key', 'VALUES', 3, 0.1, 0.2, 0.3, 'elem', 'REDUCE', 10],
+                ['key', 'REDUCE', 10, 'VALUES', 3, 0.1, 0.2, 0.3, 'elem'],
             ],
             'with CAS' => [
                 ['key', [0.1, 0.2, 0.3], 'elem', null, true],
