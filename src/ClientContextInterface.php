@@ -45,6 +45,7 @@ use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
 use Predis\Command\Container\Search\FTCURSOR;
 use Predis\Command\Container\XGROUP;
+use Predis\Command\Redis\VADD;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -325,6 +326,17 @@ use Predis\Command\Container\XGROUP;
  * @method $this unwatch()
  * @method $this waitaof(int $numLocal, int $numReplicas, int $timeout)
  * @method $this unsubscribe(string ...$channels)
+ * @method $this vadd(string $key, string|array $vector, string $elem, ?int $dim = null, bool $cas = false, ?string $quant = VADD::$QUANT_DEFAULT, ?int $BEF = null, ?string|array $attributes = null, ?int $numlinks = null)
+ * @method $this vcard(string $key)
+ * @method $this vdim(int $key)
+ * @method $this vemb(string $key, string $elem, bool $raw = false)
+ * @method $this vgetattr(string $key, string $elem, bool $asJson = false)
+ * @method $this vinfo(string $key)
+ * @method $this vlinks(string $key, string $elem, bool $withScores = false)
+ * @method $this vrandmember(string $key, int $count = null)
+ * @method $this vrem(string $key, string $elem)
+ * @method $this vsetattr(string $key, string $elem, string|array $attributes)
+ * @method $this vsim(string $key, string|array $vectorOrElem, bool $isElem = false, bool $withScores = false, int $count = null, int $ef = null, string $filter = null, int $filterEf = null, bool $truth = false, bool $noThread = false)
  * @method $this watch($key)
  * @method $this eval($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this eval_ro(string $script, array $keys, ...$argument)

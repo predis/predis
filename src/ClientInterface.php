@@ -47,6 +47,7 @@ use Predis\Command\Container\Search\FTCURSOR;
 use Predis\Command\Container\XGROUP;
 use Predis\Command\Container\XINFO;
 use Predis\Command\FactoryInterface;
+use Predis\Command\Redis\VADD;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Response\Status;
@@ -346,6 +347,17 @@ use Predis\Response\Status;
  * @method mixed             multi()
  * @method mixed             unwatch()
  * @method array             unsubscribe(string ...$channels)
+ * @method bool              vadd(string $key, string|array $vector, string $elem, int $dim = null, bool $cas = false, string $quant = VADD::$QUANT_DEFAULT, int $bef = null, string|array $attributes = null, ?int $numlinks = null)
+ * @method int               vcard(string $key)
+ * @method int               vdim(string $key)
+ * @method array             vemb(string $key, string $elem, bool $raw = false)
+ * @method string|array|null vgetattr(string $key, string $elem, bool $asJson = false)
+ * @method array|null        vinfo(string $key)
+ * @method array|null        vlinks(string $key, string $elem, bool $withScores = false)
+ * @method string|array|null vrandmember(string $key, int $count = null)
+ * @method bool              vrem(string $key, string $elem)
+ * @method array             vsim(string $key, string|array $vectorOrElem, bool $isElem = false, bool $withScores = false, int $count = null, int $ef = null, string $filter = null, int $filterEf = null, bool $truth = false, bool $noThread = false)
+ * @method bool              vsetattr(string $key, string $elem, string|array $attributes)
  * @method array             waitaof(int $numLocal, int $numReplicas, int $timeout)
  * @method mixed             watch(string[]|string $keyOrKeys)
  * @method mixed             eval(string $script, int $numkeys, string ...$keyOrArg = null)
