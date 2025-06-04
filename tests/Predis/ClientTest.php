@@ -1288,14 +1288,30 @@ class ClientTest extends PredisTestCase
      */
     public function testClientsCreateDifferentPersistentConnections(): void
     {
-        $client1 = new Client($this->getParameters(['database' => 14, 'persistent' => true]));
-        $client2 = new Client($this->getParameters(['database' => 15, 'persistent' => true]));
+        $client1 = new Client($this->getParameters(['database' => 14, 'persistent' => true, 'conn_uid' => 1]));
+        $client2 = new Client($this->getParameters(['database' => 15, 'persistent' => true, 'conn_uid' => 2]));
 
         $client1->set('foo', 'bar');
         $client2->set('foo', 'baz');
 
         $this->assertSame('bar', $client1->get('foo'));
         $this->assertSame('baz', $client2->get('foo'));
+        $this->assertNotSame($client1->client('ID'), $client2->client('ID'));
+    }
+
+    /**
+     * @group connected
+     */
+    public function testClientsCreateSamePersistentConnections(): void
+    {
+        $client1 = new Client($this->getParameters(['persistent' => true]));
+        $client2 = new Client($this->getParameters(['persistent' => true]));
+
+        $client1->set('foo', 'bar');
+        $client2->set('foo', 'baz');
+
+        $this->assertSame('baz', $client2->get('foo'));
+        $this->assertSame($client1->client('ID'), $client2->client('ID'));
     }
 
     /**
@@ -1307,11 +1323,11 @@ class ClientTest extends PredisTestCase
     {
         $client1 = new Client(
             $this->getDefaultParametersArray(),
-            ['cluster' => 'redis', 'parameters' => ['persistent' => true]]
+            ['cluster' => 'redis', 'parameters' => ['persistent' => true, 'conn_uid' => 1]]
         );
         $client2 = new Client(
             $this->getDefaultParametersArray(),
-            ['cluster' => 'redis', 'parameters' => ['persistent' => true]]
+            ['cluster' => 'redis', 'parameters' => ['persistent' => true, 'conn_uid' => 2]]
         );
 
         $client1->set('{shard1}foo', 'bar');
