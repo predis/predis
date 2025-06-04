@@ -144,7 +144,7 @@ To increase a performance of your application you may set up a client to use per
 client saves a time on socket creation and connection handshake. By default, connection is created on first-command
 execution and will be automatically closed by GC before the process is being killed.
 However, if your application is backed by PHP-FPM the processes are idle, and you may set up it to be persistent and
-re-usable across multiple script execution within the same process.
+reusable across multiple script execution within the same process.
 
 To enable the persistent connection mode you should provide following configuration:
 
