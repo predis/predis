@@ -1285,6 +1285,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 5.0.0
      */
     public function testClientsCreateDifferentPersistentConnections(): void
     {
@@ -1301,6 +1302,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 5.0.0
      */
     public function testClientsCreateSamePersistentConnections(): void
     {
