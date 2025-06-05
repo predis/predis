@@ -4,6 +4,7 @@ CAS
 Customizable
 ElastiCache
 FPM
+GC
 IANA
 Lua
 PSR
