@@ -1357,7 +1357,6 @@ class ClientTest extends PredisTestCase
         $this->assertSame('baz', $client2->get('foo'));
         $this->assertSame($client1->client('ID'), $client2->client('ID'));
         $client1->disconnect();
-        $client2->disconnect();
     }
 
     /**
