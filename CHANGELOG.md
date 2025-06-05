@@ -1,6 +1,9 @@
 ## Changelog
 
 ## Unreleased
+### Added
+- Add experimental support for vector sets commands (#1550)
+
 ### Changed
 - Handle and retry `LOADING` errors from Sentinel replicas (#1536)
 
