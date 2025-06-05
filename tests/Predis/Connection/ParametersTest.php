@@ -403,6 +403,17 @@ class ParametersTest extends PredisTestCase
         $this->assertSame($expected, Parameters::parse($uri));
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testSetParameters(): void
+    {
+        $parameters = new Parameters();
+        $parameters->property = 'value';
+
+        $this->assertEquals('value', $parameters->property);
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //

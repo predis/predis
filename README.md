@@ -138,6 +138,50 @@ it is still desired to have control of when the connection is opened or closed: 
 achieved by invoking `$client->connect()` and `$client->disconnect()`. Please note that the effect
 of these methods on aggregate connections may differ depending on each specific implementation.
 
+#### Persistent connections ####
+
+To increase a performance of your application you may set up a client to use persistent TCP connection, this way
+client saves a time on socket creation and connection handshake. By default, connection is created on first-command
+execution and will be automatically closed by GC before the process is being killed.
+However, if your application is backed by PHP-FPM the processes are idle, and you may set up it to be persistent and
+reusable across multiple script execution within the same process.
+
+To enable the persistent connection mode you should provide following configuration:
+
+```php
+// Standalone
+$client = new Predis\Client(['persistent' => true]);
+
+// Cluster
+$client = new Predis\Client(
+    ['tcp://host:port', 'tcp://host:port', 'tcp://host:port'],
+    ['cluster' => 'redis', 'parameters' => ['persistent' => true]]
+);
+```
+
+**Important**
+
+If you operate on multiple clients within the same application, and they communicate with the same resource, by default
+they will share the same socket (that's the default behaviour of persistent sockets). So in this case you would need
+to additionally provide a `conn_uid` identifier for each client, this way each client will create its own socket so
+the connection context won't be shared across clients. This socket behaviour explained
+[here](https://www.php.net/manual/en/function.stream-socket-client.php#105393)
+
+```php
+// Standalone
+$client1 = new Predis\Client(['persistent' => true, 'conn_uid' => 'id_1']);
+$client2 = new Predis\Client(['persistent' => true, 'conn_uid' => 'id_2']);
+
+// Cluster
+$client1 = new Predis\Client(
+    ['tcp://host:port', 'tcp://host:port', 'tcp://host:port'],
+    ['cluster' => 'redis', 'parameters' => ['persistent' => true, 'conn_uid' => 'id_1']]
+);
+$client2 = new Predis\Client(
+    ['tcp://host:port', 'tcp://host:port', 'tcp://host:port'],
+    ['cluster' => 'redis', 'parameters' => ['persistent' => true, 'conn_uid' => 'id_2']]
+);
+```
 
 ### Client configuration ###
 

@@ -41,7 +41,6 @@ class StreamConnection extends AbstractConnection
     public function __construct(ParametersInterface $parameters)
     {
         parent::__construct($parameters);
-        $this->parameters->conn_uid = spl_object_hash($this);
     }
 
     /**
