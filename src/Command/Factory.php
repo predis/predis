@@ -67,6 +67,18 @@ abstract class Factory implements FactoryInterface
             throw new ClientException("Command `$commandID` is not a registered Redis command.");
         }
 
+        $containsNamedArgument = array_reduce(
+            array_keys($arguments),
+            static function (bool $carry, $key): bool {
+                return $carry || is_string($key);
+            },
+            false
+        );
+
+        if ($containsNamedArgument) {
+            throw new ClientException('Named arguments are not supported.');
+        }
+
         $command = new $commandClass();
         $command->setArguments($arguments);
 
