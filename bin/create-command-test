@@ -15,7 +15,7 @@
 // For example, to generate a test case for SET (which is represented by the
 // Predis\Command\Redis\StringSet class):
 //
-//   $ ./bin/generate-command-test --class=StringSet
+//   $ ./bin/create-command-test --class=StringSet
 //
 // Here is a list of optional arguments:
 //
