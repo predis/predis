@@ -27,6 +27,7 @@ use Predis\Command\Argument\Search\SugGetArguments;
 use Predis\Command\Argument\Search\SynUpdateArguments;
 use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
+use Predis\Command\Argument\Stream\XClaimOptions;
 use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\AlterArguments as TSAlterArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
@@ -298,6 +299,7 @@ use Predis\Response\Status;
  * @method int               xack(string $key, string $group, string ...$id)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method array             xautoclaim(string $key, string $group, string $consumer, int $minIdleTime, string $start, ?int $count = null, bool $justId = false)
+ * @method array             xclaim(string $key, string $group, string $consumer, int $minIdleTime, string|array $ids, ?XClaimOptions $options = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)
  * @method array             xrevrange(string $key, string $end, string $start, ?int $count = null)
