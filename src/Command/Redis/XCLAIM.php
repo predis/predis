@@ -63,6 +63,7 @@ class XCLAIM extends RedisCommand
         foreach ($data as [$id, $kvDict]) {
             $result[$id] = CommandUtility::arrayToDictionary($kvDict);
         }
+
         return $result;
     }
 
