@@ -39,9 +39,9 @@ class XADD_Test extends PredisCommandTestCase
     {
         /** @var PrefixableCommand $command */
         $command = $this->getCommand();
-        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $actualArguments = ['key', ['entry' => 'value']];
         $prefix = 'prefix:';
-        $expectedArguments = ['prefix:arg1', '*'];
+        $expectedArguments = ['prefix:key', '*', 'entry', 'value'];
 
         $command->setArguments($actualArguments);
         $command->prefixKeys($prefix);
