@@ -295,6 +295,7 @@ use Predis\Response\Status;
  * @method array             tsqueryindex(string ...$filterExpression)
  * @method array             tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method array             tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
+ * @method int               xack(string $key, string $group, string ...$id)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method array             xautoclaim(string $key, string $group, string $consumer, int $minIdleTime, string $start, ?int $count = null, bool $justId = false)
  * @method int               xdel(string $key, string ...$id)
