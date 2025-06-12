@@ -64,10 +64,6 @@ class XCLAIM extends RedisCommand
 
     public function parseResponse($data): array
     {
-        if (!$data) {
-            return [];
-        }
-
         // JUSTID format
         if (isset($data[0]) && !is_array($data[0])) {
             return $data;
