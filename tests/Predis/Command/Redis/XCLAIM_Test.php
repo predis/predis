@@ -13,7 +13,6 @@
 namespace Predis\Command\Redis;
 
 use Predis\ClientInterface;
-use Predis\Command\Argument\Stream\XClaimOptions;
 
 /**
  * @group commands
@@ -123,13 +122,12 @@ class XCLAIM_Test extends PredisCommandTestCase
 
         // Claim deleted
         $redis->xdel('stream', '1-1');
-        $claimed = $redis->xclaim('stream', 'group', 'consumer3', 0, ['0-1', '1-1', '2-1'], new XClaimOptions(true));
+        $claimed = $redis->xclaim('stream', 'group', 'consumer3', 0, ['0-1', '1-1', '2-1'], null, null, null, false, true);
         $this->assertSame(['0-1', '2-1'], $claimed);
 
         // Claim with all options
         $redis->xdel('stream', '1-1');
-        $options = new XClaimOptions(true, 10, 100, 5, true, '3-1');
-        $claimed = $redis->xclaim('stream', 'group', 'consumer3', 0, '3-1', $options);
+        $claimed = $redis->xclaim('stream', 'group', 'consumer3', 0, '3-1', 10, 100, 5, true, true, '3-1');
         $this->assertSame(['3-1'], $claimed);
 
         // Claim unknown
@@ -149,31 +147,31 @@ class XCLAIM_Test extends PredisCommandTestCase
                 ['stream', 'group', 'consumer', 0, 'id1', 'id2'],
             ],
             'with IDLE modifier' => [
-                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], new XClaimOptions(false, 10)],
+                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], 10],
                 ['stream', 'group', 'consumer', 0, 'id1', 'id2', 'IDLE', 10],
             ],
             'with TIME modifier' => [
-                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], new XClaimOptions(false, null, 12345)],
+                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], null, 12345],
                 ['stream', 'group', 'consumer', 0, 'id1', 'id2', 'TIME', 12345],
             ],
             'with RETRYCOUNT modifier' => [
-                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], new XClaimOptions(false, null, null, 5)],
+                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], null, null, 5],
                 ['stream', 'group', 'consumer', 0, 'id1', 'id2', 'RETRYCOUNT', 5],
             ],
             'with FORCE modifier' => [
-                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], new XClaimOptions(false, null, null, null, true)],
+                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], null, null, null, true],
                 ['stream', 'group', 'consumer', 0, 'id1', 'id2', 'FORCE'],
             ],
             'with JUSTID modifier' => [
-                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], new XClaimOptions(true, null, null, null, false)],
+                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], null, null, null, false, true],
                 ['stream', 'group', 'consumer', 0, 'id1', 'id2', 'JUSTID'],
             ],
             'with LASTID modifier' => [
-                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], new XClaimOptions(false, null, null, null, false, '1-1')],
+                ['stream', 'group', 'consumer', 0, ['id1', 'id2'], null, null, null, false, false, '1-1'],
                 ['stream', 'group', 'consumer', 0, 'id1', 'id2', 'LASTID', '1-1'],
             ],
             'with all arguments' => [
-                ['stream', 'group', 'consumer', 100, ['id1', 'id2'], new XClaimOptions(true, 10, 12345, 5, true, '1-1')],
+                ['stream', 'group', 'consumer', 100, ['id1', 'id2'], 10, 12345, 5, true, true, '1-1'],
                 ['stream', 'group', 'consumer', 100, 'id1', 'id2', 'IDLE', 10, 'TIME', 12345, 'RETRYCOUNT', 5, 'FORCE', 'JUSTID', 'LASTID', '1-1'],
             ],
         ];

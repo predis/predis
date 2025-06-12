@@ -12,7 +12,6 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Argument\Stream\XClaimOptions;
 use Predis\Command\PrefixableCommand as RedisCommand;
 use Predis\Command\Redis\Utils\CommandUtility;
 
@@ -28,29 +27,44 @@ class XCLAIM extends RedisCommand
 
     public function setArguments(array $arguments): void
     {
-        $argumentsCount = count($arguments);
-        if ($argumentsCount < 5 || $argumentsCount > 6) {
+        if (count($arguments) < 5) {
             return;
         }
 
-        $options = $argumentsCount === 6 ? array_pop($arguments) : null;
-        $ids = array_pop($arguments);
-        $processedArguments = array_merge(
-            $arguments,
-            is_array($ids) ? $ids : [$ids],
-            $options instanceof XClaimOptions ? $options->toArray() : []
-        );
-        parent::setArguments($processedArguments);
-    }
+        $processedArguments = array_slice($arguments, 0, 4);
+        $ids = $arguments[4];
+        $processedArguments = array_merge($processedArguments, is_array($ids) ? $ids : [$ids]);
 
-    public function prefixKeys($prefix)
-    {
-        $this->applyPrefixForFirstArgument($prefix);
+        if (array_key_exists(5, $arguments) && null !== $arguments[5]) {
+            array_push($processedArguments, 'IDLE', $arguments[5]);
+        }
+
+        if (array_key_exists(6, $arguments) && null !== $arguments[6]) {
+            array_push($processedArguments, 'TIME', $arguments[6]);
+        }
+
+        if (array_key_exists(7, $arguments) && null !== $arguments[7]) {
+            array_push($processedArguments, 'RETRYCOUNT', $arguments[7]);
+        }
+
+        if (array_key_exists(8, $arguments) && false !== $arguments[8]) {
+            $processedArguments[] = 'FORCE';
+        }
+
+        if (array_key_exists(9, $arguments) && false !== $arguments[9]) {
+            $processedArguments[] = 'JUSTID';
+        }
+
+        if (array_key_exists(10, $arguments) && false !== $arguments[10]) {
+            array_push($processedArguments, 'LASTID', $arguments[10]);
+        }
+
+        parent::setArguments($processedArguments);
     }
 
     public function parseResponse($data): array
     {
-        if (!is_array($data) || !$data) {
+        if (!$data) {
             return [];
         }
 
@@ -70,5 +84,10 @@ class XCLAIM extends RedisCommand
     public function parseResp3Response($data): array
     {
         return $this->parseResponse($data);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }
