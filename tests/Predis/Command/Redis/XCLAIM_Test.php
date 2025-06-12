@@ -107,10 +107,11 @@ class XCLAIM_Test extends PredisCommandTestCase
         $redis->xadd('stream', ['key0' => 'val0'], '0-1');
         $redis->xadd('stream', ['key1' => 'val1'], '1-1');
         $redis->xadd('stream', ['key2' => 'val2'], '2-1');
+        $redis->xadd('stream', ['key3' => 'val3'], '3-1');
 
         $redis->xgroup->create('stream', 'group', '0');
 
-        $redis->xreadgroup('group', 'consumer1', 3, null, false, 'stream', '>');
+        $redis->xreadgroup('group', 'consumer1', 4, null, false, 'stream', '>');
 
         // Claim one
         $claimed = $redis->xclaim('stream', 'group', 'consumer2', 0, '0-1');
@@ -125,8 +126,14 @@ class XCLAIM_Test extends PredisCommandTestCase
         $claimed = $redis->xclaim('stream', 'group', 'consumer3', 0, ['0-1', '1-1', '2-1'], new XClaimOptions(true));
         $this->assertSame(['0-1', '2-1'], $claimed);
 
+        // Claim with all options
+        $redis->xdel('stream', '1-1');
+        $options = new XClaimOptions(true, 10, 100, 5, true, '3-1');
+        $claimed = $redis->xclaim('stream', 'group', 'consumer3', 0, '3-1', $options);
+        $this->assertSame(['3-1'], $claimed);
+
         // Claim unknown
-        $claimed = $redis->xclaim('stream', 'group', 'consumer3', 0, ['3-1']);
+        $claimed = $redis->xclaim('stream', 'group', 'consumer3', 0, ['4-1']);
         $this->assertSame([], $claimed);
     }
 
