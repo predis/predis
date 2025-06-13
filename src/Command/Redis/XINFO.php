@@ -14,6 +14,7 @@ namespace Predis\Command\Redis;
 
 use Predis\Command\Argument\ArrayableArgument;
 use Predis\Command\Command as RedisCommand;
+use Predis\Command\Redis\Utils\CommandUtility;
 
 class XINFO extends RedisCommand
 {
@@ -48,16 +49,60 @@ class XINFO extends RedisCommand
 
     public function parseResponse($data)
     {
+        if ($this->getArgument(0) === 'STREAM') {
+            return $this->parseStreamResponse($data);
+        }
+
+        return $this->parseDict($data);
+    }
+
+    private function parseStreamResponse($data): array
+    {
+        $result = CommandUtility::arrayToDictionary($data, null, false);
+
+        if (isset($result['entries'])) {
+            $result['entries'] = $this->parseDict($result['entries']);
+        }
+
+        if (isset($result['groups']) && is_array($result['groups'])) {
+            $result['groups'] = array_map(static function ($group) {
+                $group = CommandUtility::arrayToDictionary($group, null, false);
+                if (isset($group['consumers'])) {
+                    $group['consumers'] = array_map(static function ($consumer) {
+                        return CommandUtility::arrayToDictionary($consumer, null, false);
+                    }, $group['consumers']);
+                }
+
+                return $group;
+            }, $result['groups']);
+        }
+
+        return $result;
+    }
+
+    public function parseResp3Response($data)
+    {
+        $result = $data;
+        if (isset($result['entries'])) {
+            $result['entries'] = $this->parseDict($result['entries']);
+        }
+
+        return $result;
+    }
+
+    private function parseDict($data): array
+    {
         $result = [];
 
         for ($i = 0, $iMax = count($data); $i < $iMax; $i++) {
             if (is_array($data[$i])) {
-                $result[$i] = $this->parseResponse($data[$i]);
+                $result[$i] = $this->parseDict($data[$i]);
+                continue;
             }
 
             if (array_key_exists($i + 1, $data)) {
                 if (is_array($data[$i + 1])) {
-                    $result[$data[$i]] = $this->parseResponse($data[++$i]);
+                    $result[$data[$i]] = $this->parseDict($data[++$i]);
                 } else {
                     $result[$data[$i]] = $data[++$i];
                 }
