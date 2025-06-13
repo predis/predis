@@ -298,6 +298,7 @@ use Predis\Response\Status;
  * @method int               xack(string $key, string $group, string ...$id)
  * @method string            xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method array             xautoclaim(string $key, string $group, string $consumer, int $minIdleTime, string $start, ?int $count = null, bool $justId = false)
+ * @method array             xclaim(string $key, string $group, string $consumer, int $minIdleTime, string|array $ids, ?int $idle = null, ?int $time = null, ?int $retryCount = null, bool $force = false, bool $justId = false, ?string $lastId = null)
  * @method int               xdel(string $key, string ...$id)
  * @method int               xlen(string $key)
  * @method array             xpending(string $key, string $group, ?int $minIdleTime = null, ?string $start = null, ?string $end = null, ?int $count = null, ?string $consumer = null)

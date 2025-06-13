@@ -4,6 +4,7 @@
 ### Added
 - Add experimental support for vector sets commands (#1550)
 - Added support for `XACK` command (#1555)
+- Added support for `XCLAIM` command (#1557)
 - Added support for `XPENDING` command (#1558)
 
 ### Changed

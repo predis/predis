@@ -287,6 +287,7 @@ use Predis\Command\Redis\VADD;
  * @method $this xack(string $key, string $group, string ...$id)
  * @method $this xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method $this xautoclaim(string $key, string $group, string $consumer, int $minIdleTime, string $start, ?int $count = null, bool $justId = false)
+ * @method $this xclaim(string $key, string $group, string $consumer, int $minIdleTime, string|array $ids, ?int $idle = null, ?int $time = null, ?int $retryCount = null, bool $force = false, bool $justId = false, ?string $lastId = null)
  * @method $this xdel(string $key, string ...$id)
  * @method $this xlen(string $key)
  * @method $this xpending(string $key, string $group, ?int $minIdleTime = null, ?string $start = null, ?string $end = null, ?int $count = null, ?string $consumer = null)
