@@ -306,6 +306,7 @@ use Predis\Response\Status;
  * @method array             xrange(string $key, string $start, string $end, ?int $count = null)
  * @method array|null        xread(int $count = null, int $block = null, array $streams = null, string ...$id)
  * @method array             xreadgroup(string $group, string $consumer, ?int $count = null, ?int $blockMs = null, bool $noAck = false, string ...$keyOrId)
+ * @method Status            xsetid(string $key, string $lastId, ?int $entriesAdded = null, ?string $maxDeleteId = null)
  * @method string            xtrim(string $key, array|string $strategy, string $threshold, array $options = null)
  * @method int               zadd(string $key, array $membersAndScoresDictionary)
  * @method int               zcard(string $key)

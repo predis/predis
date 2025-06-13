@@ -6,6 +6,7 @@
 - Added support for `XACK` command (#1555)
 - Added support for `XCLAIM` command (#1557)
 - Added support for `XPENDING` command (#1558)
+- Added support for `XSETID` command (#1559)
 
 ### Changed
 - Handle and retry `LOADING` errors from Sentinel replicas (#1536)
