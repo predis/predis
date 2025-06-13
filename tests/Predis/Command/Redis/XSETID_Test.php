@@ -77,6 +77,23 @@ class XSETID_Test extends PredisCommandTestCase
     public function testSetId(): void
     {
         $redis = $this->getClient();
+        $redis->xadd('stream', ['key0' => 'val0'], '0-1');
+        $this->assertEquals('OK', $redis->xsetid('stream', '1-1', 500, '1-1'));
+
+        // Attempt to set id less than top id
+        $redis->xadd('stream', ['key0' => 'val0'], '2-1');
+        $this->expectException(ServerException::class);
+        $redis->xsetid('stream', '1-1');
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 5.0.0
+     */
+    public function testSetIdExtended(): void
+    {
+        $redis = $this->getClient();
 
         $redis->xadd('stream', ['key0' => 'val0'], '0-1');
 
