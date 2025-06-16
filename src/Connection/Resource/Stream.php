@@ -276,6 +276,7 @@ class Stream implements StreamInterface
 
     /**
      * {@inheritDoc}
+     * @return mixed
      */
     public function getMetadata(?string $key = null)
     {
