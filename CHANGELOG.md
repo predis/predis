@@ -17,6 +17,7 @@
 - fix(stream): Fixed throwing `CommunicationException` when stream is EOF (#1548)
 - Removed automatic `conn_uid` parameter assignment (#1552)
 - fix(commands): Fixed wrong command API call on prefix processing (#1554)
+- fix `XREAD` response parsing while read null (#1563)
 
 ### Maintenance
 - Updated Redis 8.0 test image (#1562)
