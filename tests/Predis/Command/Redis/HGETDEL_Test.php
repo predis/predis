@@ -55,7 +55,7 @@ class HGETDEL_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 7.9.0
+     * @requiresRedisVersion >= 8.0.0
      */
     public function testReturnsAndRemoveFieldsFromHash(): void
     {
