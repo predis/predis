@@ -41,9 +41,11 @@ class BITOP extends RedisCommand
             array_unshift($arguments, $operation, $destination);
         }
 
-        $operation = strtoupper($arguments[0]);
-        if (!in_array($operation, self::VALID_OPERATIONS, true)) {
-            throw new InvalidArgumentException('BITOP operation must be one of: AND, OR, XOR, NOT, DIFF, DIFF1, ANDOR, ONE');
+        if (!empty($arguments)) {
+            $operation = strtoupper($arguments[0]);
+            if (!in_array($operation, self::VALID_OPERATIONS, false)) {
+                throw new InvalidArgumentException('BITOP operation must be one of: AND, OR, XOR, NOT, DIFF, DIFF1, ANDOR, ONE');
+            }
         }
 
         parent::setArguments($arguments);
