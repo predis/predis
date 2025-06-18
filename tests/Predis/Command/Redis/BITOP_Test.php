@@ -13,6 +13,7 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\PrefixableCommand;
+use InvalidArgumentException;
 
 /**
  * @group commands
@@ -84,9 +85,9 @@ class BITOP_Test extends PredisCommandTestCase
     {
         /** @var PrefixableCommand $command */
         $command = $this->getCommand();
-        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $actualArguments = ['AND', 'arg1', 'arg2', 'arg3', 'arg4'];
         $prefix = 'prefix:';
-        $expectedArguments = ['arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+        $expectedArguments = ['AND', 'prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
 
         $command->setArguments($actualArguments);
         $command->prefixKeys($prefix);
@@ -181,15 +182,15 @@ class BITOP_Test extends PredisCommandTestCase
     }
 
     /**
-     * @group connected
-     * @requiresRedisVersion >= 2.6.0
+     * @group disconnected
      */
     public function testThrowsExceptionOnInvalidOperation(): void
     {
-        $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessage('ERR syntax error');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('BITOP operation must be one of: AND, OR, XOR, NOT, DIFF, DIFF1, ANDOR, ONE');
 
-        $this->getClient()->bitop('NOOP', 'key:dst', 'key:src:1', 'key:src:2');
+        $command = $this->getCommand();
+        $command->setArguments(['NOOP', 'key:dst', 'key:src:1', 'key:src:2']);
     }
 
     /**

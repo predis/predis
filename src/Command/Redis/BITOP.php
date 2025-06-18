@@ -13,12 +13,15 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\PrefixableCommand as RedisCommand;
+use InvalidArgumentException;
 
 /**
  * @see http://redis.io/commands/bitop
  */
 class BITOP extends RedisCommand
 {
+    private const VALID_OPERATIONS = ['AND', 'OR', 'XOR', 'NOT', 'DIFF', 'DIFF1', 'ANDOR', 'ONE'];
+
     /**
      * {@inheritdoc}
      */
@@ -36,6 +39,11 @@ class BITOP extends RedisCommand
             [$operation, $destination] = $arguments;
             $arguments = $arguments[2];
             array_unshift($arguments, $operation, $destination);
+        }
+
+        $operation = strtoupper($arguments[0]);
+        if (!in_array($operation, self::VALID_OPERATIONS, true)) {
+            throw new InvalidArgumentException('BITOP operation must be one of: AND, OR, XOR, NOT, DIFF, DIFF1, ANDOR, ONE');
         }
 
         parent::setArguments($arguments);
