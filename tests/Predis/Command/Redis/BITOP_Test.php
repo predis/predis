@@ -157,7 +157,7 @@ class BITOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.0.2
+     * @requiresRedisVersion >= 8.2.0
      */
     public function testCanPerformBitwiseONE(): void
     {
@@ -172,7 +172,7 @@ class BITOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.0.2
+     * @requiresRedisVersion >= 8.2.0
      */
     public function testCanPerformBitwiseDIFF(): void
     {
@@ -188,7 +188,7 @@ class BITOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.0.2
+     * @requiresRedisVersion >= 8.2.0
      */
     public function testCanPerformBitwiseDIFF1(): void
     {
@@ -204,7 +204,7 @@ class BITOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.0.2
+     * @requiresRedisVersion >= 8.2.0
      */
     public function testCanPerformBitwiseANDOR(): void
     {
