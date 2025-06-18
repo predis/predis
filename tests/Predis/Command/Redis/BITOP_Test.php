@@ -157,6 +157,70 @@ class BITOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 8.0.2
+     */
+    public function testCanPerformBitwiseONE(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->set('key:src:1', "\x01");
+        $redis->set('key:src:2', "\x02");
+
+        $this->assertSame(1, $redis->bitop('ONE', 'key:dst', 'key:src:1', 'key:src:2'));
+        $this->assertSame("\x03", $redis->get('key:dst'));
+    }
+
+        /**
+     * @group connected
+     * @requiresRedisVersion >= 8.0.2
+     */
+    public function testCanPerformBitwiseDIFF(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->set('key:src:1', "\x01");
+        $redis->set('key:src:2', "\x00");
+        $redis->set('key:src:3', "\x04");
+
+        $this->assertSame(1, $redis->bitop('DIFF', 'key:dst', 'key:src:1', 'key:src:2', 'key:src:3'));
+        $this->assertSame("\x01", $redis->get('key:dst'));
+    }
+
+        /**
+     * @group connected
+     * @requiresRedisVersion >= 8.0.2
+     */
+    public function testCanPerformBitwiseDIFF1(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->set('key:src:1', "\x01");
+        $redis->set('key:src:2', "\x00");
+        $redis->set('key:src:3', "\x04");
+
+        $this->assertSame(1, $redis->bitop('DIFF1', 'key:dst', 'key:src:1', 'key:src:2', 'key:src:3'));
+        $this->assertSame("\x04", $redis->get('key:dst'));
+    }
+
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.0.2
+     */
+    public function testCanPerformBitwiseANDOR(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->set('key:src:1', "\x03");
+        $redis->set('key:src:2', "\x02");
+        $redis->set('key:src:3', "\x04");
+
+        $this->assertSame(1, $redis->bitop('ANDOR', 'key:dst', 'key:src:1', 'key:src:2', 'key:src:3'));
+        $this->assertSame("\x02", $redis->get('key:dst'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testCanPerformBitwiseNOT(): void
