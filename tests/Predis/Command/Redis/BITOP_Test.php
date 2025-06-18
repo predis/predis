@@ -12,8 +12,8 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\PrefixableCommand;
 use InvalidArgumentException;
+use Predis\Command\PrefixableCommand;
 
 /**
  * @group commands
