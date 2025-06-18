@@ -170,7 +170,7 @@ class BITOP_Test extends PredisCommandTestCase
         $this->assertSame("\x03", $redis->get('key:dst'));
     }
 
-        /**
+    /**
      * @group connected
      * @requiresRedisVersion >= 8.0.2
      */
@@ -186,7 +186,7 @@ class BITOP_Test extends PredisCommandTestCase
         $this->assertSame("\x01", $redis->get('key:dst'));
     }
 
-        /**
+    /**
      * @group connected
      * @requiresRedisVersion >= 8.0.2
      */
@@ -201,7 +201,6 @@ class BITOP_Test extends PredisCommandTestCase
         $this->assertSame(1, $redis->bitop('DIFF1', 'key:dst', 'key:src:1', 'key:src:2', 'key:src:3'));
         $this->assertSame("\x04", $redis->get('key:dst'));
     }
-
 
     /**
      * @group connected
