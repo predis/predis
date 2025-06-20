@@ -18,6 +18,9 @@
 - Removed automatic `conn_uid` parameter assignment (#1552)
 - fix(commands): Fixed wrong command API call on prefix processing (#1554)
 
+### Maintenance
+- Added testing with 8.2 (#1567)
+
 ## v3.0.1 (2025-05-16)
 ### Fixed
 - Send `default` user if only password is used for authentication (#1535)
