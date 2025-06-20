@@ -165,6 +165,23 @@ class XREAD_Test extends PredisCommandTestCase
         $this->assertSame($expectedResponse, $response);
     }
 
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 5.0.0
+     * @return void
+     */
+    public function testReadNull(): void
+    {
+        $redis = $this->getClient();
+
+        $stream1Id1 = $redis->xadd('stream1', ['field1' => 'value1']);
+        $redis->xdel('stream1', $stream1Id1);
+        $response = $redis->xread(1, null, ['stream1'], '0-0');
+
+        $this->assertSame([], $response);
+    }
+
     public function argumentsProvider(): array
     {
         return [
