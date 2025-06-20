@@ -24,6 +24,9 @@
 ### Maintenance
 - Updated Redis 8.0 test image (#1562)
 
+### Maintenance
+- Added testing with 8.2 (#1567)
+
 ## v3.0.1 (2025-05-16)
 ### Fixed
 - Send `default` user if only password is used for authentication (#1535)
