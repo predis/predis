@@ -31,6 +31,7 @@ jobs:
           - '7.2'
           - '7.4'
           - '8.0'
+          - '8.2'
 
     steps:
 
@@ -38,6 +39,7 @@ jobs:
         run: |
           # Mapping of original redis versions to client test containers
           declare -A redis_clients_version_mapping=(
+            ["8.2"]="8.2-M01-pre"
             ["8.0"]="8.0.2"
             ["7.4"]="7.4.2"
             ["7.2"]="7.2.7"
@@ -106,7 +108,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: relay
-          coverage: ${{ (matrix.php == '8.4' && matrix.redis == '7.4') && 'xdebug' || 'none' }}
+          coverage: ${{ (matrix.php == '8.4' && matrix.redis == '8.0') && 'xdebug' || 'none' }}
 
       - name: Install Composer dependencies
         uses: ramsey/composer-install@v2
@@ -115,78 +117,74 @@ jobs:
           composer-options: ${{ matrix.php == '8.0' && '--ignore-platform-reqs' || '' }}
 
       - name: Run tests
-        if: ${{ matrix.php != '8.4' || matrix.redis != '7.4' }}
+        if: ${{ matrix.php != '8.4' || matrix.redis != '8.0' }}
         run: vendor/bin/phpunit
 
       - name: Run tests with coverage
-        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php == '8.4' && matrix.redis == '8.0' }}
         run: vendor/bin/phpunit --coverage-php build/cov/coverage-predis.cov --coverage-filter ./src
 
       - name: Run tests using Relay
-        if: ${{ matrix.php != '8.4' && matrix.redis >= '7.2' }}
+        if: ${{ matrix.php != '8.4' && matrix.redis >= '8.0' }}
         run: vendor/bin/phpunit -c phpunit.relay.xml
 
       - name: Run tests using Relay with coverage
-        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php == '8.4' && matrix.redis == '8.0' }}
         run: vendor/bin/phpunit -c phpunit.relay.xml --coverage-php build/cov/coverage-relay.cov --coverage-filter ./src
 
       - name: Run tests against unprotected Redis
-        if: ${{ (matrix.php != '8.4' || matrix.redis != '7.4') &&  matrix.redis > '4.0'}}
+        if: ${{ (matrix.php != '8.4' || matrix.redis != '8.0') &&  matrix.redis > '4.0'}}
         run: vendor/bin/phpunit --group unprotected
 
       - name: Run tests against unprotected Redis with coverage
-        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php == '8.4' && matrix.redis == '8.0' }}
         run: vendor/bin/phpunit --group unprotected --coverage-php build/cov/coverage-unprotected.cov --coverage-filter ./src
 
       - name: Run stack tests
-        if: ${{ (matrix.php != '8.4' || matrix.redis != '7.4') && matrix.redis >= '7.2' }}
+        if: ${{ (matrix.php != '8.4' || matrix.redis != '8.0') && matrix.redis >= '7.2' }}
         run: vendor/bin/phpunit --group realm-stack
 
       - name: Run stack tests with coverage
-        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' && steps.stack_infra.conclusion == 'success' }}
+        if: ${{ matrix.php == '8.4' && matrix.redis == '8.0' }}
         run: vendor/bin/phpunit --group realm-stack --coverage-php build/cov/coverage-stack.cov --coverage-filter ./src
-        env:
-          REDIS_STACK_SERVER_PORT: 6479
 
       - name: Run stack tests using Relay
-        if: ${{ matrix.php != '8.4' && matrix.redis == '7.4' }}
+        if: ${{ (matrix.php != '8.4' || matrix.redis != '8.0') && matrix.redis >= '7.2' }}
         run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml
 
       - name: Run stack tests using Relay with coverage
-        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php == '8.4' && matrix.redis == '8.0' }}
         run: vendor/bin/phpunit --group realm-stack -c phpunit.relay.xml --coverage-php build/cov/coverage-stack-relay.cov --coverage-filter ./src
-        env:
-          REDIS_STACK_SERVER_PORT: 6479
 
       - name: Run tests against cluster
-        if: ${{ (matrix.php != '8.4' || matrix.redis != '7.4') && steps.cluster_infra.conclusion == 'success' }}
+        if: ${{ (matrix.php != '8.4' || matrix.redis != '8.0') && steps.cluster_infra.conclusion == 'success' }}
         run: |
           vendor/bin/phpunit --group cluster
 
       - name: Run tests against cluster with coverage
-        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' && steps.cluster_infra.conclusion == 'success' }}
+        if: ${{ matrix.php == '8.4' && matrix.redis == '8.0' && steps.cluster_infra.conclusion == 'success' }}
         run: |
           vendor/bin/phpunit --group cluster --coverage-php build/cov/coverage-cluster.cov --coverage-filter ./src
 
       - name: Run tests against cluster using Relay
-        if: ${{ matrix.php != '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php != '8.4' && matrix.redis == '8.0' }}
         run: |
           sleep 5
           vendor/bin/phpunit -c phpunit.relay.xml --group cluster
 
       - name: Run tests against cluster using Relay with coverage
-        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php == '8.4' && matrix.redis == '8.0' }}
         run: |
           sleep 5
           vendor/bin/phpunit -c phpunit.relay.xml --group cluster --coverage-php build/cov/coverage-cluster-relay.cov --coverage-filter ./src
 
       - name: Merge coverage reports
-        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php == '8.4' && matrix.redis == '8.0' }}
         run: php vendor/bin/phpcov merge --clover build/logs/clover.xml build/cov
 
       - name: Send coverage to Coveralls
         uses: coverallsapp/github-action@v2
-        if: ${{ matrix.php == '8.4' && matrix.redis == '7.4' }}
+        if: ${{ matrix.php == '8.4' && matrix.redis == '8.0' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
