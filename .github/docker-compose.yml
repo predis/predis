@@ -3,7 +3,7 @@
 services:
 
   redis-official:
-    image: ${REDIS_IMAGE_NAME:-redis:7.4}
+    image: ${REDIS_IMAGE_NAME:-redis:8.0}
     container_name: redis-official
     healthcheck:
       test: [ "CMD", "redis-cli", "PING" ]
@@ -20,7 +20,7 @@ services:
       - standalone
 
   redis-clients:
-    image: ${REDIS_IMAGE_NAME:-redislabs/client-libs-test:7.4.2}
+    image: ${REDIS_IMAGE_NAME:-redislabs/client-libs-test:8.0.2}
     container_name: redis-standalone
     environment:
       - TLS_ENABLED=yes
@@ -40,7 +40,7 @@ services:
       - standalone
 
   redis-unprotected:
-    image: ${REDIS_IMAGE_NAME:-redislabs/client-libs-test:7.4.2}
+    image: ${REDIS_IMAGE_NAME:-redislabs/client-libs-test:8.0.2}
     container_name: redis-unprotected
     environment:
       - TLS_ENABLED=no
@@ -58,7 +58,7 @@ services:
       - unprotected
 
   redis-cluster:
-    image: ${REDIS_IMAGE_NAME:-redislabs/client-libs-test:7.4.2}
+    image: ${REDIS_IMAGE_NAME:-redislabs/client-libs-test:8.0.2}
     container_name: redis-cluster
     environment:
       - REDIS_CLUSTER=yes
