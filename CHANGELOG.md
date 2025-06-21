@@ -7,6 +7,7 @@
 - Added support for `XCLAIM` command (#1557)
 - Added support for `XPENDING` command (#1558)
 - Added support for `XSETID` command (#1559)
+- Added validation and support for the new `BITOP` command operations (#1566)
 
 ### Changed
 - Handle and retry `LOADING` errors from Sentinel replicas (#1536)
