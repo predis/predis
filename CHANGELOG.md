@@ -4,6 +4,7 @@
 ### Fixed
 - Fixed return type for `ZCOUNT` to be `int` (#1546)
 - Removed automatic `conn_uid` parameter assignment (#1551)
+- Fixed method annotations in ClientContextInterface (#1571)
 
 ## v2.4.0 (2025-04-30)
 ### Added
