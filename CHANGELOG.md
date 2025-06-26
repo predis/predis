@@ -20,7 +20,7 @@
 - fix(commands): Fixed wrong command API call on prefix processing (#1554)
 - fix `XREAD` response parsing while read null (#1563)
 - fix `XINFO` command responses parsing (#1560)
-- Fixed method annotations in ClientContextInterface (#1570)
+- Fixed method annotations in ClientInterface and ClientContextInterface (#1570)
 
 ### Maintenance
 - Updated Redis 8.0 test image (#1562)
