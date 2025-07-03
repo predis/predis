@@ -23,6 +23,7 @@
 
 ### Maintenance
 - Updated Redis 8.0 test image (#1562)
+- Updated Redis 8.2 test image (#1573)
 
 ### Maintenance
 - Added testing with 8.2 (#1567)
