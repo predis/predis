@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Json;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 class JSONMGET extends RedisCommand
 {
@@ -32,5 +32,10 @@ class JSONMGET extends RedisCommand
         $unpackedArguments[] = $arguments[1];
 
         parent::setArguments($unpackedArguments);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixSkippingLastArgument($prefix);
     }
 }

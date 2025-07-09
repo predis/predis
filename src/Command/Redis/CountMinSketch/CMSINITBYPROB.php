@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\CountMinSketch;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/cms.initbyprob/
@@ -24,5 +24,10 @@ class CMSINITBYPROB extends RedisCommand
     public function getId()
     {
         return 'CMS.INITBYPROB';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

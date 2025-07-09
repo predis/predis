@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/ft.aliasupdate/
@@ -25,5 +25,10 @@ class FTALIASUPDATE extends RedisCommand
     public function getId()
     {
         return 'FT.ALIASUPDATE';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForAllArguments($prefix);
     }
 }

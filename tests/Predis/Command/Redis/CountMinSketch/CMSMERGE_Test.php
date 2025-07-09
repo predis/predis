@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\CountMinSketch;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -55,6 +56,23 @@ class CMSMERGE_Test extends PredisCommandTestCase
     public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['dest', ['key1', 'key2', 'key3'], [10]];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:dest', 3, 'prefix:key1', 'prefix:key2', 'prefix:key3', 'WEIGHTS', 10];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**

@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see  https://redis.io/commands/ft.search/
@@ -48,5 +48,10 @@ class FTSEARCH extends RedisCommand
             [$index, $query],
             $commandArguments
         ));
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

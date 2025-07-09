@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 class FTDROPINDEX extends RedisCommand
 {
@@ -34,5 +34,10 @@ class FTDROPINDEX extends RedisCommand
             [$index],
             $commandArguments
         ));
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

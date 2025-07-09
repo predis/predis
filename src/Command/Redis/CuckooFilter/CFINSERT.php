@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\CuckooFilter;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 use Predis\Command\Traits\BloomFilters\Capacity;
 use Predis\Command\Traits\BloomFilters\Items;
 use Predis\Command\Traits\BloomFilters\NoCreate;
@@ -48,5 +48,10 @@ class CFINSERT extends RedisCommand
 
         $this->setCapacity($arguments);
         $this->filterArguments();
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

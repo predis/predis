@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\CuckooFilter;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 use Predis\Command\Traits\BloomFilters\BucketSize;
 use Predis\Command\Traits\BloomFilters\Expansion;
 use Predis\Command\Traits\BloomFilters\MaxIterations;
@@ -48,5 +48,10 @@ class CFRESERVE extends RedisCommand
 
         $this->setBucketSize($arguments);
         $this->filterArguments();
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

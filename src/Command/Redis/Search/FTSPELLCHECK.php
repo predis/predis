@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 class FTSPELLCHECK extends RedisCommand
 {
@@ -47,5 +47,10 @@ class FTSPELLCHECK extends RedisCommand
             [$index, $query],
             $commandArguments
         ));
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

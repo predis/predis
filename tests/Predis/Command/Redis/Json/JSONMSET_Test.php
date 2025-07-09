@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\Json;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -53,6 +54,23 @@ class JSONMSET_Test extends PredisCommandTestCase
     public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['key', '$..', 'value', 'key1', '$', 'value1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:key', '$..', 'value', 'prefix:key1', '$', 'value1'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**

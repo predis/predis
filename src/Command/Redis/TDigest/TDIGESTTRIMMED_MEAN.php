@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\TDigest;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/tdigest.trimmed_mean/
@@ -46,5 +46,10 @@ class TDIGESTTRIMMED_MEAN extends RedisCommand
             case -INF: return '-inf';
             default: return $data;
         }
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

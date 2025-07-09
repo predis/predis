@@ -10,6 +10,9 @@
     stopOnFailure="false"
     beStrictAboutTestsThatDoNotTestAnything="true"
 >
+    <php>
+        <ini name="error_reporting" value="E_ALL &amp; ~E_DEPRECATED"/>
+    </php>
 
     <testsuites>
         <testsuite name="Predis Test Suite">

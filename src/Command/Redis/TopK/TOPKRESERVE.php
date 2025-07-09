@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\TopK;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/topk.reserve/
@@ -43,5 +43,10 @@ class TOPKRESERVE extends RedisCommand
         }
 
         parent::setArguments($arguments);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

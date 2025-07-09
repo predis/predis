@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Json;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 use Predis\Command\Traits\Json\Indent;
 use Predis\Command\Traits\Json\Newline;
 use Predis\Command\Traits\Json\Space;
@@ -53,5 +53,10 @@ class JSONGET extends RedisCommand
 
         $this->setIndent($arguments);
         $this->filterArguments();
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }
