@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\TDigest;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/tdigest.merge/
@@ -39,5 +39,18 @@ class TDIGESTMERGE extends RedisCommand
         }
 
         parent::setArguments($processedArguments);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        if ($arguments = $this->getArguments()) {
+            $arguments[0] = $prefix . $arguments[0];
+
+            for ($i = 2, $iMax = (int) $arguments[1] + 2; $i < $iMax; $i++) {
+                $arguments[$i] = $prefix . $arguments[$i];
+            }
+
+            $this->setRawArguments($arguments);
+        }
     }
 }

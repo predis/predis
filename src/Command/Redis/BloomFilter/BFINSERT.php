@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\BloomFilter;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 use Predis\Command\Traits\BloomFilters\Capacity;
 use Predis\Command\Traits\BloomFilters\Error;
 use Predis\Command\Traits\BloomFilters\Expansion;
@@ -46,6 +46,11 @@ class BFINSERT extends RedisCommand
     public function getId()
     {
         return 'BF.INSERT';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 
     public function setArguments(array $arguments)

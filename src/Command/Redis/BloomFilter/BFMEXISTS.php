@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\BloomFilter;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/bf.mexists/
@@ -24,5 +24,10 @@ class BFMEXISTS extends RedisCommand
     public function getId()
     {
         return 'BF.MEXISTS';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

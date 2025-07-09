@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\BloomFilter;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/bf.add/
@@ -25,5 +25,10 @@ class BFADD extends RedisCommand
     public function getId()
     {
         return 'BF.ADD';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

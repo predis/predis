@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Json;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/json.type/
@@ -24,5 +24,10 @@ class JSONTYPE extends RedisCommand
     public function getId()
     {
         return 'JSON.TYPE';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

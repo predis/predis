@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\TDigest;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/tdigest.add/
@@ -24,5 +24,10 @@ class TDIGESTADD extends RedisCommand
     public function getId()
     {
         return 'TDIGEST.ADD';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

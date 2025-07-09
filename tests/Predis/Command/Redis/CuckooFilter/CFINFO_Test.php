@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\CuckooFilter;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -58,6 +59,23 @@ class CFINFO_Test extends PredisCommandTestCase
     public function testParseResponse(array $actualResponse, array $expectedResponse): void
     {
         $this->assertSame($expectedResponse, $this->getCommand()->parseResponse($actualResponse));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**

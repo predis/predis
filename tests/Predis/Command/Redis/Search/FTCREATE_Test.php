@@ -18,6 +18,7 @@ use Predis\Command\Argument\Search\SchemaFields\NumericField;
 use Predis\Command\Argument\Search\SchemaFields\TagField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Argument\Search\SchemaFields\VectorField;
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 
 /**
@@ -60,6 +61,23 @@ class FTCREATE_Test extends PredisCommandTestCase
     public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setRawArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**

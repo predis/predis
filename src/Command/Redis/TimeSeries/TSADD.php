@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\TimeSeries;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/ts.add/
@@ -35,5 +35,10 @@ class TSADD extends RedisCommand
             [$key, $timestamp, $value],
             $commandArguments
         ));
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

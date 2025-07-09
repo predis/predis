@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 use Predis\Command\Traits\By\GeoBy;
 use Predis\Command\Traits\Count;
 use Predis\Command\Traits\From\GeoFrom;
@@ -118,5 +118,10 @@ class GEOSEARCH extends RedisCommand
         }
 
         return $parsedData;
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

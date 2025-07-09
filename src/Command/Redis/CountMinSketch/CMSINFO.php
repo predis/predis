@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\CountMinSketch;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/cms.info/
@@ -41,5 +41,10 @@ class CMSINFO extends RedisCommand
         }
 
         return $data;
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

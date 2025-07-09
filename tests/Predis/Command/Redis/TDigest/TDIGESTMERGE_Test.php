@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\TDigest;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -45,6 +46,23 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
     {
         $command = $this->getCommand();
         $command->setArguments($actualArguments);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['dest', ['key1', 'key2', 'key3'], 10];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:dest', 3, 'prefix:key1', 'prefix:key2', 'prefix:key3', 'COMPRESSION', 10];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
 
         $this->assertSame($expectedArguments, $command->getArguments());
     }

@@ -19,6 +19,7 @@ use Predis\Command\Argument\Geospatial\ByRadius;
 use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\Argument\Geospatial\FromLonLat;
 use Predis\Command\Argument\Geospatial\FromMember;
+use Predis\Command\PrefixableCommand;
 use UnexpectedValueException;
 
 class GEOSEARCH_Test extends PredisCommandTestCase
@@ -58,6 +59,23 @@ class GEOSEARCH_Test extends PredisCommandTestCase
     public function testParseResponse(array $actualResponse, array $expectedResponse): void
     {
         $this->assertSame($expectedResponse, $this->getCommand()->parseResponse($actualResponse));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setRawArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**

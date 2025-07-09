@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Json;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 use Predis\Command\Traits\Json\NxXxArgument;
 
 /**
@@ -37,5 +37,10 @@ class JSONSET extends RedisCommand
     {
         $this->setSubcommand($arguments);
         $this->filterArguments();
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

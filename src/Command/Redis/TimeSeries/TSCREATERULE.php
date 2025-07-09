@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\TimeSeries;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/ts.createrule/
@@ -36,5 +36,15 @@ class TSCREATERULE extends RedisCommand
         }
 
         parent::setArguments($processedArguments);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        if ($arguments = $this->getArguments()) {
+            $arguments[0] = $prefix . $arguments[0];
+            $arguments[1] = $prefix . $arguments[1];
+
+            $this->setRawArguments($arguments);
+        }
     }
 }

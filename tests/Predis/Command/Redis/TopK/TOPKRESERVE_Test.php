@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\TopK;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -55,6 +56,23 @@ class TOPKRESERVE_Test extends PredisCommandTestCase
     public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**

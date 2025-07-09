@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Search;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/ft.info/
@@ -24,5 +24,10 @@ class FTINFO extends RedisCommand
     public function getId()
     {
         return 'FT.INFO';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

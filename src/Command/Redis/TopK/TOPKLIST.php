@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\TopK;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/topk.list/
@@ -73,5 +73,10 @@ class TOPKLIST extends RedisCommand
         $lastArgument = (!empty($arguments)) ? $arguments[count($arguments) - 1] : null;
 
         return is_string($lastArgument) && strtoupper($lastArgument) === 'WITHCOUNT';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

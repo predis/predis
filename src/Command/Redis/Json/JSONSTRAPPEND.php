@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis\Json;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see https://redis.io/commands/json.strappend/
@@ -24,5 +24,10 @@ class JSONSTRAPPEND extends RedisCommand
     public function getId()
     {
         return 'JSON.STRAPPEND';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }
