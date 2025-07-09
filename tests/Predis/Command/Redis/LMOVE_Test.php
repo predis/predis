@@ -68,7 +68,7 @@ class LMOVE_Test extends PredisCommandTestCase
         $command = $this->getCommand();
         $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
         $prefix = 'prefix:';
-        $expectedArguments = ['prefix:arg1', 'prefix:arg2', 'arg3', 'arg4'];;
+        $expectedArguments = ['prefix:arg1', 'prefix:arg2', 'arg3', 'arg4'];
 
         $command->setArguments($actualArguments);
         $command->prefixKeys($prefix);

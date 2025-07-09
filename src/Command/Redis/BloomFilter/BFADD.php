@@ -27,7 +27,6 @@ class BFADD extends RedisCommand
         return 'BF.ADD';
     }
 
-
     public function prefixKeys($prefix)
     {
         $this->applyPrefixForFirstArgument($prefix);

@@ -71,7 +71,7 @@ class FTALIASADD_Test extends PredisCommandTestCase
         $command = $this->getCommand();
         $actualArguments = ['arg1', 'arg2'];
         $prefix = 'prefix:';
-        $expectedArguments = ['prefix:arg1', 'prefix:arg2'];;
+        $expectedArguments = ['prefix:arg1', 'prefix:arg2'];
 
         $command->setArguments($actualArguments);
         $command->prefixKeys($prefix);
