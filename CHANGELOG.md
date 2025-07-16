@@ -11,6 +11,7 @@
 
 ### Changed
 - Handle and retry `LOADING` errors from Sentinel replicas (#1536)
+- Retry all exceptions from Sentinel replicas (#1577)
 
 ### Fixed
 - Fixed PHP 8.4 deprecated call to `stream_context_set_option()` (#1545)
