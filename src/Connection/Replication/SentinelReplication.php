@@ -28,6 +28,7 @@ use Predis\Replication\RoleException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
+use Throwable;
 
 /**
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -719,9 +720,12 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
                     throw new ConnectionException($this->current, $response->getMessage());
                 }
                 break;
-            } catch (CommunicationException $exception) {
+            } catch (Throwable $exception) {
                 $this->wipeServerList();
-                $exception->getConnection()->disconnect();
+
+                if ($exception instanceof ConnectionException) {
+                    $exception->getConnection()->disconnect();
+                }
 
                 if ($retries === $this->retryLimit) {
                     throw $exception;
