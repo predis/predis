@@ -12,6 +12,7 @@
 
 namespace Predis\Connection\Replication;
 
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command;
 use Predis\Connection;
@@ -1326,7 +1327,7 @@ class SentinelReplicationTest extends PredisTestCase
                 $this->isRedisCommand('GET', ['key'])
             )
             ->willThrowException(
-                new \Exception('message')
+                new Exception('message')
             );
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?role=slave');
