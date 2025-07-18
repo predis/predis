@@ -16,7 +16,6 @@ use InvalidArgumentException;
 use Predis\Command\Command;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
-use Predis\CommunicationException;
 use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
@@ -28,6 +27,7 @@ use Predis\Replication\RoleException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
+use Throwable;
 
 /**
  * @author Daniele Alessandri <suppakilla@gmail.com>
@@ -719,9 +719,12 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
                     throw new ConnectionException($this->current, $response->getMessage());
                 }
                 break;
-            } catch (CommunicationException $exception) {
+            } catch (Throwable $exception) {
                 $this->wipeServerList();
-                $exception->getConnection()->disconnect();
+
+                if ($exception instanceof ConnectionException) {
+                    $exception->getConnection()->disconnect();
+                }
 
                 if ($retries === $this->retryLimit) {
                     throw $exception;
