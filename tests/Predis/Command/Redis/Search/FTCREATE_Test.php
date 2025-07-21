@@ -275,4 +275,21 @@ class FTCREATE_Test extends PredisCommandTestCase
             ],
         ];
     }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.2.0
+     * @return void
+     */
+    public function testVectorCreateVANAMA(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->ftcreate('test', [
+            new VectorField(
+                'svs-vanama', 'SVS-VAMANA',
+                ['TYPE', 'FLOAT32', 'DIM', 4, 'DISTANCE_METRIC', 'L2']
+            ),
+        ]));
+    }
 }
