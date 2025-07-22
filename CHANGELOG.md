@@ -13,7 +13,6 @@
 - Added support for `XPENDING` command (#1558)
 - Added support for `XSETID` command (#1559)
 - Added validation and support for the new `BITOP` command operations (#1566)
-- Added test validation for the new SVS-VAMANA vector index type for FT.CREATE (#1578)
 
 ### Changed
 - Handle and retry `LOADING` errors from Sentinel replicas (#1536)
@@ -22,19 +21,12 @@
 ### Fixed
 - Fixed PHP 8.4 deprecated call to `stream_context_set_option()` (#1545)
 - Fixed return type for `ZCOUNT` to be `int` (#1547)
-- fix(stream): Fixed throwing `CommunicationException` when stream is EOF (#1548)
+- Fixed throwing `CommunicationException` when stream is EOF (#1548)
 - Removed automatic `conn_uid` parameter assignment (#1552)
-- fix(commands): Fixed wrong command API call on prefix processing (#1554)
-- fix `XREAD` response parsing while read null (#1563)
-- fix `XINFO` command responses parsing (#1560)
+- Fixed wrong command API call on prefix processing (#1554)
+- Fixed `XREAD` response parsing while read null (#1563)
+- Fixed `XINFO` command responses parsing (#1560)
 - Marked missing commands as Prefixable (#1576)
-
-### Maintenance
-- Updated Redis 8.0 test image (#1562)
-- Updated Redis 8.2 test image (#1573)
-
-### Maintenance
-- Added testing with 8.2 (#1567)
 
 ## v3.0.1 (2025-05-16)
 ### Fixed
