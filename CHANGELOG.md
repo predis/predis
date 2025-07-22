@@ -5,7 +5,7 @@
 ### Changed
 ### Fixed
 
-## v3.0.2 (2025-07-22)
+## v3.1.0 (2025-07-22)
 ### Added
 - Add experimental support for vector sets commands (#1550)
 - Added support for `XACK` command (#1555)
