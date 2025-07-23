@@ -1123,7 +1123,7 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testParseIPv6AddresseAndPortPairInRedirectionPayload(): void
+    public function testParseIPv6AddressAndPortPairInRedirectionPayload(): void
     {
         $movedResponse = new Response\Error('MOVED 1970 2001:db8:0:f101::2:6379');
 

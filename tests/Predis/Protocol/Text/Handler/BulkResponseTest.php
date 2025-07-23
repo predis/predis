@@ -42,7 +42,7 @@ class BulkResponseTest extends PredisTestCase
     public function testBulk(): void
     {
         $bulk = 'This is a bulk string.';
-        $bulkLengh = strlen($bulk);
+        $bulkLength = strlen($bulk);
 
         $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
         $connection
@@ -51,12 +51,12 @@ class BulkResponseTest extends PredisTestCase
         $connection
             ->expects($this->once())
             ->method('readBuffer')
-            ->with($this->equalTo($bulkLengh + 2))
+            ->with($this->equalTo($bulkLength + 2))
             ->willReturn("$bulk\r\n");
 
         $handler = new Handler\BulkResponse();
 
-        $this->assertSame($bulk, $handler->handle($connection, (string) $bulkLengh));
+        $this->assertSame($bulk, $handler->handle($connection, (string) $bulkLength));
     }
 
     /**
