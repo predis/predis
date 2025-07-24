@@ -41,7 +41,7 @@ class XADD extends RedisCommand
         $idOffset = 2;
         $pushRefArg = false;
 
-        if (count(array_intersect(['KEEPREF', 'DELREF', 'ACKED'], $arguments)) == 1) {
+        if (is_array($arguments) && count(array_intersect(['KEEPREF', 'DELREF', 'ACKED'], $arguments)) == 1) {
             $optionsOffset += 1;
             $idOffset += 1;
             $pushRefArg = true;
