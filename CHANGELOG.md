@@ -1,11 +1,11 @@
 ## Changelog
 
 ### Unreleased
-  - Added support for the new XDELEX and XACKDEL commands that will be introduced with Redis 8.2 #(1580)
-  - Extended the existing XTRIM and XADD commands with the newly introduced parameters #(1580)
 ### Added
+- Added support for `XDELEX` and `XACKDEL` (#1580)
+
 ### Changed
-### Fixed
+- Extended `XTRIM` and `XADD` commands with new parameters (#1580)
 
 ## v3.1.0 (2025-07-22)
 ### Added
