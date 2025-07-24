@@ -112,7 +112,7 @@ class XADD_Test extends PredisCommandTestCase
             ['stream', '*', 'key', 'val'],
         ];
 
-            $data[] = [
+        $data[] = [
             ['stream', 'KEEPREF', ['key' => 'val'], '2-3'],
             ['stream', 'KEEPREF', '2-3', 'key', 'val'],
         ];

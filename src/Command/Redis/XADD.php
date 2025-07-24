@@ -36,14 +36,13 @@ class XADD extends RedisCommand
 
         $args[] = $arguments[0];
 
-
         $optionsOffset = 3;
         $idOffset = 2;
         $pushRefArg = false;
 
         if (is_array($arguments) && count(array_intersect(['KEEPREF', 'DELREF', 'ACKED'], $arguments)) == 1) {
-            $optionsOffset += 1;
-            $idOffset += 1;
+            ++$optionsOffset;
+            ++$idOffset;
             $pushRefArg = true;
         }
 
@@ -68,8 +67,8 @@ class XADD extends RedisCommand
 
         // ID, default to * to let Redis set it
         $args[] = $arguments[$idOffset] ?? '*';
-        if (isset($arguments[$idOffset-1]) && is_array($arguments[$idOffset-1])) {
-            foreach ($arguments[$idOffset-1] as $key => $val) {
+        if (isset($arguments[$idOffset - 1]) && is_array($arguments[$idOffset - 1])) {
+            foreach ($arguments[$idOffset - 1] as $key => $val) {
                 $args[] = $key;
                 $args[] = $val;
             }
