@@ -41,7 +41,7 @@ class XADD extends RedisCommand
         $pushRefArg = false;
 
         $refArguments = ['KEEPREF', 'DELREF', 'ACKED'];
-        $stringArgs = array_filter($arguments, function($arg) {
+        $stringArgs = array_filter($arguments, function ($arg) {
             return is_string($arg);
         });
 
