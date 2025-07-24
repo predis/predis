@@ -40,7 +40,12 @@ class XADD extends RedisCommand
         $idOffset = 2;
         $pushRefArg = false;
 
-        if (is_array($arguments) && count(array_intersect(['KEEPREF', 'DELREF', 'ACKED'], $arguments)) == 1) {
+        $refArguments = ['KEEPREF', 'DELREF', 'ACKED'];
+        $stringArgs = array_filter($arguments, function($arg) {
+            return is_string($arg);
+        });
+
+        if (count(array_intersect($refArguments, $stringArgs)) == 1) {
             ++$optionsOffset;
             ++$idOffset;
             $pushRefArg = true;
@@ -62,7 +67,8 @@ class XADD extends RedisCommand
         }
 
         if ($pushRefArg) {
-            $args[] = array_intersect(['KEEPREF', 'DELREF', 'ACKED'], $arguments)[0];
+            $refArgFound = array_intersect($refArguments, $stringArgs);
+            $args[] = reset($refArgFound);
         }
 
         // ID, default to * to let Redis set it
