@@ -33,16 +33,16 @@ class XACKDEL extends RedisCommand
     public function setArguments(array $arguments)
     {
         $processedArguments = [$arguments[0], $arguments[1]];
-        
+
         $argIndex = 2;
         if (isset($arguments[$argIndex]) && in_array(strtoupper($arguments[$argIndex]), ['KEEPREF', 'DELREF', 'ACKED'])) {
             $processedArguments[] = strtoupper($arguments[$argIndex]);
             $argIndex++;
         }
-        
+
         while (isset($arguments[$argIndex])) {
             $arg = $arguments[$argIndex];
-            
+
             if (is_array($arg)) {
                 foreach ($arg as $item) {
                     $processedArguments[] = $item;
@@ -50,7 +50,7 @@ class XACKDEL extends RedisCommand
             } else {
                 $processedArguments[] = $arg;
             }
-            
+
             $argIndex++;
         }
 

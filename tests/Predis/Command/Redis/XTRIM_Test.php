@@ -83,7 +83,7 @@ class XTRIM_Test extends PredisCommandTestCase
             [
                 ['stream', 'MINID', '0-1'],
                 ['stream', 'MINID', '0-1'],
-            ],            
+            ],
             [
                 ['stream', 'MINID', '0-1', 'KEEPREF'],
                 ['stream', 'MINID', '0-1', 'KEEPREF'],

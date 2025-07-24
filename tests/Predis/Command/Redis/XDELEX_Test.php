@@ -158,16 +158,16 @@ class XDELEX_Test extends PredisCommandTestCase
         $redis->xadd('teststream', ['key2' => 'val2'], '2-1');
 
         $result = $redis->xdelex('teststream', 'IDS', '2', '0-1', '2-1');
-        
+
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
-        
+
         $remaining = $redis->xrange('teststream', '-', '+');
         $this->assertSame(['1-1' => ['key1' => 'val1']], $remaining);
-        
+
         $redis->xadd('teststream', ['key3' => 'val3'], '3-1');
         $result2 = $redis->xdelex('teststream', 'KEEPREF', 'IDS', '1', '3-1');
-        
+
         $this->assertIsArray($result2);
         $this->assertCount(1, $result2);
     }
