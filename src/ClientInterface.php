@@ -362,7 +362,7 @@ use Predis\Response\Status;
  * @method array|null        vlinks(string $key, string $elem, bool $withScores = false)
  * @method string|array|null vrandmember(string $key, int $count = null)
  * @method bool              vrem(string $key, string $elem)
- * @method array             vsim(string $key, string|array $vectorOrElem, bool $isElem = false, bool $withScores = false, int $count = null, int $ef = null, string $filter = null, int $filterEf = null, bool $truth = false, bool $noThread = false)
+ * @method array             vsim(string $key, string|array $vectorOrElem, bool $isElem = false, bool $withScores = false, int $count = null, float $epsilon = null, int $ef = null, string $filter = null, int $filterEf = null, bool $truth = false, bool $noThread = false)
  * @method bool              vsetattr(string $key, string $elem, string|array $attributes)
  * @method array             waitaof(int $numLocal, int $numReplicas, int $timeout)
  * @method mixed             watch(string[]|string $keyOrKeys)

@@ -351,7 +351,7 @@ use Predis\Command\Redis\VADD;
  * @method $this vrandmember(string $key, int $count = null)
  * @method $this vrem(string $key, string $elem)
  * @method $this vsetattr(string $key, string $elem, string|array $attributes)
- * @method $this vsim(string $key, string|array $vectorOrElem, bool $isElem = false, bool $withScores = false, int $count = null, int $ef = null, string $filter = null, int $filterEf = null, bool $truth = false, bool $noThread = false)
+ * @method $this vsim(string $key, string|array $vectorOrElem, bool $isElem = false, bool $withScores = false, int $count = null, float $epsilon = null, int $ef = null, string $filter = null, int $filterEf = null, bool $truth = false, bool $noThread = false)
  * @method $this watch($key)
  * @method $this eval($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this eval_ro(string $script, array $keys, ...$argument)
