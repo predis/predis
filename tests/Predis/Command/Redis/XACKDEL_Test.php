@@ -39,23 +39,9 @@ class XACKDEL_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithoutOptions(): void
-    {
-        $arguments = ['stream', 'group1', 'IDS', '2', 'id1', 'id2'];
-        $expected = ['stream', 'group1', 'IDS', '2', 'id1', 'id2'];
-
-        $command = $this->getCommand();
-        $command->setArguments($arguments);
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testFilterArgumentsWithKEEPREF(): void
     {
-        $arguments = ['stream', 'group1', 'KEEPREF', 'IDS', '2', 'id1', 'id2'];
+        $arguments = ['stream', 'group1', 'KEEPREF', ['id1', 'id2']];
         $expected = ['stream', 'group1', 'KEEPREF', 'IDS', '2', 'id1', 'id2'];
 
         $command = $this->getCommand();
@@ -69,7 +55,7 @@ class XACKDEL_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithDELREF(): void
     {
-        $arguments = ['stream', 'group1', 'DELREF', 'IDS', '3', 'id1', 'id2', 'id3'];
+        $arguments = ['stream', 'group1', 'DELREF', ['id1', 'id2', 'id3']];
         $expected = ['stream', 'group1', 'DELREF', 'IDS', '3', 'id1', 'id2', 'id3'];
 
         $command = $this->getCommand();
@@ -83,36 +69,8 @@ class XACKDEL_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithACKED(): void
     {
-        $arguments = ['stream', 'group1', 'ACKED', 'IDS', '1', 'id1'];
+        $arguments = ['stream', 'group1', 'ACKED', ['id1']];
         $expected = ['stream', 'group1', 'ACKED', 'IDS', '1', 'id1'];
-
-        $command = $this->getCommand();
-        $command->setArguments($arguments);
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testFilterArgumentsWithArrayOfIds(): void
-    {
-        $arguments = ['stream', 'group1', 'IDS', '3', ['id1', 'id2', 'id3']];
-        $expected = ['stream', 'group1', 'IDS', '3', 'id1', 'id2', 'id3'];
-
-        $command = $this->getCommand();
-        $command->setArguments($arguments);
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testFilterArgumentsWithKEEPREFAndArrayOfIds(): void
-    {
-        $arguments = ['stream', 'group1', 'KEEPREF', 'IDS', '2', ['id1', 'id2']];
-        $expected = ['stream', 'group1', 'KEEPREF', 'IDS', '2', 'id1', 'id2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -135,7 +93,7 @@ class XACKDEL_Test extends PredisCommandTestCase
     {
         /** @var PrefixableCommand $command */
         $command = $this->getCommand();
-        $actualArguments = ['stream', 'group1', 'DELREF', 'IDS', '2', 'id1', 'id2'];
+        $actualArguments = ['stream', 'group1', 'DELREF', ['id1', 'id2']];
         $prefix = 'prefix:';
         $expectedArguments = ['prefix:stream', 'group1', 'DELREF', 'IDS', '2', 'id1', 'id2'];
 
@@ -161,14 +119,14 @@ class XACKDEL_Test extends PredisCommandTestCase
 
         $redis->xreadgroup('testgroup', 'consumer1', 2, null, false, 'teststream', '>');
 
-        $result = $redis->xackdel('teststream', 'testgroup', 'IDS', '2', '0-1', '1-1');
+        $result = $redis->xackdel('teststream', 'testgroup', 'KEEPREF', ['0-1', '1-1']);
 
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
 
         $redis->xadd('teststream', ['key3' => 'val3'], '3-1');
         $redis->xreadgroup('testgroup', 'consumer1', 1, null, false, 'teststream', '>');
-        $result2 = $redis->xackdel('teststream', 'testgroup', 'KEEPREF', 'IDS', '1', '3-1');
+        $result2 = $redis->xackdel('teststream', 'testgroup', 'KEEPREF', ['3-1']);
 
         $this->assertIsArray($result2);
         $this->assertCount(1, $result2);

@@ -35,23 +35,7 @@ class XADD extends RedisCommand
         $args = [];
 
         $args[] = $arguments[0];
-
-        $optionsOffset = 3;
-        $idOffset = 2;
-        $pushRefArg = false;
-
-        $refArguments = ['KEEPREF', 'DELREF', 'ACKED'];
-        $stringArgs = array_filter($arguments, function ($arg) {
-            return is_string($arg);
-        });
-
-        if (count(array_intersect($refArguments, $stringArgs)) == 1) {
-            ++$optionsOffset;
-            ++$idOffset;
-            $pushRefArg = true;
-        }
-
-        $options = $arguments[$optionsOffset] ?? [];
+        $options = $arguments[3] ?? [];
 
         if (isset($options['nomkstream']) && $options['nomkstream']) {
             $args[] = 'NOMKSTREAM';
@@ -66,15 +50,16 @@ class XADD extends RedisCommand
             }
         }
 
-        if ($pushRefArg) {
-            $refArgFound = array_intersect($refArguments, $stringArgs);
-            $args[] = reset($refArgFound);
+        if (isset($options['trimming'])) {
+            $args[] = strtoupper($options['trimming']);
         }
 
         // ID, default to * to let Redis set it
-        $args[] = $arguments[$idOffset] ?? '*';
-        if (isset($arguments[$idOffset - 1]) && is_array($arguments[$idOffset - 1])) {
-            foreach ($arguments[$idOffset - 1] as $key => $val) {
+        $args[] = $arguments[2] ?? '*';
+
+    
+        if (isset($arguments[1]) && is_array($arguments[1])) {
+            foreach ($arguments[1] as $key => $val) {
                 $args[] = $key;
                 $args[] = $val;
             }

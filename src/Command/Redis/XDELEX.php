@@ -32,27 +32,9 @@ class XDELEX extends RedisCommand
      */
     public function setArguments(array $arguments)
     {
-        $processedArguments = [$arguments[0]];
+        $processedArguments = [$arguments[0], strtoupper($arguments[1])];
 
-        $argIndex = 1;
-        if (isset($arguments[$argIndex]) && in_array(strtoupper($arguments[$argIndex]), ['KEEPREF', 'DELREF', 'ACKED'])) {
-            $processedArguments[] = strtoupper($arguments[$argIndex]);
-            $argIndex++;
-        }
-
-        while (isset($arguments[$argIndex])) {
-            $arg = $arguments[$argIndex];
-
-            if (is_array($arg)) {
-                foreach ($arg as $item) {
-                    $processedArguments[] = $item;
-                }
-            } else {
-                $processedArguments[] = $arg;
-            }
-
-            $argIndex++;
-        }
+        array_push($processedArguments, 'IDS', strval(count($arguments[2])), ...$arguments[2]);
 
         parent::setArguments($processedArguments);
     }

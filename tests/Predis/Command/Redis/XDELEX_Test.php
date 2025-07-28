@@ -39,23 +39,9 @@ class XDELEX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testFilterArgumentsWithoutOptions(): void
-    {
-        $arguments = ['stream', 'IDS', '2', 'id1', 'id2'];
-        $expected = ['stream', 'IDS', '2', 'id1', 'id2'];
-
-        $command = $this->getCommand();
-        $command->setArguments($arguments);
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testFilterArgumentsWithKEEPREF(): void
     {
-        $arguments = ['stream', 'KEEPREF', 'IDS', '2', 'id1', 'id2'];
+        $arguments = ['stream', 'KEEPREF', ['id1', 'id2']];
         $expected = ['stream', 'KEEPREF', 'IDS', '2', 'id1', 'id2'];
 
         $command = $this->getCommand();
@@ -69,7 +55,7 @@ class XDELEX_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithDELREF(): void
     {
-        $arguments = ['stream', 'DELREF', 'IDS', '3', 'id1', 'id2', 'id3'];
+        $arguments = ['stream', 'DELREF', ['id1', 'id2', 'id3']];
         $expected = ['stream', 'DELREF', 'IDS', '3', 'id1', 'id2', 'id3'];
 
         $command = $this->getCommand();
@@ -83,36 +69,8 @@ class XDELEX_Test extends PredisCommandTestCase
      */
     public function testFilterArgumentsWithACKED(): void
     {
-        $arguments = ['stream', 'ACKED', 'IDS', '1', 'id1'];
+        $arguments = ['stream', 'ACKED', ['id1']];
         $expected = ['stream', 'ACKED', 'IDS', '1', 'id1'];
-
-        $command = $this->getCommand();
-        $command->setArguments($arguments);
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testFilterArgumentsWithArrayOfIds(): void
-    {
-        $arguments = ['stream', 'IDS', '3', ['id1', 'id2', 'id3']];
-        $expected = ['stream', 'IDS', '3', 'id1', 'id2', 'id3'];
-
-        $command = $this->getCommand();
-        $command->setArguments($arguments);
-
-        $this->assertSame($expected, $command->getArguments());
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testFilterArgumentsWithKEEPREFAndArrayOfIds(): void
-    {
-        $arguments = ['stream', 'KEEPREF', 'IDS', '2', ['id1', 'id2']];
-        $expected = ['stream', 'KEEPREF', 'IDS', '2', 'id1', 'id2'];
 
         $command = $this->getCommand();
         $command->setArguments($arguments);
@@ -135,7 +93,7 @@ class XDELEX_Test extends PredisCommandTestCase
     {
         /** @var PrefixableCommand $command */
         $command = $this->getCommand();
-        $actualArguments = ['stream', 'DELREF', 'IDS', '2', 'id1', 'id2'];
+        $actualArguments = ['stream', 'DELREF', ['id1', 'id2']];
         $prefix = 'prefix:';
         $expectedArguments = ['prefix:stream', 'DELREF', 'IDS', '2', 'id1', 'id2'];
 
@@ -157,7 +115,7 @@ class XDELEX_Test extends PredisCommandTestCase
         $redis->xadd('teststream', ['key1' => 'val1'], '1-1');
         $redis->xadd('teststream', ['key2' => 'val2'], '2-1');
 
-        $result = $redis->xdelex('teststream', 'IDS', '2', '0-1', '2-1');
+        $result = $redis->xdelex('teststream', 'KEEPREF', ['0-1', '2-1']);
 
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
@@ -166,7 +124,7 @@ class XDELEX_Test extends PredisCommandTestCase
         $this->assertSame(['1-1' => ['key1' => 'val1']], $remaining);
 
         $redis->xadd('teststream', ['key3' => 'val3'], '3-1');
-        $result2 = $redis->xdelex('teststream', 'KEEPREF', 'IDS', '1', '3-1');
+        $result2 = $redis->xdelex('teststream', 'KEEPREF', ['3-1']);
 
         $this->assertIsArray($result2);
         $this->assertCount(1, $result2);
