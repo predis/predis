@@ -2,6 +2,8 @@
 
 ### Unreleased
 ### Added
+- Added missing VSIM argument (#1582)
+
 ### Changed
 ### Fixed
 
