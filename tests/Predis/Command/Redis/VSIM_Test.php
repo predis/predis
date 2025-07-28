@@ -123,11 +123,11 @@ class VSIM_Test extends PredisCommandTestCase
         $this->assertTrue($redis->vsetattr('key', 'elem3', ['years' => 16]));
         $this->assertTrue($redis->vsetattr('key', 'elem1', ['years' => 19]));
 
-        // with Filter expression
+        // with Filter expression and Epsilon
         $this->assertSame(
             ['elem2', 'elem1'],
             $redis->vsim(
-                'key', [0.9, 0.8, 0.7, 0.6], false, false, null, null,
+                'key', [0.9, 0.8, 0.7, 0.6], false, false, null, 0.2, null,
                 '.years >= 18'
             )
         );
@@ -192,11 +192,11 @@ class VSIM_Test extends PredisCommandTestCase
         $this->assertTrue($redis->vsetattr('key', 'elem3', ['years' => 16]));
         $this->assertTrue($redis->vsetattr('key', 'elem1', ['years' => 19]));
 
-        // with Filter expression
+        // with Filter expression and Epsilon
         $this->assertSame(
             ['elem2', 'elem1'],
             $redis->vsim(
-                'key', [0.9, 0.8, 0.7, 0.6], false, false, null, null,
+                'key', [0.9, 0.8, 0.7, 0.6], false, false, null, 0.2, null,
                 '.years >= 18'
             )
         );
@@ -225,24 +225,28 @@ class VSIM_Test extends PredisCommandTestCase
                 ['key', 'elem1', true, false, 10],
                 ['key', 'ELE', 'elem1', 'COUNT', 10],
             ],
+            'with EPSILON' => [
+                ['key', 'elem1', true, false, null, 0.01],
+                ['key', 'ELE', 'elem1', 'EPSILON', 0.01],
+            ],
             'with EF' => [
-                ['key', 'elem1', true, false, null, 50],
+                ['key', 'elem1', true, false, null, null, 50],
                 ['key', 'ELE', 'elem1', 'EF', 50],
             ],
             'with FILTER' => [
-                ['key', 'elem1', true, false, null, null, '.year >= 1980 and .rating > 7'],
+                ['key', 'elem1', true, false, null, null, null, '.year >= 1980 and .rating > 7'],
                 ['key', 'ELE', 'elem1', 'FILTER', '.year >= 1980 and .rating > 7'],
             ],
             'with FILTER-EF' => [
-                ['key', 'elem1', true, false, null, null, null, 50],
+                ['key', 'elem1', true, false, null, null, null, null, 50],
                 ['key', 'ELE', 'elem1', 'FILTER-EF', 50],
             ],
             'with TRUTH' => [
-                ['key', 'elem1', true, false, null, null, null, null, true],
+                ['key', 'elem1', true, false, null, null, null, null, null, true],
                 ['key', 'ELE', 'elem1', 'TRUTH'],
             ],
             'with NOTHREAD' => [
-                ['key', 'elem1', true, false, null, null, null, null, false, true],
+                ['key', 'elem1', true, false, null, null, null, null, null, false, true],
                 ['key', 'ELE', 'elem1', 'NOTHREAD'],
             ],
         ];

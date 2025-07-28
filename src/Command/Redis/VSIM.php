@@ -51,22 +51,26 @@ class VSIM extends RedisCommand
         }
 
         if (isset($arguments[5])) {
-            array_push($processedArguments, 'EF', $arguments[5]);
+            array_push($processedArguments, 'EPSILON', $arguments[5]);
         }
 
         if (isset($arguments[6])) {
-            array_push($processedArguments, 'FILTER', $arguments[6]);
+            array_push($processedArguments, 'EF', $arguments[6]);
         }
 
         if (isset($arguments[7])) {
-            array_push($processedArguments, 'FILTER-EF', $arguments[7]);
+            array_push($processedArguments, 'FILTER', $arguments[7]);
         }
 
-        if (isset($arguments[8]) && false !== $arguments[8]) {
-            $processedArguments[] = 'TRUTH';
+        if (isset($arguments[8])) {
+            array_push($processedArguments, 'FILTER-EF', $arguments[8]);
         }
 
         if (isset($arguments[9]) && false !== $arguments[9]) {
+            $processedArguments[] = 'TRUTH';
+        }
+
+        if (isset($arguments[10]) && false !== $arguments[10]) {
             $processedArguments[] = 'NOTHREAD';
         }
 
