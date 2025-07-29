@@ -301,7 +301,7 @@ use Predis\Response\Status;
  * @method array             xautoclaim(string $key, string $group, string $consumer, int $minIdleTime, string $start, ?int $count = null, bool $justId = false)
  * @method array             xclaim(string $key, string $group, string $consumer, int $minIdleTime, string|array $ids, ?int $idle = null, ?int $time = null, ?int $retryCount = null, bool $force = false, bool $justId = false, ?string $lastId = null)
  * @method int               xdel(string $key, string ...$id)
- * @method int               xdelex(string $key, string $mode, string ...$ids)
+ * @method array             xdelex(string $key, string $mode, string ...$ids)
  * @method int               xlen(string $key)
  * @method array             xpending(string $key, string $group, ?int $minIdleTime = null, ?string $start = null, ?string $end = null, ?int $count = null, ?string $consumer = null)
  * @method array             xrevrange(string $key, string $end, string $start, ?int $count = null)
