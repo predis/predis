@@ -34,11 +34,11 @@ class SimpleDebuggableConnection extends StreamConnection
 
     private function storeDebug(CommandInterface $command, $direction)
     {
-        $firtsArg = $command->getArgument(0);
+        $firstArg = $command->getArgument(0);
         $timestamp = round(microtime(true) - $this->tstart, 4);
 
         $debug = $command->getId();
-        $debug .= isset($firtsArg) ? " $firtsArg " : ' ';
+        $debug .= isset($firstArg) ? " $firstArg " : ' ';
         $debug .= "$direction $this";
         $debug .= " [{$timestamp}s]";
 
