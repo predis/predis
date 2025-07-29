@@ -2,10 +2,11 @@
 
 ### Unreleased
 ### Added
+- Added support for `XDELEX` and `XACKDEL` (#1580)
 - Added missing VSIM argument (#1582)
 
 ### Changed
-### Fixed
+- Extended `XTRIM` and `XADD` commands with new parameters (#1580)
 
 ## v3.1.0 (2025-07-22)
 ### Added

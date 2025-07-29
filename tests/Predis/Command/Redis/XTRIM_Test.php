@@ -84,6 +84,18 @@ class XTRIM_Test extends PredisCommandTestCase
                 ['stream', 'MINID', '0-1'],
                 ['stream', 'MINID', '0-1'],
             ],
+            [
+                ['stream', 'MINID', '0-1', ['trimming' => 'KEEPREF']],
+                ['stream', 'MINID', '0-1', 'KEEPREF'],
+            ],
+            [
+                ['stream', 'MINID', '0-1', ['limit' => 10, 'trimming' => 'KEEPREF']],
+                ['stream', 'MINID', '0-1', 'LIMIT', 10, 'KEEPREF'],
+            ],
+            [
+                ['stream', ['MINID'], '0-1', ['limit' => 10, 'trimming' => 'ACKED']],
+                ['stream', 'MINID', '0-1', 'LIMIT', 10, 'ACKED'],
+            ],
         ];
     }
 

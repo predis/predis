@@ -49,6 +49,10 @@ class XTRIM extends RedisCommand
             $args[] = $options['limit'];
         }
 
+        if (isset($options['trimming'])) {
+            $args[] = strtoupper($options['trimming']);
+        }
+
         parent::setArguments($args);
     }
 

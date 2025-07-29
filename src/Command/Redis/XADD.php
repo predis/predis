@@ -50,8 +50,13 @@ class XADD extends RedisCommand
             }
         }
 
+        if (isset($options['trimming'])) {
+            $args[] = strtoupper($options['trimming']);
+        }
+
         // ID, default to * to let Redis set it
         $args[] = $arguments[2] ?? '*';
+
         if (isset($arguments[1]) && is_array($arguments[1])) {
             foreach ($arguments[1] as $key => $val) {
                 $args[] = $key;
