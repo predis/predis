@@ -8,6 +8,9 @@
 ### Changed
 - Extended `XTRIM` and `XADD` commands with new parameters (#1580)
 
+### Maintenance
+- Updated Redis 8.2 test image
+
 ## v3.1.0 (2025-07-22)
 ### Added
 - Add experimental support for vector sets commands (#1550)
