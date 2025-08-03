@@ -222,7 +222,7 @@ class FTCREATE_Test extends PredisCommandTestCase
             ),
         ]));
 
-        $this->sleep(0.1);
+        $this->sleep(0.2);
 
         // Create test vectors (8-dimensional to match DIM)
         $vectors = [
@@ -273,7 +273,7 @@ class FTCREATE_Test extends PredisCommandTestCase
             ),
         ]));
 
-        $this->sleep(0.1);
+        $this->sleep(0.2);
 
         // Create test vectors (8-dimensional to match DIM)
         $vectors = [
