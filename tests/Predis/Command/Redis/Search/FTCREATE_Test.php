@@ -198,6 +198,7 @@ class FTCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.1.0
      * @return void
      */
