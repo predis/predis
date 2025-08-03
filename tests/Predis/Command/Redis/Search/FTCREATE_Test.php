@@ -196,6 +196,108 @@ class FTCREATE_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $actualResponse);
     }
 
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.1.0
+     * @return void
+     */
+    public function testVectorCreateVANAMA(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->ftcreate('test', [
+            new VectorField(
+                'v', 'SVS-VAMANA',
+                ['TYPE', 'FLOAT32',
+                    'DIM', 8,
+                    'DISTANCE_METRIC', 'L2',
+                    'COMPRESSION', 'LeanVec8x8',  // LeanVec compression required for REDUCE
+                    'CONSTRUCTION_WINDOW_SIZE', 200,
+                    'GRAPH_MAX_DEGREE', 32,
+                    'SEARCH_WINDOW_SIZE', 15,
+                    'EPSILON', 0.01,
+                    'TRAINING_THRESHOLD', 1024,
+                    'REDUCE', 4,
+                ]// Half of DIM (8/2 = 4)
+            ),
+        ]));
+
+        $this->sleep(0.1);
+
+        // Create test vectors (8-dimensional to match DIM)
+        $vectors = [
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
+            [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0],
+            [4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0],
+            [5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0],
+        ];
+
+        foreach ($vectors as $i => $vector) {
+            $redis->hset("doc{$i}", 'v', VectorUtility::toBlob($vector));
+        }
+
+        $query = new SearchArguments();
+        $query->params(['vec', VectorUtility::toBlob($vectors[0])]);
+        $query->noContent();
+
+        $result = $redis->ftsearch('test', '*=>[KNN 3 @v $vec as score]', $query);
+
+        $this->assertSame(3, $result[0]);
+        $this->assertSame('doc0', $result[1]);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.1.0
+     * @return void
+     */
+    public function testVectorCreateVANAMAResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->ftcreate('test', [
+            new VectorField(
+                'v', 'SVS-VAMANA',
+                ['TYPE', 'FLOAT32',
+                    'DIM', 8,
+                    'DISTANCE_METRIC', 'L2',
+                    'COMPRESSION', 'LeanVec8x8',  // LeanVec compression required for REDUCE
+                    'CONSTRUCTION_WINDOW_SIZE', 200,
+                    'GRAPH_MAX_DEGREE', 32,
+                    'SEARCH_WINDOW_SIZE', 15,
+                    'EPSILON', 0.01,
+                    'TRAINING_THRESHOLD', 1024,
+                    'REDUCE', 4,
+                ]// Half of DIM (8/2 = 4)
+            ),
+        ]));
+
+        $this->sleep(0.1);
+
+        // Create test vectors (8-dimensional to match DIM)
+        $vectors = [
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
+            [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0],
+            [4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0],
+            [5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0],
+        ];
+
+        foreach ($vectors as $i => $vector) {
+            $redis->hset("doc{$i}", 'v', VectorUtility::toBlob($vector));
+        }
+
+        $query = new SearchArguments();
+        $query->params(['vec', VectorUtility::toBlob($vectors[0])]);
+        $query->noContent();
+
+        $result = $redis->ftsearch('test', '*=>[KNN 3 @v $vec as score]', $query);
+
+        $this->assertSame(3, count($result['results']));
+        $this->assertSame('doc0', $result['results'][0]['id']);
+    }
+
     public function argumentsProvider(): array
     {
         return [
@@ -276,103 +378,5 @@ class FTCREATE_Test extends PredisCommandTestCase
                 ['index', 'ON', 'HASH', 'SCHEMA', 'text_field', 'TEXT', 'numeric_field', 'NUMERIC', 'tag_field', 'AS', 'tf', 'TAG'],
             ],
         ];
-    }
-
-    /**
-     * @group connected
-     * @requiresRedisVersion >= 8.1.0
-     * @return void
-     */
-    public function testVectorCreateVANAMA(): void
-    {
-        $redis = $this->getClient();
-
-        $this->assertEquals('OK', $redis->ftcreate('test', [
-            new VectorField(
-                'v', 'SVS-VAMANA',
-                ['TYPE', 'FLOAT32',
-                    'DIM', 8,
-                    'DISTANCE_METRIC', 'L2',
-                    'COMPRESSION', 'LeanVec8x8',  // LeanVec compression required for REDUCE
-                    'CONSTRUCTION_WINDOW_SIZE', 200,
-                    'GRAPH_MAX_DEGREE', 32,
-                    'SEARCH_WINDOW_SIZE', 15,
-                    'EPSILON', 0.01,
-                    'TRAINING_THRESHOLD', 1024,
-                    'REDUCE', 4,
-                ]// Half of DIM (8/2 = 4)
-            ),
-        ]));
-
-        // Create test vectors (8-dimensional to match DIM)
-        $vectors = [
-            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
-            [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
-            [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0],
-            [4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0],
-            [5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0],
-        ];
-
-        foreach ($vectors as $i => $vector) {
-            $redis->hset("doc{$i}", 'v', VectorUtility::toBlob($vector));
-        }
-
-        $query = new SearchArguments();
-        $query->params(['vec', VectorUtility::toBlob($vectors[0])]);
-        $query->noContent();
-
-        $result = $redis->ftsearch('test', '*=>[KNN 3 @v $vec as score]', $query);
-
-        $this->assertSame(3, $result[0]);
-        $this->assertSame('doc0', $result[1]);
-    }
-
-    /**
-     * @group connected
-     * @requiresRedisVersion >= 8.1.0
-     * @return void
-     */
-    public function testVectorCreateVANAMAResp3(): void
-    {
-        $redis = $this->getResp3Client();
-
-        $this->assertEquals('OK', $redis->ftcreate('test', [
-            new VectorField(
-                'v', 'SVS-VAMANA',
-                ['TYPE', 'FLOAT32',
-                    'DIM', 8,
-                    'DISTANCE_METRIC', 'L2',
-                    'COMPRESSION', 'LeanVec8x8',  // LeanVec compression required for REDUCE
-                    'CONSTRUCTION_WINDOW_SIZE', 200,
-                    'GRAPH_MAX_DEGREE', 32,
-                    'SEARCH_WINDOW_SIZE', 15,
-                    'EPSILON', 0.01,
-                    'TRAINING_THRESHOLD', 1024,
-                    'REDUCE', 4,
-                ]// Half of DIM (8/2 = 4)
-            ),
-        ]));
-
-        // Create test vectors (8-dimensional to match DIM)
-        $vectors = [
-            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
-            [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
-            [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0],
-            [4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0],
-            [5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0],
-        ];
-
-        foreach ($vectors as $i => $vector) {
-            $redis->hset("doc{$i}", 'v', VectorUtility::toBlob($vector));
-        }
-
-        $query = new SearchArguments();
-        $query->params(['vec', VectorUtility::toBlob($vectors[0])]);
-        $query->noContent();
-
-        $result = $redis->ftsearch('test', '*=>[KNN 3 @v $vec as score]', $query);
-
-        $this->assertSame(3, count($result['results']));
-        $this->assertSame('doc0', $result['results'][0]['id']);
     }
 }
