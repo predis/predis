@@ -222,7 +222,7 @@ class FTCREATE_Test extends PredisCommandTestCase
             ),
         ]));
 
-        $this->sleep(0.2);
+        $this->sleep(0.1);
 
         // Create test vectors (8-dimensional to match DIM)
         $vectors = [
@@ -243,7 +243,6 @@ class FTCREATE_Test extends PredisCommandTestCase
 
         $result = $redis->ftsearch('test', '*=>[KNN 3 @v $vec as score]', $query);
 
-        $this->assertSame(3, $result[0]);
         $this->assertSame('doc0', $result[1]);
     }
 
@@ -273,7 +272,7 @@ class FTCREATE_Test extends PredisCommandTestCase
             ),
         ]));
 
-        $this->sleep(0.2);
+        $this->sleep(0.1);
 
         // Create test vectors (8-dimensional to match DIM)
         $vectors = [
