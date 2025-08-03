@@ -9,7 +9,8 @@
 - Extended `XTRIM` and `XADD` commands with new parameters (#1580)
 
 ### Maintenance
-- Updated Redis 8.2 test image
+- Updated Redis 8.2 test image (#1583)
+- Added test coverage for updated Vamana (#1584)
 
 ## v3.1.0 (2025-07-22)
 ### Added
