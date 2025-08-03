@@ -244,6 +244,7 @@ class FTCREATE_Test extends PredisCommandTestCase
 
         $result = $redis->ftsearch('test', '*=>[KNN 3 @v $vec as score]', $query);
 
+        $this->assertSame(3, $result[0]);
         $this->assertSame('doc0', $result[1]);
     }
 
