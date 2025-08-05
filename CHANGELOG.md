@@ -1,6 +1,11 @@
 ## Changelog
 
-### Unreleased
+## Unreleased
+### Added
+### Changed
+### Maintenance
+
+## v3.2.0 (2025-08-05)
 ### Added
 - Added support for `XDELEX` and `XACKDEL` (#1580)
 - Added missing VSIM argument (#1582)
