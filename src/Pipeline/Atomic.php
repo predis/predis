@@ -14,6 +14,7 @@ namespace Predis\Pipeline;
 
 use Predis\ClientException;
 use Predis\ClientInterface;
+use Predis\Connection\AggregateConnectionInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -63,13 +64,12 @@ class Atomic extends Pipeline
     {
         $commandFactory = $this->getClient()->getCommandFactory();
         $connection->executeCommand($commandFactory->create('multi'));
-        $buffer = '';
 
-        foreach ($commands as $command) {
-            $buffer .= $command->serializeCommand();
+        if ($connection instanceof AggregateConnectionInterface) {
+            $this->writeToMultiNode($connection, $commands);
+        } else {
+            $this->writeToSingleNode($connection, $commands);
         }
-
-        $connection->write($buffer);
 
         foreach ($commands as $command) {
             $response = $connection->readResponse($command);
