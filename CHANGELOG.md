@@ -3,6 +3,8 @@
 ## Unreleased
 ### Added
 ### Changed
+- Refactor pipeline data writing depends on connection type (#1586)
+
 ### Maintenance
 
 ## v3.2.0 (2025-08-05)
