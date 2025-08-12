@@ -474,6 +474,11 @@ class PredisStrategyTest extends PredisTestCase
             'HSCAN' => 'keys-first',
             'HSTRLEN' => 'keys-first',
 
+            /* commands operating on streams */
+            'XADD' => 'keys-first',
+            'XDEL' => 'keys-first',
+            'XRANGE' => 'keys-first',
+
             /* commands operating on HyperLogLog */
             'PFADD' => 'keys-first',
             'PFCOUNT' => 'keys-all',
