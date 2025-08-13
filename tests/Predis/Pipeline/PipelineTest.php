@@ -321,7 +321,11 @@ class PipelineTest extends PredisTestCase
      */
     public function testSwitchesToMasterWithReplicationConnection(): void
     {
-        $buffer = (new PING())->serializeCommand() . (new PING())->serializeCommand() . (new PING())->serializeCommand();
+        $nodeConnection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $nodeConnection
+            ->expects($this->exactly(3))
+            ->method('write')
+            ->with((new PING())->serializeCommand());
         $pong = new Response\Status('PONG');
 
         $connection = $this->getMockBuilder('Predis\Connection\Replication\ReplicationInterface')->getMock();
@@ -329,9 +333,9 @@ class PipelineTest extends PredisTestCase
             ->expects($this->once())
             ->method('switchToMaster');
         $connection
-            ->expects($this->once())
-            ->method('write')
-            ->with($buffer);
+            ->expects($this->exactly(3))
+            ->method('getConnectionByCommand')
+            ->willReturn($nodeConnection);
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
@@ -639,6 +643,32 @@ class PipelineTest extends PredisTestCase
             'bar',
             'foo',
             'baz',
+        ];
+
+        $this->assertSameValues($expectedResults, $results);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     */
+    public function testReplicationExecutesPipelineWithCRLFValues(): void
+    {
+        $parameters = $this->getDefaultParametersArray();
+
+        $client = $this->getClient(
+            ["tcp://{$parameters['host']}:{$parameters['port']}?role=master&database={$parameters['database']}&password={$parameters['password']}"],
+            ['replication' => 'predis']
+        );
+
+        $results = $client->pipeline(function (Pipeline $pipe) {
+            $pipe->set('foo', "bar\r\nbaz");
+            $pipe->get('foo');
+        });
+
+        $expectedResults = [
+            new Response\Status('OK'),
+            "bar\r\nbaz",
         ];
 
         $this->assertSameValues($expectedResults, $results);

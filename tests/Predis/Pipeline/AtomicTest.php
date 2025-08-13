@@ -13,6 +13,7 @@
 namespace Predis\Pipeline;
 
 use Predis\Client;
+use Predis\ClientInterface;
 use Predis\Command\Redis\PING;
 use Predis\Connection\Parameters;
 use Predis\Response;
@@ -262,5 +263,48 @@ class AtomicTest extends PredisTestCase
         $pipeline->ping();
 
         $pipeline->execute();
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     */
+    public function testReplicationExecutesPipelineWithCRLFValues(): void
+    {
+        $parameters = $this->getDefaultParametersArray();
+
+        $client = $this->getClient(
+            ["tcp://{$parameters['host']}:{$parameters['port']}?role=master&database={$parameters['database']}&password={$parameters['password']}"],
+            ['replication' => 'predis']
+        );
+
+        $results = $client->pipeline(function (Pipeline $pipe) {
+            $pipe->set('foo', "bar\r\nbaz");
+            $pipe->get('foo');
+        });
+
+        $expectedResults = [
+            new Response\Status('OK'),
+            "bar\r\nbaz",
+        ];
+
+        $this->assertSameValues($expectedResults, $results);
+    }
+
+    // ******************************************************************** //
+    // ---- HELPER METHODS ------------------------------------------------ //
+    // ******************************************************************** //
+
+    /**
+     * Returns a client instance connected to the specified Redis server.
+     *
+     * @param array $parameters Additional connection parameters
+     * @param array $options    Additional client options
+     *
+     * @return ClientInterface
+     */
+    protected function getClient(array $parameters = [], array $options = []): ClientInterface
+    {
+        return $this->createClient($parameters, $options);
     }
 }

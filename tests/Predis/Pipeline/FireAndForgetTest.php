@@ -13,7 +13,9 @@
 namespace Predis\Pipeline;
 
 use Predis\Client;
+use Predis\ClientInterface;
 use Predis\Command\Redis\PING;
+use Predis\Response;
 use PredisTestCase;
 
 class FireAndForgetTest extends PredisTestCase
@@ -47,16 +49,21 @@ class FireAndForgetTest extends PredisTestCase
      */
     public function testSwitchesToMasterWithReplicationConnection(): void
     {
-        $buffer = (new PING())->serializeCommand() . (new PING())->serializeCommand() . (new PING())->serializeCommand();
+        $nodeConnection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $nodeConnection
+            ->expects($this->exactly(3))
+            ->method('write')
+            ->with((new PING())->serializeCommand());
+
         $connection = $this->getMockBuilder('Predis\Connection\Replication\ReplicationInterface')
             ->getMock();
         $connection
             ->expects($this->once())
             ->method('switchToMaster');
         $connection
-            ->expects($this->once())
-            ->method('write')
-            ->with($buffer);
+            ->expects($this->exactly(3))
+            ->method('getConnectionByCommand')
+            ->willReturn($nodeConnection);
         $connection
             ->expects($this->never())
             ->method('readResponse');
@@ -88,5 +95,48 @@ class FireAndForgetTest extends PredisTestCase
         $pipeline->get('baz');
 
         $this->assertEmpty($pipeline->execute());
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     */
+    public function testReplicationExecutesPipelineWithCRLFValues(): void
+    {
+        $parameters = $this->getDefaultParametersArray();
+
+        $client = $this->getClient(
+            ["tcp://{$parameters['host']}:{$parameters['port']}?role=master&database={$parameters['database']}&password={$parameters['password']}"],
+            ['replication' => 'predis']
+        );
+
+        $results = $client->pipeline(function (Pipeline $pipe) {
+            $pipe->set('foo', "bar\r\nbaz");
+            $pipe->get('foo');
+        });
+
+        $expectedResults = [
+            new Response\Status('OK'),
+            "bar\r\nbaz",
+        ];
+
+        $this->assertSameValues($expectedResults, $results);
+    }
+
+    // ******************************************************************** //
+    // ---- HELPER METHODS ------------------------------------------------ //
+    // ******************************************************************** //
+
+    /**
+     * Returns a client instance connected to the specified Redis server.
+     *
+     * @param array $parameters Additional connection parameters
+     * @param array $options    Additional client options
+     *
+     * @return ClientInterface
+     */
+    protected function getClient(array $parameters = [], array $options = []): ClientInterface
+    {
+        return $this->createClient($parameters, $options);
     }
 }
