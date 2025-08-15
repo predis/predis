@@ -155,6 +155,11 @@ abstract class ClusterStrategy implements StrategyInterface
             'HSCAN' => $getKeyFromFirstArgument,
             'HSTRLEN' => $getKeyFromFirstArgument,
 
+            /* commands operating on streams */
+            'XADD' => $getKeyFromFirstArgument,
+            'XDEL' => $getKeyFromFirstArgument,
+            'XRANGE' => $getKeyFromFirstArgument,
+
             /* commands operating on HyperLogLog */
             'PFADD' => $getKeyFromFirstArgument,
             'PFCOUNT' => $getKeyFromAllArguments,
