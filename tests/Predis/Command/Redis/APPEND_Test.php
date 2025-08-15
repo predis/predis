@@ -91,7 +91,7 @@ class APPEND_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
-    public function testReturnsTheLenghtOfTheStringAfterAppend(): void
+    public function testReturnsTheLengthOfTheStringAfterAppend(): void
     {
         $redis = $this->getClient();
 
