@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Response\ServerException;
 
 class BLMOVE_Test extends PredisCommandTestCase
@@ -55,6 +56,23 @@ class BLMOVE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'prefix:arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @dataProvider listsProvider
      * @param  array  $firstList
@@ -86,6 +104,31 @@ class BLMOVE_Test extends PredisCommandTestCase
         $this->assertSame($expectedResponse, $actualResponse);
         $this->assertSame($expectedModifiedFirstList, $redis->lrange('test-blmove1', 0, -1));
         $this->assertSame($expectedModifiedSecondList, $redis->lrange('test-blmove2', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsCorrectListElementResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->rpush('test-blmove1', ['element1', 'element2', 'element3']);
+        $redis->rpush('test-blmove2', ['element4', 'element5', 'element6']);
+
+        $actualResponse = $redis->blmove(
+            'test-blmove1',
+            'test-blmove2',
+            'LEFT',
+            'LEFT',
+            0
+        );
+
+        $this->assertSame('element1', $actualResponse);
+        $this->assertSame(['element2', 'element3'], $redis->lrange('test-blmove1', 0, -1));
+        $this->assertSame(['element1', 'element4', 'element5', 'element6'], $redis->lrange('test-blmove2', 0, -1));
     }
 
     /**

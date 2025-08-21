@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -304,10 +304,12 @@ class FactoryTest extends PredisTestCase
             ->method('getParameters')
             ->willReturn($parameters);
         $connection
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(4))
             ->method('addConnectCommand')
             ->withConsecutive(
-                [$this->isRedisCommand('AUTH', ['foobar'])],
+                [$this->isRedisCommand('HELLO', [2, 'AUTH', 'default', 'foobar', 'SETNAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])],
                 [$this->isRedisCommand('SELECT', ['0'])]
             );
 
@@ -333,9 +335,13 @@ class FactoryTest extends PredisTestCase
         $connection->expects($this->once())
             ->method('getParameters')
             ->will($this->returnValue($parameters));
-        $connection->expects($this->once())
+        $connection->expects($this->exactly(3))
             ->method('addConnectCommand')
-            ->with($this->isRedisCommand('AUTH', ['foobar']));
+            ->withConsecutive(
+                [$this->isRedisCommand('HELLO', [2, 'AUTH', 'default', 'foobar', 'SETNAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])]
+            );
 
         $factory = new Factory();
 
@@ -360,9 +366,13 @@ class FactoryTest extends PredisTestCase
         $connection->expects($this->once())
             ->method('getParameters')
             ->will($this->returnValue($parameters));
-        $connection->expects($this->once())
+        $connection->expects($this->exactly(3))
             ->method('addConnectCommand')
-            ->with($this->isRedisCommand('AUTH', ['myusername', 'foobar']));
+            ->withConsecutive(
+                [$this->isRedisCommand('HELLO', [2, 'AUTH', 'myusername', 'foobar', 'SETNAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])]
+            );
 
         $factory = new Factory();
 
@@ -386,8 +396,13 @@ class FactoryTest extends PredisTestCase
         $connection->expects($this->once())
             ->method('getParameters')
             ->will($this->returnValue($parameters));
-        $connection->expects($this->never())
-            ->method('addConnectCommand');
+        $connection->expects($this->exactly(3))
+            ->method('addConnectCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('HELLO', [2, 'SETNAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])]
+            );
 
         $factory = new Factory();
 
@@ -412,8 +427,13 @@ class FactoryTest extends PredisTestCase
         $connection->expects($this->once())
             ->method('getParameters')
             ->will($this->returnValue($parameters));
-        $connection->expects($this->never())
-            ->method('addConnectCommand');
+        $connection->expects($this->exactly(3))
+            ->method('addConnectCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('HELLO', [2, 'SETNAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])],
+                [$this->isRedisCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])]
+            );
 
         $factory = new Factory();
 
@@ -546,19 +566,42 @@ class FactoryTest extends PredisTestCase
      */
     public function testSetClientNameAndVersionOnConnection(): void
     {
-        $parameters = ['client_info' => true];
+        $parameters = [];
 
         $factory = new Factory();
         $connection = $factory->create($parameters);
         $initCommands = $connection->getInitCommands();
 
         $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
-        $this->assertSame('CLIENT', $initCommands[0]->getId());
-        $this->assertSame(['SETINFO', 'LIB-NAME', 'predis'], $initCommands[0]->getArguments());
+        $this->assertSame('HELLO', $initCommands[0]->getId());
+        $this->assertSame([2, 'SETNAME', 'predis'], $initCommands[0]->getArguments());
 
         $this->assertInstanceOf(RawCommand::class, $initCommands[1]);
         $this->assertSame('CLIENT', $initCommands[1]->getId());
-        $this->assertSame(['SETINFO', 'LIB-VER', Client::VERSION], $initCommands[1]->getArguments());
+        $this->assertSame(['SETINFO', 'LIB-NAME', 'predis'], $initCommands[1]->getArguments());
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[2]);
+        $this->assertSame('CLIENT', $initCommands[2]->getId());
+        $this->assertSame(['SETINFO', 'LIB-VER', Client::VERSION], $initCommands[2]->getArguments());
+    }
+
+    /**
+     * @dataProvider onConnectionProvider
+     * @group disconnected
+     * @param  array $parameters
+     * @param  array $expectedCommands
+     * @return void
+     */
+    public function testCreatesConnectionWithParameters(array $parameters, array $expectedCommands): void
+    {
+        $factory = new Factory();
+        $connection = $factory->create($parameters);
+        $initCommands = $connection->getInitCommands();
+
+        for ($i = 0, $iMax = count($initCommands); $i < $iMax; $i++) {
+            $this->assertSame($expectedCommands[$i]->getId(), $initCommands[$i]->getId());
+            $this->assertSameValues($expectedCommands[$i]->getArguments(), $initCommands[$i]->getArguments());
+        }
     }
 
     // ******************************************************************** //
@@ -598,6 +641,48 @@ class FactoryTest extends PredisTestCase
             // SELECT
             ['database', ''],
             ['database', null],
+        ];
+    }
+
+    public function onConnectionProvider(): array
+    {
+        return [
+            'resp_2_no_auth' => [
+                [],
+                [
+                    new RawCommand('HELLO', [2, 'SETNAME', 'predis']),
+                    new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis']),
+                    new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION]),
+                    new RawCommand('SELECT', [0]),
+                ],
+            ],
+            'resp_2_auth' => [
+                ['username' => 'foo', 'password' => 'bar'],
+                [
+                    new RawCommand('HELLO', [2, 'AUTH', 'foo', 'bar', 'SETNAME', 'predis']),
+                    new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis']),
+                    new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION]),
+                    new RawCommand('SELECT', [0]),
+                ],
+            ],
+            'resp_3_no_auth' => [
+                ['protocol' => 3],
+                [
+                    new RawCommand('HELLO', [3, 'SETNAME', 'predis']),
+                    new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis']),
+                    new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION]),
+                    new RawCommand('SELECT', [0]),
+                ],
+            ],
+            'resp_3_auth' => [
+                ['protocol' => 3, 'username' => 'foo', 'password' => 'bar'],
+                [
+                    new RawCommand('HELLO', [3, 'AUTH', 'foo', 'bar', 'SETNAME', 'predis']),
+                    new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis']),
+                    new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION]),
+                    new RawCommand('SELECT', [0]),
+                ],
+            ],
         ];
     }
 }

@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -38,12 +38,14 @@ use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
-use Predis\Command\Redis\Container\ACL;
-use Predis\Command\Redis\Container\CLUSTER;
-use Predis\Command\Redis\Container\FunctionContainer;
-use Predis\Command\Redis\Container\Json\JSONDEBUG;
-use Predis\Command\Redis\Container\Search\FTCONFIG;
-use Predis\Command\Redis\Container\Search\FTCURSOR;
+use Predis\Command\Container\ACL;
+use Predis\Command\Container\CLIENT;
+use Predis\Command\Container\FUNCTIONS;
+use Predis\Command\Container\Json\JSONDEBUG;
+use Predis\Command\Container\Search\FTCONFIG;
+use Predis\Command\Container\Search\FTCURSOR;
+use Predis\Command\Container\XGROUP;
+use Predis\Command\Redis\VADD;
 
 /**
  * Interface defining a client-side context such as a pipeline or transaction.
@@ -59,14 +61,14 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this move($key, $db)
  * @method $this object($subcommand, $key)
  * @method $this persist($key)
- * @method $this pexpire($key, $milliseconds)
- * @method $this pexpireat($key, $timestamp)
+ * @method $this pexpire($key, $milliseconds, string $option = null)
+ * @method $this pexpireat($key, $timestamp, string $option = null)
  * @method $this pttl($key)
  * @method $this randomkey()
  * @method $this rename($key, $target)
  * @method $this renamenx($key, $target)
- * @method $this scan($cursor, array $options = null)
- * @method $this sort($key, array $options = null)
+ * @method $this scan($cursor, ?array $options = null)
+ * @method $this sort($key, ?array $options = null)
  * @method $this sort_ro(string $key, ?string $byPattern = null, ?LimitOffsetCount $limit = null, array $getPatterns = [], ?string $sorting = null, bool $alpha = false)
  * @method $this ttl($key)
  * @method $this type($key)
@@ -83,6 +85,7 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this bitcount(string $key, $start = null, $end = null, string $index = 'byte')
  * @method $this bitop($operation, $destkey, $key)
  * @method $this bitfield($key, $subcommand, ...$subcommandArg)
+ * @method $this bitfield_ro(string $key, ?array $encodingOffsetMap = null)
  * @method $this bitpos($key, $bit, $start = null, $end = null, string $index = 'byte')
  * @method $this blmpop(int $timeout, array $keys, string $modifier = 'left', int $count = 1)
  * @method $this bzpopmax(array $keys, int $timeout)
@@ -111,6 +114,7 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this failover(?To $to = null, bool $abort = false, int $timeout = -1)
  * @method $this fcall(string $function, array $keys, ...$args)
  * @method $this fcall_ro(string $function, array $keys, ...$args)
+ * @method $this ft_list()
  * @method $this ftaggregate(string $index, string $query, ?AggregateArguments $arguments = null)
  * @method $this ftaliasadd(string $alias, string $index)
  * @method $this ftaliasdel(string $alias)
@@ -154,8 +158,17 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this strlen($key)
  * @method $this hdel($key, array $fields)
  * @method $this hexists($key, $field)
+ * @method $this hexpire(string $key, int $seconds, array $fields, string $flag = null)
+ * @method $this hexpireat(string $key, int $unixTimeSeconds, array $fields, string $flag = null)
+ * @method $this hexpiretime(string $key, array $fields)
+ * @method $this hpersist(string $key, array $fields)
+ * @method $this hpexpire(string $key, int $milliseconds, array $fields, string $flag = null)
+ * @method $this hpexpireat(string $key, int $unixTimeMilliseconds, array $fields, string $flag = null)
+ * @method $this hpexpiretime(string $key, array $fields)
  * @method $this hget($key, $field)
+ * @method $this hgetex(string $key, array $fields, string $modifier = HGETEX::NULL)
  * @method $this hgetall($key)
+ * @method $this hgetdel(string $key, array $fields)
  * @method $this hincrby($key, $field, $increment)
  * @method $this hincrbyfloat($key, $field, $increment)
  * @method $this hkeys($key)
@@ -163,9 +176,12 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this hmget($key, array $fields)
  * @method $this hmset($key, array $dictionary)
  * @method $this hrandfield(string $key, int $count = 1, bool $withValues = false)
- * @method $this hscan($key, $cursor, array $options = null)
+ * @method $this hscan($key, $cursor, ?array $options = null)
  * @method $this hset($key, $field, $value)
+ * @method $this hsetex(string $key, array $fieldValueMap, string $setModifier = HSETEX::SET_NULL, string $ttlModifier = HSETEX::TTL_NULL, int|bool $ttlModifierValue = false)
  * @method $this hsetnx($key, $field, $value)
+ * @method $this httl(string $key, array $fields)
+ * @method $this hpttl(string $key, array $fields)
  * @method $this hvals($key)
  * @method $this hstrlen($key, $field)
  * @method $this jsonarrappend(string $key, string $path = '$', ...$value)
@@ -225,7 +241,10 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this spop($key, $count = null)
  * @method $this srandmember($key, $count = null)
  * @method $this srem($key, $member)
- * @method $this sscan($key, $cursor, array $options = null)
+ * @method $this sscan($key, $cursor, ?array $options = null)
+ * @method $this ssubscribe(string ...$shardChannels)
+ * @method $this subscribe(string ...$channels)
+ * @method $this sunsubscribe(?string ...$shardChannels = null)
  * @method $this sunion(array|string $keys)
  * @method $this sunionstore($destination, array|string $keys)
  * @method $this tdigestadd(string $key, float ...$value)
@@ -255,7 +274,7 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
  * @method $this tsdel(string $key, int $fromTimestamp, int $toTimestamp)
  * @method $this tsdeleterule(string $sourceKey, string $destKey)
- * @method $this tsget(string $key, GetArguments $arguments = null)
+ * @method $this tsget(string $key, ?GetArguments $arguments = null)
  * @method $this tsincrby(string $key, float $value, ?IncrByArguments $arguments = null)
  * @method $this tsinfo(string $key, ?InfoArguments $arguments = null)
  * @method $this tsmadd(mixed ...$keyTimestampValue)
@@ -265,6 +284,21 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this tsqueryindex(string ...$filterExpression)
  * @method $this tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method $this tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
+ * @method $this xack(string $key, string $group, string ...$id)
+ * @method $this xackdel(string $key, string $group, string $mode, array $ids)
+ * @method $this xadd(string $key, array $dictionary, string $id = '*', array $options = null)
+ * @method $this xautoclaim(string $key, string $group, string $consumer, int $minIdleTime, string $start, ?int $count = null, bool $justId = false)
+ * @method $this xclaim(string $key, string $group, string $consumer, int $minIdleTime, string|array $ids, ?int $idle = null, ?int $time = null, ?int $retryCount = null, bool $force = false, bool $justId = false, ?string $lastId = null)
+ * @method $this xdel(string $key, string ...$id)
+ * @method $this xdelex(string $key, string $mode, array $ids)
+ * @method $this xlen(string $key)
+ * @method $this xpending(string $key, string $group, ?int $minIdleTime = null, ?string $start = null, ?string $end = null, ?int $count = null, ?string $consumer = null)
+ * @method $this xrevrange(string $key, string $end, string $start, ?int $count = null)
+ * @method $this xrange(string $key, string $start, string $end, ?int $count = null)
+ * @method $this xread(int $count = null, int $block = null, array $streams = null, string ...$id)
+ * @method $this xreadgroup(string $group, string $consumer, ?int $count = null, ?int $blockMs = null, bool $noAck = false, string ...$keyOrId)
+ * @method $this xsetid(string $key, string $lastId, ?int $entriesAdded = null, ?string $maxDeleteId = null)
+ * @method $this xtrim(string $key, array|string $strategy, string $threshold, array $options = null)
  * @method $this zadd($key, array $membersAndScoresDictionary)
  * @method $this zcard($key)
  * @method $this zcount($key, $min, $max)
@@ -277,22 +311,22 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this zmpop(array $keys, string $modifier = 'min', int $count = 1)
  * @method $this zmscore(string $key, string ...$member)
  * @method $this zrandmember(string $key, int $count = 1, bool $withScores = false)
- * @method $this zrange($key, $start, $stop, array $options = null)
- * @method $this zrangebyscore($key, $min, $max, array $options = null)
+ * @method $this zrange($key, $start, $stop, ?array $options = null)
+ * @method $this zrangebyscore($key, $min, $max, ?array $options = null)
  * @method $this zrangestore(string $destination, string $source, int|string $min, string|int $max, string|bool $by = false, bool $reversed = false, bool $limit = false, int $offset = 0, int $count = 0)
  * @method $this zrank($key, $member)
  * @method $this zrem($key, $member)
  * @method $this zremrangebyrank($key, $start, $stop)
  * @method $this zremrangebyscore($key, $min, $max)
- * @method $this zrevrange($key, $start, $stop, array $options = null)
- * @method $this zrevrangebyscore($key, $max, $min, array $options = null)
+ * @method $this zrevrange($key, $start, $stop, ?array $options = null)
+ * @method $this zrevrangebyscore($key, $max, $min, ?array $options = null)
  * @method $this zrevrank($key, $member)
  * @method $this zunion(array $keys, int[] $weights = [], string $aggregate = 'sum', bool $withScores = false)
  * @method $this zunionstore(string $destination, array $keys, int[] $weights = [], string $aggregate = 'sum')
  * @method $this zscore($key, $member)
- * @method $this zscan($key, $cursor, array $options = null)
- * @method $this zrangebylex($key, $start, $stop, array $options = null)
- * @method $this zrevrangebylex($key, $start, $stop, array $options = null)
+ * @method $this zscan($key, $cursor, ?array $options = null)
+ * @method $this zrangebylex($key, $start, $stop, ?array $options = null)
+ * @method $this zrevrangebylex($key, $start, $stop, ?array $options = null)
  * @method $this zremrangebylex($key, $min, $max)
  * @method $this zlexcount($key, $min, $max)
  * @method $this pexpiretime(string $key)
@@ -306,47 +340,60 @@ use Predis\Command\Redis\Container\Search\FTCURSOR;
  * @method $this multi()
  * @method $this unwatch()
  * @method $this waitaof(int $numLocal, int $numReplicas, int $timeout)
+ * @method $this unsubscribe(string ...$channels)
+ * @method $this vadd(string $key, string|array $vector, string $elem, int $dim = null, bool $cas = false, string $quant = VADD::QUANT_DEFAULT, ?int $BEF = null, string|array $attributes = null, int $numlinks = null)
+ * @method $this vcard(string $key)
+ * @method $this vdim(int $key)
+ * @method $this vemb(string $key, string $elem, bool $raw = false)
+ * @method $this vgetattr(string $key, string $elem, bool $asJson = false)
+ * @method $this vinfo(string $key)
+ * @method $this vlinks(string $key, string $elem, bool $withScores = false)
+ * @method $this vrandmember(string $key, int $count = null)
+ * @method $this vrem(string $key, string $elem)
+ * @method $this vsetattr(string $key, string $elem, string|array $attributes)
+ * @method $this vsim(string $key, string|array $vectorOrElem, bool $isElem = false, bool $withScores = false, int $count = null, float $epsilon = null, int $ef = null, string $filter = null, int $filterEf = null, bool $truth = false, bool $noThread = false)
  * @method $this watch($key)
  * @method $this eval($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this eval_ro(string $script, array $keys, ...$argument)
  * @method $this evalsha($script, $numkeys, $keyOrArg1 = null, $keyOrArgN = null)
  * @method $this evalsha_ro(string $sha1, array $keys, ...$argument)
  * @method $this script($subcommand, $argument = null)
- * @method $this shutdown(bool $noSave = null, bool $now = false, bool $force = false, bool $abort = false)
+ * @method $this shutdown(?bool $noSave = null, bool $now = false, bool $force = false, bool $abort = false)
  * @method $this auth($password)
  * @method $this echo($message)
  * @method $this ping($message = null)
  * @method $this select($database)
  * @method $this bgrewriteaof()
  * @method $this bgsave()
- * @method $this client($subcommand, $argument = null)
  * @method $this config($subcommand, $argument = null)
  * @method $this dbsize()
  * @method $this flushall()
  * @method $this flushdb()
- * @method $this info($section = null)
+ * @method $this info(string ...$section = null)
  * @method $this lastsave()
  * @method $this save()
  * @method $this slaveof($host, $port)
  * @method $this slowlog($subcommand, $argument = null)
+ * @method $this spublish(string $shardChannel, string $message)
  * @method $this time()
- * @method $this command()
+ * @method $this command($subcommand, $argument = null)
  * @method $this geoadd($key, $longitude, $latitude, $member)
  * @method $this geohash($key, array $members)
  * @method $this geopos($key, array $members)
  * @method $this geodist($key, $member1, $member2, $unit = null)
- * @method $this georadius($key, $longitude, $latitude, $radius, $unit, array $options = null)
- * @method $this georadiusbymember($key, $member, $radius, $unit, array $options = null)
+ * @method $this georadius($key, $longitude, $latitude, $radius, $unit, ?array $options = null)
+ * @method $this georadiusbymember($key, $member, $radius, $unit, ?array $options = null)
  * @method $this geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
- * @property CLUSTER           $cluster
- * @property FunctionContainer $function
- * @property FTCONFIG          $ftconfig
- * @property FTCURSOR          $ftcursor
- * @property JSONDEBUG         $jsondebug
- * @property ACL               $acl
+ * @property CLIENT    $client
+ * @property FUNCTIONS $function
+ * @property FTCONFIG  $ftconfig
+ * @property FTCURSOR  $ftcursor
+ * @property JSONDEBUG $jsondebug
+ * @property ACL       $acl
+ * @property XGROUP    $xgroup
  */
 interface ClientContextInterface
 {

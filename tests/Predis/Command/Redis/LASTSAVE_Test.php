@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -57,6 +57,17 @@ class LASTSAVE_Test extends PredisCommandTestCase
      * @group connected
      */
     public function testReturnsIntegerValue(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertIsInt($redis->lastsave());
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsIntegerValueResp3(): void
     {
         $redis = $this->getClient();
 

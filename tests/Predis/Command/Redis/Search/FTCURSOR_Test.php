@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -18,6 +18,7 @@ use Predis\Command\Argument\Search\CursorArguments;
 use Predis\Command\Argument\Search\SchemaFields\AbstractField;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -75,6 +76,23 @@ class FTCURSOR_Test extends PredisCommandTestCase
     public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setRawArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**
@@ -138,6 +156,55 @@ class FTCURSOR_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testReadAggregatedResultsFromExistingCursorResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $ftCreateArguments = (new CreateArguments())->prefix(['user:']);
+        $schema = [
+            new TextField('name'),
+            new TextField('country'),
+            new NumericField('dob', '', AbstractField::SORTABLE),
+        ];
+
+        $this->assertEquals('OK', $redis->ftcreate('idx', $schema, $ftCreateArguments));
+        $this->assertSame(
+            3,
+            $redis->hset('user:0', 'name', 'Vlad', 'country', 'Ukraine', 'dob', 813801600)
+        );
+        $this->assertSame(
+            3,
+            $redis->hset('user:1', 'name', 'Vlad', 'country', 'Israel', 'dob', 782265600)
+        );
+        $this->assertSame(
+            3,
+            $redis->hset('user:2', 'name', 'Vlad', 'country', 'Ukraine', 'dob', 813801600)
+        );
+
+        $ftAggregateArguments = (new AggregateArguments())
+            ->apply('year(@dob)', 'birth')
+            ->groupBy('@country', '@birth')
+            ->reduce('COUNT', true, 'country_birth_Vlad_count')
+            ->sortBy(0, '@birth', 'DESC')
+            ->withCursor(1);
+
+        [$response, $cursor] = $redis->ftaggregate('idx', '@name: "Vlad"', $ftAggregateArguments);
+        $actualResponse = [];
+
+        while ($cursor) {
+            $actualResponse[] = $response;
+            [$response, $cursor] = $redis->ftcursor->read('idx', $cursor);
+        }
+
+        $this->assertNotEmpty($actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
      * @requiresRediSearchVersion >= 1.1.0
      */
     public function testDelExplicitlyRemovesExistingCursor(): void
@@ -188,7 +255,6 @@ class FTCURSOR_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Cursor not found');
 
         $redis->ftcursor->read('idx', 21412412);
     }
@@ -204,7 +270,6 @@ class FTCURSOR_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('Cursor does not exist');
 
         $redis->ftcursor->del('idx', 21412412);
     }

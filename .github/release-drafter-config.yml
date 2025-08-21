@@ -1,6 +1,8 @@
 name-template: 'v$NEXT_MINOR_VERSION'
 tag-template: 'v$NEXT_MINOR_VERSION'
 change-template: '- $TITLE (#$NUMBER)'
+filter-by-comitish: true
+commitish: v3.x
 
 autolabeler:
   - label: 'maintenance'

@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\Json;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\Status;
 
@@ -60,6 +61,23 @@ class JSONRESP_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @group relay-resp3
      * @dataProvider jsonProvider
@@ -81,6 +99,20 @@ class JSONRESP_Test extends PredisCommandTestCase
         $redis->jsonset(...$jsonArguments);
 
         $this->assertEquals($expectedResponse, $redis->jsonresp($key, $path));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisJsonVersion >= 1.0.0
+     */
+    public function testReturnRespValueFromGivenJsonResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->jsonset('key', '$', '{"key1":"value1"}');
+
+        $this->assertEquals(['value1'], $redis->jsonresp('key', '$.key1'));
     }
 
     public function jsonProvider(): array

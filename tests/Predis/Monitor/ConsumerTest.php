@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,6 +13,7 @@
 namespace Predis\Monitor;
 
 use Predis\Client;
+use Predis\Connection\Parameters;
 use Predis\Monitor\Consumer as MonitorConsumer;
 use PredisTestCase;
 
@@ -92,6 +93,11 @@ class ConsumerTest extends PredisTestCase
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
 
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
             ->onlyMethods(['disconnect'])
@@ -112,6 +118,11 @@ class ConsumerTest extends PredisTestCase
     public function testGarbageCollectorRunStopsConsumer(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         /** @var \Predis\ClientInterface */
         $client = $this->getMockBuilder('Predis\Client')
@@ -140,6 +151,11 @@ class ConsumerTest extends PredisTestCase
             ->method('read')
             ->willReturn($message);
 
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $client = new Client($connection);
 
         $monitor = new MonitorConsumer($client);
@@ -164,6 +180,11 @@ class ConsumerTest extends PredisTestCase
             ->expects($this->once())
             ->method('read')
             ->willReturn($message);
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $client = new Client($connection);
 
@@ -190,6 +211,7 @@ class ConsumerTest extends PredisTestCase
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => constant('REDIS_SERVER_PORT'),
             'database' => constant('REDIS_SERVER_DBNUM'),
+            'password' => getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD'),
             // Prevents suite from handing on broken test
             'read_write_timeout' => 2,
         ];

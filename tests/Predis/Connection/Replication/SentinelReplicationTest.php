@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@
 
 namespace Predis\Connection\Replication;
 
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command;
 use Predis\Connection;
@@ -51,17 +52,17 @@ class SentinelReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testParametersForSentinelConnectionShouldIgnoreDatabaseAndPassword(): void
+    public function testParametersForSentinelConnectionShouldIgnoreDatabase(): void
     {
         $replication = $this->getReplicationConnection('svc', [
-            'tcp://127.0.0.1:5381?role=sentinel&database=1&username=myusername',
+            'tcp://127.0.0.1:5381?role=sentinel&database=1&username=myusername&password=password',
         ]);
 
         $parameters = $replication->getSentinelConnection()->getParameters()->toArray();
 
         $this->assertArrayNotHasKey('database', $parameters, 'Parameter `database` was expected to not exist in connection parameters');
-        $this->assertArrayNotHasKey('username', $parameters, 'Parameter `username` was expected to not exist in connection parameters');
-        $this->assertArrayNotHasKey('password', $parameters, 'Parameter `password` was expected to not exist in connection parameters');
+        $this->assertArrayHasKey('username', $parameters, 'Parameter `username` was expected to not exist in connection parameters');
+        $this->assertArrayHasKey('password', $parameters, 'Parameter `password` was expected to not exist in connection parameters');
     }
 
     /**
@@ -1196,6 +1197,95 @@ class SentinelReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testMethodExecuteCommandRetriesReadOnlyCommandOnNextSlaveOnConnectionException(): void
+    {
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $sentinel1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', ['slaves', 'svc']
+            ))
+            ->willReturn(
+                [
+                    [
+                        'name', '127.0.0.1:6383',
+                        'ip', '127.0.0.1',
+                        'port', '6383',
+                        'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
+                        'flags', 'slave',
+                        'master-host', '127.0.0.1',
+                        'master-port', '6381',
+                    ],
+                ]
+            );
+
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
+        $master
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
+        $slave1
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+
+        $slave1
+            ->expects($this->any())
+            ->method('disconnect');
+
+        $slave1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with(
+                $this->isRedisCommand('GET', ['key'])
+            )
+            ->willThrowException(
+                new Connection\ConnectionException($slave1, 'Unknown connection error [127.0.0.1:6382]')
+            );
+
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?role=slave');
+        $slave2
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+        $slave2
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('GET', ['key'])]
+            )
+            ->willReturnOnConsecutiveCalls(
+                'value'
+            );
+
+        /** @var Connection\FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with([
+                'host' => '127.0.0.1',
+                'port' => '6383',
+                'role' => 'slave',
+            ])
+            ->willReturn($slave2);
+
+        $replication = $this->getReplicationConnection('svc', [$sentinel1], $factory);
+
+        $replication->add($master);
+        $replication->add($slave1);
+
+        self::assertSame('value', $replication->executeCommand(
+            Command\RawCommand::create('get', 'key')
+        ));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testMethodExecuteCommandRetriesReadOnlyCommandOnNextSlaveOnFailure(): void
     {
         $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
@@ -1237,7 +1327,7 @@ class SentinelReplicationTest extends PredisTestCase
                 $this->isRedisCommand('GET', ['key'])
             )
             ->willThrowException(
-                new Connection\ConnectionException($slave1, 'Unknown connection error [127.0.0.1:6382]')
+                new Exception('message')
             );
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?role=slave');
@@ -1517,6 +1607,173 @@ class SentinelReplicationTest extends PredisTestCase
         $replication->updateSentinels();
     }
 
+    /**
+     * @dataProvider connectionsProvider
+     * @group disconnected
+     */
+    public function testGetParameters(string $connection): void
+    {
+        $sentinel = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $connection = $this->getMockConnection($connection);
+
+        $replication = $this->getReplicationConnection('srv', [$sentinel]);
+        $replication->add($connection);
+
+        $this->assertSame($connection->getParameters(), $replication->getParameters());
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testGetParametersReturnsSentinelParametersOnEmptyConnectionPool(): void
+    {
+        $sentinel = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+
+        $replication = $this->getReplicationConnection('srv', [$sentinel]);
+
+        $this->assertSame($sentinel->getParameters(), $replication->getParameters());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testWrite(): void
+    {
+        $command1 = new Command\Redis\Search\FTSEARCH();
+        $command1->setArguments(['arg1', '*']);
+
+        $command2 = new Command\Redis\Search\FTSEARCH();
+        $command2->setArguments(['arg2', '*']);
+
+        $command3 = new Command\Redis\Search\FTSEARCH();
+        $command3->setArguments(['arg3', '*']);
+
+        $sentinel = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
+        $strategy = new Replication\ReplicationStrategy();
+        $factory = new Connection\Factory();
+
+        $master
+            ->expects($this->exactly(3))
+            ->method('isConnected')
+            ->willReturn(true);
+
+        $slave
+            ->expects($this->never())
+            ->method('write');
+
+        $master
+            ->expects($this->exactly(3))
+            ->method('write')
+            ->withConsecutive(
+                [$command1->serializeCommand()],
+                [$command2->serializeCommand()],
+                [$command3->serializeCommand()]
+            );
+
+        $replication = new SentinelReplication('svc', [$sentinel], $factory, $strategy);
+
+        $replication->add($master);
+        $replication->add($slave);
+
+        $replication->write($command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand());
+    }
+
+    public function connectionsProvider(): array
+    {
+        return [
+            'master connection' => ['tcp://127.0.0.1:6379?role=master'],
+            'slave connection' => ['tcp://127.0.0.1:6379'],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDiscardsSlaveWhenRespondsLOADINGAndExecutesReadOnlyCommandOnNextSlave(): void
+    {
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $sentinel1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', ['slaves', 'svc']
+            ))
+            ->willReturn(
+                [
+                    [
+                        'name', '127.0.0.1:6383',
+                        'ip', '127.0.0.1',
+                        'port', '6383',
+                        'runid', '1c0bf1291797fbc5608c07a17da394147dc62817',
+                        'flags', 'slave',
+                        'master-host', '127.0.0.1',
+                        'master-port', '6381',
+                    ],
+                ]
+            );
+
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
+        $master
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6382?role=slave');
+        $slave1
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+        $slave1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with(
+                $this->isRedisCommand('GET', ['key'])
+            )
+            ->willReturn(
+                new Response\Error('LOADING')
+            );
+
+        $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?role=slave');
+        $slave2
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+        $slave2
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('GET', ['key'])]
+            )
+            ->willReturnOnConsecutiveCalls(
+                'value'
+            );
+
+        /** @var Connection\FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with([
+                'host' => '127.0.0.1',
+                'port' => '6383',
+                'role' => 'slave',
+            ])
+            ->willReturn($slave2);
+
+        $replication = $this->getReplicationConnection('svc', [$sentinel1], $factory);
+
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $this->assertSame('value', $replication->executeCommand(
+            Command\RawCommand::create('get', 'key')
+        ));
+        $this->assertSame($slave2, $replication->getCurrent());
+    }
+
     // ******************************************************************** //
     // ---- HELPER METHODS ------------------------------------------------ //
     // ******************************************************************** //
@@ -1530,7 +1787,7 @@ class SentinelReplicationTest extends PredisTestCase
      *
      * @return SentinelReplication
      */
-    protected function getReplicationConnection(string $service, array $sentinels, Connection\FactoryInterface $factory = null): SentinelReplication
+    protected function getReplicationConnection(string $service, array $sentinels, ?Connection\FactoryInterface $factory = null): SentinelReplication
     {
         $factory = $factory ?: new Connection\Factory();
 

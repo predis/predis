@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,6 +14,7 @@ namespace Predis\Command\Redis\TimeSeries;
 
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -60,6 +61,23 @@ class TSREVRANGE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setRawArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @group relay-resp3
      * @return void
@@ -86,6 +104,31 @@ class TSREVRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
+    public function testReturnsQueriedRangeInReverseDirectionFromGivenTimeSeriesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $createArguments = (new CreateArguments())->labels('type', 'temp', 'location', 'TLV');
+        $this->assertEquals('OK', $redis->tscreate('temp:TLV', $createArguments));
+
+        $this->assertSame(
+            [1000, 1010, 1020, 1030],
+            $redis->tsmadd('temp:TLV', 1000, 30, 'temp:TLV', 1010, 35, 'temp:TLV', 1020, 9999, 'temp:TLV', 1030, 40)
+        );
+
+        $rangeArguments = (new RangeArguments())->filterByValue(-100, 100);
+        $this->assertEquals(
+            [[1030, '40'], [1010, '35'], [1000, '30']],
+            $redis->tsrevrange('temp:TLV', '-', '+', $rangeArguments)
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */

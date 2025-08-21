@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -18,6 +18,9 @@ use Predis\Client;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
+use Predis\Command\Redis\ECHO_;
+use Predis\Command\Redis\PING;
+use Predis\Connection\Parameters;
 use Predis\Response;
 use PredisTestCase;
 use stdClass;
@@ -87,6 +90,11 @@ class PipelineTest extends PredisTestCase
             ->method('readResponse')
             ->willReturn($object);
 
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $pipeline = new Pipeline(new Client($connection));
 
         $pipeline->ping();
@@ -110,6 +118,11 @@ class PipelineTest extends PredisTestCase
             ->method('readResponse')
             ->willReturn($error);
 
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $pipeline = new Pipeline(new Client($connection));
 
         $pipeline->ping();
@@ -130,6 +143,11 @@ class PipelineTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('readResponse')
             ->willReturn($error);
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $client = new Client($connection, ['exceptions' => false]);
 
@@ -199,14 +217,30 @@ class PipelineTest extends PredisTestCase
      */
     public function testExecuteWithFilledBuffer(): void
     {
+        $command1 = new ECHO_();
+        $command1->setArguments(['one']);
+
+        $command2 = new ECHO_();
+        $command2->setArguments(['two']);
+
+        $command3 = new ECHO_();
+        $command3->setArguments(['three']);
+
+        $buffer = $command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand();
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->exactly(3))
-            ->method('writeRequest');
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
             ->willReturnCallback($this->getReadCallback());
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -240,14 +274,36 @@ class PipelineTest extends PredisTestCase
      */
     public function testFlushHandlesPartialBuffers(): void
     {
+        $command1 = new ECHO_();
+        $command1->setArguments(['one']);
+
+        $command2 = new ECHO_();
+        $command2->setArguments(['two']);
+
+        $buffer1 = $command1->serializeCommand() . $command2->serializeCommand();
+
+        $command3 = new ECHO_();
+        $command3->setArguments(['three']);
+
+        $command4 = new ECHO_();
+        $command4->setArguments(['four']);
+
+        $buffer2 = $command3->serializeCommand() . $command4->serializeCommand();
+
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->exactly(4))
-            ->method('writeRequest');
+            ->expects($this->exactly(2))
+            ->method('write')
+            ->withConsecutive([$buffer1], [$buffer2]);
         $connection
             ->expects($this->exactly(4))
             ->method('readResponse')
             ->willReturnCallback($this->getReadCallback());
+
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -265,6 +321,11 @@ class PipelineTest extends PredisTestCase
      */
     public function testSwitchesToMasterWithReplicationConnection(): void
     {
+        $nodeConnection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $nodeConnection
+            ->expects($this->exactly(3))
+            ->method('write')
+            ->with((new PING())->serializeCommand());
         $pong = new Response\Status('PONG');
 
         $connection = $this->getMockBuilder('Predis\Connection\Replication\ReplicationInterface')->getMock();
@@ -273,11 +334,16 @@ class PipelineTest extends PredisTestCase
             ->method('switchToMaster');
         $connection
             ->expects($this->exactly(3))
-            ->method('writeRequest');
+            ->method('getConnectionByCommand')
+            ->willReturn($nodeConnection);
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
             ->willReturn($pong);
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -336,14 +402,36 @@ class PipelineTest extends PredisTestCase
      */
     public function testExecuteWithCallableArgumentRunsPipelineInCallable(): void
     {
+        $command1 = new ECHO_();
+        $command1->setArguments(['one']);
+
+        $command2 = new ECHO_();
+        $command2->setArguments(['two']);
+
+        $command3 = new ECHO_();
+        $command3->setArguments(['three']);
+
+        $command4 = new ECHO_();
+        $command4->setArguments(['four']);
+
+        $buffer = $command1->serializeCommand()
+            . $command2->serializeCommand()
+            . $command3->serializeCommand()
+            . $command4->serializeCommand();
+
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
-            ->expects($this->exactly(4))
-            ->method('writeRequest');
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->exactly(4))
             ->method('readResponse')
             ->willReturnCallback($this->getReadCallback());
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Pipeline(new Client($connection));
 
@@ -400,6 +488,23 @@ class PipelineTest extends PredisTestCase
     public function testIntegrationWithFluentInterface(): void
     {
         $pipeline = $this->getClient()->pipeline();
+
+        $results = $pipeline
+            ->echo('one')
+            ->echo('two')
+            ->echo('three')
+            ->execute();
+
+        $this->assertSame(['one', 'two', 'three'], $results);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testIntegrationWithFluentInterfaceResp3(): void
+    {
+        $pipeline = $this->getClient(['protocol' => 3])->pipeline();
 
         $results = $pipeline
             ->echo('one')
@@ -510,6 +615,63 @@ class PipelineTest extends PredisTestCase
         $this->assertEquals('OK', $results[0]);
         $this->assertInstanceOf('Predis\Response\Error', $results[1]);
         $this->assertSame('bar', $results[2]);
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testClusterExecutePipeline(): void
+    {
+        $client = $this->getClient();
+
+        $results = $client->pipeline(function (Pipeline $pipe) {
+            $pipe->set('foo', 'bar');
+            $pipe->set('bar', 'foo');
+            $pipe->set('baz', 'baz');
+            $pipe->get('foo');
+            $pipe->get('bar');
+            $pipe->get('baz');
+        });
+
+        $expectedResults = [
+            new Response\Status('OK'),
+            new Response\Status('OK'),
+            new Response\Status('OK'),
+            'bar',
+            'foo',
+            'baz',
+        ];
+
+        $this->assertSameValues($expectedResults, $results);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     */
+    public function testReplicationExecutesPipelineWithCRLFValues(): void
+    {
+        $parameters = $this->getDefaultParametersArray();
+
+        $client = $this->getClient(
+            ["tcp://{$parameters['host']}:{$parameters['port']}?role=master&database={$parameters['database']}&password={$parameters['password']}"],
+            ['replication' => 'predis']
+        );
+
+        $results = $client->pipeline(function (Pipeline $pipe) {
+            $pipe->set('foo', "bar\r\nbaz");
+            $pipe->get('foo');
+        });
+
+        $expectedResults = [
+            new Response\Status('OK'),
+            "bar\r\nbaz",
+        ];
+
+        $this->assertSameValues($expectedResults, $results);
     }
 
     // ******************************************************************** //

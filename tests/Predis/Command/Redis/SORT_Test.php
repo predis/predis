@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,6 +13,7 @@
 namespace Predis\Command\Redis;
 
 use Predis\Client;
+use Predis\Command\PrefixableCommand;
 
 /**
  * @group commands
@@ -106,11 +107,39 @@ class SORT_Test extends PredisCommandTestCase
     }
 
     /**
+     * @dataProvider prefixKeysProvider
+     * @group disconnected
+     */
+    public function testPrefixKeys(array $actualArguments, array $expectedArguments): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $prefix = 'prefix:';
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testBasicSort(): void
     {
         $redis = $this->getClient();
+        $redis->lpush('list:unordered', $unordered = [2, 100, 3, 1, 30, 10]);
+
+        $this->assertEquals([1, 2, 3, 10, 30, 100], $redis->sort('list:unordered'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testBasicSortResp3(): void
+    {
+        $redis = $this->getResp3Client();
         $redis->lpush('list:unordered', $unordered = [2, 100, 3, 1, 30, 10]);
 
         $this->assertEquals([1, 2, 3, 10, 30, 100], $redis->sort('list:unordered'));
@@ -243,5 +272,27 @@ class SORT_Test extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
         $redis->sort('foo');
+    }
+
+    public function prefixKeysProvider(): array
+    {
+        return [
+            'with only argument' => [
+                ['key'],
+                ['prefix:key'],
+            ],
+            'with key and BY arguments' => [
+                ['key', ['by' => 'key']],
+                ['prefix:key', 'BY', 'prefix:key'],
+            ],
+            'with key and STORE arguments' => [
+                ['key', ['store' => 'key']],
+                ['prefix:key', 'STORE', 'prefix:key'],
+            ],
+            'with key and GET arguments' => [
+                ['key', ['get' => 'key']],
+                ['prefix:key', 'GET', 'prefix:key'],
+            ],
+        ];
     }
 }

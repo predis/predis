@@ -4,13 +4,15 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 namespace Predis\Command\Redis;
+
+use Predis\Command\PrefixableCommand;
 
 /**
  * @group commands
@@ -46,6 +48,23 @@ class XTRIM_Test extends PredisCommandTestCase
         $this->assertSame($expected, $command->getArguments());
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
     public function dataFilterArguments(): array
     {
         return [
@@ -65,6 +84,18 @@ class XTRIM_Test extends PredisCommandTestCase
                 ['stream', 'MINID', '0-1'],
                 ['stream', 'MINID', '0-1'],
             ],
+            [
+                ['stream', 'MINID', '0-1', ['trimming' => 'KEEPREF']],
+                ['stream', 'MINID', '0-1', 'KEEPREF'],
+            ],
+            [
+                ['stream', 'MINID', '0-1', ['limit' => 10, 'trimming' => 'KEEPREF']],
+                ['stream', 'MINID', '0-1', 'LIMIT', 10, 'KEEPREF'],
+            ],
+            [
+                ['stream', ['MINID'], '0-1', ['limit' => 10, 'trimming' => 'ACKED']],
+                ['stream', 'MINID', '0-1', 'LIMIT', 10, 'ACKED'],
+            ],
         ];
     }
 
@@ -83,6 +114,24 @@ class XTRIM_Test extends PredisCommandTestCase
     public function testTrimOnMaxlenExact(): void
     {
         $redis = $this->getClient();
+
+        $redis->xadd('stream', ['key' => 'val']);
+        $redis->xadd('stream', ['key' => 'val']);
+        $redis->xadd('stream', ['key' => 'val']);
+
+        $res = $redis->xtrim('stream', 'MAXLEN', 2);
+
+        $this->assertSame(1, $res);
+        $this->assertSame(2, $redis->xlen('stream'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testTrimOnMaxlenExactResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->xadd('stream', ['key' => 'val']);
         $redis->xadd('stream', ['key' => 'val']);

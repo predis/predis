@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -112,6 +112,23 @@ class ZINTER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsIntersectedValuesOnSortedSetsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('test-zinter1', 1, 'member1', 2, 'member2', 3, 'member3');
+        $redis->zadd('test-zinter2', 1, 'member1', 2, 'member2');
+
+        $actualResponse = $redis->zinter(['test-zinter1', 'test-zinter2']);
+
+        $this->assertSame(['member1', 'member2'], $actualResponse);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 6.2.0
      */
     public function testThrowsExceptionOnWrongType(): void
@@ -127,8 +144,8 @@ class ZINTER_Test extends PredisCommandTestCase
 
     /**
      * @dataProvider unexpectedValueProvider
-     * @param         $keys
-     * @param         $weights
+     * @param  mixed  $keys
+     * @param  mixed  $weights
      * @param  string $aggregate
      * @param  bool   $withScores
      * @param  string $expectedExceptionMessage

@@ -4,13 +4,15 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 namespace Predis\Command\Redis;
+
+use Predis\Command\PrefixableCommand;
 
 /**
  * @group commands
@@ -57,12 +59,48 @@ class GETRANGE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.4.0
      */
     public function testReturnsSubstring(): void
     {
         $redis = $this->getClient();
+
+        $redis->set('string', 'this is a string');
+
+        $this->assertSame('this', $redis->getrange('string', 0, 3));
+        $this->assertSame('ing', $redis->getrange('string', -3, -1));
+        $this->assertSame('this is a string', $redis->getrange('string', 0, -1));
+        $this->assertSame('string', $redis->getrange('string', 10, 100));
+
+        $this->assertSame('t', $redis->getrange('string', 0, 0));
+        $this->assertSame('', $redis->getrange('string', -1, 0));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsSubstringResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->set('string', 'this is a string');
 

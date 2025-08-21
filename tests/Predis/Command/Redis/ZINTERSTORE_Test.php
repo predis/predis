@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Response\ServerException;
 use UnexpectedValueException;
 
@@ -58,6 +59,23 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['dest', ['arg1', 'arg2', 'arg3', 'arg4']];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:dest', 4, 'prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @dataProvider sortedSetsProvider
      * @param  array  $firstSortedSet
@@ -100,6 +118,27 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testStoresIntersectedValuesOnSortedSetsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('test-zunionstore1', 1, 'member1', 2, 'member2', 3, 'member3');
+        $redis->zadd('test-zunionstore2', 1, 'member1', 2, 'member2');
+
+        $actualResponse = $redis->zinterstore('destination', ['test-zunionstore1', 'test-zunionstore2']);
+
+        $this->assertSame(2, $actualResponse);
+        $this->assertSame(
+            [['member1' => 2.0], ['member2' => 4.0]],
+            $redis->zrange('destination', 0, -1, ['withscores' => true])
+        );
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
@@ -116,8 +155,8 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
     /**
      * @dataProvider unexpectedValueProvider
      * @param  string $destination
-     * @param         $keys
-     * @param         $weights
+     * @param  mixed  $keys
+     * @param  mixed  $weights
      * @param  string $aggregate
      * @param  string $expectedExceptionMessage
      * @return void

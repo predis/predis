@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -60,7 +60,7 @@ class LCS_Test extends PredisCommandTestCase
      * @dataProvider stringsProvider
      * @param  array $stringsArguments
      * @param  array $functionArguments
-     * @param        $expectedResponse
+     * @param  mixed $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -74,6 +74,20 @@ class LCS_Test extends PredisCommandTestCase
         $redis->mset(...$stringsArguments);
 
         $this->assertSame($expectedResponse, $redis->lcs(...$functionArguments));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsLongestCommonSubsequenceFromGivenStringsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->mset('key1', 'value1', 'key2', '2value');
+
+        $this->assertSame('value', $redis->lcs('key1', 'key2'));
     }
 
     public function argumentsProvider(): array

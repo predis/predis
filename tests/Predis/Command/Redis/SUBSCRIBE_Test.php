@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,10 +12,12 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+use Predis\Consumer\Push\PushResponse;
+
 /**
  * @group commands
  * @group realm-pubsub
- * @group relay-incompatible
  */
 class SUBSCRIBE_Test extends PredisCommandTestCase
 {
@@ -77,7 +79,25 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsTheFirstSubscribedChannelDetails(): void
@@ -89,6 +109,20 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsTheFirstSubscribedChannelDetailsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = new PushResponse(['subscribe', 'channel', 1]);
+
+        $this->assertEquals($expectedResponse, $redis->subscribe('channel'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendSubscribeAfterSubscribe(): void
@@ -101,6 +135,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendPsubscribeAfterSubscribe(): void
@@ -113,6 +148,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendUnsubscribeAfterSubscribe(): void
@@ -126,6 +162,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendPunsubscribeAfterSubscribe(): void
@@ -139,6 +176,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCanSendQuitAfterSubscribe(): void
@@ -152,6 +190,7 @@ class SUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.0.0
      */
     public function testCannotSendOtherCommandsAfterSubscribe(): void

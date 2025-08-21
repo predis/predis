@@ -7,6 +7,7 @@ on:
     branches:
       - main
       - v2.**
+      - v3.**
   pull_request: null
 
 permissions: {}
@@ -143,25 +144,31 @@ jobs:
           echo "EXPECTED=${EXPECTED}"
           test "${CURRENT}" = "${EXPECTED}"
 
-  spelling:
-    name: Spelling
-    needs:
-      - byte_level
-      - syntax_errors
+  changelog:
+
+    name: Changelog
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    if: >-
+      github.event_name == 'pull_request' &&
+      !contains(github.event.head_commit.message, 'nochangelog') &&
+      !contains(github.event.head_commit.message, 'no-changelog') &&
+      !contains(github.event.head_commit.message, 'no changelog') &&
+      !contains(github.event.pull_request.labels.*.name, 'no-changelog')
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Cache pip
-        uses: actions/cache@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-codespell
+          fetch-depth: 0
 
-      - name: Install codespell
-        run: pip install --user 'codespell>=2.2'
-
-      - name: Search for misspellings
-        run: $(python -m site --user-base)/bin/codespell
+      - name: Check for CHANGELOG entry
+        env:
+          TARGET: ${{ github.event.pull_request.base.ref }}
+        run:  |
+          FILES_CHANGED=$(git diff --name-only origin/$TARGET...HEAD | grep -E 'CHANGELOG\.md' -c)
+          if [ "$FILES_CHANGED" != "1" ]; then
+            echo "CHANGELOG.md was not updated";
+            exit 1;
+          fi;

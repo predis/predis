@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -1435,5 +1435,65 @@ repl_backlog_histlen:12978
 
         $this->assertEquals($master, $unserialized->getConnectionByRole('master'));
         $this->assertEquals($slave1, $unserialized->getConnectionByRole('slave'));
+    }
+
+    /**
+     * @dataProvider connectionsProvider
+     * @group disconnected
+     */
+    public function testGetParameters(string $connection): void
+    {
+        $connection = $this->getMockConnection($connection);
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($connection);
+
+        $this->assertSame($connection->getParameters(), $replication->getParameters());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testWrite(): void
+    {
+        $command1 = new Command\Redis\Json\JSONGET();
+        $command1->setArguments(['arg1']);
+
+        $command2 = new Command\Redis\Json\JSONGET();
+        $command2->setArguments(['arg2']);
+
+        $command3 = new Command\Redis\Json\JSONGET();
+        $command3->setArguments(['arg3']);
+
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
+
+        $slave1
+            ->expects($this->never())
+            ->method('write');
+
+        $master
+            ->expects($this->exactly(3))
+            ->method('write')
+            ->withConsecutive(
+                [$command1->serializeCommand()],
+                [$command2->serializeCommand()],
+                [$command3->serializeCommand()]
+            );
+
+        $replication = new MasterSlaveReplication();
+
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $replication->write($command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand());
+    }
+
+    public function connectionsProvider(): array
+    {
+        return [
+            'master connection' => ['tcp://127.0.0.1:6379?role=master'],
+            'slave connection' => ['tcp://127.0.0.1:6379'],
+        ];
     }
 }

@@ -4,13 +4,15 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 namespace Predis\Command\Redis;
+
+use Predis\Command\PrefixableCommand;
 
 /**
  * @group commands
@@ -60,6 +62,23 @@ class KEYS_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsArrayOfMatchingKeys(): void
@@ -69,6 +88,25 @@ class KEYS_Test extends PredisCommandTestCase
         $keysAll = array_merge($keys, $keysNS);
 
         $redis = $this->getClient();
+        $redis->mset($keysAll);
+
+        $this->assertSame([], $redis->keys('nomatch:*'));
+        $this->assertSameValues(array_keys($keysNS), $redis->keys('metavar:*'));
+        $this->assertSameValues(array_keys($keysAll), $redis->keys('*'));
+        $this->assertSameValues(array_keys($keys), $redis->keys('a?a'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsArrayOfMatchingKeysResp3(): void
+    {
+        $keys = ['aaa' => 1, 'aba' => 2, 'aca' => 3];
+        $keysNS = ['metavar:foo' => 'bar', 'metavar:hoge' => 'piyo'];
+        $keysAll = array_merge($keys, $keysNS);
+
+        $redis = $this->getResp3Client();
         $redis->mset($keysAll);
 
         $this->assertSame([], $redis->keys('nomatch:*'));

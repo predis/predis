@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\CuckooFilter;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 
 /**
@@ -59,6 +60,23 @@ class CFMEXISTS_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @group relay-resp3
      * @return void
@@ -74,5 +92,22 @@ class CFMEXISTS_Test extends PredisCommandTestCase
         $redis->cfadd('key', 'item2');
         $redis->cfadd('key', 'item3');
         $this->assertSame([1, 1, 1], $redis->cfmexists('key', 'item1', 'item2', 'item3'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testExistsReturnsExistingItemsWithinCuckooFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertSame([false, false, false], $redis->cfmexists('key', 'item1', 'item2', 'item3'));
+        $redis->cfadd('key', 'item1');
+        $this->assertSame([true, false, false], $redis->cfmexists('key', 'item1', 'item2', 'item3'));
+        $redis->cfadd('key', 'item2');
+        $redis->cfadd('key', 'item3');
+        $this->assertSame([true, true, true], $redis->cfmexists('key', 'item1', 'item2', 'item3'));
     }
 }

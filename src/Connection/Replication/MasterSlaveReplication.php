@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,11 +14,14 @@ namespace Predis\Connection\Replication;
 
 use InvalidArgumentException;
 use Predis\ClientException;
+use Predis\Command\Command;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
 use Predis\Replication\MissingMasterException;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response\ErrorInterface as ResponseErrorInterface;
@@ -27,7 +30,7 @@ use Predis\Response\ErrorInterface as ResponseErrorInterface;
  * Aggregate connection handling replication of Redis nodes configured in a
  * single master / multiple slaves setup.
  */
-class MasterSlaveReplication implements ReplicationInterface
+class MasterSlaveReplication extends AbstractAggregateConnection implements ReplicationInterface
 {
     /**
      * @var ReplicationStrategy
@@ -72,7 +75,7 @@ class MasterSlaveReplication implements ReplicationInterface
     /**
      * {@inheritdoc}
      */
-    public function __construct(ReplicationStrategy $strategy = null)
+    public function __construct(?ReplicationStrategy $strategy = null)
     {
         $this->strategy = $strategy ?: new ReplicationStrategy();
     }
@@ -549,5 +552,23 @@ class MasterSlaveReplication implements ReplicationInterface
     public function __sleep()
     {
         return ['master', 'slaves', 'pool', 'aliases', 'strategy'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): ?ParametersInterface
+    {
+        if (isset($this->master)) {
+            return $this->master->getParameters();
+        }
+
+        $slave = $this->pickSlave();
+
+        if (null !== $slave) {
+            return $slave->getParameters();
+        }
+
+        return null;
     }
 }

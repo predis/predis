@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -79,6 +79,21 @@ class HRANDFIELD_Test extends PredisCommandTestCase
         $actualResponse = $redis->hrandfield($key, $count, $withValues);
 
         $this->assertOneOf($expectedResponse, $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsRandomFieldsFromHashResp3(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->hset('key', 'key1', 'value1', 'key2', 'value2', 'key3', 'value3');
+        $actualResponse = $redis->hrandfield('key');
+
+        $this->assertOneOf(['key1', 'key2', 'key3'], $actualResponse);
     }
 
     /**

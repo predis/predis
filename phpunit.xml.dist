@@ -10,6 +10,9 @@
     stopOnFailure="false"
     beStrictAboutTestsThatDoNotTestAnything="true"
 >
+    <php>
+        <ini name="error_reporting" value="E_ALL &amp; ~E_DEPRECATED"/>
+    </php>
 
     <testsuites>
         <testsuite name="Predis Test Suite">
@@ -17,23 +20,19 @@
         </testsuite>
     </testsuites>
 
-    <coverage processUncoveredFiles="true">
-        <include>
-            <directory suffix=".php">./src</directory>
-        </include>
-        <report>
-            <clover outputFile="build/logs/clover.xml"/>
-        </report>
-    </coverage>
+    <logging>
+        <log type="coverage-php" target="build/cov/coverage.cov"/>
+    </logging>
 
     <groups>
         <exclude>
-            <group>realm-webdis</group>
             <group>realm-stack</group>
             <group>ext-relay</group>
             <group>ext-curl</group>
-            <group>ext-phpiredis</group>
             <group>cluster</group>
+            <group>gears</group>
+            <group>gears-cluster</group>
+            <group>unprotected</group>
             <!-- <group>connected</group> -->
             <!-- <group>disconnected</group> -->
             <!-- <group>commands</group> -->
@@ -50,11 +49,17 @@
     <php>
         <const name="REDIS_SERVER_HOST" value="127.0.0.1" />
         <const name="REDIS_SERVER_PORT" value="6379" />
+        <const name="REDIS_UNPROTECTED_SERVER_PORT" value="6380" />
         <const name="REDIS_SERVER_DBNUM" value="0" />
+        <const name="REDIS_PASSWORD" value="foobar" />
         <env name="USE_RELAY" value="false" />
+        <env name="REDIS_STACK_SERVER_PORT" value="6479" />
 
         <!-- Redis Cluster -->
         <!-- Only master nodes endpoints included -->
-        <const name="REDIS_CLUSTER_ENDPOINTS" value="127.0.0.1:6372,127.0.0.1:6373,127.0.0.1:6374" />
+        <const
+            name="REDIS_CLUSTER_ENDPOINTS"
+            value="127.0.0.1:6372?password=foobar,127.0.0.1:6373?password=foobar,127.0.0.1:6374?password=foobar"
+        />
     </php>
 </phpunit>

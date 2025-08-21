@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,6 +14,7 @@ namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\ExplainArguments;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -60,10 +61,28 @@ class FTEXPLAIN_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setRawArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
+     * @requiresRedisVersion <= 7.9.0
      */
     public function testExplainReturnsExecutionPlanForGivenQuery(): void
     {
@@ -105,12 +124,107 @@ EOT;
         $this->assertEquals('OK', $redis->ftcreate('index', $schema));
         $this->assertEquals(
             $expectedResponse,
-            $redis->ftexplain('index', '(foo bar)|(hello world) @date:[100 200]|@date:[500 +inf]')
+            $redis->ftexplain(
+                'index', '(foo bar)|(hello world) @date:[100 200]|@date:[500 +inf]',
+                (new ExplainArguments())->dialect(1)
+            )
         );
     }
 
     /**
      * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     * @requiresRedisVersion <= 7.9.0
+     */
+    public function testExplainReturnsExecutionPlanForGivenQueryResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = <<<EOT
+INTERSECT {
+  UNION {
+    INTERSECT {
+      UNION {
+        foo
+        +foo(expanded)
+      }
+      UNION {
+        bar
+        +bar(expanded)
+      }
+    }
+    INTERSECT {
+      UNION {
+        hello
+        +hello(expanded)
+      }
+      UNION {
+        world
+        +world(expanded)
+      }
+    }
+  }
+  UNION {
+    NUMERIC {100.000000 <= @date <= 200.000000}
+    NUMERIC {500.000000 <= @date <= inf}
+  }
+}
+
+EOT;
+
+        $schema = [new TextField('text_field')];
+
+        $this->assertEquals('OK', $redis->ftcreate('index', $schema));
+        $this->assertEquals(
+            $expectedResponse,
+            $redis->ftexplain(
+                'index',
+                '(foo bar)|(hello world) @date:[100 200]|@date:[500 +inf]',
+                (new ExplainArguments())->dialect(1)
+            )
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     * @requiresRedisVersion > 7.3.0
+     */
+    public function testExplainReturnsExecutionPlanForGivenQueryWithDialect2(): void
+    {
+        $redis = $this->getClient();
+        $expectedResponse = <<<EOT
+INTERSECT {
+  @name:UNION {
+    @name:james
+    @name:+jame(expanded)
+    @name:jame(expanded)
+  }
+  UNION {
+    brown
+    +brown(expanded)
+  }
+}
+
+EOT;
+
+        $schema = [new TextField('name')];
+
+        $this->assertEquals('OK', $redis->ftcreate('index', $schema));
+        $this->assertEquals(
+            $expectedResponse,
+            $redis->ftexplain(
+                'index',
+                '@name: James Brown',
+                (new ExplainArguments())->language()
+            )
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -119,7 +233,6 @@ EOT;
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('index: no such index');
 
         $redis->ftexplain('index', 'query');
     }
@@ -129,7 +242,7 @@ EOT;
         return [
             'with default arguments' => [
                 ['index', 'query', null],
-                ['index', 'query'],
+                ['index', 'query', 'DIALECT', 2],
             ],
             'with DIALECT' => [
                 ['index', 'query', (new ExplainArguments())->dialect('dialect')],

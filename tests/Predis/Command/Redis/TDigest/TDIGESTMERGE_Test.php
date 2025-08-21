@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\TDigest;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -45,6 +46,23 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
     {
         $command = $this->getCommand();
         $command->setArguments($actualArguments);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['dest', ['key1', 'key2', 'key3'], 10];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:dest', 3, 'prefix:key1', 'prefix:key2', 'prefix:key3', 'COMPRESSION', 10];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
 
         $this->assertSame($expectedArguments, $command->getArguments());
     }
@@ -114,6 +132,33 @@ class TDIGESTMERGE_Test extends PredisCommandTestCase
         $this->assertSame(1000, $info['Compression']);
         $this->assertEquals(
             ['1', '2', '3', '4', 'inf'],
+            $redis->tdigestbyrank('destination-key', 0, 1, 2, 3, 4)
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testMergedSketchHaveCompressionEqualMaxValueAmongAllSourceSketchesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->tdigestcreate('source-key1');
+        $redis->tdigestcreate('source-key2', 1000);
+
+        $redis->tdigestadd('source-key1', 1, 2);
+        $redis->tdigestadd('source-key2', 3, 4);
+
+        $actualResponse = $redis->tdigestmerge('destination-key', ['source-key1', 'source-key2']);
+        $info = $redis->tdigestinfo('destination-key');
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame(1000, $info['Compression']);
+        $this->assertEquals(
+            [1.0, 2.0, 3.0, 4.0, INF],
             $redis->tdigestbyrank('destination-key', 0, 1, 2, 3, 4)
         );
     }

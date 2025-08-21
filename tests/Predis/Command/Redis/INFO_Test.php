@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -311,6 +311,34 @@ BUFFER;
 
         $this->assertIsArray($info = $redis->executeCommand($command));
         $this->assertArrayHasKey('redis_version', $info['Server'] ?? $info);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsAnArrayOfInfoResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $command = $this->getCommand();
+
+        $this->assertIsArray($info = $redis->executeCommand($command));
+        $this->assertArrayHasKey('redis_version', $info['Server'] ?? $info);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.9.0
+     */
+    public function testExposeSearchInformation(): void
+    {
+        $this->markTestSkipped('Skipped due to a bug in 8.0-M05. Should be removed in the next version.');
+
+        $redis = $this->getClient();
+
+        $this->assertArrayHasKey('search', $redis->info('modules')['Modules']);
+        $this->assertNotEmpty($redis->info('search'));
+        $this->assertArrayHasKey('search', $redis->info('everything')['Modules']);
     }
 
     /**

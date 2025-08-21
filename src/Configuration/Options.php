@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -41,9 +41,9 @@ class Options implements OptionsInterface
     protected $input;
 
     /**
-     * @param array $options Named array of client options
+     * @param array|null $options Named array of client options
      */
-    public function __construct(array $options = null)
+    public function __construct(?array $options = null)
     {
         $this->input = $options ?? [];
     }
@@ -112,5 +112,13 @@ class Options implements OptionsInterface
         }
 
         return;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function __set($option, $value)
+    {
+        $this->options[$option] = $value;
     }
 }

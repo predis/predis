@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -64,7 +64,7 @@ class EVALSHA_RO_Test extends PredisCommandTestCase
      * @param  string $script
      * @param  array  $keys
      * @param  array  $arguments
-     * @param         $expectedResponse
+     * @param  mixed  $expectedResponse
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -79,6 +79,20 @@ class EVALSHA_RO_Test extends PredisCommandTestCase
         $sha1 = $redis->script('LOAD', $script);
 
         $this->assertSame($expectedResponse, $redis->evalsha_ro($sha1, $keys, ...$arguments));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testExecutesReadOnlyCachedScriptsResp3(): void
+    {
+        $redis = $this->getClient();
+
+        $sha1 = $redis->script('LOAD', "return 'test'");
+
+        $this->assertSame('test', $redis->evalsha_ro($sha1, []));
     }
 
     /**

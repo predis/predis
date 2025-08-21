@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\TDigest;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -60,6 +61,23 @@ class TDIGESTQUANTILE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @group relay-resp3
      * @return void
@@ -83,6 +101,29 @@ class TDIGESTQUANTILE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsValuesBelowGivenQuantileResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->tdigestcreate('key', 1000);
+
+        $addResponse = $redis->tdigestadd('key', 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5);
+        $quantileResponse = $redis->tdigestquantile('key', 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0);
+
+        $this->assertEquals('OK', $addResponse);
+        $this->assertEquals([1.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0, 5.0, 5.0, 5.0, 5.0], $quantileResponse);
+
+        $redis->tdigestcreate('empty_key');
+        $this->assertEquals([null, null], $redis->tdigestquantile('empty_key', 0.0, 0.1));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */

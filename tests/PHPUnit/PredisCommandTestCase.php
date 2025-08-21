@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -22,7 +22,7 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns the expected command for tests.
      *
-     * @return Command\CommandInterface|string Instance or FQCN of the expected command
+     * @return CommandInterface|string Instance or FQCN of the expected command
      */
     abstract protected function getExpectedCommand(): string;
 
@@ -36,13 +36,13 @@ abstract class PredisCommandTestCase extends PredisTestCase
     /**
      * Returns a new command instance.
      *
-     * @return Command\CommandInterface
+     * @return CommandInterface
      */
-    public function getCommand(): Command\CommandInterface
+    public function getCommand(): CommandInterface
     {
         $command = $this->getExpectedCommand();
 
-        return $command instanceof Command\CommandInterface ? $command : new $command();
+        return $command instanceof CommandInterface ? $command : new $command();
     }
 
     /**
@@ -68,6 +68,25 @@ abstract class PredisCommandTestCase extends PredisTestCase
         }
 
         return $client;
+    }
+
+    /**
+     * Returns a new RESP3 client instance.
+     *
+     * @param  bool   $flushDb
+     * @return Client
+     */
+    public function getResp3Client(bool $flushDb = true): Client
+    {
+        $commands = $this->getCommandFactory();
+
+        if (!$commands->supports($id = $this->getExpectedId())) {
+            $this->markTestSkipped(
+                "The current command factory does not support command $id"
+            );
+        }
+
+        return $this->createClient(['protocol' => 3], null, $flushDb);
     }
 
     /**

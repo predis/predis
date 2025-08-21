@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -77,6 +77,19 @@ class MSETNX_Test extends PredisCommandTestCase
     public function testCreatesMultipleKeys(): void
     {
         $redis = $this->getClient();
+
+        $this->assertSame(1, $redis->msetnx('foo', 'bar', 'hoge', 'piyo'));
+        $this->assertSame('bar', $redis->get('foo'));
+        $this->assertSame('piyo', $redis->get('hoge'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCreatesMultipleKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertSame(1, $redis->msetnx('foo', 'bar', 'hoge', 'piyo'));
         $this->assertSame('bar', $redis->get('foo'));

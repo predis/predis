@@ -4,13 +4,15 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 namespace Predis\Command\Redis;
+
+use Predis\Command\PrefixableCommand;
 
 /**
  * @group commands
@@ -129,12 +131,40 @@ class GEORADIUS_Test extends PredisCommandTestCase
     }
 
     /**
+     * @dataProvider prefixKeysProvider
+     * @group disconnected
+     */
+    public function testPrefixKeys(array $actualArguments, array $expectedArguments): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $prefix = 'prefix:';
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 3.2.0
      */
     public function testCommandReturnsGeoRadiusInfoWithNoOptions(): void
     {
         $redis = $this->getClient();
+
+        $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
+        $this->assertEquals(['Palermo', 'Catania'], $redis->georadius('Sicily', 15, 37, 200, 'km'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCommandReturnsGeoRadiusInfoWithNoOptionsResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
         $this->assertEquals(['Palermo', 'Catania'], $redis->georadius('Sicily', 15, 37, 200, 'km'));
@@ -149,10 +179,10 @@ class GEORADIUS_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $redis->geoadd('Sicily', '13.361389', '38.115556', 'Palermo', '15.087269', '37.502669', 'Catania');
-        $this->assertEquals([
-            ['Palermo', '190.4424', ['13.36138933897018433', '38.11555639549629859']],
-            ['Catania', '56.4413', ['15.08726745843887329', '37.50266842333162032']],
-        ], $redis->georadius('Sicily', 15, 37, 200, 'km', 'WITHDIST', 'WITHCOORD'));
+        $this->assertEqualsWithDelta([
+            ['Palermo', '190.4424', [13.36138933897018433, 38.11555639549629859]],
+            ['Catania', '56.4413', [15.08726745843887329, 37.50266842333162032]],
+        ], $redis->georadius('Sicily', 15, 37, 200, 'km', 'WITHDIST', 'WITHCOORD'), 0.1);
     }
 
     /**
@@ -168,5 +198,27 @@ class GEORADIUS_Test extends PredisCommandTestCase
 
         $redis->lpush('Sicily', 'Palermo');
         $redis->georadius('Sicily', 15, 37, 200, 'km');
+    }
+
+    public function prefixKeysProvider(): array
+    {
+        return [
+            'with empty arguments' => [
+                [],
+                [],
+            ],
+            'with key argument only' => [
+                ['key'],
+                ['prefix:key'],
+            ],
+            'with key and STORE arguments' => [
+                ['key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STORE', 'key'],
+                ['prefix:key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STORE', 'prefix:key'],
+            ],
+            'with key and STOREDIST arguments' => [
+                ['key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STOREDIST', 'key'],
+                ['prefix:key', 'arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'STOREDIST', 'prefix:key'],
+            ],
+        ];
     }
 }

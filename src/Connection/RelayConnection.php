@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -50,14 +50,14 @@ use Relay\Relay;
  *
  * @see https://github.com/cachewerk/relay
  */
-class RelayConnection extends StreamConnection
+class RelayConnection extends AbstractConnection
 {
     use RelayMethods;
 
     /**
      * The Relay instance.
      *
-     * @var \Relay\Relay
+     * @var Relay
      */
     protected $client;
 
@@ -90,12 +90,12 @@ class RelayConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
-    public function __construct(ParametersInterface $parameters)
+    public function __construct(ParametersInterface $parameters, Relay $client)
     {
         $this->assertExtensions();
 
         $this->parameters = $this->assertParameters($parameters);
-        $this->client = $this->createClient();
+        $this->client = $client;
     }
 
     /**
@@ -129,29 +129,9 @@ class RelayConnection extends StreamConnection
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function assertParameters(ParametersInterface $parameters)
-    {
-        if (!in_array($parameters->scheme, ['tcp', 'tls', 'unix', 'redis', 'rediss'])) {
-            throw new InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
-        }
-
-        if (!in_array($parameters->serializer, [null, 'php', 'igbinary', 'msgpack', 'json'])) {
-            throw new InvalidArgumentException("Invalid serializer: '{$parameters->serializer}'.");
-        }
-
-        if (!in_array($parameters->compression, [null, 'lzf', 'lz4', 'zstd'])) {
-            throw new InvalidArgumentException("Invalid compression algorithm: '{$parameters->compression}'.");
-        }
-
-        return $parameters;
-    }
-
-    /**
      * Creates a new instance of the client.
      *
-     * @return \Relay\Relay
+     * @return Relay
      */
     private function createClient()
     {
@@ -189,7 +169,7 @@ class RelayConnection extends StreamConnection
     /**
      * Returns the underlying client.
      *
-     * @return \Relay\Relay
+     * @return Relay
      */
     public function getClient()
     {
@@ -197,21 +177,12 @@ class RelayConnection extends StreamConnection
     }
 
     /**
-     * {@inheritdoc}
+     * @param  ParametersInterface $parameters
+     * @param                      $address
+     * @param                      $flags
+     * @return Relay
      */
-    public function getIdentifier()
-    {
-        try {
-            return $this->client->endpointId();
-        } catch (RelayException $ex) {
-            return parent::getIdentifier();
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createStreamSocket(ParametersInterface $parameters, $address, $flags)
+    protected function connectWithConfiguration(ParametersInterface $parameters, $address, $flags)
     {
         $timeout = isset($parameters->timeout) ? (float) $parameters->timeout : 5.0;
 
@@ -237,6 +208,18 @@ class RelayConnection extends StreamConnection
         }
 
         return $this->client;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIdentifier()
+    {
+        try {
+            return $this->client->endpointId();
+        } catch (RelayException $ex) {
+            return parent::getIdentifier();
+        }
     }
 
     /**
@@ -340,9 +323,136 @@ class RelayConnection extends StreamConnection
     /**
      * {@inheritdoc}
      */
-    public function __wakeup()
+    protected function createResource()
     {
-        $this->assertExtensions();
-        $this->client = $this->createClient();
+        switch ($this->parameters->scheme) {
+            case 'tcp':
+            case 'redis':
+                return $this->initializeTcpConnection($this->parameters);
+
+            case 'unix':
+                return $this->initializeUnixConnection($this->parameters);
+
+            default:
+                throw new InvalidArgumentException("Invalid scheme: '{$this->parameters->scheme}'.");
+        }
+    }
+
+    /**
+     * Initializes a TCP connection via client.
+     *
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     *
+     * @return Relay
+     */
+    protected function initializeTcpConnection(ParametersInterface $parameters)
+    {
+        if (!filter_var($parameters->host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            $address = "tcp://$parameters->host:$parameters->port";
+        } else {
+            $address = "tcp://[$parameters->host]:$parameters->port";
+        }
+
+        $flags = STREAM_CLIENT_CONNECT;
+
+        if (isset($parameters->async_connect) && $parameters->async_connect) {
+            $flags |= STREAM_CLIENT_ASYNC_CONNECT;
+        }
+
+        if (isset($parameters->persistent)) {
+            if (false !== $persistent = filter_var($parameters->persistent, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
+                $flags |= STREAM_CLIENT_PERSISTENT;
+
+                if ($persistent === null) {
+                    $address = "{$address}/{$parameters->persistent}";
+                }
+            }
+        }
+
+        return $this->connectWithConfiguration($parameters, $address, $flags);
+    }
+
+    /**
+     * Initializes a UNIX connection via client.
+     *
+     * @param ParametersInterface $parameters Initialization parameters for the connection.
+     *
+     * @return Relay
+     */
+    protected function initializeUnixConnection(ParametersInterface $parameters)
+    {
+        if (!isset($parameters->path)) {
+            throw new InvalidArgumentException('Missing UNIX domain socket path.');
+        }
+
+        $flags = STREAM_CLIENT_CONNECT;
+
+        if (isset($parameters->persistent)) {
+            if (false !== $persistent = filter_var($parameters->persistent, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
+                $flags |= STREAM_CLIENT_PERSISTENT;
+
+                if ($persistent === null) {
+                    throw new InvalidArgumentException(
+                        'Persistent connection IDs are not supported when using UNIX domain sockets.'
+                    );
+                }
+            }
+        }
+
+        return $this->connectWithConfiguration($parameters, "unix://{$parameters->path}", $flags);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function connect()
+    {
+        if (parent::connect() && $this->initCommands) {
+            foreach ($this->initCommands as $command) {
+                $response = $this->executeCommand($command);
+
+                if ($response instanceof ErrorResponseInterface && ($command->getId() === 'CLIENT')) {
+                    // Do nothing on CLIENT SETINFO command failure
+                } elseif ($response instanceof ErrorResponseInterface) {
+                    $this->onConnectionError("`{$command->getId()}` failed: {$response->getMessage()}", 0);
+                }
+            }
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function read()
+    {
+        throw new NotSupportedException('The "relay" extension does not support reading responses.');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function assertParameters(ParametersInterface $parameters)
+    {
+        if (!in_array($parameters->scheme, ['tcp', 'tls', 'unix', 'redis', 'rediss'])) {
+            throw new InvalidArgumentException("Invalid scheme: '{$parameters->scheme}'.");
+        }
+
+        if (!in_array($parameters->serializer, [null, 'php', 'igbinary', 'msgpack', 'json'])) {
+            throw new InvalidArgumentException("Invalid serializer: '{$parameters->serializer}'.");
+        }
+
+        if (!in_array($parameters->compression, [null, 'lzf', 'lz4', 'zstd'])) {
+            throw new InvalidArgumentException("Invalid compression algorithm: '{$parameters->compression}'.");
+        }
+
+        return $parameters;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function write(string $buffer): void
+    {
+        throw new NotSupportedException('The "relay" extension does not support writing operations.');
     }
 }

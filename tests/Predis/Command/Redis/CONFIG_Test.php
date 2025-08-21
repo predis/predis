@@ -4,13 +4,15 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 namespace Predis\Command\Redis;
+
+use Predis\Response\ServerException;
 
 /**
  * @group commands
@@ -98,6 +100,21 @@ class CONFIG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsListOfConfigurationValuesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertIsArray($configs = $redis->config('GET', '*'));
+        $this->assertGreaterThan(1, count($configs));
+        $this->assertArrayHasKey('loglevel', $configs);
+        $this->assertArrayHasKey('appendonly', $configs);
+        $this->assertArrayHasKey('dbfilename', $configs);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testReturnsListOfOneConfigurationEntry(): void
@@ -139,6 +156,65 @@ class CONFIG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsTrueOnSuccessfulConfigurationResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $previous = $redis->config('GET', 'loglevel');
+
+        $this->assertEquals('OK', $redis->config('SET', 'loglevel', 'notice'));
+        $this->assertSame(['loglevel' => 'notice'], $redis->config('GET', 'loglevel'));
+
+        // We set the loglevel configuration to the previous value.
+        $redis->config('SET', 'loglevel', $previous['loglevel']);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.9.0
+     */
+    public function testOverrideDefaultDialectWithConfigCommand()
+    {
+        $redis = $this->getClient();
+        $default_dialect = (int) $redis
+            ->config('GET', 'search-default-dialect')['search-default-dialect'];
+
+        $this->assertEquals('OK', $redis->config('SET', 'search-default-dialect', 2));
+        $this->assertEquals(2, (int) $redis->ftconfig->get('DEFAULT_DIALECT')[0][1]);
+        $this->assertEquals(2,
+            (int) $redis->config('GET', 'search-default-dialect')['search-default-dialect']);
+        $this->assertEquals(
+            'OK',
+            $redis->config('SET', 'search-default-dialect', $default_dialect)
+        );
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.9.0
+     */
+    public function testSetGetSearchConfiguration()
+    {
+        $redis = $this->getClient();
+
+        $this->assertGreaterThan(0,
+            (int) $redis->config('GET', 'search-timeout')['search-timeout']);
+        $this->assertGreaterThanOrEqual(0,
+            (int) $redis->config('GET', 'ts-retention-policy')['ts-retention-policy']);
+        $this->assertGreaterThanOrEqual(0,
+            (int) $redis->config('GET', 'bf-error-rate')['bf-error-rate']);
+        $this->assertGreaterThan(0,
+            (int) $redis->config('GET', 'cf-initial-size')['cf-initial-size']);
+
+        $this->expectException(ServerException::class);
+        $redis->config('SET', 'search-max-doctablesize', 10000);
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testThrowsExceptionWhenSettingUnknownConfiguration(): void
@@ -164,6 +240,17 @@ class CONFIG_Test extends PredisCommandTestCase
     public function testReturnsTrueOnResetstat(): void
     {
         $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->config('RESETSTAT'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsTrueOnResetstatResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertEquals('OK', $redis->config('RESETSTAT'));
     }

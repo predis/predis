@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -72,6 +72,25 @@ class PEXPIRETIME_Test extends PredisCommandTestCase
 
         $this->assertSame($expirationTime, $redis->pexpiretime('key'));
         $this->assertSame(-1, $redis->pexpiretime('key1'));
-        $this->assertSame(-2, $redis->pexpiretime('non-existing key'));
+        $this->assertSame(-2, $redis->pexpiretime('pexpire_non-existing-key'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testReturnsCorrectExpirationTimeForGivenKeyResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expirationTime = time() * 1000 + 1000;
+
+        $redis->set('key', 'value');
+        $redis->set('key1', 'value');
+        $redis->pexpireat('key', $expirationTime);
+
+        $this->assertSame($expirationTime, $redis->pexpiretime('key'));
+        $this->assertSame(-1, $redis->pexpiretime('key1'));
+        $this->assertSame(-2, $redis->pexpiretime('pexpire_non-existing-key'));
     }
 }

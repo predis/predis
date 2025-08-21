@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -165,6 +165,24 @@ class FUNCTIONS_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
         $redis->function->flush();
+
+        $actualResponse = $redis->function->load(
+            "#!lua name={$this->libName} \n redis.register_function('myfunc', function(keys, args) return args[1] end)"
+        );
+
+        $this->assertSame('mylib', $actualResponse);
+        $this->assertSame('arg1', $redis->fcall('myfunc', [], 'arg1'));
+        $this->assertEquals('OK', $redis->function->delete($this->libName));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testLoadFunctionAddFunctionIntoGivenLibraryResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $actualResponse = $redis->function->load(
             "#!lua name={$this->libName} \n redis.register_function('myfunc', function(keys, args) return args[1] end)"

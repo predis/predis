@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,10 +12,11 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-transaction
- * @group relay-incompatible
  */
 class WATCH_Test extends PredisCommandTestCase
 {
@@ -72,7 +73,25 @@ class WATCH_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.2.0
      */
     public function testAbortsTransactionOnExternalWriteOperations(): void
@@ -92,6 +111,47 @@ class WATCH_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testAbortsTransactionOnExternalWriteOperationsResp3(): void
+    {
+        $redis1 = $this->getResp3Client();
+        $redis2 = $this->getResp3Client();
+
+        $redis1->mset('foo', 'bar', 'hoge', 'piyo');
+
+        $this->assertEquals('OK', $redis1->watch('foo', 'hoge'));
+        $this->assertEquals('OK', $redis1->multi());
+        $this->assertEquals('QUEUED', $redis1->get('foo'));
+        $this->assertEquals('OK', $redis2->set('foo', 'hijacked'));
+        $this->assertNull($redis1->exec());
+        $this->assertSame('hijacked', $redis1->get('foo'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 2.2.0
+     */
+    public function testWatchMultipleKeysAsListAbortsTransactionOnExternalWriteOperations(): void
+    {
+        $redis1 = $this->getClient();
+        $redis2 = $this->getClient();
+
+        $redis1->mset('foo', 'bar', 'hoge', 'piyo');
+
+        $this->assertEquals('OK', $redis1->watch(['foo', 'hoge']));
+        $this->assertEquals('OK', $redis1->multi());
+        $this->assertEquals('QUEUED', $redis1->set('hoge', 'bar'));
+        $this->assertEquals('OK', $redis2->set('hoge', 'hijacked'));
+        $this->assertNull($redis1->exec());
+        $this->assertSame('hijacked', $redis1->get('hoge'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 2.2.0
      */
     public function testCanWatchNotYetExistingKeys(): void
@@ -114,7 +174,7 @@ class WATCH_Test extends PredisCommandTestCase
     public function testThrowsExceptionWhenCallingInsideTransaction(): void
     {
         $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessage('ERR WATCH inside MULTI is not allowed');
+        $this->expectExceptionMessage('WATCH inside MULTI is not allowed');
 
         $redis = $this->getClient();
 

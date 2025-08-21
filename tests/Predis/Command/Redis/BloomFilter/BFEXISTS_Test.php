@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\BloomFilter;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 
 /**
@@ -59,6 +60,23 @@ class BFEXISTS_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @group relay-resp3
      * @return void
@@ -72,5 +90,20 @@ class BFEXISTS_Test extends PredisCommandTestCase
 
         $this->assertSame(1, $redis->bfexists('key', 'item'));
         $this->assertSame(0, $redis->bfexists('key', 'non-existing'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testExistsReturnsExistingItemWithinBloomFilterResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->bfadd('key', 'item');
+
+        $this->assertTrue($redis->bfexists('key', 'item'));
+        $this->assertFalse($redis->bfexists('key', 'non-existing'));
     }
 }

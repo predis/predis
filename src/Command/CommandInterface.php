@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -77,4 +77,27 @@ interface CommandInterface
      * @return mixed
      */
     public function parseResponse($data);
+
+    /**
+     * Parses RESP3 protocol response and returns a PHP object.
+     *
+     * @param  mixed $data
+     * @return mixed
+     */
+    public function parseResp3Response($data);
+
+    /**
+     * Returns RESP-formatted representation of command.
+     *
+     * @return string
+     */
+    public function serializeCommand(): string;
+
+    /**
+     * Creates command object from given serialized representation.
+     *
+     * @param  string $serializedCommand
+     * @return static
+     */
+    public static function deserializeCommand(string $serializedCommand): CommandInterface;
 }

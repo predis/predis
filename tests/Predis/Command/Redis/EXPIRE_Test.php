@@ -4,13 +4,15 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 namespace Predis\Command\Redis;
+
+use Predis\Command\PrefixableCommand;
 
 /**
  * @group commands
@@ -60,11 +62,39 @@ class EXPIRE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      */
     public function testReturnsZeroOnNonExistingKeys(): void
     {
         $redis = $this->getClient();
+
+        $this->assertSame(0, $redis->expire('foo', 2));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsZeroOnNonExistingKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertSame(0, $redis->expire('foo', 2));
     }
@@ -146,13 +176,13 @@ class EXPIRE_Test extends PredisCommandTestCase
                 ['newExpiryLower', 'value', 'EX', 1000],
                 ['newExpiryGreater', 'value', 'EX', 10],
                 ['newExpiryGreater', 100, 'GT'],
-                ['newExpiryLower', 20, 'GT'],
+                ['newExpiryLower', 10, 'GT'],
             ],
             'only if new expiry is lower then current one' => [
                 ['newExpiryLower', 'value', 'EX', 1000],
                 ['newExpiryGreater', 'value', 'EX', 10],
-                ['newExpiryLower', 20, 'LT'],
-                ['newExpiryGreater', 20, 'LT'],
+                ['newExpiryLower', 10, 'LT'],
+                ['newExpiryGreater', 100, 'LT'],
             ],
         ];
     }

@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -79,6 +79,52 @@ class TSMREVRANGE_Test extends PredisCommandTestCase
                     [1020, '120'],
                     [1010, '110'],
                     [1000, '120'],
+                ],
+            ],
+        ];
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('stock:A', (new CreateArguments())->labels('type', 'stock', 'name', 'A'))
+        );
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('stock:B', (new CreateArguments())->labels('type', 'stock', 'name', 'B'))
+        );
+        $this->assertSame(
+            [1000, 1010, 1020],
+            $redis->tsmadd('stock:A', 1000, 100, 'stock:A', 1010, 110, 'stock:A', 1020, 120)
+        );
+        $this->assertSame(
+            [1000, 1010, 1020],
+            $redis->tsmadd('stock:B', 1000, 120, 'stock:B', 1010, 110, 'stock:B', 1020, 100)
+        );
+
+        $mrangeArguments = (new MRangeArguments())
+            ->withLabels()
+            ->filter('type=stock')
+            ->groupBy('type', 'max');
+
+        $this->assertEquals($expectedResponse, $redis->tsmrevrange('-', '+', $mrangeArguments));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.10.0
+     */
+    public function testQueryRangeAcrossMultipleTimeSeriesInReverseDirectionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = [
+            'type=stock' => [
+                ['type' => 'stock'],
+                ['reducers' => ['max']],
+                ['sources' => ['stock:A', 'stock:B']],
+                [
+                    [1020, 120],
+                    [1010, 110],
+                    [1000, 120],
                 ],
             ],
         ];

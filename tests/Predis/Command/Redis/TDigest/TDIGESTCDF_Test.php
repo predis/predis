@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\TDigest;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -60,6 +61,23 @@ class TDIGESTCDF_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @group relay-resp3
      * @return void
@@ -83,6 +101,29 @@ class TDIGESTCDF_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReturnsValuesEstimatedForGivenRanksResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $expectedResponse = [0.0, 0.083333333333333329, 0.33333333333333331, 0.75, 1.0];
+
+        $redis->tdigestcreate('key');
+        $redis->tdigestcreate('empty_key');
+
+        $redis->tdigestadd('key', 1, 2, 2, 3, 3, 3);
+
+        $actualResponse = $redis->tdigestcdf('key', 0, 1, 2, 3, 4);
+
+        $this->assertSameWithPrecision($expectedResponse, $actualResponse, 5);
+        $this->assertSame([0.0, 0.0], $redis->tdigestcdf('empty_key', 0, 1));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */

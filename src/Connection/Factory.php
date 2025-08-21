@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -31,7 +31,6 @@ class Factory implements FactoryInterface
         'tls' => 'Predis\Connection\StreamConnection',
         'redis' => 'Predis\Connection\StreamConnection',
         'rediss' => 'Predis\Connection\StreamConnection',
-        'http' => 'Predis\Connection\WebdisConnection',
     ];
 
     /**
@@ -165,25 +164,32 @@ class Factory implements FactoryInterface
     {
         $parameters = $connection->getParameters();
 
-        if (isset($parameters->password) && strlen($parameters->password)) {
-            $cmdAuthArgs = isset($parameters->username) && strlen($parameters->username)
-                ? [$parameters->username, $parameters->password]
-                : [$parameters->password];
+        if (!empty($parameters->password)) {
+            $cmdAuthArgs = [$parameters->protocol, 'AUTH'];
+
+            if (empty($parameters->username)) {
+                $parameters->username = 'default';
+            }
+
+            array_push($cmdAuthArgs, $parameters->username, $parameters->password);
+            array_push($cmdAuthArgs, 'SETNAME', 'predis');
 
             $connection->addConnectCommand(
-                new RawCommand('AUTH', $cmdAuthArgs)
+                new RawCommand('HELLO', $cmdAuthArgs)
+            );
+        } else {
+            $connection->addConnectCommand(
+                new RawCommand('HELLO', [$parameters->protocol ?? 2, 'SETNAME', 'predis'])
             );
         }
 
-        if ($parameters->client_info ?? false && !$connection instanceof RelayConnection) {
-            $connection->addConnectCommand(
-                new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
-            );
+        $connection->addConnectCommand(
+            new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
+        );
 
-            $connection->addConnectCommand(
-                new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])
-            );
-        }
+        $connection->addConnectCommand(
+            new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])
+        );
 
         if (isset($parameters->database) && strlen($parameters->database)) {
             $connection->addConnectCommand(

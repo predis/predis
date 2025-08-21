@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,6 +13,9 @@
 namespace Predis\Pipeline;
 
 use Predis\Client;
+use Predis\ClientInterface;
+use Predis\Command\Redis\PING;
+use Predis\Connection\Parameters;
 use Predis\Response;
 use PredisTestCase;
 
@@ -25,6 +28,7 @@ class AtomicTest extends PredisTestCase
     {
         $pong = new Response\Status('PONG');
         $queued = new Response\Status('QUEUED');
+        $buffer = (new PING())->serializeCommand() . (new PING())->serializeCommand() . (new PING())->serializeCommand();
 
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
         $connection
@@ -39,13 +43,9 @@ class AtomicTest extends PredisTestCase
                 [$pong, $pong, $pong]
             );
         $connection
-            ->expects($this->exactly(3))
-            ->method('writeRequest')
-            ->withConsecutive(
-                [$this->isRedisCommand('PING')],
-                [$this->isRedisCommand('PING')],
-                [$this->isRedisCommand('PING')]
-            );
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
@@ -54,6 +54,11 @@ class AtomicTest extends PredisTestCase
                 $queued,
                 $queued
             );
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -69,6 +74,7 @@ class AtomicTest extends PredisTestCase
      */
     public function testThrowsExceptionOnAbortedTransaction(): void
     {
+        $buffer = (new PING())->serializeCommand() . (new PING())->serializeCommand() . (new PING())->serializeCommand();
         $this->expectException('Predis\ClientException');
         $this->expectExceptionMessage('The underlying transaction has been aborted by the server');
 
@@ -87,13 +93,9 @@ class AtomicTest extends PredisTestCase
                 null
             );
         $connection
-            ->expects($this->exactly(3))
-            ->method('writeRequest')
-            ->withConsecutive(
-                [$this->isRedisCommand('PING')],
-                [$this->isRedisCommand('PING')],
-                [$this->isRedisCommand('PING')]
-            );
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
@@ -117,6 +119,7 @@ class AtomicTest extends PredisTestCase
      */
     public function testPipelineWithErrorInTransaction(): void
     {
+        $buffer = (new PING())->serializeCommand() . (new PING())->serializeCommand() . (new PING())->serializeCommand();
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR Test error');
 
@@ -136,13 +139,9 @@ class AtomicTest extends PredisTestCase
                 new Response\Status('OK')
             );
         $connection
-            ->expects($this->exactly(3))
-            ->method('writeRequest')
-            ->withConsecutive(
-                [$this->isRedisCommand('PING')],
-                [$this->isRedisCommand('PING')],
-                [$this->isRedisCommand('PING')]
-            );
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
@@ -166,6 +165,7 @@ class AtomicTest extends PredisTestCase
      */
     public function testThrowsServerExceptionOnResponseErrorByDefault(): void
     {
+        $buffer = (new PING())->serializeCommand() . (new PING())->serializeCommand();
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessage('ERR Test error');
 
@@ -182,12 +182,9 @@ class AtomicTest extends PredisTestCase
                 new Response\Status('OK')
             );
         $connection
-            ->expects($this->exactly(2))
-            ->method('writeRequest')
-            ->withConsecutive(
-                [$this->isRedisCommand('PING')],
-                [$this->isRedisCommand('PING')]
-            );
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->once())
             ->method('readResponse')
@@ -208,6 +205,7 @@ class AtomicTest extends PredisTestCase
      */
     public function testReturnsResponseErrorWithClientExceptionsSetToFalse(): void
     {
+        $buffer = (new PING())->serializeCommand() . (new PING())->serializeCommand() . (new PING())->serializeCommand();
         $pong = new Response\Status('PONG');
         $queued = new Response\Status('QUEUED');
         $error = new Response\Error('ERR Test error');
@@ -225,13 +223,9 @@ class AtomicTest extends PredisTestCase
                 [$pong, $pong, $error]
             );
         $connection
-            ->expects($this->exactly(3))
-            ->method('writeRequest')
-            ->withConsecutive(
-                [$this->isRedisCommand('PING')],
-                [$this->isRedisCommand('PING')],
-                [$this->isRedisCommand('PING')]
-            );
+            ->expects($this->once())
+            ->method('write')
+            ->with($buffer);
         $connection
             ->expects($this->exactly(3))
             ->method('readResponse')
@@ -240,6 +234,11 @@ class AtomicTest extends PredisTestCase
                 $queued,
                 $queued
             );
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Atomic(new Client($connection, ['exceptions' => false]));
 
@@ -264,5 +263,48 @@ class AtomicTest extends PredisTestCase
         $pipeline->ping();
 
         $pipeline->execute();
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     */
+    public function testReplicationExecutesPipelineWithCRLFValues(): void
+    {
+        $parameters = $this->getDefaultParametersArray();
+
+        $client = $this->getClient(
+            ["tcp://{$parameters['host']}:{$parameters['port']}?role=master&database={$parameters['database']}&password={$parameters['password']}"],
+            ['replication' => 'predis']
+        );
+
+        $results = $client->pipeline(function (Pipeline $pipe) {
+            $pipe->set('foo', "bar\r\nbaz");
+            $pipe->get('foo');
+        });
+
+        $expectedResults = [
+            new Response\Status('OK'),
+            "bar\r\nbaz",
+        ];
+
+        $this->assertSameValues($expectedResults, $results);
+    }
+
+    // ******************************************************************** //
+    // ---- HELPER METHODS ------------------------------------------------ //
+    // ******************************************************************** //
+
+    /**
+     * Returns a client instance connected to the specified Redis server.
+     *
+     * @param array $parameters Additional connection parameters
+     * @param array $options    Additional client options
+     *
+     * @return ClientInterface
+     */
+    protected function getClient(array $parameters = [], array $options = []): ClientInterface
+    {
+        return $this->createClient($parameters, $options);
     }
 }

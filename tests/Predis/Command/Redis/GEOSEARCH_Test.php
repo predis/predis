@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -19,6 +19,7 @@ use Predis\Command\Argument\Geospatial\ByRadius;
 use Predis\Command\Argument\Geospatial\FromInterface;
 use Predis\Command\Argument\Geospatial\FromLonLat;
 use Predis\Command\Argument\Geospatial\FromMember;
+use Predis\Command\PrefixableCommand;
 use UnexpectedValueException;
 
 class GEOSEARCH_Test extends PredisCommandTestCase
@@ -58,6 +59,23 @@ class GEOSEARCH_Test extends PredisCommandTestCase
     public function testParseResponse(array $actualResponse, array $expectedResponse): void
     {
         $this->assertSame($expectedResponse, $this->getCommand()->parseResponse($actualResponse));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setRawArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**
@@ -103,6 +121,29 @@ class GEOSEARCH_Test extends PredisCommandTestCase
         $this->assertSame(
             $expectedResponse,
             $redis->geosearch($key, $from, $by, $sorting, $count, $any, $withCoord, $withDist, $withHash)
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsSearchedGeospatialCoordinatesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->geoadd('key', 1.1, 2, 'member1');
+        $redis->geoadd('key', 2.1, 3, 'member2');
+        $redis->geoadd('key', 3.1, 4, 'member3');
+
+        $this->assertSame(
+            ['member1', 'member2', 'member3'],
+            $redis->geosearch(
+                'key',
+                new FromLonLat(1, 4),
+                new ByRadius(9999, 'km')
+            )
         );
     }
 
@@ -186,7 +227,7 @@ class GEOSEARCH_Test extends PredisCommandTestCase
                 [
                     'member1' => ['lng' => 1.1, 'lat' => 2.2],
                     'member2' => ['lng' => 2.2, 'lat' => 3.3],
-                    'member3' => ['lng' => 3.3, 'lat' => 4.4]],
+                    'member3' => ['lng' => 3.3, 'lat' => 4.4], ],
             ],
             'with WITHDIST modifier' => [
                 [['member1', '111.111'], ['member2', '222.222'], ['member3', '333.333']],

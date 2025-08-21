@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -76,6 +76,23 @@ class ZDIFFSTORE_Test extends PredisCommandTestCase
 
         $this->assertSame($expectedResultingElements, $actualResponse);
         $this->assertSame($expectedResponse, $redis->zrange('zdiffstore', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testStoresDifferenceBetweenSortedSetsResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('test-zset-1', 1, 'member1', 2, 'member2', 3, 'member3');
+        $redis->zadd('test-zset-2', 1, 'member4', 2, 'member5', 3, 'member6');
+        $actualResponse = $redis->zdiffstore('zdiffstore', ['test-zset-1', 'test-zset-2']);
+
+        $this->assertSame(3, $actualResponse);
+        $this->assertSame(['member1', 'member2', 'member3'], $redis->zrange('zdiffstore', 0, -1));
     }
 
     public function sortedSetsProvider(): array

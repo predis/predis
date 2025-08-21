@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,6 +16,7 @@ use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Argument\TimeSeries\IncrByArguments;
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -62,6 +63,23 @@ class TSINCRBY_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setRawArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @group relay-resp3
      * @return void
@@ -100,6 +118,40 @@ class TSINCRBY_Test extends PredisCommandTestCase
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
+    public function testIncrByIncreasesValueAndTimestampOfExistingSampleResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $arguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('sensor_id', 2, 'area_id', 32);
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:2:32', $arguments)
+        );
+
+        $addArguments = (new AddArguments())
+            ->retentionMsecs(31536000000);
+
+        $this->assertEquals(
+            123123123123,
+            $redis->tsadd('temperature:2:32', 123123123123, 27, $addArguments)
+        );
+
+        $this->assertEquals(
+            123123123124,
+            $redis->tsincrby('temperature:2:32', 28, (new IncrByArguments())->timestamp(123123123124))
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.0.0
+     */
     public function testIncrByCreateNewSampleIfNotExists(): void
     {
         $redis = $this->getClient();
@@ -117,6 +169,44 @@ class TSINCRBY_Test extends PredisCommandTestCase
         $this->assertEquals(
             123123123123,
             $redis->tsincrby('temperature:2:32', 27, (new IncrByArguments())->timestamp(123123123123))
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisTimeSeriesVersion >= 1.12.01
+     */
+    public function testIncrByCreateNewSampleWithIgnoreArgument(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals(
+            1000,
+            $redis->tsincrby(
+                'temperature:2:32',
+                27,
+                (new IncrByArguments())
+                    ->timestamp(1000)
+                    ->duplicatePolicy(CommonArguments::POLICY_LAST)
+                    ->ignore(10, 10)
+            )
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1000, 27)
+        );
+
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1005, 27)
+        );
+
+        $this->assertEquals(
+            1005,
+            $redis->tsadd('temperature:2:32', 1005, 38)
         );
     }
 

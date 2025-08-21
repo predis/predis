@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -61,6 +61,25 @@ class MONITOR_Test extends PredisCommandTestCase
     public function testReturnsStatusResponseAndReadsEventsFromTheConnection(): void
     {
         $connection = $this->getClient()->getConnection();
+        $command = $this->getCommand();
+
+        $this->assertEquals('OK', $connection->executeCommand($command));
+
+        // NOTE: Starting with 2.6 Redis does not return the "MONITOR" message after
+        // +OK to the client that issued the MONITOR command.
+        if ($this->isRedisServerVersion('<=', '2.4.0')) {
+            $this->assertMatchesRegularExpression('/\d+.\d+(\s?\(db \d+\))? "MONITOR"/', $connection->read());
+        }
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testReturnsStatusResponseAndReadsEventsFromTheConnectionResp3(): void
+    {
+        $connection = $this->getResp3Client()->getConnection();
         $command = $this->getCommand();
 
         $this->assertEquals('OK', $connection->executeCommand($command));

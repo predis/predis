@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -119,6 +119,34 @@ class GEOSEARCHSTORE_Test extends PredisCommandTestCase
     public function testStoresInSortedSetWithStoreDistArgumentProvided(): void
     {
         $redis = $this->getClient();
+
+        $redis->geoadd('key', 1.1, 2, 'member1');
+        $redis->geoadd('key', 2.1, 3, 'member2');
+        $redis->geoadd('key', 3.1, 4, 'member3');
+
+        $actualResultingElements = $redis->geosearchstore(
+            'destination',
+            'key',
+            new FromLonLat(1, 4),
+            new ByRadius(9999, 'km'),
+            null,
+            2,
+            false,
+            true
+        );
+
+        $this->assertSame(2, $actualResultingElements);
+        $this->assertSame(['member2', 'member1'], $redis->zrange('destination', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testStoresInSortedSetWithStoreDistArgumentProvidedResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->geoadd('key', 1.1, 2, 'member1');
         $redis->geoadd('key', 2.1, 3, 'member2');

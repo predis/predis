@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\CountMinSketch;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -58,6 +59,23 @@ class CMSMERGE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['dest', ['key1', 'key2', 'key3'], [10]];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:dest', 3, 'prefix:key1', 'prefix:key2', 'prefix:key3', 'WEIGHTS', 10];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @group relay-resp3
      * @dataProvider sketchesProvider
@@ -90,6 +108,28 @@ class CMSMERGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testMergeSketchesAndSaveWithinDestinationCountMinSketchResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->cmsinitbyprob('source1', 0.001, 0.01);
+        $redis->cmsinitbyprob('source2', 0.001, 0.01);
+        $redis->cmsinitbyprob('destination', 0.001, 0.01);
+        $redis->cmsincrby('source1', 'item1', 1, 'item2', 1);
+        $redis->cmsincrby('source2', 'item1', 1, 'item2', 1);
+
+        $actualResponse = $redis->cmsmerge('destination', ['source1', 'source2']);
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame([2, 2], $redis->cmsquery('destination', 'item1', 'item2'));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.0.0
      */

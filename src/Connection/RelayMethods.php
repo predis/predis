@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -28,11 +28,11 @@ trait RelayMethods
     /**
      * Registers a new `invalidated` event listener.
      *
-     * @param  callable $callback
-     * @param  string   $pattern
+     * @param  callable    $callback
+     * @param  string|null $pattern
      * @return bool
      */
-    public function onInvalidated(?callable $callback, string $pattern = null)
+    public function onInvalidated(?callable $callback, ?string $pattern = null)
     {
         return $this->client->onInvalidated($callback, $pattern);
     }
@@ -129,7 +129,7 @@ trait RelayMethods
      * @param  ?int    $db
      * @return bool
      */
-    public function flushMemory(string $endpointId = null, int $db = null)
+    public function flushMemory(?string $endpointId = null, ?int $db = null)
     {
         return $this->client->flushMemory($endpointId, $db);
     }

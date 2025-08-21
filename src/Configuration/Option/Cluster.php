@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,6 +17,7 @@ use Predis\Cluster\RedisStrategy;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\Cluster\PredisCluster;
 use Predis\Connection\Cluster\RedisCluster;
+use Predis\Connection\Parameters;
 
 /**
  * Configures an aggregate connection used for clustering
@@ -58,8 +59,15 @@ class Cluster extends Aggregate
         switch ($description) {
             case 'redis':
             case 'redis-cluster':
-                return function ($parameters, $options, $option) {
-                    return new RedisCluster($options->connections, new RedisStrategy($options->crc16));
+                return static function ($parameters, $options, $option) {
+                    $optionParameters = $options->parameters ?? [];
+
+                    return new RedisCluster(
+                        $options->connections,
+                        new Parameters($optionParameters),
+                        new RedisStrategy($options->crc16),
+                        $options->readTimeout
+                    );
                 };
 
             case 'predis':
@@ -81,8 +89,10 @@ class Cluster extends Aggregate
      */
     protected function getDefaultConnectionInitializer()
     {
-        return function ($parameters, $options, $option) {
-            return new PredisCluster();
+        return static function ($parameters, $options, $option) {
+            $optionsParameters = $options->parameters ?? [];
+
+            return new PredisCluster(new Parameters($optionsParameters));
         };
     }
 

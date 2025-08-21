@@ -1,27 +1,115 @@
 ## Changelog
 
-## v2.2.2 (2023-09-13)
-
+## Unreleased
 ### Added
-- Added `client_info` client parameter
-- Added support for `CLUSTER` container command
+- Added cluster support for `XADD`, `XDEL` and `XRANGE` (#1587)
+### Changed
+- Refactor pipeline data writing depends on connection type (#1586)
 
-### Fixed
-- Fixed `EXPIRETIME` not using `prefix`
-- Disabled `CLIENT SETINFO` calls by default
+### Maintenance
 
-## v2.2.1 (2023-08-15)
-
+## v3.2.0 (2025-08-05)
 ### Added
-- Added support for `WAITAOF` command (#1357)
-- Added support for `SHUTDOWN` command (#1359)
-- Added support for `FUNCTION` command (#1332)
-- Added support for new optional `PEXPIRE`, `PEXPIREAT` and `COMMAND`
-- Added missing Redis Stack commands to `KeyPrefixProcessor` (#1358)
+- Added support for `XDELEX` and `XACKDEL` (#1580)
+- Added missing VSIM argument (#1582)
 
 ### Changed
-- Set client name and version when establishing a connection (#1347)
+- Extended `XTRIM` and `XADD` commands with new parameters (#1580)
 
+### Maintenance
+- Updated Redis 8.2 test image (#1583)
+- Added test coverage for updated Vamana (#1584)
+
+## v3.1.0 (2025-07-22)
+### Added
+- Add experimental support for vector sets commands (#1550)
+- Added support for `XACK` command (#1555)
+- Added support for `XCLAIM` command (#1557)
+- Added support for `XPENDING` command (#1558)
+- Added support for `XSETID` command (#1559)
+- Added validation and support for the new `BITOP` command operations (#1566)
+
+### Changed
+- Handle and retry `LOADING` errors from Sentinel replicas (#1536)
+- Retry all exceptions from Sentinel replicas (#1577)
+
+### Fixed
+- Fixed PHP 8.4 deprecated call to `stream_context_set_option()` (#1545)
+- Fixed return type for `ZCOUNT` to be `int` (#1547)
+- Fixed throwing `CommunicationException` when stream is EOF (#1548)
+- Removed automatic `conn_uid` parameter assignment (#1552)
+- Fixed wrong command API call on prefix processing (#1554)
+- Fixed `XREAD` response parsing while read null (#1563)
+- Fixed `XINFO` command responses parsing (#1560)
+- Marked missing commands as Prefixable (#1576)
+
+## v3.0.1 (2025-05-16)
+### Fixed
+- Send `default` user if only password is used for authentication (#1535)
+
+## v3.0.0 (2025-05-02)
+### Added
+- ⚠️ Added support for transactions for clustered connections (#1497)
+- Added support for RESP3 communication protocol (#1047)
+- Added support for RESP3 push notifications (#1316)
+- Added support for Sharded Pub/Sub (#1303)
+- Added support for `XGROUP` commands (#1324)
+- Added support for `XREADGROUP` command (#1327)
+- Added support for `XAUTOCLAIM` command (#1328)
+- Added support for `XINFO` commands (#1331)
+- Added support for Redis 7.4 `XREAD` and `HSCAN` interface changes (#1452)
+
+### Changed
+- ⚠️ Refactored Relay integration (#1423)
+- ⚠️ Changed interface of `CLIENT` command (#1337)
+- ⚠️ Changed interfaces for commands to support Redis 6.2 — 7.0 arguments (#1330)
+- ⚠️ Changed default search `DIALECT` to `2` (#1516)
+- ⚠️ Implemented PSR-7 compatible stream abstraction (#1450)
+- ⚠️ Improved pipeline abstractions (#1438)
+- ⚠️ Improved connection handshake (#1431)
+
+### Fixed
+- Fixed single persistent connection using the same resource (#1512)
+
+### Maintenance
+- Revisit incompatible tests against Relay (#1537)
+
+## v2.4.0 (2025-04-30)
+### Added
+- Added new hash-field expiration commands (#1520)
+- Added missing `FT._LIST` and `BITFIELD_RO` commands (#1521)
+
+### Changed
+- Update `WATCH` command to accept `string|string[]` (#1476)
+- Optimize cluster slotmap with compact slot range object (#1493)
+
+### Fixed
+- Fixed `EVAL_RO` cluster support (#1449)
+- Fixed PHP 8.4 compatibility with `stream_context_set_option()` (#1503)
+- Prevent named arguments runtime failure (#1509)
+- Mark `GEOSEARCH` as read-only to ensure execution on replica (#1481)
+- Fixed protocol loss during redis cluster `MOVED` / `ASK` (#1530)
+
+### Maintenance
+- Added CI testing with Redis 8.0 (#1510)
+- Added test coverage for compatibility with Redis 8.0 (#1513)
+- Use parallel on PHP-CS-Fixer (#1489)
+
+## v2.3.0 (2024-11-21)
+### Added
+- Added `GeoShapeField` field (#1467)
+- Added hash expiration commands (#1456)
+- Added support for time series `IGNORE` filter (#1458)
+- Added `XREAD` commands (#1459)
+- Added `NOVALUES` argument support to `HSCAN` (#1459)
+- Added support for search `INDEXMISSING` and `INDEXEMPTY` arguments (#1464)
+
+### Changed
+- Explicitly mark nullable parameters as nullable (#1448)
+- Filter out available replicas based on link status flag (#1440)
+- Respect `prefix` for `ZPOPMIN`, `ZPOPMAX`, `ZMSCORE`, `LMOVE`, `BLMOVE`, `SMISMEMBER` and `GEOSEARCH` (#1451, #1453, #1455, #1468)
+- Updated test infrastructure (#1510)
+-
 ## v2.2.0 (2023-06-14)
 
 Predis v2.2.0 introduces official support for [Redis Stack](https://redis.io/docs/stack/) as well as a [Relay](https://github.com/cachewerk/relay) integration for substantially [faster read performance](https://github.com/predis/predis/wiki/Using-Relay).

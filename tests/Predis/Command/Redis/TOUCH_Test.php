@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -85,6 +85,26 @@ class TOUCH_Test extends PredisCommandTestCase
     public function testReturnsNumberOfDeletedKeys(): void
     {
         $redis = $this->getClient();
+
+        $this->assertSame(0, $redis->touch('foo'));
+
+        $redis->set('foo', 'bar');
+        $this->assertSame(1, $redis->touch('foo'));
+        $this->assertSame(1, $redis->touch('foo', 'hoge'));
+
+        $redis->set('hoge', 'piyo');
+        $this->assertSame(1, $redis->touch('foo'));
+        $this->assertSame(2, $redis->touch('foo', 'hoge'));
+    }
+
+    /**
+     * @requiresRedisVersion >= 6.0.0
+     *
+     * @group connected
+     */
+    public function testReturnsNumberOfDeletedKeysResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $this->assertSame(0, $redis->touch('foo'));
 

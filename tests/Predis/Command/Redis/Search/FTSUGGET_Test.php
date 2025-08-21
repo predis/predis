@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -84,7 +84,6 @@ class FTSUGGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -103,13 +102,30 @@ class FTSUGGET_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRediSearchVersion >= 2.8.0
+     */
+    public function testGetReturnsLimitedResultsWithMaxModifierResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->ftsugadd('key', 'hello', 2);
+        $redis->ftsugadd('key', 'hell', 2);
+
+        $actualResponse = $redis->ftsugget('key', 'hel', (new SugGetArguments())->max(1));
+
+        $this->assertSame(['hell'], $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
-    public function testGetReturnsNullOnNonExistingKey(): void
+    public function testGetReturnsEmptyArrayOnNonExistingKey(): void
     {
         $redis = $this->getClient();
 
-        $this->assertNull($redis->ftsugget('key', 'hel'));
+        $this->assertEmpty($redis->ftsugget('key', 'hel'));
     }
 
     public function argumentsProvider(): array

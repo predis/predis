@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -27,13 +27,13 @@ trait ByLexByScore
 
     public function setArguments(array $arguments)
     {
-        $argument = $arguments[static::$byLexByScoreArgumentPositionOffset];
-
-        if (false === $argument) {
+        if (count($arguments) <= static::$byLexByScoreArgumentPositionOffset || false === $arguments[static::$byLexByScoreArgumentPositionOffset]) {
             parent::setArguments($arguments);
 
             return;
         }
+
+        $argument = $arguments[static::$byLexByScoreArgumentPositionOffset];
 
         if (is_string($argument) && in_array(strtoupper($argument), self::$argumentsEnum)) {
             $argument = self::$argumentsEnum[$argument];

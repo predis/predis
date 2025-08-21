@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -32,7 +32,7 @@ function zpop($client, $key)
         'cas' => true,      // Initialize with support for CAS operations
         'watch' => $key,    // Key that needs to be WATCHed to detect changes
         'retry' => 3,       // Number of retries on aborted transactions, after
-                            // which the client bails out with an exception.
+        // which the client bails out with an exception.
     ];
 
     $client->transaction($options, function ($tx) use ($key, &$element) {

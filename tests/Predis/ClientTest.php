@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,6 +17,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\Factory as CommandFactory;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\Replication\MasterSlaveReplication;
 use PredisTestCase;
@@ -208,7 +209,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithClusterArgument(): void
     {
-        $cluster = new Connection\Cluster\PredisCluster();
+        $cluster = new Connection\Cluster\PredisCluster(new Parameters());
 
         $factory = new Connection\Factory();
         $cluster->add($factory->create('tcp://localhost:7000'));
@@ -225,7 +226,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithReplicationArgument(): void
     {
-        $replication = new Connection\Replication\MasterSlaveReplication();
+        $replication = new MasterSlaveReplication();
 
         $factory = new Connection\Factory();
         $replication->add($factory->create('tcp://host1?alias=master'));
@@ -548,10 +549,49 @@ class ClientTest extends PredisTestCase
                 ['foo', 'bar', 'hoge', 'piyo']
             );
 
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $client = new Client($connection);
 
         $this->assertEquals('PONG', $client->executeCommand($ping));
         $this->assertSame(['foo' => 'bar', 'hoge' => 'piyo'], $client->executeCommand($hgetall));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecuteCommandReturnsResp3ParsedResponses(): void
+    {
+        $commands = $this->getCommandFactory();
+
+        $ping = $commands->create('ping', []);
+        $get = $commands->create('get', []);
+
+        $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
+        $connection
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$ping],
+                [$get]
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('PONG'),
+                []
+            );
+
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 3]));
+
+        $client = new Client($connection);
+
+        $this->assertEquals('PONG', $client->executeCommand($ping));
+        $this->assertSame([], $client->executeCommand($get));
     }
 
     /**
@@ -608,6 +648,11 @@ class ClientTest extends PredisTestCase
             ->method('executeCommand')
             ->with($this->isInstanceOf('Predis\Command\Redis\PING'))
             ->willReturn('PONG');
+
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $commands = $this->getMockBuilder('Predis\Command\FactoryInterface')->getMock();
         $commands
@@ -912,7 +957,7 @@ class ClientTest extends PredisTestCase
      */
     public function testGetClientByMethodSupportsSelectingConnectionByCommand(): void
     {
-        $command = \Predis\Command\RawCommand::create('GET', 'key');
+        $command = Command\RawCommand::create('GET', 'key');
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
 
         $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
@@ -1003,7 +1048,7 @@ class ClientTest extends PredisTestCase
     {
         $client = new Client();
 
-        $this->assertInstanceOf('Predis\PubSub\Consumer', $client->pubSubLoop());
+        $this->assertInstanceOf('Predis\Consumer\PubSub\Consumer', $client->pubSubLoop());
     }
 
     /**
@@ -1016,7 +1061,7 @@ class ClientTest extends PredisTestCase
 
         $client = new Client($connection);
 
-        $this->assertInstanceOf('Predis\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
+        $this->assertInstanceOf('Predis\Consumer\PubSub\Consumer', $pubsub = $client->pubSubLoop($options));
 
         $reflection = new ReflectionProperty($pubsub, 'options');
         $reflection->setAccessible(true);
@@ -1078,11 +1123,11 @@ class ClientTest extends PredisTestCase
             ->method('__invoke')
             ->withConsecutive(
                 [
-                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    $this->isInstanceOf('Predis\Consumer\PubSub\Consumer'),
                     (object) ['kind' => 'subscribe', 'channel' => 'channel', 'payload' => 1],
                 ],
                 [
-                    $this->isInstanceOf('Predis\PubSub\Consumer'),
+                    $this->isInstanceOf('Predis\Consumer\PubSub\Consumer'),
                     (object) ['kind' => 'unsubscribe', 'channel' => 'channel', 'payload' => 0],
                 ]
             )
@@ -1159,6 +1204,11 @@ class ClientTest extends PredisTestCase
     public function testMonitorReturnsMonitorConsumer(): void
     {
         $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $client = new Client($connection);
 
         $this->assertInstanceOf('Predis\Monitor\Consumer', $monitor = $client->monitor());
@@ -1195,6 +1245,11 @@ class ClientTest extends PredisTestCase
                 'OK'
             );
 
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $client = new Client($connection);
 
         $this->assertTrue($client->executeCommand($command));
@@ -1209,7 +1264,7 @@ class ClientTest extends PredisTestCase
         $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382');
         $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383');
 
-        $aggregate = new \Predis\Connection\Cluster\PredisCluster();
+        $aggregate = new Connection\Cluster\PredisCluster(new Parameters());
 
         $aggregate->add($connection1);
         $aggregate->add($connection2);
@@ -1258,29 +1313,130 @@ class ClientTest extends PredisTestCase
      * @group relay-incompatible
      * @requiresRedisVersion >= 7.2.0
      */
-    public function testDoNoSetClientInfoOnConnection(): void
+    public function testSetClientInfoOnConnection(): void
     {
         $client = new Client($this->getParameters());
         $libName = $client->client('LIST')[0]['lib-name'];
         $libVer = $client->client('LIST')[0]['lib-ver'];
 
-        $this->assertEmpty($libName);
-        $this->assertEmpty($libVer);
+        $this->assertSame('predis', $libName);
+        $this->assertSame(Client::VERSION, $libVer);
     }
 
     /**
      * @group connected
-     * @group relay-incompatible
-     * @requiresRedisVersion >= 7.2.0
+     * @requiresRedisVersion >= 5.0.0
      */
-    public function testSetClientInfoOnConnectionWhenEnabled(): void
+    public function testClientsCreateDifferentPersistentConnections(): void
     {
-        $client = new Client($this->getParameters(['client_info' => true]));
-        $libName = $client->client('LIST')[0]['lib-name'];
-        $libVer = $client->client('LIST')[0]['lib-ver'];
+        $client1 = new Client($this->getParameters(['database' => 14, 'persistent' => true, 'conn_uid' => 1]));
+        $client2 = new Client($this->getParameters(['database' => 15, 'persistent' => true, 'conn_uid' => 2]));
 
-        $this->assertSame('predis', $libName);
-        $this->assertSame(Client::VERSION, $libVer);
+        $client1->set('foo', 'bar');
+        $client2->set('foo', 'baz');
+
+        $this->assertSame('bar', $client1->get('foo'));
+        $this->assertSame('baz', $client2->get('foo'));
+        $this->assertNotSame($client1->client('ID'), $client2->client('ID'));
+        $client1->disconnect();
+        $client2->disconnect();
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 5.0.0
+     */
+    public function testClientsCreateSamePersistentConnections(): void
+    {
+        $client1 = new Client($this->getParameters(['persistent' => true]));
+        $client2 = new Client($this->getParameters(['persistent' => true]));
+
+        $client1->set('foo', 'bar');
+        $client2->set('foo', 'baz');
+
+        $this->assertSame('baz', $client2->get('foo'));
+        $this->assertSame($client1->client('ID'), $client2->client('ID'));
+        $client1->disconnect();
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 2.0.0
+     */
+    public function testClusterClientsCreateDifferentPersistentConnections(): void
+    {
+        $client1 = new Client(
+            $this->getDefaultParametersArray(),
+            ['cluster' => 'redis', 'parameters' => ['persistent' => true, 'conn_uid' => 1]]
+        );
+        $client2 = new Client(
+            $this->getDefaultParametersArray(),
+            ['cluster' => 'redis', 'parameters' => ['persistent' => true, 'conn_uid' => 2]]
+        );
+
+        $client1->set('{shard1}foo', 'bar');
+        $client2->set('{shard2}foo', 'baz');
+
+        $this->assertSame('bar', $client1->get('{shard1}foo'));
+        $this->assertSame('baz', $client2->get('{shard2}foo'));
+        $client1->disconnect();
+        $client2->disconnect();
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 2.0.0
+     * @requires PHP >= 7.4
+     * @return void
+     */
+    public function testCreatesClusterWithRelayConnection(): void
+    {
+        $client = new Client($this->getDefaultParametersArray(), ['cluster' => 'redis', 'connections' => 'relay']);
+
+        $this->assertEquals('OK', $client->set('key', 'value'));
+        $this->assertSame('value', $client->get('key'));
+    }
+
+    /**
+     * @group connected
+     * @group unprotected
+     * @requiresRedisVersion >= 2.0.0
+     * @return void
+     */
+    public function testClientAuthenticationAgainstUnprotectedServer(): void
+    {
+        $client = new Client($this->getParameters());
+
+        $this->assertEquals('OK', $client->set('key', 'value'));
+        $this->assertSame('value', $client->get('key'));
+
+        // AUTH doesn't throw exception if no authentication requires.
+        $clientWithPassword = new Client($this->getParameters(
+            ['password' => getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD')])
+        );
+        $this->assertEquals('OK', $clientWithPassword->set('key', 'value'));
+        $this->assertSame('value', $clientWithPassword->get('key'));
+
+        $this->assertEquals(
+            'OK',
+            $client->acl->setUser(
+                'test_user',
+                'on',
+                '>foobar',
+                'allcommands',
+                'allkeys'
+            )
+        );
+
+        $clientTestUser = new Client($this->getParameters(
+            ['username' => 'test_user', 'password' => 'foobar'])
+        );
+        $this->assertEquals('test_user', $clientTestUser->acl->whoami());
+        $this->assertEquals('OK', $clientTestUser->set('key', 'value'));
+        $this->assertSame('value', $clientTestUser->get('key'));
+        $this->assertEquals(1, $clientTestUser->acl->delUser('test_user'));
     }
 
     // ******************************************************************** //

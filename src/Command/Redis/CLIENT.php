@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -28,6 +28,77 @@ class CLIENT extends RedisCommand
     public function getId()
     {
         return 'CLIENT';
+    }
+
+    public function setArguments(array $arguments)
+    {
+        switch ($arguments[0]) {
+            case 'LIST':
+                $this->setListArguments($arguments);
+                break;
+            case 'NOEVICT':
+                $arguments[0] = 'NO-EVICT';
+                $this->setNoTouchArguments($arguments);
+                break;
+            case 'NOTOUCH':
+                $arguments[0] = 'NO-TOUCH';
+                $this->setNoTouchArguments($arguments);
+                break;
+            case 'SETINFO':
+                $this->setSetInfoArguments($arguments);
+                break;
+            default:
+                parent::setArguments($arguments);
+        }
+    }
+
+    private function setListArguments(array $arguments): void
+    {
+        $processedArguments = [$arguments[0]];
+
+        if (array_key_exists(1, $arguments) && null !== $arguments[1]) {
+            array_push($processedArguments, 'TYPE', strtoupper($arguments[1]));
+        }
+
+        if (array_key_exists(2, $arguments)) {
+            array_push($processedArguments, 'ID', $arguments[2]);
+        }
+
+        if (count($arguments) > 3) {
+            for ($i = 3, $iMax = count($arguments); $i < $iMax; $i++) {
+                $processedArguments[] = $arguments[$i];
+            }
+        }
+
+        parent::setArguments($processedArguments);
+    }
+
+    private function setNoTouchArguments(array $arguments): void
+    {
+        $processedArguments = [$arguments[0]];
+
+        if (array_key_exists(1, $arguments) && null !== $arguments[1]) {
+            $modifier = ($arguments[1]) ? 'ON' : 'OFF';
+            $processedArguments[] = $modifier;
+        }
+
+        parent::setArguments($processedArguments);
+    }
+
+    private function setSetInfoArguments(array $arguments): void
+    {
+        $processedArguments = [$arguments[0]];
+
+        if (
+            array_key_exists(1, $arguments)
+            && null !== $arguments[1]
+            && array_key_exists(2, $arguments)
+            && null !== $arguments[2]
+        ) {
+            array_push($processedArguments, strtoupper($arguments[1]), $arguments[2]);
+        }
+
+        parent::setArguments($processedArguments);
     }
 
     /**
@@ -71,5 +142,14 @@ class CLIENT extends RedisCommand
         }
 
         return $clients;
+    }
+
+    /**
+     * @param                          $data
+     * @return array|mixed|string|null
+     */
+    public function parseResp3Response($data)
+    {
+        return $this->parseResponse($data);
     }
 }

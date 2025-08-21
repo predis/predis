@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -20,11 +20,14 @@ use Predis\ClientException;
 use Predis\Cluster\RedisStrategy as RedisClusterStrategy;
 use Predis\Cluster\SlotMap;
 use Predis\Cluster\StrategyInterface;
+use Predis\Command\Command;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\ParametersInterface;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -53,9 +56,13 @@ use Traversable;
  * Asking for the cluster configuration to Redis is actually done by issuing a
  * CLUSTER SLOTS command to a random node in the pool.
  */
-class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
+class RedisCluster extends AbstractAggregateConnection implements ClusterInterface, IteratorAggregate, Countable
 {
     private $useClusterSlots = true;
+
+    /**
+     * @var NodeConnectionInterface[]
+     */
     private $pool = [];
     private $slots = [];
     private $slotmap;
@@ -65,16 +72,34 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     private $retryInterval = 10;
 
     /**
-     * @param FactoryInterface  $connections Optional connection factory.
-     * @param StrategyInterface $strategy    Optional cluster strategy.
+     * @var int
+     */
+    private $readTimeout = 1000;
+
+    /**
+     * @var ParametersInterface
+     */
+    private $connectionParameters;
+
+    /**
+     * @param FactoryInterface       $connections Optional connection factory.
+     * @param StrategyInterface|null $strategy    Optional cluster strategy.
+     * @param int|null               $readTimeout Optional read timeout
      */
     public function __construct(
         FactoryInterface $connections,
-        StrategyInterface $strategy = null
+        ParametersInterface $parameters,
+        ?StrategyInterface $strategy = null,
+        ?int $readTimeout = null
     ) {
         $this->connections = $connections;
+        $this->connectionParameters = $parameters;
         $this->strategy = $strategy ?: new RedisClusterStrategy();
         $this->slotmap = new SlotMap();
+
+        if (!is_null($readTimeout)) {
+            $this->readTimeout = $readTimeout;
+        }
     }
 
     /**
@@ -130,7 +155,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      */
     public function connect()
     {
-        if ($connection = $this->getRandomConnection()) {
+        foreach ($this->pool as $connection) {
             $connection->connect();
         }
     }
@@ -258,7 +283,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
                 }
 
                 usleep($retryAfter * 1000);
-                $retryAfter = $retryAfter * 2;
+                $retryAfter *= 2;
                 ++$retries;
             }
         }
@@ -271,9 +296,9 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
      * the CLUSTER SLOTS command against the specified node or a random one from
      * the pool.
      *
-     * @param NodeConnectionInterface $connection Optional connection instance.
+     * @param NodeConnectionInterface|null $connection Optional connection instance.
      */
-    public function askSlotMap(NodeConnectionInterface $connection = null)
+    public function askSlotMap(?NodeConnectionInterface $connection = null)
     {
         if (!$connection && !$connection = $this->getRandomConnection()) {
             return;
@@ -541,7 +566,7 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
                 break;
             } catch (Throwable $exception) {
                 usleep($retryAfter * 1000);
-                $retryAfter = $retryAfter * 2;
+                $retryAfter *= 2;
 
                 if ($exception instanceof ConnectionException) {
                     $connection = $exception->getConnection();
@@ -598,6 +623,20 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function executeCommandOnEachNode(CommandInterface $command): array
+    {
+        $responses = [];
+
+        foreach ($this->pool as $connection) {
+            $responses[] = $connection->executeCommand($command);
+        }
+
+        return $responses;
+    }
+
+    /**
      * @return int
      */
     #[ReturnTypeWillChange]
@@ -640,12 +679,9 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     }
 
     /**
-     * Returns the underlying command hash strategy used to hash commands by
-     * using keys found in their arguments.
-     *
-     * @return StrategyInterface
+     * {@inheritDoc}
      */
-    public function getClusterStrategy()
+    public function getClusterStrategy(): StrategyInterface
     {
         return $this->strategy;
     }
@@ -677,5 +713,31 @@ class RedisCluster implements ClusterInterface, IteratorAggregate, Countable
     public function useClusterSlots($value)
     {
         $this->useClusterSlots = (bool) $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): ?ParametersInterface
+    {
+        return $this->connectionParameters;
+    }
+
+    /**
+     * Loop over connections until there's data to read.
+     *
+     * @return mixed
+     */
+    public function read()
+    {
+        while (true) {
+            foreach ($this->pool as $connection) {
+                if ($connection->hasDataToRead()) {
+                    return $connection->read();
+                }
+            }
+
+            usleep($this->readTimeout);
+        }
     }
 }

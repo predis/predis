@@ -4,13 +4,15 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 namespace Predis\Command\Redis;
+
+use Predis\Command\PrefixableCommand;
 
 /**
  * @group commands
@@ -59,12 +61,45 @@ class GETBIT_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1', 'arg2', 'arg3', 'arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
     public function testCanGetBitsFromString(): void
     {
         $redis = $this->getClient();
+
+        $redis->set('key:binary', "\x80\x00\00\x01");
+
+        $this->assertSame(1, $redis->getbit('key:binary', 0));
+        $this->assertSame(0, $redis->getbit('key:binary', 15));
+        $this->assertSame(1, $redis->getbit('key:binary', 31));
+        $this->assertSame(0, $redis->getbit('key:binary', 63));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCanGetBitsFromStringResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->set('key:binary', "\x80\x00\00\x01");
 

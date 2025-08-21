@@ -4,13 +4,16 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 namespace Predis\Command;
+
+use Predis\ClientConfiguration;
+use UnexpectedValueException;
 
 /**
  * Class representing a generic Redis command.
@@ -119,5 +122,73 @@ final class RawCommand implements CommandInterface
     public function parseResponse($data)
     {
         return $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function parseResp3Response($data)
+    {
+        return $data;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function serializeCommand(): string
+    {
+        $commandID = $this->getId();
+        $arguments = $this->getArguments();
+
+        $cmdlen = strlen($commandID);
+        $reqlen = count($arguments) + 1;
+
+        $buffer = "*{$reqlen}\r\n\${$cmdlen}\r\n{$commandID}\r\n";
+
+        foreach ($arguments as $argument) {
+            $arglen = strlen(strval($argument));
+            $buffer .= "\${$arglen}\r\n{$argument}\r\n";
+        }
+
+        return $buffer;
+    }
+
+    public static function deserializeCommand(string $serializedCommand): CommandInterface
+    {
+        if ($serializedCommand[0] !== '*') {
+            throw new UnexpectedValueException('Invalid serializing format');
+        }
+
+        $commandArray = explode("\r\n", $serializedCommand);
+        $commandId = $commandArray[2];
+        $classPath = __NAMESPACE__ . '\Redis\\';
+
+        // Check if given command is a module command.
+        if (count($commandIdArray = explode('.', $commandId)) > 1) {
+            // Fetch module configuration to resolve namespace.
+            $moduleConfiguration = array_filter(
+                ClientConfiguration::getModules(),
+                static function ($module) use ($commandIdArray) {
+                    return $module['commandPrefix'] === $commandIdArray[0];
+                }
+            );
+
+            $commandClass = strtoupper($commandIdArray[0] . $commandIdArray[1]);
+            $classPath .= array_shift($moduleConfiguration)['name'] . '\\' . $commandClass;
+        } else {
+            $classPath .= $commandIdArray[0];
+        }
+
+        $command = new $classPath();
+        $arguments = [];
+
+        for ($i = 4, $iMax = count($commandArray); $i < $iMax; $i++) {
+            $arguments[] = $commandArray[$i];
+            ++$i;
+        }
+
+        $command->setArguments($arguments);
+
+        return $command;
     }
 }

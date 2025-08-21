@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,13 +12,18 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
  * @see http://redis.io/commands/hscan
  */
 class HSCAN extends RedisCommand
 {
+    /**
+     * @var array
+     */
+    private $arguments;
+
     /**
      * {@inheritdoc}
      */
@@ -37,6 +42,7 @@ class HSCAN extends RedisCommand
             $arguments = array_merge($arguments, $options);
         }
 
+        $this->arguments = $arguments;
         parent::setArguments($arguments);
     }
 
@@ -62,6 +68,10 @@ class HSCAN extends RedisCommand
             $normalized[] = $options['COUNT'];
         }
 
+        if (!empty($options['NOVALUES']) && true === $options['NOVALUES']) {
+            $normalized[] = 'NOVALUES';
+        }
+
         return $normalized;
     }
 
@@ -70,17 +80,33 @@ class HSCAN extends RedisCommand
      */
     public function parseResponse($data)
     {
-        if (is_array($data)) {
-            $fields = $data[1];
-            $result = [];
+        if (!in_array('NOVALUES', $this->arguments, true)) {
+            if (is_array($data)) {
+                $fields = $data[1];
+                $result = [];
 
-            for ($i = 0; $i < count($fields); ++$i) {
-                $result[$fields[$i]] = $fields[++$i];
+                for ($i = 0; $i < count($fields); ++$i) {
+                    $result[$fields[$i]] = $fields[++$i];
+                }
+
+                $data[1] = $result;
             }
-
-            $data[1] = $result;
         }
 
         return $data;
+    }
+
+    /**
+     * @param                          $data
+     * @return array|mixed|string|null
+     */
+    public function parseResp3Response($data)
+    {
+        return $this->parseResponse($data);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

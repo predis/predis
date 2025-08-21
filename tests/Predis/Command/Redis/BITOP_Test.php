@@ -4,13 +4,16 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 namespace Predis\Command\Redis;
+
+use InvalidArgumentException;
+use Predis\Command\PrefixableCommand;
 
 /**
  * @group commands
@@ -76,12 +79,44 @@ class BITOP_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['AND', 'arg1', 'arg2', 'arg3', 'arg4'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['AND', 'prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testCanPerformBitwiseAND(): void
     {
         $redis = $this->getClient();
+
+        $redis->set('key:src:1', "h\x80");
+        $redis->set('key:src:2', 'R');
+
+        $this->assertSame(2, $redis->bitop('AND', 'key:dst', 'key:src:1', 'key:src:2'));
+        $this->assertSame("@\x00", $redis->get('key:dst'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testCanPerformBitwiseANDResp3(): void
+    {
+        $redis = $this->getResp3Client();
 
         $redis->set('key:src:1', "h\x80");
         $redis->set('key:src:2', 'R');
@@ -122,6 +157,69 @@ class BITOP_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 8.2.0
+     */
+    public function testCanPerformBitwiseONE(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->set('key:src:1', "\x01");
+        $redis->set('key:src:2', "\x02");
+
+        $this->assertSame(1, $redis->bitop('ONE', 'key:dst', 'key:src:1', 'key:src:2'));
+        $this->assertSame("\x03", $redis->get('key:dst'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.2.0
+     */
+    public function testCanPerformBitwiseDIFF(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->set('key:src:1', "\x01");
+        $redis->set('key:src:2', "\x00");
+        $redis->set('key:src:3', "\x04");
+
+        $this->assertSame(1, $redis->bitop('DIFF', 'key:dst', 'key:src:1', 'key:src:2', 'key:src:3'));
+        $this->assertSame("\x01", $redis->get('key:dst'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.2.0
+     */
+    public function testCanPerformBitwiseDIFF1(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->set('key:src:1', "\x01");
+        $redis->set('key:src:2', "\x00");
+        $redis->set('key:src:3', "\x04");
+
+        $this->assertSame(1, $redis->bitop('DIFF1', 'key:dst', 'key:src:1', 'key:src:2', 'key:src:3'));
+        $this->assertSame("\x04", $redis->get('key:dst'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.2.0
+     */
+    public function testCanPerformBitwiseANDOR(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->set('key:src:1', "\x03");
+        $redis->set('key:src:2', "\x02");
+        $redis->set('key:src:3', "\x04");
+
+        $this->assertSame(1, $redis->bitop('ANDOR', 'key:dst', 'key:src:1', 'key:src:2', 'key:src:3'));
+        $this->assertSame("\x02", $redis->get('key:dst'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.6.0
      */
     public function testCanPerformBitwiseNOT(): void
@@ -147,15 +245,15 @@ class BITOP_Test extends PredisCommandTestCase
     }
 
     /**
-     * @group connected
-     * @requiresRedisVersion >= 2.6.0
+     * @group disconnected
      */
     public function testThrowsExceptionOnInvalidOperation(): void
     {
-        $this->expectException('Predis\Response\ServerException');
-        $this->expectExceptionMessage('ERR syntax error');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('BITOP operation must be one of: AND, OR, XOR, NOT, DIFF, DIFF1, ANDOR, ONE');
 
-        $this->getClient()->bitop('NOOP', 'key:dst', 'key:src:1', 'key:src:2');
+        $command = $this->getCommand();
+        $command->setArguments(['NOOP', 'key:dst', 'key:src:1', 'key:src:2']);
     }
 
     /**

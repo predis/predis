@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -97,6 +97,27 @@ class ZRANGESTORE_Test extends PredisCommandTestCase
 
         $this->assertSame($expectedResultingElements, $actualResponse);
         $this->assertSame($expectedResponse, $redis->zrange('destination', 0, -1));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testStoresSortedSetRangesResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $redis->zadd('source', 1, 'member1', 2, 'member2', 3, 'member3');
+        $actualResponse = $redis->zrangestore(
+            'destination',
+            'source',
+            0,
+            -1
+        );
+
+        $this->assertSame(3, $actualResponse);
+        $this->assertSame(['member1', 'member2', 'member3'], $redis->zrange('destination', 0, -1));
     }
 
     /**

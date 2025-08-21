@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -80,6 +80,27 @@ class ZMSCORE_Test extends PredisCommandTestCase
 
         $this->assertEquals($expectedResponse, $redis->zmscore($key, ...$members));
         $this->assertNull($redis->zmscore($key, $notExpectedMember)[0]);
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 6.2.0
+     */
+    public function testReturnsScoresAssociatedWithMembersResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $notExpectedMember = 'not_expected';
+
+        /** @var string[] $members */
+        $members = array_filter([1, 'member1', 2, 'member2', 3, 'member3'], static function ($item) {
+            return is_string($item);
+        });
+
+        $redis->zadd('test-zscore', 1, 'member1', 2, 'member2', 3, 'member3');
+
+        $this->assertSame([1.0, 2.0, 3.0], $redis->zmscore('test-zscore', ...$members));
+        $this->assertNull($redis->zmscore('test-zscore', $notExpectedMember)[0]);
     }
 
     /**

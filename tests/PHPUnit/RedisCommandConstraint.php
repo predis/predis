@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,7 +16,7 @@ use SebastianBergmann\Exporter\Exporter;
 /**
  * PHPUnit constraint to verify that a Redis command matches certain conditions.
  */
-class RedisCommandConstraint extends \PHPUnit\Framework\Constraint\Constraint
+class RedisCommandConstraint extends PHPUnit\Framework\Constraint\Constraint
 {
     protected $commandID;
     protected $arguments;
@@ -25,7 +25,7 @@ class RedisCommandConstraint extends \PHPUnit\Framework\Constraint\Constraint
      * @param string|CommandInterface $command   Expected command instance or command ID
      * @param ?array                  $arguments Expected command arguments
      */
-    public function __construct($command, array $arguments = null)
+    public function __construct($command, ?array $arguments = null)
     {
         if ($command instanceof CommandInterface) {
             $this->commandID = strtoupper($command->getId());

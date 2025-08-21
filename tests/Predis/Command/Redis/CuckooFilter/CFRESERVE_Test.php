@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\CuckooFilter;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
 
@@ -50,6 +51,23 @@ class CFRESERVE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['arg1'];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:arg1'];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
+    }
+
+    /**
      * @group connected
      * @group relay-resp3
      * @dataProvider filtersProvider
@@ -79,6 +97,27 @@ class CFRESERVE_Test extends PredisCommandTestCase
         $this->assertSame($expectedBucketSize, $info['Bucket size']);
         $this->assertSame($expectedMaxIterations, $info['Max iterations']);
         $this->assertSame($expectedExpansion, $info['Expansion rate']);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisBfVersion >= 2.6.0
+     */
+    public function testReserveCreatesCuckooFilterWithCorrectConfigurationResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $actualResponse = $redis->cfreserve('key', 500);
+        $this->assertEquals('OK', $actualResponse);
+
+        $info = $redis->cfinfo('key');
+
+        $this->assertSame(568, $info['Size']);
+        $this->assertSame(2, $info['Bucket size']);
+        $this->assertSame(20, $info['Max iterations']);
+        $this->assertSame(1, $info['Expansion rate']);
     }
 
     /**

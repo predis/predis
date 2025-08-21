@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -265,10 +265,6 @@ class ClusterTest extends PredisTestCase
 
         /** @var OptionsInterface|MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
-        $options
-            ->expects($this->never())
-            ->method('__get')
-            ->with('connections');
 
         $this->assertInstanceOf('closure', $initializer = $option->filter($options, 'predis'));
         $this->assertInstanceOf('Predis\Connection\Cluster\PredisCluster', $initializer($parameters = []));
@@ -285,15 +281,17 @@ class ClusterTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $options
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method('__get')
             ->withConsecutive(
                 ['connections'],
-                ['crc16']
+                ['crc16'],
+                ['readTimeout']
             )
             ->willReturnOnConsecutiveCalls(
                 $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock(),
-                $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock()
+                $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock(),
+                1000
             );
 
         $this->assertInstanceOf('closure', $initializer = $option->filter($options, 'redis'));
@@ -311,15 +309,17 @@ class ClusterTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $options
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(3))
             ->method('__get')
             ->withConsecutive(
                 ['connections'],
-                ['crc16']
+                ['crc16'],
+                ['readTimeout']
             )
             ->willReturnOnConsecutiveCalls(
                 $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock(),
-                $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock()
+                $this->getMockBuilder('Predis\Cluster\Hash\HashGeneratorInterface')->getMock(),
+                1000
             );
 
         $this->assertInstanceOf('closure', $initializer = $option->filter($options, 'redis-cluster'));

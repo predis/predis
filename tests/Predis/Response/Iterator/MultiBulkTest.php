@@ -4,7 +4,7 @@
  * This file is part of the Predis package.
  *
  * (c) 2009-2020 Daniele Alessandri
- * (c) 2021-2023 Till Krüss
+ * (c) 2021-2025 Till Krüss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -14,6 +14,7 @@ namespace Predis\Response\Iterator;
 
 use Predis\Client;
 use Predis\ClientInterface;
+use Predis\Command\RawCommand;
 use Predis\Connection\CompositeStreamConnection;
 use Predis\Protocol\Text\ProtocolProcessor as TextProtocolProcessor;
 use PredisTestCase;
@@ -119,6 +120,12 @@ class MultiBulkTest extends PredisTestCase
         $protocol->useIterableMultibulk(true);
 
         $connection = new CompositeStreamConnection($parameters, $protocol);
+        $connection->addConnectCommand(
+            new RawCommand(
+                'AUTH',
+                [getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD')]
+            )
+        );
 
         $client = new Client($connection);
         $client->connect();
