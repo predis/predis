@@ -78,7 +78,7 @@ class LINSERT_Test extends PredisCommandTestCase
     /**
      * @group connected
      */
-    public function testReturnsLengthOfListAfterInser(): void
+    public function testReturnsLengthOfListAfterInsert(): void
     {
         $redis = $this->getClient();
 
