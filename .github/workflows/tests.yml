@@ -32,6 +32,7 @@ jobs:
           - '7.4'
           - '8.0'
           - '8.2'
+          - '8.4'
 
     steps:
 
@@ -39,7 +40,8 @@ jobs:
         run: |
           # Mapping of original redis versions to client test containers
           declare -A redis_clients_version_mapping=(
-            ["8.2"]="8.2.1-pre"
+            ["8.4"]="8.4-M01-pre"
+            ["8.2"]="8.2.2-pre"
             ["8.0"]="8.0.2"
             ["7.4"]="7.4.2"
             ["7.2"]="7.2.7"
