@@ -29,6 +29,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
     {
         $this->commandsFactory = new RedisFactory();
     }
+
     /**
      * @group disconnected
      */
@@ -188,9 +189,9 @@ class KeyPrefixProcessorTest extends PredisTestCase
      * @group disconnected
      * @dataProvider commandArgumentsDataProvider
      *
-     * @param string $commandID
-     * @param array $arguments
-     * @param array $expected
+     * @param  string          $commandID
+     * @param  array           $arguments
+     * @param  array           $expected
      * @throws ClientException
      */
     public function testApplyPrefixToCommand($commandID, array $arguments, array $expected): void
