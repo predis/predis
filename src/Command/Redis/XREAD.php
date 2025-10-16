@@ -50,6 +50,10 @@ class XREAD extends RedisCommand
             return [];
         }
 
+        if ($data !== array_values($data)) {
+            return $data; // Relay
+        }
+
         $processedData = [];
 
         foreach ($data as $stream) {

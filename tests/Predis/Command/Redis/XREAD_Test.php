@@ -56,7 +56,6 @@ class XREAD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 5.0.0
      */
@@ -110,7 +109,6 @@ class XREAD_Test extends PredisCommandTestCase
     /**
      * @group medium
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 5.0.0
      */
@@ -137,7 +135,6 @@ class XREAD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 7.4.0
      */
@@ -167,7 +164,6 @@ class XREAD_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @requiresRedisVersion >= 5.0.0
      * @return void
      */
