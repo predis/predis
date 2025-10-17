@@ -6,8 +6,8 @@
 - Added prefixable interface for HEXPIRE, HEXPIRETIME (#1592)
 ### Changed
 - Refactor pipeline data writing depends on connection type (#1586)
-
 ### Maintenance
+- Added testing with 8.4-M01 (#1593)
 
 ## v3.2.0 (2025-08-05)
 ### Added
