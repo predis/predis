@@ -67,6 +67,7 @@ class VEMB_Test extends PredisCommandTestCase
      * @dataProvider quantisationProvider
      * @group connected
      * @group relay-incompatible
+     * @group relay-fixme
      * @return void
      * @requiresRedisVersion >= 8.0.0
      */
@@ -100,6 +101,7 @@ class VEMB_Test extends PredisCommandTestCase
      * @dataProvider quantisationProvider
      * @group connected
      * @group relay-incompatible
+     * @group relay-fixme
      * @return void
      * @requiresRedisVersion >= 8.0.0
      */
