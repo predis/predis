@@ -109,7 +109,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: relay-0.12.1
+          extensions: relay-0.12.0
           coverage: ${{ (matrix.php == '8.4' && matrix.redis == '8.0') && 'xdebug' || 'none' }}
 
       - name: Install Composer dependencies
