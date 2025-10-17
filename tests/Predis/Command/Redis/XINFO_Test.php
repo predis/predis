@@ -86,7 +86,6 @@ class XINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -110,7 +109,6 @@ class XINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -147,7 +145,6 @@ class XINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
@@ -180,7 +177,6 @@ class XINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 7.2.0
      */
@@ -280,7 +276,6 @@ class XINFO_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */

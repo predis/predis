@@ -173,7 +173,6 @@ class CONFIG_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @requiresRedisVersion >= 7.9.0
      */
     public function testOverrideDefaultDialectWithConfigCommand()

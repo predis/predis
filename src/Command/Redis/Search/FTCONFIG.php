@@ -31,4 +31,20 @@ class FTCONFIG extends RedisCommand
     {
         return 'FT.CONFIG';
     }
+
+    public function parseResponse($data)
+    {
+        if (!is_array($data) || $data === array_values($data)) {
+            return $data;
+        }
+
+        // Relay
+        $result = [];
+        foreach ($data as $key => $value) {
+            $group = [$key, $value];
+            $result[] = $group;
+        }
+
+        return $result;
+    }
 }

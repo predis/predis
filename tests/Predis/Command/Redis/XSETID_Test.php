@@ -88,7 +88,6 @@ class XSETID_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @requiresRedisVersion >= 5.0.0
      */
     public function testSetIdExtended(): void

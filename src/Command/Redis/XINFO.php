@@ -58,7 +58,11 @@ class XINFO extends RedisCommand
 
     private function parseStreamResponse($data): array
     {
-        $result = CommandUtility::arrayToDictionary($data, null, false);
+        if ($data === array_values($data)) {
+            $result = CommandUtility::arrayToDictionary($data, null, false);
+        } else {
+            $result = $data; // Relay
+        }
 
         if (isset($result['entries'])) {
             $result['entries'] = $this->parseDict($result['entries']);
@@ -66,10 +70,16 @@ class XINFO extends RedisCommand
 
         if (isset($result['groups']) && is_array($result['groups'])) {
             $result['groups'] = array_map(static function ($group) {
-                $group = CommandUtility::arrayToDictionary($group, null, false);
+                if ($group === array_values($group)) {
+                    $group = CommandUtility::arrayToDictionary($group, null, false);
+                }
                 if (isset($group['consumers'])) {
                     $group['consumers'] = array_map(static function ($consumer) {
-                        return CommandUtility::arrayToDictionary($consumer, null, false);
+                        if ($consumer === array_values($consumer)) {
+                            $consumer = CommandUtility::arrayToDictionary($consumer, null, false);
+                        }
+
+                        return $consumer;
                     }, $group['consumers']);
                 }
 
@@ -92,6 +102,10 @@ class XINFO extends RedisCommand
 
     private function parseDict($data): array
     {
+        if ($data !== array_values($data)) {
+            return $data; // Relay
+        }
+
         $result = [];
 
         for ($i = 0, $iMax = count($data); $i < $iMax; $i++) {
