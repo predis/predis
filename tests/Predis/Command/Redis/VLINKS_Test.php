@@ -95,6 +95,7 @@ class VLINKS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 8.0.0
      */

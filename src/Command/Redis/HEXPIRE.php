@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 use UnexpectedValueException;
 
 class HEXPIRE extends RedisCommand
@@ -47,5 +47,10 @@ class HEXPIRE extends RedisCommand
         }
 
         parent::setArguments($processedArguments);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

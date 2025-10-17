@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - Added cluster support for `XADD`, `XDEL` and `XRANGE` (#1587)
+- Added prefixable interface for HEXPIRE, HEXPIRETIME (#1592)
 ### Changed
 - Refactor pipeline data writing depends on connection type (#1586)
 
