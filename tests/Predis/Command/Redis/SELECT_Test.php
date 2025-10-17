@@ -84,6 +84,7 @@ class SELECT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      */
     public function testThrowsExceptionOnUnexpectedDatabaseName(): void
     {
