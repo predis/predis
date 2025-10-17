@@ -419,6 +419,30 @@ class StreamTest extends TestCase
         fclose($handle);
     }
 
+    public function testWriteThrowsExceptionOnDroppedConnection(): void
+    {
+        $context = stream_context_create([
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+            ]
+        ]);
+
+        $handle = stream_socket_client("ssl://127.0.0.1:9443", $errno, $errstr, 5, STREAM_CLIENT_CONNECT, $context);
+
+        $stream = new Stream($handle);
+
+        $data = str_repeat("x", 100000000);
+
+        $this->assertGreaterThan(0, $stream->write($data)); // filling the buffer, no issue just yet
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Stream closed');
+
+        $stream->write($data);
+    }
+
+
     public function writableModeProvider(): array
     {
         return [
