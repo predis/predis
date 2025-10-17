@@ -211,6 +211,16 @@ class Stream implements StreamInterface
             throw new RuntimeException('Unable to write to stream', 1);
         }
 
+        if ($result === 0) {
+            if ($this->eof()) {
+                throw new RuntimeException('Stream closed', 1);
+            }
+
+            if (stream_get_meta_data($this->stream)['timed_out']) {
+                throw new RuntimeException('Stream timed out', 1);
+            }
+        }
+
         return $result;
     }
 

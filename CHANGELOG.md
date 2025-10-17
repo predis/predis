@@ -12,6 +12,7 @@
 ### Changed
 - Refactor pipeline data writing depends on connection type (#1586)
 - Improved compatiblity with Relay (#1597)
+- Fail on broken TLS connection (#1595)
 
 ### Maintenance
 - Added testing with 8.4-M01 (#1593)
