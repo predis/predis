@@ -68,6 +68,7 @@ class RelayConnection extends AbstractConnection
      */
     public $atypicalCommands = [
         'AUTH',
+        'SELECT',
 
         'TYPE',
 
