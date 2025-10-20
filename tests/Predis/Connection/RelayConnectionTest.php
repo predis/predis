@@ -469,6 +469,7 @@ class RelayConnectionTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      */
     public function testExecutesCommand(): void
     {
@@ -487,6 +488,7 @@ class RelayConnectionTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group unprotected
      * @requiresRedisVersion >= 7.2.0
      */
     public function testConnectWithOnConnectionCommands(): void
