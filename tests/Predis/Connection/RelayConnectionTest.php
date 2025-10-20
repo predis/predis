@@ -472,7 +472,9 @@ class RelayConnectionTest extends PredisTestCase
      */
     public function testExecutesCommand(): void
     {
-        $connection = new RelayConnection(new Parameters(), new Relay());
+        $parameters = $this->getParameters();
+        $connection = new RelayConnection($parameters, new Relay());
+        $connection->executeCommand(new RawCommand('AUTH', [$parameters->password]));
 
         $this->assertEquals(
             'OK',
@@ -491,7 +493,9 @@ class RelayConnectionTest extends PredisTestCase
      */
     public function testConnectWithOnConnectionCommands(): void
     {
-        $connection = new RelayConnection(new Parameters(), new Relay());
+        $parameters = $this->getParameters();
+        $connection = new RelayConnection($parameters, new Relay());
+        $connection->addConnectCommand(new RawCommand('AUTH', [$parameters->password]));
         $connection->addConnectCommand(new RawCommand('CLIENT', ['SETNAME', 'predis']));
 
         $connection->connect();
