@@ -11,6 +11,7 @@
 
 ### Maintenance
 - Added testing with 8.4-M01 (#1593)
+- Added testing with 8.4-RC1-pre image (#1602)
 
 ## v3.2.0 (2025-08-05)
 ### Added
