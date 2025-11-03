@@ -54,8 +54,6 @@ class VREM_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
-     * @group relay-fixme
      * @return void
      * @requiresRedisVersion >= 8.0.0
      */
@@ -80,8 +78,6 @@ class VREM_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
-     * @group relay-fixme
      * @return void
      * @requiresRedisVersion >= 8.0.0
      */
