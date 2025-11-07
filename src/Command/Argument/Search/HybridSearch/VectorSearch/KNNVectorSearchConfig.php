@@ -47,28 +47,31 @@ class KNNVectorSearchConfig extends BaseVectorSearchConfig
         }
 
         $this->arguments = array_merge($this->arguments, $this->vector);
-        $this->arguments[] = 'KNN';
+
+        if ($this->k || $this->ef) {
+            $this->arguments[] = 'KNN';
+        }
 
         $tokens = [];
 
-        if ($this->k) {
+        if ($this->k !== null) {
             array_push($tokens, 'K', $this->k);
-        } else {
-            throw new ValueError('K is a required argument');
         }
 
-        if ($this->ef) {
+        if ($this->ef !== null) {
             array_push($tokens, 'EF_RUNTIME', $this->ef);
         }
 
-        array_push($this->arguments, count($tokens), ...$tokens);
+        if ($this->as) {
+            array_push($tokens, ...$this->as);
+        }
+
+        if (!empty($tokens)) {
+            array_push($this->arguments, count($tokens), ...$tokens);
+        }
 
         if ($this->filter) {
             $this->arguments = array_merge($this->arguments, $this->filter);
-        }
-
-        if ($this->as) {
-            $this->arguments = array_merge($this->arguments, $this->as);
         }
 
         return $this->arguments;

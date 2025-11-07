@@ -18,10 +18,10 @@ class LinearCombineConfigTest extends TestCase
     public function argumentsProvider(): array
     {
         return [
-            'with ALPHA' => [(new LinearCombineConfig())->alpha(0.2), ['LINEAR', 2, 'ALPHA', 0.2]],
-            'with BETA' => [(new LinearCombineConfig())->beta(0.2), ['LINEAR', 2, 'BETA', 0.2]],
+            'with ALPHA' => [(new LinearCombineConfig())->alpha(0.2), ['COMBINE', 'LINEAR', 2, 'ALPHA', 0.2]],
+            'with BETA' => [(new LinearCombineConfig())->beta(0.2), ['COMBINE', 'LINEAR', 2, 'BETA', 0.2]],
             'with all arguments' => [
-                (new LinearCombineConfig())->alpha(0.3)->beta(0.2), ['LINEAR', 4, 'ALPHA', 0.3, 'BETA', 0.2]
+                (new LinearCombineConfig())->alpha(0.3)->beta(0.2)->as('alias'), ['COMBINE', 'LINEAR', 6, 'ALPHA', 0.3, 'BETA', 0.2, 'YIELD_SCORE_AS', 'alias']
             ],
         ];
     }

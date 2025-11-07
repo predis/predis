@@ -159,13 +159,15 @@ class HybridSearchQuery implements ArrayableArgument
     }
 
     /**
-     * @param string $expression
-     * @param string $asField
+     * @param array $expressionFieldDict field => function dictionary
      * @return $this
      */
-    public function apply(string $expression, string $asField): self
+    public function apply(array $expressionFieldDict): self
     {
-        array_push($this->apply, 'APPLY', $expression, 'AS', $asField);
+        foreach ($expressionFieldDict as $field => $function) {
+            array_push($this->apply, 'APPLY', $function, 'AS', $field);
+        }
+
         return $this;
     }
 

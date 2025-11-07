@@ -46,12 +46,16 @@ class RRFCombineConfig extends BaseCombine
         $this->arguments[] = 'RRF';
         $tokens = [];
 
-        if ($this->window) {
+        if ($this->window !== null) {
             array_push($tokens, 'WINDOW', $this->window);
         }
 
-        if ($this->rrfConstant) {
+        if ($this->rrfConstant !== null) {
             array_push($tokens, 'CONSTANT', $this->rrfConstant);
+        }
+
+        if ($this->as) {
+            array_push($tokens, ...$this->as);
         }
 
         if (!empty($tokens)) {

@@ -3,6 +3,8 @@
 namespace Predis\Command\Argument\Search\HybridSearch\VectorSearch;
 
 use Predis\Command\Argument\ArrayableArgument;
+use Predis\Command\Redis\Utils\VectorUtility;
+
 abstract class BaseVectorSearchConfig implements ArrayableArgument
 {
     public const POLICY_ADHOC = 'ADHOC';
@@ -33,15 +35,15 @@ abstract class BaseVectorSearchConfig implements ArrayableArgument
      * Vector to perform search against.
      *
      * @param string $field The vector field name to search against. Must start with "@".
-     * @param mixed $value The vector value for the 'field'
+     * @param string|float[] $value Binary vector representation or array of floats as vector.
      * @return self
      */
     public function vector(string $field, $value): self
     {
         if (is_array($value)) {
-            array_push($this->vector, $field, ...$value);
+            array_push($this->vector, $field, VectorUtility::toBlob($value));
         } else {
-            array_push($this->arguments, $field, $value);
+            array_push($this->vector, $field, $value);
         }
 
         return $this;

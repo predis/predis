@@ -46,15 +46,23 @@ class LinearCombineConfig extends BaseCombine
         $this->arguments[] = 'LINEAR';
         $tokens = [];
 
-        if ($this->alpha) {
+        if ($this->alpha !== null) {
             array_push($tokens, 'ALPHA', $this->alpha);
         }
 
-        if ($this->beta) {
+        if ($this->beta !== null) {
             array_push($tokens, 'BETA', $this->beta);
         }
 
-        array_push($this->arguments, count($tokens), ...$tokens);
+        if ($this->as) {
+            array_push($tokens, ...$this->as);
+        }
+
+        if (!empty($tokens)) {
+            array_push($this->arguments, count($tokens), ...$tokens);
+
+        }
+
         return $this->arguments;
     }
 }

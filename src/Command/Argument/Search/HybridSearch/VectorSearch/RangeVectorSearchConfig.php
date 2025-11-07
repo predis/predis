@@ -45,29 +45,33 @@ class RangeVectorSearchConfig extends BaseVectorSearchConfig
         }
 
         $this->arguments = array_merge($this->arguments, $this->vector);
-        $this->arguments[] = 'RANGE';
+
+        if ($this->radius || $this->epsilon) {
+            $this->arguments[] = 'RANGE';
+        }
 
         $tokens = [];
 
-        if ($this->radius) {
+        if ($this->radius !== null) {
             array_push($tokens, 'RADIUS', $this->radius);
-        } else {
-            throw new ValueError('Radius is a required argument');
         }
 
-        if ($this->epsilon) {
+        if ($this->epsilon !== null) {
             array_push($tokens, 'EPSILON', $this->epsilon);
         }
 
-        array_push($this->arguments, count($tokens), ...$tokens);
+        if ($this->as) {
+            array_push($tokens, ...$this->as);
+        }
+
+        if (!empty($tokens)) {
+            array_push($this->arguments, count($tokens), ...$tokens);
+        }
 
         if ($this->filter) {
             $this->arguments = array_merge($this->arguments, $this->filter);
         }
 
-        if ($this->as) {
-            $this->arguments = array_merge($this->arguments, $this->as);
-        }
         return $this->arguments;
     }
 }

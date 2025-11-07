@@ -34,6 +34,16 @@ class SearchConfig implements ArrayableArgument
     }
 
     /**
+     * @param string $alias
+     * @return void
+     */
+    public function as(string $alias): self
+    {
+        array_push($this->arguments, 'YIELD_SCORE_AS', $alias);
+        return $this;
+    }
+
+    /**
      * @param callable(ScorerConfig): void $callable
      * @return self
      */

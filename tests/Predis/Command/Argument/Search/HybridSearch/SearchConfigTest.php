@@ -19,6 +19,7 @@ class SearchConfigTest extends TestCase
     {
         return [
             'with query' => [(new SearchConfig())->query('*'), ['SEARCH', '*']],
+            'with AS' => [(new SearchConfig())->query('*')->as('alias'), ['SEARCH', '*', 'YIELD_SCORE_AS', 'alias']],
             'with SCORER' => [
                 (new SearchConfig())
                     ->buildScorerConfig(function (ScorerConfig $scorerConfig) {

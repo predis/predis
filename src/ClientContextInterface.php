@@ -19,6 +19,7 @@ use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\DropArguments;
 use Predis\Command\Argument\Search\ExplainArguments;
+use Predis\Command\Argument\Search\HybridSearch\HybridSearchQuery;
 use Predis\Command\Argument\Search\ProfileArguments;
 use Predis\Command\Argument\Search\SchemaFields\FieldInterface;
 use Predis\Command\Argument\Search\SearchArguments;
@@ -126,6 +127,7 @@ use Predis\Command\Redis\VADD;
  * @method $this ftdictdump(string $dict)
  * @method $this ftdropindex(string $index, ?DropArguments $arguments = null)
  * @method $this ftexplain(string $index, string $query, ?ExplainArguments $arguments = null)
+ * @method $this fthybrid(string $index, HybridSearchQuery $query)
  * @method $this ftinfo(string $index)
  * @method $this ftprofile(string $index, ProfileArguments $arguments)
  * @method $this ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
