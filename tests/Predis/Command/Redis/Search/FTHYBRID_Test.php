@@ -30,8 +30,6 @@ use Predis\Command\Argument\Search\SchemaFields\VectorField;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Command\Redis\Utils\VectorUtility;
 
-use function PHPUnit\Framework\assertTrue;
-
 /**
  * @group commands
  * @group realm-stack
@@ -335,8 +333,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->assertGreaterThan(0, count($response['results']));
 
         foreach ($response['results'] as $result) {
-            assertTrue(in_array($result['price'], ['15', '16']));
-            assertTrue(in_array($result['size'], ['10', '11']));
+            $this->assertTrue(in_array($result['price'], ['15', '16']));
+            $this->assertTrue(in_array($result['size'], ['10', '11']));
         }
     }
 
