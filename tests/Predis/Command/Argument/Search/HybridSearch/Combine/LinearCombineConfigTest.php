@@ -25,8 +25,7 @@ class LinearCombineConfigTest extends TestCase
         ?float $alpha = null,
         ?float $beta = null,
         ?string $as = null
-    )
-    {
+    ) {
         $config = new LinearCombineConfig();
 
         if ($alpha) {
@@ -51,7 +50,7 @@ class LinearCombineConfigTest extends TestCase
             'with BETA' => [['COMBINE', 'LINEAR', 2, 'BETA', 0.2], null, 0.2, null],
             'with all arguments' => [
                 ['COMBINE', 'LINEAR', 6, 'ALPHA', 0.3, 'BETA', 0.2, 'YIELD_SCORE_AS', 'alias'],
-                0.3, 0.2, 'alias'
+                0.3, 0.2, 'alias',
             ],
         ];
     }

@@ -25,8 +25,7 @@ class SearchConfigTest extends TestCase
         ?string $query = null,
         ?string $type = null,
         ?string $as = null
-    )
-    {
+    ) {
         $config = new SearchConfig();
 
         if ($query) {

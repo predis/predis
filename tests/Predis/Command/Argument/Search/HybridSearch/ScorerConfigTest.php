@@ -24,8 +24,7 @@ class ScorerConfigTest extends TestCase
         array $expectedReturn,
         ?string $type = null,
         ?string $as = null
-    )
-    {
+    ) {
         $config = new ScorerConfig();
 
         if ($type) {
@@ -46,7 +45,7 @@ class ScorerConfigTest extends TestCase
             'with YIELD_SCORE_AS' => [['YIELD_SCORE_AS', 'alias'], null, 'alias'],
             'with all' => [
                 [ScorerConfig::TYPE_DISMAX, 'YIELD_SCORE_AS', 'alias'],
-                ScorerConfig::TYPE_DISMAX, 'alias'
+                ScorerConfig::TYPE_DISMAX, 'alias',
             ],
         ];
     }

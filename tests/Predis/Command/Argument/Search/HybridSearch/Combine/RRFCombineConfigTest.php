@@ -25,8 +25,7 @@ class RRFCombineConfigTest extends TestCase
         ?int $window = null,
         ?int $rrfConstant = null,
         ?string $as = null
-    )
-    {
+    ) {
         $config = new RRFCombineConfig();
 
         if ($window) {
