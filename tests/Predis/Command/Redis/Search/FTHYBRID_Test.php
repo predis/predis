@@ -78,6 +78,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -103,6 +105,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -128,6 +132,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -155,6 +161,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -182,6 +190,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -271,6 +281,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -296,6 +308,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -327,6 +341,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -359,6 +375,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -393,6 +411,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -444,6 +464,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -483,6 +505,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -535,6 +559,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -588,6 +614,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -649,6 +677,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -688,6 +718,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -742,6 +774,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -773,6 +807,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -827,6 +863,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -888,6 +926,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
@@ -951,6 +991,8 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @group connected
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.2
      * @return void
      */
