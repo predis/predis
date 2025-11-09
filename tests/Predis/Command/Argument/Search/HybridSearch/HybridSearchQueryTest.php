@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Argument\Search\HybridSearch;
 
 use PHPUnit\Framework\TestCase;
@@ -37,7 +47,7 @@ class HybridSearchQueryTest extends TestCase
                             ->k(5)
                             ->ef(10);
                     }),
-                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10]
+                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10],
             ],
             'with RANGE vector search' => [
                 (new HybridSearchQuery(RangeVectorSearchConfig::class))
@@ -53,7 +63,7 @@ class HybridSearchQueryTest extends TestCase
                             ->radius(5)
                             ->epsilon(0.2);
                     }),
-                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'RANGE', 4, 'RADIUS', 5, 'EPSILON', 0.2]
+                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'RANGE', 4, 'RADIUS', 5, 'EPSILON', 0.2],
             ],
             'with COMBINE config - RRF' => [
                 (new HybridSearchQuery())
@@ -74,7 +84,7 @@ class HybridSearchQueryTest extends TestCase
                             ->window(5)
                             ->rrfConstant(10);
                     }),
-                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'COMBINE', 'RRF', 4, 'WINDOW', 5, 'CONSTANT', 10]
+                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'COMBINE', 'RRF', 4, 'WINDOW', 5, 'CONSTANT', 10],
             ],
             'with COMBINE config - LINEAR' => [
                 (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
@@ -95,7 +105,7 @@ class HybridSearchQueryTest extends TestCase
                             ->alpha(0.2)
                             ->beta(0.3);
                     }),
-                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'COMBINE', 'LINEAR', 4, 'ALPHA', 0.2, 'BETA', 0.3]
+                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'COMBINE', 'LINEAR', 4, 'ALPHA', 0.2, 'BETA', 0.3],
             ],
             'with LOAD' => [
                 (new HybridSearchQuery())
@@ -112,7 +122,7 @@ class HybridSearchQueryTest extends TestCase
                             ->ef(10);
                     })
                     ->load(['field1', 'field2']),
-                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'LOAD', 2, 'field1', 'field2']
+                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'LOAD', 2, 'field1', 'field2'],
             ],
             'with GROUPBY' => [
                 (new HybridSearchQuery())
@@ -132,10 +142,10 @@ class HybridSearchQueryTest extends TestCase
                         ['field1', 'field2'],
                         [
                             new Reducer(Reducer::REDUCE_COUNT, ['prop1', 'prop2'], 'alias'),
-                            new Reducer(Reducer::REDUCE_MAX, ['prop1', 'prop2'])
+                            new Reducer(Reducer::REDUCE_MAX, ['prop1', 'prop2']),
                         ]
                     ),
-                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'GROUPBY', 2, 'field1', 'field2', 'REDUCE', 'COUNT', 2, 'prop1', 'prop2', 'AS', 'alias', 'REDUCE', 'MAX', 2, 'prop1', 'prop2']
+                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'GROUPBY', 2, 'field1', 'field2', 'REDUCE', 'COUNT', 2, 'prop1', 'prop2', 'AS', 'alias', 'REDUCE', 'MAX', 2, 'prop1', 'prop2'],
             ],
             'with APPLY' => [
                 (new HybridSearchQuery())
@@ -152,7 +162,7 @@ class HybridSearchQueryTest extends TestCase
                             ->ef(10);
                     })
                     ->apply(['field' => 'expr']),
-                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'APPLY', 'expr', 'AS', 'field']
+                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'APPLY', 'expr', 'AS', 'field'],
             ],
             'with SORTBY' => [
                 (new HybridSearchQuery())

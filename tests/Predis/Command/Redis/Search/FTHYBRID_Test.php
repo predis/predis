@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis\Search;
 
 use Predis\ClientContextInterface;
@@ -19,6 +29,7 @@ use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Argument\Search\SchemaFields\VectorField;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Command\Redis\Utils\VectorUtility;
+
 use function PHPUnit\Framework\assertTrue;
 
 /**
@@ -79,7 +90,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red} @color:{green}")
+                    ->query('@color:{red} @color:{green}')
                     ->buildScorerConfig(function (ScorerConfig $scorerConfig) {
                         $scorerConfig->type(ScorerConfig::TYPE_TFIDF);
                     });
@@ -104,7 +115,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red} @color:{green}")
+                    ->query('@color:{red} @color:{green}')
                     ->buildScorerConfig(function (ScorerConfig $scorerConfig) {
                         $scorerConfig->type(ScorerConfig::TYPE_TFIDF);
                     });
@@ -129,7 +140,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red} @color:{green}");
+                    ->query('@color:{red} @color:{green}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config->vector('@embedding', [-100, -200, -200, -300]);
@@ -156,7 +167,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red} @color:{green}");
+                    ->query('@color:{red} @color:{green}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config->vector('@embedding', [-100, -200, -200, -300]);
@@ -183,7 +194,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("shoes")
+                    ->query('shoes')
                     ->buildScorerConfig(function (ScorerConfig $scorerConfig) {
                         $scorerConfig->type(ScorerConfig::TYPE_TFIDF);
                     });
@@ -196,23 +207,23 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     ->alpha(1)
                     ->beta(0);
             })
-            ->load(["@description", "@color", "@price", "@size", "@__score", "@__item"])
+            ->load(['@description', '@color', '@price', '@size', '@__score', '@__item'])
             ->limit(0, 2);
 
         $expectedResultsTFIDF = [
             [
-                "description" => "red shoes",
-                "color" => "red",
-                "price" => "15",
-                "size" => "10",
-                "__score" => "2",
+                'description' => 'red shoes',
+                'color' => 'red',
+                'price' => '15',
+                'size' => '10',
+                '__score' => '2',
             ],
             [
-                "description" => "green shoes with red laces",
-                "color" => "green",
-                "price" => "16",
-                "size" => "11",
-                "__score" => "2",
+                'description' => 'green shoes with red laces',
+                'color' => 'green',
+                'price' => '16',
+                'size' => '11',
+                '__score' => '2',
             ],
         ];
 
@@ -222,7 +233,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("shoes")
+                    ->query('shoes')
                     ->buildScorerConfig(function (ScorerConfig $scorerConfig) {
                         $scorerConfig->type(ScorerConfig::TYPE_BM25);
                     });
@@ -235,23 +246,23 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     ->alpha(1)
                     ->beta(0);
             })
-            ->load(["@description", "@color", "@price", "@size", "@__score", "@__item"])
+            ->load(['@description', '@color', '@price', '@size', '@__score', '@__item'])
             ->limit(0, 2);
 
         $expectedResultsBM25 = [
             [
-                "description" => "red shoes",
-                "color" => "red",
-                "price" => "15",
-                "size" => "10",
-                "__score" => "0.657894719299",
+                'description' => 'red shoes',
+                'color' => 'red',
+                'price' => '15',
+                'size' => '10',
+                '__score' => '0.657894719299',
             ],
             [
-                "description" => "green shoes with red laces",
-                "color" => "green",
-                "price" => "16",
-                "size" => "11",
-                "__score" => "0.657894719299",
+                'description' => 'green shoes with red laces',
+                'color' => 'green',
+                'price' => '16',
+                'size' => '11',
+                '__score' => '0.657894719299',
             ],
         ];
 
@@ -272,7 +283,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("shoes");
+                    ->query('shoes');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
@@ -297,21 +308,21 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{missing}");
+                    ->query('@color:{missing}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', 'abcd1234efgh5678')
-                    ->filter("@price:[15 16] @size:[10 11]");
+                    ->filter('@price:[15 16] @size:[10 11]');
             })
-            ->load(["@price", "@size"]);
+            ->load(['@price', '@size']);
 
         $response = $redis->fthybrid('idx', $query);
         $this->assertGreaterThan(0, count($response['results']));
 
         foreach ($response['results'] as $result) {
-            assertTrue(in_array($result["price"], ["15", "16"]));
-            assertTrue(in_array($result["size"], ["10", "11"]));
+            assertTrue(in_array($result['price'], ['15', '16']));
+            assertTrue(in_array($result['size'], ['10', '11']));
         }
     }
 
@@ -328,7 +339,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("shoes")
+                    ->query('shoes')
                     ->as('search_score');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
@@ -340,7 +351,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->assertGreaterThan(0, count($response['results']));
 
         foreach ($response['results'] as $result) {
-            if (in_array($result["__key"], ['item:0', 'item:1', 'item:4'])) {
+            if (in_array($result['__key'], ['item:0', 'item:1', 'item:4'])) {
                 $this->assertArrayHasKey('search_score', $result);
                 $this->assertArrayHasKey('__score', $result);
             }
@@ -360,7 +371,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("shoes");
+                    ->query('shoes');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
@@ -374,7 +385,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->assertGreaterThan(0, count($response['results']));
 
         foreach ($response['results'] as $result) {
-            if (in_array($result["__key"], ['item:0', 'item:1', 'item:2'])) {
+            if (in_array($result['__key'], ['item:0', 'item:1', 'item:2'])) {
                 $this->assertArrayHasKey('vsim_score', $result);
                 $this->assertArrayHasKey('__score', $result);
             }
@@ -394,7 +405,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("shoes")
+                    ->query('shoes')
                     ->as('search_score');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
@@ -415,13 +426,13 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->assertGreaterThan(0, count($response['results']));
 
         foreach ($response['results'] as $result) {
-            if (in_array($result["__key"], ['item:0', 'item:1', 'item:2'])) {
+            if (in_array($result['__key'], ['item:0', 'item:1', 'item:2'])) {
                 $this->assertArrayHasKey('vsim_score', $result);
             } else {
                 $this->assertArrayNotHasKey('vsim_score', $result);
             }
 
-            if (in_array($result["__key"], ['item:0', 'item:1', 'item:4'])) {
+            if (in_array($result['__key'], ['item:0', 'item:1', 'item:4'])) {
                 $this->assertArrayHasKey('search_score', $result);
             } else {
                 $this->assertArrayNotHasKey('search_score', $result);
@@ -445,7 +456,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("shoes")
+                    ->query('shoes')
                     ->as('search_score');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
@@ -484,7 +495,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{none}");
+                    ->query('@color:{none}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
@@ -493,9 +504,9 @@ class FTHYBRID_Test extends PredisCommandTestCase
             });
 
         $expected_results = [
-            ["__key" => "item:2", "__score" => "0.016393442623"],
-            ["__key" => "item:7", "__score" => "0.0161290322581"],
-            ["__key" => "item:12", "__score" => "0.015873015873"],
+            ['__key' => 'item:2', '__score' => '0.016393442623'],
+            ['__key' => 'item:7', '__score' => '0.0161290322581'],
+            ['__key' => 'item:12', '__score' => '0.015873015873'],
         ];
 
         $response = $redis->fthybrid('idx', $query);
@@ -504,7 +515,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{none}");
+                    ->query('@color:{none}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
@@ -514,9 +525,9 @@ class FTHYBRID_Test extends PredisCommandTestCase
             });
 
         $expected_results = [
-            ["__key" => "item:12", "__score" => "0.016393442623"],
-            ["__key" => "item:22", "__score" => "0.0161290322581"],
-            ["__key" => "item:27", "__score" => "0.015873015873"],
+            ['__key' => 'item:12', '__score' => '0.016393442623'],
+            ['__key' => 'item:22', '__score' => '0.0161290322581'],
+            ['__key' => 'item:27', '__score' => '0.015873015873'],
         ];
 
         $response = $redis->fthybrid('idx', $query);
@@ -536,7 +547,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery(RangeVectorSearchConfig::class))
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{none}");
+                    ->query('@color:{none}');
             })
             ->buildVectorSearchConfig(function (RangeVectorSearchConfig $config) {
                 $config
@@ -545,9 +556,9 @@ class FTHYBRID_Test extends PredisCommandTestCase
             ->limit(0, 3);
 
         $expected_results = [
-            ["__key" => "item:2", "__score" => "0.016393442623"],
-            ["__key" => "item:7", "__score" => "0.0161290322581"],
-            ["__key" => "item:12", "__score" => "0.015873015873"],
+            ['__key' => 'item:2', '__score' => '0.016393442623'],
+            ['__key' => 'item:7', '__score' => '0.0161290322581'],
+            ['__key' => 'item:12', '__score' => '0.015873015873'],
         ];
 
         $response = $redis->fthybrid('idx', $query);
@@ -556,7 +567,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery(RangeVectorSearchConfig::class))
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{none}");
+                    ->query('@color:{none}');
             })
             ->buildVectorSearchConfig(function (RangeVectorSearchConfig $config) {
                 $config
@@ -567,9 +578,9 @@ class FTHYBRID_Test extends PredisCommandTestCase
             ->limit(0, 3);
 
         $expected_results = [
-            ["__key" => "item:27", "__score" => "0.016393442623"],
-            ["__key" => "item:12", "__score" => "0.0161290322581"],
-            ["__key" => "item:22", "__score" => "0.015873015873"],
+            ['__key' => 'item:27', '__score' => '0.016393442623'],
+            ['__key' => 'item:12', '__score' => '0.0161290322581'],
+            ['__key' => 'item:22', '__score' => '0.015873015873'],
         ];
 
         $response = $redis->fthybrid('idx', $query);
@@ -589,7 +600,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red}");
+                    ->query('@color:{red}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
@@ -603,9 +614,9 @@ class FTHYBRID_Test extends PredisCommandTestCase
             ->limit(0, 3);
 
         $expected_results = [
-            ["__key" => "item:2", "__score" => "0.166666666667"],
-            ["__key" => "item:7", "__score" => "0.166666666667"],
-            ["__key" => "item:12", "__score" => "0.166666666667"],
+            ['__key' => 'item:2', '__score' => '0.166666666667'],
+            ['__key' => 'item:7', '__score' => '0.166666666667'],
+            ['__key' => 'item:12', '__score' => '0.166666666667'],
         ];
 
         $response = $redis->fthybrid('idx', $query);
@@ -614,7 +625,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, RRFCombineConfig::class))
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red}");
+                    ->query('@color:{red}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
@@ -628,9 +639,9 @@ class FTHYBRID_Test extends PredisCommandTestCase
             ->limit(0, 3);
 
         $expected_results = [
-            ["__key" => "item:2", "__score" => "1.5"],
-            ["__key" => "item:0", "__score" => "1"],
-            ["__key" => "item:7", "__score" => "0.5"],
+            ['__key' => 'item:2', '__score' => '1.5'],
+            ['__key' => 'item:0', '__score' => '1'],
+            ['__key' => 'item:7', '__score' => '0.5'],
         ];
 
         $response = $redis->fthybrid('idx', $query);
@@ -650,7 +661,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red|green|black}");
+                    ->query('@color:{red|green|black}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
@@ -661,15 +672,15 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     ->alpha(0.5)
                     ->beta(0.5);
             })
-            ->load(["@description", "@color", "@price", "@size", "@__key"])
+            ->load(['@description', '@color', '@price', '@size', '@__key'])
             ->limit(0, 1);
 
         $expected_results = [
-            "description" => "red dress",
-            "color" => "red",
-            "price" => "17",
-            "size" => "12",
-            "__key" => "item:2",
+            'description' => 'red dress',
+            'color' => 'red',
+            'price' => '17',
+            'size' => '12',
+            '__key' => 'item:2',
         ];
 
         $response = $redis->fthybrid('idx', $query);
@@ -689,16 +700,16 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red}");
+                    ->query('@color:{red}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', [1, 2, 7, 6]);
             })
-            ->load(["@color", "@price", "@size"])
+            ->load(['@color', '@price', '@size'])
             ->apply([
-                "price_discount" => "@price - (@price * 0.1)",
-                "tax_discount" => "@price_discount * 0.2",
+                'price_discount' => '@price - (@price * 0.1)',
+                'tax_discount' => '@price_discount * 0.2',
             ])
             ->limit(0, 3);
 
@@ -708,22 +719,22 @@ class FTHYBRID_Test extends PredisCommandTestCase
                 'price' => '17',
                 'size' => '12',
                 'price_discount' => '15.3',
-                'tax_discount' => '3.06'
+                'tax_discount' => '3.06',
             ],
             [
                 'color' => 'red',
                 'price' => '18',
                 'size' => '11',
                 'price_discount' => '16.2',
-                'tax_discount' => '3.24'
+                'tax_discount' => '3.24',
             ],
             [
                 'color' => 'red',
                 'price' => '15',
                 'size' => '10',
                 'price_discount' => '13.5',
-                'tax_discount' => '2.7'
-            ]
+                'tax_discount' => '2.7',
+            ],
         ];
 
         $response = $redis->fthybrid('idx', $query);
@@ -743,13 +754,13 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red|green|black}");
+                    ->query('@color:{red|green|black}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', [1, 2, 7, 6]);
             })
-            ->load(["@description", "@color", "@price", "@size"])
+            ->load(['@description', '@color', '@price', '@size'])
             ->filter('@price=="15"')
             ->limit(0, 3);
 
@@ -780,35 +791,35 @@ class FTHYBRID_Test extends PredisCommandTestCase
                 $config
                     ->vector('@embedding', '$vector');
             })
-            ->load(["@description", "@color", "@price"])
+            ->load(['@description', '@color', '@price'])
             ->apply([
-                'price_discount' => "@price - (@price * 0.1)"
+                'price_discount' => '@price - (@price * 0.1)',
             ])
             ->params([
-                "vector" => "abcd1234abcd5678",
-                "color_criteria" => "red",
+                'vector' => 'abcd1234abcd5678',
+                'color_criteria' => 'red',
             ])
             ->limit(0, 3);
 
         $expected_results = [
             [
-                'description' => "red shoes",
+                'description' => 'red shoes',
                 'color' => 'red',
                 'price' => '15',
                 'price_discount' => '13.5',
             ],
             [
-                'description' => "red dress",
+                'description' => 'red dress',
                 'color' => 'red',
                 'price' => '17',
                 'price_discount' => '15.3',
             ],
             [
-                'description' => "red shoes",
+                'description' => 'red shoes',
                 'color' => 'red',
                 'price' => '16',
                 'price_discount' => '14.4',
-            ]
+            ],
         ];
 
         $response = $redis->fthybrid('idx', $query);
@@ -828,19 +839,19 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red|green}");
+                    ->query('@color:{red|green}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', [1, 2, 7, 6]);
             })
-            ->load(["@color", "@price"])
+            ->load(['@color', '@price'])
             ->apply([
-                'price_discount' => "@price - (@price * 0.1)"
+                'price_discount' => '@price - (@price * 0.1)',
             ])
             ->sortBy([
-                "@price_discount" => 'DESC',
-                "@color" => 'ASC',
+                '@price_discount' => 'DESC',
+                '@color' => 'ASC',
             ])
             ->limit(0, 5);
 
@@ -869,7 +880,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
                 'color' => 'red',
                 'price' => '15',
                 'price_discount' => '13.5',
-            ]
+            ],
         ];
 
         $response = $redis->fthybrid('idx', $query);
@@ -889,49 +900,49 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red|green}");
+                    ->query('@color:{red|green}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', [1, 2, 7, 6]);
             })
-            ->load(["@color", "@price", "@size", "@item_type"])
+            ->load(['@color', '@price', '@size', '@item_type'])
             ->groupBy(
-                ["@item_type", "@price"],
+                ['@item_type', '@price'],
                 [
-                    new Reducer(Reducer::REDUCE_COUNT_DISTINCT, ["@color"], 'colors_count'),
-                    new Reducer(Reducer::REDUCE_MIN, ["@size"])
+                    new Reducer(Reducer::REDUCE_COUNT_DISTINCT, ['@color'], 'colors_count'),
+                    new Reducer(Reducer::REDUCE_MIN, ['@size']),
                 ]
             )
             ->sortBy([
-                "@price" => 'ASC',
+                '@price' => 'ASC',
             ])
             ->limit(0, 4);
 
         $expected_results = [
             [
-                "item_type" => "dress",
+                'item_type' => 'dress',
                 'price' => '15',
                 'colors_count' => '1',
-                "__generated_aliasminsize" => "10",
+                '__generated_aliasminsize' => '10',
             ],
             [
-                "item_type" => "shoes",
+                'item_type' => 'shoes',
                 'price' => '15',
                 'colors_count' => '2',
-                "__generated_aliasminsize" => "10",
+                '__generated_aliasminsize' => '10',
             ],
             [
-                "item_type" => "shoes",
+                'item_type' => 'shoes',
                 'price' => '16',
                 'colors_count' => '2',
-                "__generated_aliasminsize" => "10",
+                '__generated_aliasminsize' => '10',
             ],
             [
-                "item_type" => "dress",
+                'item_type' => 'dress',
                 'price' => '16',
                 'colors_count' => '1',
-                "__generated_aliasminsize" => "11",
+                '__generated_aliasminsize' => '11',
             ],
         ];
 
@@ -952,7 +963,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $query = (new HybridSearchQuery())
             ->buildSearchConfig(function (SearchConfig $config) {
                 $config
-                    ->query("@color:{red|green}");
+                    ->query('@color:{red|green}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
@@ -974,11 +985,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
             new TagField('item_type'),
             new NumericField('size'),
             new VectorField('embedding', 'FLAT',
-                ["TYPE", "FLOAT32", "DIM", 4, "DISTANCE_METRIC", "L2"]
+                ['TYPE', 'FLOAT32', 'DIM', 4, 'DISTANCE_METRIC', 'L2']
             ),
             new VectorField('embedding-hnsw', 'HNSW',
-                ["TYPE", "FLOAT32", "DIM", 4, "DISTANCE_METRIC", "L2"]
-            )
+                ['TYPE', 'FLOAT32', 'DIM', 4, 'DISTANCE_METRIC', 'L2']
+            ),
         ];
 
         $arguments = new CreateArguments();
@@ -991,11 +1002,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
     protected function generateData(ClientInterface $client, int $itemSets = 1)
     {
         $items = [
-            [[1.0, 2.0, 7.0, 8.0], "red shoes"],
-            [[1.0, 4.0, 7.0, 8.0], "green shoes with red laces"],
-            [[1.0, 2.0, 6.0, 5.0], "red dress"],
-            [[2.0, 3.0, 6.0, 5.0], "orange dress"],
-            [[5.0, 6.0, 7.0, 8.0], "black shoes"],
+            [[1.0, 2.0, 7.0, 8.0], 'red shoes'],
+            [[1.0, 4.0, 7.0, 8.0], 'green shoes with red laces'],
+            [[1.0, 2.0, 6.0, 5.0], 'red dress'],
+            [[2.0, 3.0, 6.0, 5.0], 'orange dress'],
+            [[5.0, 6.0, 7.0, 8.0], 'black shoes'],
         ];
         $mergedItems = [];
 
@@ -1008,13 +1019,13 @@ class FTHYBRID_Test extends PredisCommandTestCase
                 [$vec, $description] = $mergedItems[$i];
 
                 $pipe->hmset("item:{$i}", [
-                    "description" => $description,
-                    "embedding" => VectorUtility::toBlob($vec),
-                    "embedding-hnsw" => VectorUtility::toBlob($vec),
-                    "price" => 15 + $i % 4,
-                    "color" => explode(' ', $description)[0],
-                    "item_type" => explode(' ', $description)[1],
-                    "size" => 10 + $i % 3
+                    'description' => $description,
+                    'embedding' => VectorUtility::toBlob($vec),
+                    'embedding-hnsw' => VectorUtility::toBlob($vec),
+                    'price' => 15 + $i % 4,
+                    'color' => explode(' ', $description)[0],
+                    'item_type' => explode(' ', $description)[1],
+                    'size' => 10 + $i % 3,
                 ]);
             }
         });

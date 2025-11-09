@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Argument\Search\HybridSearch\VectorSearch;
 
 use Predis\Command\Argument\ArrayableArgument;
@@ -34,8 +44,8 @@ abstract class BaseVectorSearchConfig implements ArrayableArgument
     /**
      * Vector to perform search against.
      *
-     * @param string $field The vector field name to search against. Must start with "@".
-     * @param string|float[] $value Binary vector representation or array of floats as vector.
+     * @param  string         $field The vector field name to search against. Must start with "@".
+     * @param  string|float[] $value Binary vector representation or array of floats as vector.
      * @return self
      */
     public function vector(string $field, $value): self
@@ -50,22 +60,24 @@ abstract class BaseVectorSearchConfig implements ArrayableArgument
     }
 
     /**
-     * @param string $expression
+     * @param  string $expression
      * @return void
      */
     public function filter(string $expression): self
     {
         array_push($this->filter, 'FILTER', $expression);
+
         return $this;
     }
 
     /**
-     * @param string $alias
+     * @param  string $alias
      * @return void
      */
     public function as(string $alias): self
     {
         array_push($this->as, 'YIELD_SCORE_AS', $alias);
+
         return $this;
     }
 

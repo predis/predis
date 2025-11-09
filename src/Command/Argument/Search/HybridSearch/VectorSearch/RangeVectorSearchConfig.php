@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Argument\Search\HybridSearch\VectorSearch;
 
 use ValueError;
@@ -19,22 +29,24 @@ class RangeVectorSearchConfig extends BaseVectorSearchConfig
     /**
      * The search radius/threshold. Finds all vectors within this distance.
      *
-     * @param int $radius
+     * @param  int   $radius
      * @return $this
      */
     public function radius(int $radius): self
     {
         $this->radius = $radius;
+
         return $this;
     }
 
     /**
-     * @param float $epsilon
+     * @param  float $epsilon
      * @return $this
      */
     public function epsilon(float $epsilon): self
     {
         $this->epsilon = $epsilon;
+
         return $this;
     }
 

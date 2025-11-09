@@ -55,9 +55,9 @@ class CommandUtility
     }
 
     /**
-     * Converts associative array into flatten array (key1, value1...keyN, valueN)
+     * Converts associative array into flatten array (key1, value1...keyN, valueN).
      *
-     * @param array $dict
+     * @param  array $dict
      * @return array
      */
     public static function dictionaryToArray(array $dict): array

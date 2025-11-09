@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Argument\Search\HybridSearch;
 
 use Predis\Command\Argument\ArrayableArgument;
@@ -12,8 +22,8 @@ use ValueError;
 
 class HybridSearchQuery implements ArrayableArgument
 {
-    const SORT_ASC = 'ASC';
-    const SORT_DESC = 'DESC';
+    public const SORT_ASC = 'ASC';
+    public const SORT_DESC = 'DESC';
 
     /**
      * @var SearchConfig
@@ -92,7 +102,7 @@ class HybridSearchQuery implements ArrayableArgument
 
     /**
      * @param string $vectorSearchMethod Class type of desired vector search method
-     * @param string $combineMethod Class type of desired combine method
+     * @param string $combineMethod      Class type of desired combine method
      */
     public function __construct(
         string $vectorSearchMethod = KNNVectorSearchConfig::class,
@@ -104,50 +114,54 @@ class HybridSearchQuery implements ArrayableArgument
     }
 
     /**
-     * @param callable(SearchConfig): void $callable
+     * @param  callable(SearchConfig): void $callable
      * @return $this
      */
     public function buildSearchConfig(callable $callable): self
     {
         $callable($this->searchConfig);
+
         return $this;
     }
 
     /**
-     * @param callable(KNNVectorSearchConfig|RangeVectorSearchConfig): void $callable
+     * @param  callable(KNNVectorSearchConfig|RangeVectorSearchConfig): void $callable
      * @return $this
      */
     public function buildVectorSearchConfig(callable $callable): self
     {
         $callable($this->vectorSearchConfig);
+
         return $this;
     }
 
     /**
-     * @param callable(RRFCombineConfig|LinearCombineConfig): void $callable
+     * @param  callable(RRFCombineConfig|LinearCombineConfig): void $callable
      * @return $this
      */
     public function buildCombineConfig(callable $callable): self
     {
         $callable($this->combineConfig);
+
         return $this;
     }
 
     /**
-     * The list of fields to return in the results
+     * The list of fields to return in the results.
      *
-     * @param array $fields
+     * @param  array $fields
      * @return $this
      */
     public function load(array $fields): self
     {
         array_push($this->load, 'LOAD', count($fields), ...$fields);
+
         return $this;
     }
 
     /**
-     * @param array $fields
-     * @param Reducer[] $reducers
+     * @param  array     $fields
+     * @param  Reducer[] $reducers
      * @return $this
      */
     public function groupBy(array $fields, array $reducers): self
@@ -162,7 +176,7 @@ class HybridSearchQuery implements ArrayableArgument
     }
 
     /**
-     * @param array $expressionFieldDict field => function dictionary
+     * @param  array $expressionFieldDict field => function dictionary
      * @return $this
      */
     public function apply(array $expressionFieldDict): self
@@ -177,7 +191,7 @@ class HybridSearchQuery implements ArrayableArgument
     /**
      * Sorts the final results by a specific field.
      *
-     * @param array<string, string> $fields Dictionary with fields and sort direction. Check class constants.
+     * @param  array<string, string> $fields Dictionary with fields and sort direction. Check class constants.
      * @return $this
      */
     public function sortBy(array $fields): self
@@ -192,42 +206,46 @@ class HybridSearchQuery implements ArrayableArgument
         }
 
         array_push($this->sortBy, 'SORTBY', count($fieldsArray), ...$fieldsArray);
+
         return $this;
     }
 
     /**
      * Final result filtering.
      *
-     * @param string $expression
+     * @param  string $expression
      * @return $this
      */
     public function filter(string $expression): self
     {
         $this->filter = $expression;
+
         return $this;
     }
 
     /**
-     * @param int $offset
-     * @param int $num
+     * @param  int   $offset
+     * @param  int   $num
      * @return $this
      */
     public function limit(int $offset, int $num): self
     {
         array_push($this->limit, 'LIMIT', $offset, $num);
+
         return $this;
     }
 
     /**
      * Binds values to named parameters in the query string.
      *
-     * @param array $params
+     * @param  array $params
      * @return $this
      */
     public function params(array $params): self
     {
         $arrayParams = CommandUtility::dictionaryToArray($params);
         array_push($this->params, 'PARAMS', count($arrayParams), ...$arrayParams);
+
         return $this;
     }
 
@@ -237,6 +255,7 @@ class HybridSearchQuery implements ArrayableArgument
     public function explainScore(): self
     {
         $this->explainScore = true;
+
         return $this;
     }
 
@@ -246,15 +265,16 @@ class HybridSearchQuery implements ArrayableArgument
     public function timeout(): self
     {
         $this->timeout = true;
+
         return $this;
     }
 
     /**
-     * @param int|null $readSize
-     * @param int|null $idleTime
+     * @param  int|null $readSize
+     * @param  int|null $idleTime
      * @return $this
      */
-    public function withCursor(int $readSize = null, int $idleTime = null): self
+    public function withCursor(?int $readSize = null, ?int $idleTime = null): self
     {
         $this->withCursor[] = 'WITHCURSOR';
 
@@ -270,7 +290,7 @@ class HybridSearchQuery implements ArrayableArgument
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function toArray(): array
     {
@@ -282,7 +302,7 @@ class HybridSearchQuery implements ArrayableArgument
 
         $combineConfig = $this->combineConfig->toArray();
 
-        # Only add if any configuration was applied
+        // Only add if any configuration was applied
         if (count($combineConfig) > 2) {
             $this->arguments = array_merge($this->arguments, $combineConfig);
         }

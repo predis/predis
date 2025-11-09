@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Argument\Search\HybridSearch\Combine;
 
 class RRFCombineConfig extends BaseCombine
@@ -17,29 +27,31 @@ class RRFCombineConfig extends BaseCombine
     /**
      * The number of top results from each search type to consider for fusion. Defaults to 50.
      *
-     * @param int $window
+     * @param  int   $window
      * @return $this
      */
     public function window(int $window): self
     {
         $this->window = $window;
+
         return $this;
     }
 
     /**
      * The RRF ranking constant. A smaller value gives more weight to top-ranked items. Defaults to 60.
      *
-     * @param int $constant
+     * @param  int  $constant
      * @return void
      */
     public function rrfConstant(int $constant): self
     {
         $this->rrfConstant = $constant;
+
         return $this;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function toArray(): array
     {
