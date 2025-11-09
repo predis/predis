@@ -42,6 +42,23 @@ class CommandUtilityTest extends PredisTestCase
         CommandUtility::arrayToDictionary(['key1', 'value1', 'key1']);
     }
 
+    /**
+     * @return void
+     */
+    public function testDictionaryToArray(): void
+    {
+        $dict = [
+            'key1' => 'value1',
+            'key2' => 'value2',
+            'key3' => 'value3',
+        ];
+
+        $this->assertSame(
+            ['key1', 'value1', 'key2', 'value2', 'key3', 'value3'],
+            CommandUtility::dictionaryToArray($dict)
+        );
+    }
+
     public function arrayProvider(): array
     {
         return [

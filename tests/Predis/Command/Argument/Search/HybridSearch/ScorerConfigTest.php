@@ -20,19 +20,33 @@ class ScorerConfigTest extends TestCase
      * @dataProvider argumentsProvider
      * @return void
      */
-    public function testToArray(ScorerConfig $config, array $expectedReturn)
+    public function testToArray(
+        array $expectedReturn,
+        ?string $type = null,
+        ?string $as = null
+    )
     {
+        $config = new ScorerConfig();
+
+        if ($type) {
+            $this->assertEquals($config, $config->type($type));
+        }
+
+        if ($as) {
+            $this->assertEquals($config, $config->as($as));
+        }
+
         $this->assertSame($expectedReturn, $config->toArray());
     }
 
     public function argumentsProvider(): array
     {
         return [
-            'with TYPE' => [(new ScorerConfig())->type(), [ScorerConfig::TYPE_BM25]],
-            'with YIELD_SCORE_AS' => [(new ScorerConfig())->as('alias'), ['YIELD_SCORE_AS', 'alias']],
+            'with TYPE' => [[ScorerConfig::TYPE_BM25], ScorerConfig::TYPE_BM25],
+            'with YIELD_SCORE_AS' => [['YIELD_SCORE_AS', 'alias'], null, 'alias'],
             'with all' => [
-                (new ScorerConfig())->type(ScorerConfig::TYPE_DISMAX)->as('alias'),
                 [ScorerConfig::TYPE_DISMAX, 'YIELD_SCORE_AS', 'alias'],
+                ScorerConfig::TYPE_DISMAX, 'alias'
             ],
         ];
     }

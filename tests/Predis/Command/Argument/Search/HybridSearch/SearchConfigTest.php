@@ -20,25 +20,40 @@ class SearchConfigTest extends TestCase
      * @dataProvider argumentsProvider
      * @return void
      */
-    public function testToArray(SearchConfig $config, array $expectedReturn)
+    public function testToArray(
+        array $expectedReturn,
+        ?string $query = null,
+        ?string $type = null,
+        ?string $as = null
+    )
     {
+        $config = new SearchConfig();
+
+        if ($query) {
+            $this->assertEquals($config, $config->query($query));
+        }
+
+        if ($type) {
+            $this->assertEquals($config, $config->buildScorerConfig(function (ScorerConfig $scorerConfig) use ($type) {
+                $scorerConfig->type($type);
+            }));
+        }
+
+        if ($as) {
+            $this->assertEquals($config, $config->as($as));
+        }
+
         $this->assertSame($expectedReturn, $config->toArray());
     }
 
     public function argumentsProvider(): array
     {
         return [
-            'with query' => [(new SearchConfig())->query('*'), ['SEARCH', '*']],
-            'with AS' => [(new SearchConfig())->query('*')->as('alias'), ['SEARCH', '*', 'YIELD_SCORE_AS', 'alias']],
+            'with query' => [['SEARCH', '*'], '*', null, null],
+            'with AS' => [['SEARCH', '*', 'YIELD_SCORE_AS', 'alias'], '*', null, 'alias'],
             'with SCORER' => [
-                (new SearchConfig())
-                    ->buildScorerConfig(function (ScorerConfig $scorerConfig) {
-                        $scorerConfig
-                            ->type(ScorerConfig::TYPE_DOCSCORE)
-                            ->as('alias');
-                    })
-                    ->query('*'),
-                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DOCSCORE, 'YIELD_SCORE_AS', 'alias'],
+                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DOCSCORE],
+                '*', ScorerConfig::TYPE_DOCSCORE, null,
             ],
         ];
     }

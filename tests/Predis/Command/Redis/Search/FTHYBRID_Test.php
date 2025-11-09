@@ -76,9 +76,23 @@ class FTHYBRID_Test extends PredisCommandTestCase
     }
 
     /**
+     * @return void
+     */
+    public function testParseResponse(): void
+    {
+        $response = ['total_results', 5, 'results', [['key', 'value'], ['key', 'value']]];
+        $command = new FTHYBRID();
+
+        $this->assertEquals([
+            'total_results' => 5,
+            'results' => [['key' => 'value'], ['key' => 'value']],
+        ], $command->parseResponse($response));
+    }
+
+    /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testReviewFeedbackHybridSearch()
@@ -105,7 +119,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testReviewFeedbackHybridSearchResp3()
@@ -132,7 +146,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testDefaultHybridSearch()
@@ -161,7 +175,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testDefaultHybridSearchResp3()
@@ -190,7 +204,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithScorer()
@@ -281,7 +295,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithVsimMethodDefinedQueryInit()
@@ -308,7 +322,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithVsimFilter()
@@ -341,7 +355,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithSearchScoreAliases()
@@ -375,7 +389,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithVsimScoreAliases()
@@ -411,7 +425,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithCombineScoreAliases()
@@ -464,7 +478,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithCombineAllScoreAliases()
@@ -505,7 +519,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithVsimKNN()
@@ -559,7 +573,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithVsimRange()
@@ -614,7 +628,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithCombine()
@@ -677,7 +691,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithLoad()
@@ -718,7 +732,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithLoadAndApply()
@@ -774,7 +788,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithLoadAndFilter()
@@ -807,7 +821,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithLoadApplyAndParams()
@@ -863,7 +877,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithApplyAndSortBy()
@@ -926,7 +940,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithLoadAndGroupBy()
@@ -991,7 +1005,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisVersion >= 8.3.2
+     * @requiresRedisVersion >= 8.3.224
      * @return void
      */
     public function testHybridSearchQueryWithCursor()

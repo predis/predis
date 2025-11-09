@@ -30,6 +30,16 @@ class RangeVectorSearchConfigTest extends TestCase
     /**
      * @return void
      */
+    public function testAs()
+    {
+        $config = new RangeVectorSearchConfig();
+
+        $this->assertEquals($config, $config->as('alias'));
+    }
+
+    /**
+     * @return void
+     */
     public function testToArrayThrowsExceptionOnMissingProperty(): void
     {
         $config = new RangeVectorSearchConfig();

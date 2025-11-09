@@ -20,17 +20,36 @@ class RRFCombineConfigTest extends TestCase
      * @dataProvider argumentsProvider
      * @return void
      */
-    public function testToArray(RRFCombineConfig $config, array $expectedReturn)
+    public function testToArray(
+        array $expectedReturn,
+        ?int $window = null,
+        ?int $rrfConstant = null,
+        ?string $as = null
+    )
     {
+        $config = new RRFCombineConfig();
+
+        if ($window) {
+            $this->assertEquals($config, $config->window($window));
+        }
+
+        if ($rrfConstant) {
+            $this->assertEquals($config, $config->rrfConstant($rrfConstant));
+        }
+
+        if ($as) {
+            $this->assertEquals($config, $config->as($as));
+        }
+
         $this->assertSame($expectedReturn, $config->toArray());
     }
 
     public function argumentsProvider(): array
     {
         return [
-            'with WINDOW' => [(new RRFCombineConfig())->window(5), ['COMBINE', 'RRF', 2, 'WINDOW', 5]],
-            'with CONSTANT' => [(new RRFCombineConfig())->rrfConstant(5), ['COMBINE', 'RRF', 2, 'CONSTANT', 5]],
-            'with all' => [(new RRFCombineConfig())->window(10)->rrfConstant(5)->as('alias'), ['COMBINE', 'RRF', 6, 'WINDOW', 10, 'CONSTANT', 5, 'YIELD_SCORE_AS', 'alias']],
+            'with WINDOW' => [['COMBINE', 'RRF', 2, 'WINDOW', 5], 5, null, null],
+            'with CONSTANT' => [['COMBINE', 'RRF', 2, 'CONSTANT', 5], null, 5, null],
+            'with all' => [['COMBINE', 'RRF', 6, 'WINDOW', 10, 'CONSTANT', 5, 'YIELD_SCORE_AS', 'alias'], 10, 5, 'alias'],
         ];
     }
 }

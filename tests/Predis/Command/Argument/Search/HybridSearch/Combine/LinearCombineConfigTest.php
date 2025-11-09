@@ -20,18 +20,38 @@ class LinearCombineConfigTest extends TestCase
      * @dataProvider argumentsProvider
      * @return void
      */
-    public function testToArray(LinearCombineConfig $config, array $expectedReturn)
+    public function testToArray(
+        array $expectedReturn,
+        ?float $alpha = null,
+        ?float $beta = null,
+        ?string $as = null
+    )
     {
+        $config = new LinearCombineConfig();
+
+        if ($alpha) {
+            $this->assertEquals($config, $config->alpha($alpha));
+        }
+
+        if ($beta) {
+            $this->assertEquals($config, $config->beta($beta));
+        }
+
+        if ($as) {
+            $this->assertEquals($config, $config->as($as));
+        }
+
         $this->assertSame($expectedReturn, $config->toArray());
     }
 
     public function argumentsProvider(): array
     {
         return [
-            'with ALPHA' => [(new LinearCombineConfig())->alpha(0.2), ['COMBINE', 'LINEAR', 2, 'ALPHA', 0.2]],
-            'with BETA' => [(new LinearCombineConfig())->beta(0.2), ['COMBINE', 'LINEAR', 2, 'BETA', 0.2]],
+            'with ALPHA' => [['COMBINE', 'LINEAR', 2, 'ALPHA', 0.2], 0.2, null, null],
+            'with BETA' => [['COMBINE', 'LINEAR', 2, 'BETA', 0.2], null, 0.2, null],
             'with all arguments' => [
-                (new LinearCombineConfig())->alpha(0.3)->beta(0.2)->as('alias'), ['COMBINE', 'LINEAR', 6, 'ALPHA', 0.3, 'BETA', 0.2, 'YIELD_SCORE_AS', 'alias'],
+                ['COMBINE', 'LINEAR', 6, 'ALPHA', 0.3, 'BETA', 0.2, 'YIELD_SCORE_AS', 'alias'],
+                0.3, 0.2, 'alias'
             ],
         ];
     }
