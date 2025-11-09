@@ -30,7 +30,7 @@ class ScorerConfig implements ArrayableArgument
      * The text scoring algorithm. Defaults to BM25.
      *
      * @param  string $type
-     * @return void
+     * @return $this
      */
     public function type(string $type = self::TYPE_BM25): self
     {
@@ -44,7 +44,7 @@ class ScorerConfig implements ArrayableArgument
      * The aliased field will be included in the `value` object of each returned document.
      *
      * @param  string $alias
-     * @return void
+     * @return $this
      */
     public function as(string $alias): self
     {

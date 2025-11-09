@@ -28,7 +28,7 @@ abstract class BaseCombine implements ArrayableArgument
 
     /**
      * @param  string $alias
-     * @return void
+     * @return $this
      */
     public function as(string $alias): self
     {

@@ -46,7 +46,7 @@ class SearchConfig implements ArrayableArgument
 
     /**
      * @param  string $alias
-     * @return void
+     * @return $this
      */
     public function as(string $alias): self
     {
@@ -57,7 +57,7 @@ class SearchConfig implements ArrayableArgument
 
     /**
      * @param  callable(ScorerConfig): void $callable
-     * @return self
+     * @return $this
      */
     public function buildScorerConfig(callable $callable): self
     {

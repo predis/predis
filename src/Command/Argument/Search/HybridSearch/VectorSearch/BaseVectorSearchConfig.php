@@ -61,7 +61,7 @@ abstract class BaseVectorSearchConfig implements ArrayableArgument
 
     /**
      * @param  string $expression
-     * @return void
+     * @return $this
      */
     public function filter(string $expression): self
     {
@@ -72,7 +72,7 @@ abstract class BaseVectorSearchConfig implements ArrayableArgument
 
     /**
      * @param  string $alias
-     * @return void
+     * @return $this
      */
     public function as(string $alias): self
     {
