@@ -12,6 +12,9 @@ use ValueError;
 
 class HybridSearchQuery implements ArrayableArgument
 {
+    const SORT_ASC = 'ASC';
+    const SORT_DESC = 'DESC';
+
     /**
      * @var SearchConfig
      */
@@ -174,23 +177,21 @@ class HybridSearchQuery implements ArrayableArgument
     /**
      * Sorts the final results by a specific field.
      *
-     * @param string $field
-     * @param string $direction
-     * @param bool $withCount
+     * @param array<string, string> $fields Dictionary with fields and sort direction. Check class constants.
      * @return $this
      */
-    public function sortBy(string $field, string $direction = 'ASC', bool $withCount = false): self
+    public function sortBy(array $fields): self
     {
-        if (!in_array(strtoupper($direction), ['ASC', 'DESC'])) {
-            throw new ValueError('Incorrect sort direction');
+        $fieldsArray = [];
+        foreach ($fields as $field => $direction) {
+            if (!in_array(strtoupper($direction), [self::SORT_ASC, self::SORT_DESC])) {
+                throw new ValueError('Sort direction must be one of "ASC" or "DESC".');
+            }
+
+            array_push($fieldsArray, $field, $direction);
         }
 
-        array_push($this->sortBy, 'SORTBY', $field, $direction);
-
-        if ($withCount) {
-            $this->sortBy[] = 'WITHCOUNT';
-        }
-
+        array_push($this->sortBy, 'SORTBY', count($fieldsArray), ...$fieldsArray);
         return $this;
     }
 

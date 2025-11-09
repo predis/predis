@@ -131,11 +131,11 @@ class HybridSearchQueryTest extends TestCase
                     ->groupBy(
                         ['field1', 'field2'],
                         [
-                            new Reducer(Reducer::REDUCE_COUNT, ['prop1', 'prop2']),
+                            new Reducer(Reducer::REDUCE_COUNT, ['prop1', 'prop2'], 'alias'),
                             new Reducer(Reducer::REDUCE_MAX, ['prop1', 'prop2'])
                         ]
                     ),
-                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'GROUPBY', 2, 'field1', 'field2', 'REDUCE', 'COUNT', 2, 'prop1', 'prop2', 'REDUCE', 'MAX', 2, 'prop1', 'prop2']
+                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'GROUPBY', 2, 'field1', 'field2', 'REDUCE', 'COUNT', 2, 'prop1', 'prop2', 'AS', 'alias', 'REDUCE', 'MAX', 2, 'prop1', 'prop2']
             ],
             'with APPLY' => [
                 (new HybridSearchQuery())
@@ -151,7 +151,7 @@ class HybridSearchQueryTest extends TestCase
                             ->k(5)
                             ->ef(10);
                     })
-                    ->apply('expr', 'field'),
+                    ->apply(['field' => 'expr']),
                 ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'APPLY', 'expr', 'AS', 'field']
             ],
             'with SORTBY' => [
@@ -168,8 +168,8 @@ class HybridSearchQueryTest extends TestCase
                             ->k(5)
                             ->ef(10);
                     })
-                    ->sortBy('field', 'DESC', true),
-                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'SORTBY', 'field', 'DESC', 'WITHCOUNT'],
+                    ->sortBy(['field' => 'DESC']),
+                ['SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'SORTBY', 2, 'field', 'DESC'],
             ],
             'with FILTER' => [
                 (new HybridSearchQuery())

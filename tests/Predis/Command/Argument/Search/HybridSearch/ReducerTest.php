@@ -11,7 +11,7 @@ class ReducerTest extends TestCase
      */
     public function testToArray(): void
     {
-        $reducer = new Reducer(Reducer::REDUCE_MAX, ['prop1', 'prop2']);
-        $this->assertSame([Reducer::REDUCE_MAX, 2, 'prop1', 'prop2'], $reducer->toArray());
+        $reducer = new Reducer(Reducer::REDUCE_MAX, ['prop1', 'prop2'], 'alias');
+        $this->assertSame([Reducer::REDUCE_MAX, 2, 'prop1', 'prop2', 'AS', 'alias'], $reducer->toArray());
     }
 }

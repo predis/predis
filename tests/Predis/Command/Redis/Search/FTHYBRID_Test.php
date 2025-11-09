@@ -8,6 +8,7 @@ use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\HybridSearch\Combine\LinearCombineConfig;
 use Predis\Command\Argument\Search\HybridSearch\Combine\RRFCombineConfig;
 use Predis\Command\Argument\Search\HybridSearch\HybridSearchQuery;
+use Predis\Command\Argument\Search\HybridSearch\Reducer;
 use Predis\Command\Argument\Search\HybridSearch\ScorerConfig;
 use Predis\Command\Argument\Search\HybridSearch\SearchConfig;
 use Predis\Command\Argument\Search\HybridSearch\VectorSearch\KNNVectorSearchConfig;
@@ -727,6 +728,241 @@ class FTHYBRID_Test extends PredisCommandTestCase
 
         $response = $redis->fthybrid('idx', $query);
         $this->assertEquals($expected_results, $response['results']);
+    }
+
+    /**
+     * @requiresRedisVersion >= 8.3.224
+     * @return void
+     */
+    public function testHybridSearchQueryWithLoadAndFilter()
+    {
+        $redis = $this->getClient();
+        $this->createHybridSearchIndex($redis);
+        $this->generateData($redis, 10);
+
+        $query = (new HybridSearchQuery())
+            ->buildSearchConfig(function (SearchConfig $config) {
+                $config
+                    ->query("@color:{red|green|black}");
+            })
+            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                $config
+                    ->vector('@embedding', [1, 2, 7, 6]);
+            })
+            ->load(["@description", "@color", "@price", "@size"])
+            ->filter('@price=="15"')
+            ->limit(0, 3);
+
+        $response = $redis->fthybrid('idx', $query);
+        $this->assertCount(3, $response['results']);
+
+        foreach ($response['results'] as $result) {
+            $this->assertEquals(15, $result['price']);
+        }
+    }
+
+    /**
+     * @requiresRedisVersion >= 8.3.224
+     * @return void
+     */
+    public function testHybridSearchQueryWithLoadApplyAndParams()
+    {
+        $redis = $this->getClient();
+        $this->createHybridSearchIndex($redis);
+        $this->generateData($redis, 5);
+
+        $query = (new HybridSearchQuery())
+            ->buildSearchConfig(function (SearchConfig $config) {
+                $config
+                    ->query('@color:{$color_criteria}');
+            })
+            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                $config
+                    ->vector('@embedding', '$vector');
+            })
+            ->load(["@description", "@color", "@price"])
+            ->apply([
+                'price_discount' => "@price - (@price * 0.1)"
+            ])
+            ->params([
+                "vector" => "abcd1234abcd5678",
+                "color_criteria" => "red",
+            ])
+            ->limit(0, 3);
+
+        $expected_results = [
+            [
+                'description' => "red shoes",
+                'color' => 'red',
+                'price' => '15',
+                'price_discount' => '13.5',
+            ],
+            [
+                'description' => "red dress",
+                'color' => 'red',
+                'price' => '17',
+                'price_discount' => '15.3',
+            ],
+            [
+                'description' => "red shoes",
+                'color' => 'red',
+                'price' => '16',
+                'price_discount' => '14.4',
+            ]
+        ];
+
+        $response = $redis->fthybrid('idx', $query);
+        $this->assertEquals($expected_results, $response['results']);
+    }
+
+    /**
+     * @requiresRedisVersion >= 8.3.224
+     * @return void
+     */
+    public function testHybridSearchQueryWithApplyAndSortBy()
+    {
+        $redis = $this->getClient();
+        $this->createHybridSearchIndex($redis);
+        $this->generateData($redis);
+
+        $query = (new HybridSearchQuery())
+            ->buildSearchConfig(function (SearchConfig $config) {
+                $config
+                    ->query("@color:{red|green}");
+            })
+            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                $config
+                    ->vector('@embedding', [1, 2, 7, 6]);
+            })
+            ->load(["@color", "@price"])
+            ->apply([
+                'price_discount' => "@price - (@price * 0.1)"
+            ])
+            ->sortBy([
+                "@price_discount" => 'DESC',
+                "@color" => 'ASC',
+            ])
+            ->limit(0, 5);
+
+        $expected_results = [
+            [
+                'color' => 'orange',
+                'price' => '18',
+                'price_discount' => '16.2',
+            ],
+            [
+                'color' => 'red',
+                'price' => '17',
+                'price_discount' => '15.3',
+            ],
+            [
+                'color' => 'green',
+                'price' => '16',
+                'price_discount' => '14.4',
+            ],
+            [
+                'color' => 'black',
+                'price' => '15',
+                'price_discount' => '13.5',
+            ],
+            [
+                'color' => 'red',
+                'price' => '15',
+                'price_discount' => '13.5',
+            ]
+        ];
+
+        $response = $redis->fthybrid('idx', $query);
+        $this->assertEquals($expected_results, $response['results']);
+    }
+
+    /**
+     * @requiresRedisVersion >= 8.3.224
+     * @return void
+     */
+    public function testHybridSearchQueryWithLoadAndGroupBy()
+    {
+        $redis = $this->getClient();
+        $this->createHybridSearchIndex($redis);
+        $this->generateData($redis, 10);
+
+        $query = (new HybridSearchQuery())
+            ->buildSearchConfig(function (SearchConfig $config) {
+                $config
+                    ->query("@color:{red|green}");
+            })
+            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                $config
+                    ->vector('@embedding', [1, 2, 7, 6]);
+            })
+            ->load(["@color", "@price", "@size", "@item_type"])
+            ->groupBy(
+                ["@item_type", "@price"],
+                [
+                    new Reducer(Reducer::REDUCE_COUNT_DISTINCT, ["@color"], 'colors_count'),
+                    new Reducer(Reducer::REDUCE_MIN, ["@size"])
+                ]
+            )
+            ->sortBy([
+                "@price" => 'ASC',
+            ])
+            ->limit(0, 4);
+
+        $expected_results = [
+            [
+                "item_type" => "dress",
+                'price' => '15',
+                'colors_count' => '1',
+                "__generated_aliasminsize" => "10",
+            ],
+            [
+                "item_type" => "shoes",
+                'price' => '15',
+                'colors_count' => '2',
+                "__generated_aliasminsize" => "10",
+            ],
+            [
+                "item_type" => "shoes",
+                'price' => '16',
+                'colors_count' => '2',
+                "__generated_aliasminsize" => "10",
+            ],
+            [
+                "item_type" => "dress",
+                'price' => '16',
+                'colors_count' => '1',
+                "__generated_aliasminsize" => "11",
+            ],
+        ];
+
+        $response = $redis->fthybrid('idx', $query);
+        $this->assertEquals($expected_results, $response['results']);
+    }
+
+    /**
+     * @requiresRedisVersion >= 8.3.224
+     * @return void
+     */
+    public function testHybridSearchQueryWithCursor()
+    {
+        $redis = $this->getClient();
+        $this->createHybridSearchIndex($redis);
+        $this->generateData($redis, 10);
+
+        $query = (new HybridSearchQuery())
+            ->buildSearchConfig(function (SearchConfig $config) {
+                $config
+                    ->query("@color:{red|green}");
+            })
+            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                $config
+                    ->vector('@embedding', [1, 2, 7, 6]);
+            })
+            ->withCursor(5, 100);
+
+        $response = $redis->fthybrid('idx', $query);
+        $this->assertGreaterThan(0, $response['SEARCH']);
+        $this->assertGreaterThan(0, $response['VSIM']);
     }
 
     protected function createHybridSearchIndex(ClientInterface $client)

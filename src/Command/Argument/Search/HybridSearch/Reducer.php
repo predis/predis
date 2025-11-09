@@ -25,9 +25,13 @@ class Reducer implements ArrayableArgument
      * @param string $function One of the available functions. Check class constants.
      * @param array $arguments List of properties
      */
-    public function __construct(string $function = self::REDUCE_COUNT, array $arguments = [])
+    public function __construct(string $function = self::REDUCE_COUNT, array $arguments = [], string $alias = null)
     {
         array_push($this->arguments, $function, count($arguments), ...$arguments);
+
+        if ($alias) {
+            array_push($this->arguments, 'AS', $alias);
+        }
     }
 
     public function toArray(): array
