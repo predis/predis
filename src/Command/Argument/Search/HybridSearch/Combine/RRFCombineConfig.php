@@ -41,7 +41,7 @@ class RRFCombineConfig extends BaseCombine
      * The RRF ranking constant. A smaller value gives more weight to top-ranked items. Defaults to 60.
      *
      * @param  int  $constant
-     * @return void
+     * @return $this
      */
     public function rrfConstant(int $constant): self
     {
