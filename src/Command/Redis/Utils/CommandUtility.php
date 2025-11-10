@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\Utils;
 
+use RuntimeException;
 use UnexpectedValueException;
 
 class CommandUtility
@@ -52,5 +53,20 @@ class CommandUtility
         }
 
         return $dict;
+    }
+
+    /**
+     * Converts a value into XXH3 hash.
+     *
+     * @param $value
+     * @return string
+     */
+    public static function xxh3Hash($value): string
+    {
+        if (!in_array('xxh3', hash_algos(), true)) {
+            throw new RuntimeException('XXH3 algorithm is not supported. Please install PECL xxhash extension.');
+        }
+
+        return hash('xxh3', $value);
     }
 }

@@ -62,6 +62,8 @@ use Predis\Response\Status;
  *
  * @method int               copy(string $source, string $destination, int $db = -1, bool $replace = false)
  * @method int               del(string[]|string $keyOrKeys, string ...$keys = null)
+ * @method int               delex(string $key, string $flag, $flagValue)
+ * @method string            digest(string $key)
  * @method string|null       dump(string $key)
  * @method int               exists(string $key)
  * @method int               expire(string $key, int $seconds, string $expireOption = '')
@@ -160,7 +162,7 @@ use Predis\Response\Status;
  * @method mixed             mset(array $dictionary)
  * @method int               msetnx(array $dictionary)
  * @method Status            psetex(string $key, $milliseconds, $value)
- * @method Status|null       set(string $key, $value, $expireResolution = null, $expireTTL = null, $flag = null)
+ * @method Status|null       set(string $key, $value, $expireResolution = null, $expireTTL = null, $flag = null, $flagValue = null)
  * @method int               setbit(string $key, $offset, $value)
  * @method Status            setex(string $key, $seconds, $value)
  * @method int               setnx(string $key, $value)

@@ -13,6 +13,7 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\PrefixableCommand;
+use Predis\Command\Redis\Utils\CommandUtility;
 
 /**
  * @group commands
@@ -254,6 +255,50 @@ class SET_Test extends PredisCommandTestCase
     public function testSetStringValueWithModifierXXUsingCluster(): void
     {
         $this->testSetStringValueWithModifierXX();
+    }
+
+    /**
+     * @group connected
+     * @requires PHP >= 8.1
+     * @requiresRedisVersion >= 8.3.224
+     */
+    public function testSetStringValueWithNewModifiers(): void
+    {
+        $redis = $this->getClient();
+        $this->assertEquals(
+            'OK',
+            $redis->set('foo', 'bar')
+        );
+
+        $value = $redis->get('foo');
+        $this->assertEquals(
+            'OK',
+            $redis->set('foo', $value, null, null, 'IFEQ', $value)
+        );
+        $this->assertNull(
+            $redis->set('foo', $value, null, null, 'IFEQ', 'wrong')
+        );
+        $this->assertEquals(
+            'OK',
+            $redis->set('foo', $value, null, null, 'IFNE', 'not equal')
+        );
+        $this->assertNull(
+            $redis->set('foo', $value, null, null, 'IFNE', $value)
+        );
+        $this->assertEquals(
+            'OK',
+            $redis->set('foo', $value, null, null, 'IFDEQ', CommandUtility::xxh3Hash($value))
+        );
+        $this->assertNull(
+            $redis->set('foo', $value, null, null, 'IFDEQ', CommandUtility::xxh3Hash('wrong'))
+        );
+        $this->assertEquals(
+            'OK',
+            $redis->set('foo', $value, null, null, 'IFDNE', CommandUtility::xxh3Hash('not equal'))
+        );
+        $this->assertNull(
+            $redis->set('foo', $value, null, null, 'IFDNE', CommandUtility::xxh3Hash($value))
+        );
     }
 
     /**
