@@ -18,7 +18,7 @@
 ### Added
 - Added support for `XDELEX` and `XACKDEL` (#1580)
 - Added missing VSIM argument (#1582)
-- Added support for FT.HYBRID (#1607)
+- Added experimental support for FT.HYBRID (#1607)
 
 ### Changed
 - Extended `XTRIM` and `XADD` commands with new parameters (#1580)
