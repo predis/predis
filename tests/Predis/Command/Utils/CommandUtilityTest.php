@@ -44,7 +44,7 @@ class CommandUtilityTest extends PredisTestCase
     }
 
     /**
-     * @requires PHP => 8.1
+     * @requires PHP >= 8.1
      * @return void
      */
     public function testXXH3Hash()
