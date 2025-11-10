@@ -4,6 +4,7 @@
 ### Added
 - Added cluster support for `XADD`, `XDEL` and `XRANGE` (#1587)
 - Added prefixable interface for `HEXPIRE` and `HEXPIRETIME` (#1592)
+- Added temporary XREADGROUP_CLAIM command (#1608)
 
 ### Changed
 - Refactor pipeline data writing depends on connection type (#1586)
