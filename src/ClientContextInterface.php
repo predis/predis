@@ -148,6 +148,7 @@ use Predis\Command\Redis\VADD;
  * @method $this incrbyfloat($key, $increment)
  * @method $this mget(array $keys)
  * @method $this mset(array $dictionary)
+ * @method $this msetex(array $dictionary, ?string $existModifier = null, ?string $expireResolution = null, ?int $expireTTL = null)
  * @method $this msetnx(array $dictionary)
  * @method $this psetex($key, $milliseconds, $value)
  * @method $this set($key, $value, $expireResolution = null, $expireTTL = null, $flag = null)
