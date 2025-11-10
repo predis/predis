@@ -14,6 +14,10 @@ namespace Predis\Command\Redis;
 
 use Predis\Command\PrefixableCommand as RedisCommand;
 
+/**
+ * @deprecated Public API will be changed in the next major version.
+ * XREADGROUP_CLAIM API will be used instead.
+ */
 class XREADGROUP extends RedisCommand
 {
     public function getId()
