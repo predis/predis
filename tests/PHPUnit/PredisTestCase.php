@@ -16,6 +16,7 @@ use PHPUnit\OneOfConstraint;
 use PHPUnit\Util\Test as TestUtil;
 use Predis\Client;
 use Predis\Command;
+use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Connection;
 
 /**
@@ -262,8 +263,14 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
             $parameters ?: []
         );
 
+        $commandsFactory = $this->getCommandFactory();
+
+        if (null !== $options && array_key_exists('prefix', $options)) {
+            $commandsFactory->setProcessor(new KeyPrefixProcessor($options['prefix']));
+        }
+
         $options = array_merge(
-            ['commands' => $this->getCommandFactory()],
+            ['commands' => $commandsFactory],
             $options ?: [],
             getenv('USE_RELAY') ? ['connections' => 'relay'] : []
         );

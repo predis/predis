@@ -14,7 +14,10 @@ namespace Predis\Command\Redis;
 
 use Predis\Command\PrefixableCommand as RedisCommand;
 
-class XREADGROUP extends RedisCommand
+/**
+ * This is a transitional command. In the next major version this command will replace XREADGROUP.
+ */
+class XREADGROUP_CLAIM extends RedisCommand
 {
     public function getId()
     {
@@ -25,22 +28,25 @@ class XREADGROUP extends RedisCommand
     {
         $processedArguments = ['GROUP', $arguments[0], $arguments[1]];
 
-        if (count($arguments) >= 3 && null !== $arguments[2]) {
-            array_push($processedArguments, 'COUNT', $arguments[2]);
-        }
-
         if (count($arguments) >= 4 && null !== $arguments[3]) {
-            array_push($processedArguments, 'BLOCK', $arguments[3]);
+            array_push($processedArguments, 'COUNT', $arguments[3]);
         }
 
-        if (count($arguments) >= 5 && false !== $arguments[4]) {
+        if (count($arguments) >= 5 && null !== $arguments[4]) {
+            array_push($processedArguments, 'BLOCK', $arguments[4]);
+        }
+
+        if (count($arguments) >= 6 && false !== $arguments[5]) {
             $processedArguments[] = 'NOACK';
         }
 
-        $processedArguments[] = 'STREAMS';
-        $keyOrIds = array_slice($arguments, 5);
+        if (count($arguments) >= 7 && false !== $arguments[6]) {
+            array_push($processedArguments, 'CLAIM', $arguments[6]);
+        }
 
-        parent::setArguments(array_merge($processedArguments, $keyOrIds));
+        array_push($processedArguments, 'STREAMS', ...array_keys($arguments[2]), ...array_values($arguments[2]));
+
+        parent::setArguments($processedArguments);
     }
 
     public function parseResponse($data)
