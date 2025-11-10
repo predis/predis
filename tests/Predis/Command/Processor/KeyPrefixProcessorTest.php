@@ -302,7 +302,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
                 ['prefix:foo', 'bar', 'prefix:hoge', 'piyo'],
             ],
             ['MSETEX',
-                [3, 'key', 'value', 'key1', 'value', 'key2', 'value', 'NX', 'EX', 10],
+                [['key' => 'value', 'key1' => 'value', 'key2' => 'value'], 'NX', 'EX', 10],
                 [3, 'prefix:key', 'value', 'prefix:key1', 'value', 'prefix:key2', 'value', 'NX', 'EX', 10],
             ],
             ['MSETNX',
