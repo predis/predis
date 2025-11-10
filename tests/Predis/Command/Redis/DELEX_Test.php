@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Command\Redis\Utils\CommandUtility;
@@ -7,7 +17,7 @@ use Predis\Command\Redis\Utils\CommandUtility;
 class DELEX_Test extends PredisCommandTestCase
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedCommand(): string
     {
@@ -15,7 +25,7 @@ class DELEX_Test extends PredisCommandTestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function getExpectedId(): string
     {
@@ -51,7 +61,7 @@ class DELEX_Test extends PredisCommandTestCase
         $value = $redis->get('foo');
         $this->assertEquals(
             1,
-            $redis->delex('foo','IFEQ', $value)
+            $redis->delex('foo', 'IFEQ', $value)
         );
         $this->assertEquals(
             'OK',
@@ -60,7 +70,7 @@ class DELEX_Test extends PredisCommandTestCase
 
         $this->assertEquals(
             0,
-            $redis->delex('foo','IFEQ', 'wrong')
+            $redis->delex('foo', 'IFEQ', 'wrong')
         );
         $this->assertEquals(
             1,
@@ -90,7 +100,7 @@ class DELEX_Test extends PredisCommandTestCase
         );
         $this->assertEquals(
             1,
-            $redis->delex('foo','IFDNE', CommandUtility::xxh3Hash('not equal'))
+            $redis->delex('foo', 'IFDNE', CommandUtility::xxh3Hash('not equal'))
         );
         $this->assertEquals(
             'OK',
@@ -99,7 +109,7 @@ class DELEX_Test extends PredisCommandTestCase
 
         $this->assertEquals(
             0,
-            $redis->delex('foo','IFDNE', CommandUtility::xxh3Hash($value))
+            $redis->delex('foo', 'IFDNE', CommandUtility::xxh3Hash($value))
         );
     }
 }

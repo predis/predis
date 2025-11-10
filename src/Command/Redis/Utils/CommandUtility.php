@@ -58,7 +58,7 @@ class CommandUtility
     /**
      * Converts a value into XXH3 hash.
      *
-     * @param $value
+     * @param         $value
      * @return string
      */
     public static function xxh3Hash($value): string
