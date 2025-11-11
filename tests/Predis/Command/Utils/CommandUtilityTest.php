@@ -20,6 +20,7 @@ use UnexpectedValueException;
 class CommandUtilityTest extends PredisTestCase
 {
     /**
+     * @group disconnected
      * @dataProvider arrayProvider
      * @param  array         $actual
      * @param  array         $expected
@@ -33,6 +34,7 @@ class CommandUtilityTest extends PredisTestCase
     }
 
     /**
+     * @group disconnected
      * @return void
      */
     public function testArrayToDictionaryThrowsExceptionOnOddNumberOfElements()
@@ -44,6 +46,7 @@ class CommandUtilityTest extends PredisTestCase
     }
 
     /**
+     * @group disconnected
      * @requires PHP >= 8.1
      * @return void
      */
@@ -55,7 +58,8 @@ class CommandUtilityTest extends PredisTestCase
     }
 
     /**
-     * @requires PHP <= 8.1
+     * @group disconnected
+     * @requires PHP < 8.1
      * @return void
      */
     public function testXXH3HashRaiseExceptionOnPHPLowerThan81()
@@ -67,6 +71,7 @@ class CommandUtilityTest extends PredisTestCase
     }
 
     /**
+     * @group disconnected
      * @return void
      */
     public function testDictionaryToArray(): void
