@@ -19,6 +19,7 @@ use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\DropArguments;
 use Predis\Command\Argument\Search\ExplainArguments;
+use Predis\Command\Argument\Search\HybridSearch\HybridSearchQuery;
 use Predis\Command\Argument\Search\ProfileArguments;
 use Predis\Command\Argument\Search\SchemaFields\FieldInterface;
 use Predis\Command\Argument\Search\SearchArguments;
@@ -138,6 +139,7 @@ use Predis\Response\Status;
  * @method array             ftdictdump(string $dict)
  * @method Status            ftdropindex(string $index, ?DropArguments $arguments = null)
  * @method string            ftexplain(string $index, string $query, ?ExplainArguments $arguments = null)
+ * @method array             fthybrid(string $index, HybridSearchQuery $query)
  * @method array             ftinfo(string $index)
  * @method array             ftprofile(string $index, ProfileArguments $arguments)
  * @method array             ftsearch(string $index, string $query, ?SearchArguments $arguments = null)
@@ -160,6 +162,7 @@ use Predis\Response\Status;
  * @method string            incrbyfloat(string $key, int|float $increment)
  * @method array             mget(string[]|string $keyOrKeys, string ...$keys = null)
  * @method mixed             mset(array $dictionary)
+ * @method array             msetex(array $dictionary, ?string $existModifier = null, ?string $expireResolution = null, ?int $expireTTL = null)
  * @method int               msetnx(array $dictionary)
  * @method Status            psetex(string $key, $milliseconds, $value)
  * @method Status|null       set(string $key, $value, $expireResolution = null, $expireTTL = null, $flag = null, $flagValue = null)
