@@ -4,6 +4,7 @@
 ### Added
 - Added cluster support for `XADD`, `XDEL` and `XRANGE` (#1587)
 - Added prefixable interface for `HEXPIRE` and `HEXPIRETIME` (#1592)
+- Added new experimental CAS/CAD functionality (#1609)
 
 ### Changed
 - Refactor pipeline data writing depends on connection type (#1586)
@@ -13,7 +14,6 @@
 - Added testing with 8.4-M01 (#1593)
 - Added testing with 8.4-RC1-pre image (#1602)
 - Added testing with 8.4-RC1-pre.2 image (#1605)
-- Added new CAS/CAD functionality (#1609)
 
 ## v3.2.0 (2025-08-05)
 ### Added
