@@ -5,6 +5,7 @@
 - Added cluster support for `XADD`, `XDEL` and `XRANGE` (#1587)
 - Added prefixable interface for `HEXPIRE` and `HEXPIRETIME` (#1592)
 - Added new experimental CAS/CAD functionality (#1609)
+- Added support for MSET command (#1610)
 
 ### Changed
 - Refactor pipeline data writing depends on connection type (#1586)

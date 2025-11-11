@@ -160,6 +160,7 @@ use Predis\Response\Status;
  * @method string            incrbyfloat(string $key, int|float $increment)
  * @method array             mget(string[]|string $keyOrKeys, string ...$keys = null)
  * @method mixed             mset(array $dictionary)
+ * @method array             msetex(array $dictionary, ?string $existModifier = null, ?string $expireResolution = null, ?int $expireTTL = null)
  * @method int               msetnx(array $dictionary)
  * @method Status            psetex(string $key, $milliseconds, $value)
  * @method Status|null       set(string $key, $value, $expireResolution = null, $expireTTL = null, $flag = null, $flagValue = null)
