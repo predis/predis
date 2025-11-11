@@ -53,4 +53,21 @@ class CommandUtility
 
         return $dict;
     }
+
+    /**
+     * Converts associative array into flatten array (key1, value1...keyN, valueN).
+     *
+     * @param  array $dict
+     * @return array
+     */
+    public static function dictionaryToArray(array $dict): array
+    {
+        $array = [];
+
+        array_walk($dict, function ($value, $key) use (&$array) {
+            array_push($array, $key, $value);
+        });
+
+        return $array;
+    }
 }
