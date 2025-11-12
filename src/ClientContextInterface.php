@@ -300,6 +300,7 @@ use Predis\Command\Redis\VADD;
  * @method $this xrange(string $key, string $start, string $end, ?int $count = null)
  * @method $this xread(int $count = null, int $block = null, array $streams = null, string ...$id)
  * @method $this xreadgroup(string $group, string $consumer, ?int $count = null, ?int $blockMs = null, bool $noAck = false, string ...$keyOrId)
+ * @method $this xreadgroup_claim(string $group, string $consumer, array $keyIdDict, ?int $count = null, ?int $blockMs = null, bool $noAck = false, ?int $claim = null)
  * @method $this xsetid(string $key, string $lastId, ?int $entriesAdded = null, ?string $maxDeleteId = null)
  * @method $this xtrim(string $key, array|string $strategy, string $threshold, array $options = null)
  * @method $this zadd($key, array $membersAndScoresDictionary)
