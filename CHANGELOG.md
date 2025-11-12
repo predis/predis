@@ -1,6 +1,6 @@
 ## Changelog
 
-## Unreleased
+## v2.4.1 (2025-11-12)
 ### Fixed
 - Fixed return type for `ZCOUNT` to be `int` (#1546)
 - Removed automatic `conn_uid` parameter assignment (#1551)
