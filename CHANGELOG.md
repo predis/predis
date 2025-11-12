@@ -4,8 +4,10 @@
 ### Added
 - Added cluster support for `XADD`, `XDEL` and `XRANGE` (#1587)
 - Added prefixable interface for `HEXPIRE` and `HEXPIRETIME` (#1592)
+- Added new experimental CAS/CAD functionality (#1609)
 - Added temporary XREADGROUP_CLAIM command (#1608)
 - Added support for MSET command (#1610)
+- Added experimental support for FT.HYBRID (#1607)
 
 ### Changed
 - Refactor pipeline data writing depends on connection type (#1586)
@@ -20,7 +22,6 @@
 ### Added
 - Added support for `XDELEX` and `XACKDEL` (#1580)
 - Added missing VSIM argument (#1582)
-- Added experimental support for FT.HYBRID (#1607)
 
 ### Changed
 - Extended `XTRIM` and `XADD` commands with new parameters (#1580)

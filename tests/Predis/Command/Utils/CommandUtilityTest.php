@@ -14,11 +14,13 @@ namespace Predis\Command\Utils;
 
 use Predis\Command\Redis\Utils\CommandUtility;
 use PredisTestCase;
+use RuntimeException;
 use UnexpectedValueException;
 
 class CommandUtilityTest extends PredisTestCase
 {
     /**
+     * @group disconnected
      * @dataProvider arrayProvider
      * @param  array         $actual
      * @param  array         $expected
@@ -32,6 +34,7 @@ class CommandUtilityTest extends PredisTestCase
     }
 
     /**
+     * @group disconnected
      * @return void
      */
     public function testArrayToDictionaryThrowsExceptionOnOddNumberOfElements()
@@ -43,6 +46,32 @@ class CommandUtilityTest extends PredisTestCase
     }
 
     /**
+     * @group disconnected
+     * @requires PHP >= 8.1
+     * @return void
+     */
+    public function testXXH3Hash()
+    {
+        $expectedHash = '87d57e269b9df0f0';
+
+        $this->assertEquals($expectedHash, CommandUtility::xxh3Hash('value'));
+    }
+
+    /**
+     * @group disconnected
+     * @requires PHP < 8.1
+     * @return void
+     */
+    public function testXXH3HashRaiseExceptionOnPHPLowerThan81()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('XXH3 algorithm is not supported. Please install PECL xxhash extension.');
+
+        CommandUtility::xxh3Hash('value');
+    }
+
+    /**
+     * @group disconnected
      * @return void
      */
     public function testDictionaryToArray(): void

@@ -53,6 +53,8 @@ use Predis\Command\Redis\VADD;
  *
  * @method $this copy(string $source, string $destination, int $db = -1, bool $replace = false)
  * @method $this del(array|string $keys)
+ * @method $this delex(string $key, string $flag, $flagValue)
+ * @method $this digest(string $key)
  * @method $this dump($key)
  * @method $this exists($key)
  * @method $this expire($key, $seconds, string $expireOption = '')
@@ -153,7 +155,7 @@ use Predis\Command\Redis\VADD;
  * @method $this msetex(array $dictionary, ?string $existModifier = null, ?string $expireResolution = null, ?int $expireTTL = null)
  * @method $this msetnx(array $dictionary)
  * @method $this psetex($key, $milliseconds, $value)
- * @method $this set($key, $value, $expireResolution = null, $expireTTL = null, $flag = null)
+ * @method $this set($key, $value, $expireResolution = null, $expireTTL = null, $flag = null, $flagValue = null)
  * @method $this setbit($key, $offset, $value)
  * @method $this setex($key, $seconds, $value)
  * @method $this setnx($key, $value)
