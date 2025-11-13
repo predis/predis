@@ -72,16 +72,16 @@ class RangeVectorSearchConfig extends BaseVectorSearchConfig
             array_push($tokens, 'EPSILON', $this->epsilon);
         }
 
-        if ($this->as) {
-            array_push($tokens, ...$this->as);
-        }
-
         if (!empty($tokens)) {
             array_push($this->arguments, count($tokens), ...$tokens);
         }
 
         if ($this->filter) {
             $this->arguments = array_merge($this->arguments, $this->filter);
+        }
+
+        if ($this->as) {
+            array_push($this->arguments, ...$this->as);
         }
 
         return $this->arguments;
