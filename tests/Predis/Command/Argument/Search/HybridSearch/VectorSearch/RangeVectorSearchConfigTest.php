@@ -80,7 +80,7 @@ class RangeVectorSearchConfigTest extends TestCase
                     ->epsilon(0.2)
                     ->as('alias')
                     ->filter('*'),
-                ['VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'RANGE', 6, 'RADIUS', 5, 'EPSILON', 0.2, 'YIELD_SCORE_AS', 'alias', 'FILTER', '*']],
+                ['VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'RANGE', 4, 'RADIUS', 5, 'EPSILON', 0.2, 'FILTER', '*', 'YIELD_SCORE_AS', 'alias']],
         ];
     }
 }
