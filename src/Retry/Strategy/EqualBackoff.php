@@ -8,15 +8,19 @@ namespace Predis\Retry\Strategy;
 class EqualBackoff implements StrategyInterface
 {
     /**
-     * @var float
+     * @var int
      */
     protected $backoff;
-    public function __construct(float $backoff)
+
+    /**
+     * @param int $backoff in micro seconds
+     */
+    public function __construct(int $backoff)
     {
         $this->backoff = $backoff;
     }
 
-    public function compute(int $failures): float
+    public function compute(int $failures): int
     {
         return $this->backoff;
     }

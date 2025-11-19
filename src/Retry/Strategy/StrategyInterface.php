@@ -8,20 +8,20 @@ namespace Predis\Retry\Strategy;
 interface StrategyInterface
 {
     /**
-     * Minimum backoff between each retry in seconds.
+     * Minimum backoff between each retry in micro seconds.
      */
-    const DEFAULT_BASE = 0.008;
+    const DEFAULT_BASE = 8 * 1000;
 
     /**
-     * Maximum backoff between each retry in seconds.
+     * Maximum backoff between each retry in micro seconds.
      */
-    const DEFAULT_CAP = 0.512;
+    const DEFAULT_CAP = 512 * 1000;
 
     /**
-     * Compute backoff in seconds upon failure.
+     * Compute backoff in micro seconds upon failure.
      *
      * @param int $failures
      * @return mixed
      */
-    public function compute(int $failures): float;
+    public function compute(int $failures): int;
 }

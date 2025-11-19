@@ -209,18 +209,25 @@ class Stream implements StreamInterface
 
         $result = fwrite($this->stream, $string);
 
-        if ($result === false) {
-            throw new RuntimeException('Unable to write to stream', 1);
-        }
+        if ($result === false || $result === 0) {
+            $metadata = $this->getMetadata();
 
-        if ($result === 0) {
             if ($this->eof()) {
-                throw new RuntimeException('Stream closed', 1);
+                throw new RuntimeException("Connection closed by peer during write", 1);
             }
 
-            if (stream_get_meta_data($this->stream)['timed_out']) {
+            if (!is_resource($this->stream)) {
+                throw new RuntimeException(
+                    "Stream resource is no longer valid",
+                    1
+                );
+            }
+
+            if ($metadata['timed_out']) {
                 throw new TimeoutException();
             }
+
+            throw new RuntimeException('Unable to write to stream', 1);
         }
 
         return $result;
@@ -254,10 +261,6 @@ class Stream implements StreamInterface
             throw new RuntimeException('Length parameter cannot be negative');
         }
 
-        if (stream_get_meta_data($this->stream)['timed_out']) {
-            throw new TimeoutException();
-        }
-
         if (0 === $length) {
             return '';
         }
@@ -269,6 +272,23 @@ class Stream implements StreamInterface
         }
 
         if (false === $string) {
+            $metadata = $this->getMetadata();
+
+            if ($this->eof()) {
+                throw new RuntimeException("Connection closed by peer during read", 1);
+            }
+
+            if (!is_resource($this->stream)) {
+                throw new RuntimeException(
+                    "Stream resource is no longer valid",
+                    1
+                );
+            }
+
+            if ($metadata['timed_out']) {
+                throw new TimeoutException();
+            }
+
             throw new RuntimeException('Unable to read from stream', 1);
         }
 
@@ -308,5 +328,15 @@ class Stream implements StreamInterface
         $metadata = stream_get_meta_data($this->stream);
 
         return $metadata[$key] ?? null;
+    }
+
+    /**
+     * Handle errors on read operation.
+     *
+     * @return void
+     */
+    private function handleReadError()
+    {
+
     }
 }
