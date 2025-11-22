@@ -19,8 +19,14 @@ use Predis\Command;
 use Predis\Connection;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\Parameters;
+use Predis\Connection\Resource\StreamFactoryInterface;
+use Predis\Connection\StreamConnection;
 use Predis\Response;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
+use Predis\TimeoutException;
 use PredisTestCase;
+use Psr\Http\Message\StreamInterface;
 
 class RedisClusterTest extends PredisTestCase
 {
@@ -1371,6 +1377,58 @@ class RedisClusterTest extends PredisTestCase
         $cluster->add($connection1);
 
         $cluster->executeCommand($command);
+    }
+
+    /**
+     * @medium
+     * @group disconnected
+     * @group slow
+     */
+    public function testRetryCommandFailureOnCustomRetryConfiguration()
+    {
+        $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3)
+        ]);
+
+        $mockStream
+            ->expects($this->exactly(4))
+            ->method('close')
+            ->withAnyParameters();
+
+        $mockStream
+            ->expects($this->exactly(4))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new TimeoutException()),
+                $this->throwException(new TimeoutException()),
+                $this->throwException(new TimeoutException()),
+                1000
+            );
+
+        $mockStream
+            ->expects($this->once())
+            ->method('read')
+            ->withAnyParameters()
+            ->willReturn("+OK\r\n");
+
+        $mockStreamFactory
+            ->expects($this->exactly(4))
+            ->method('createStream')
+            ->withAnyParameters()
+            ->willReturn($mockStream);
+
+        $connection = new StreamConnection($parameters, $mockStreamFactory);
+        $cluster = new RedisCluster(new Connection\Factory(), $parameters);
+        $cluster->useClusterSlots(false);
+        $cluster->add($connection);
+
+        $this->assertEquals(
+            'OK',
+            $cluster->executeCommand(Command\RawCommand::create('SET', 1001))
+        );
     }
 
     /**

@@ -2,7 +2,11 @@
 
 namespace Predis\Retry;
 
+use Predis\Connection\ConnectionException;
+use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Retry\Strategy\StrategyInterface;
+use Predis\TimeoutException;
+use Throwable;
 
 class Retry
 {
@@ -16,13 +20,32 @@ class Retry
      */
     protected $retries;
 
+    /**
+     * @var array
+     */
+    protected $catchableExceptions = [
+        TimeoutException::class,
+        ConnectionException::class,
+        StreamInitException::class
+    ];
 
+    /**
+     * @param StrategyInterface $backoffStrategy
+     * @param int $retries
+     * @param array|null $catchableExceptions A list of exceptions classes that should be caught.
+     *                                        Overrides default list of the catchable exceptions.
+     */
     public function __construct(
         StrategyInterface $backoffStrategy,
-        int $retries
+        int $retries,
+        array $catchableExceptions = null
     ) {
         $this->backoffStrategy = $backoffStrategy;
         $this->retries = $retries;
+
+        if (null !== $catchableExceptions) {
+            $this->catchableExceptions = $catchableExceptions;
+        }
     }
 
     /**
@@ -37,6 +60,17 @@ class Retry
     }
 
     /**
+     * Extend catchable exceptions list.
+     *
+     * @param array $catchableExceptions
+     * @return void
+     */
+    public function updateCatchableExceptions(array $catchableExceptions): void
+    {
+        $this->catchableExceptions =  array_merge($this->catchableExceptions, $catchableExceptions);
+    }
+
+    /**
      * @return int
      */
     public function getRetries(): int
@@ -46,9 +80,9 @@ class Retry
 
     /**
      * @param callable(): void $do
-     * @param callable(Retryable): void|null $fail
-     * @return void
-     * @throws Retryable
+     * @param callable(Throwable): void|null $fail
+     * @return mixed
+     * @throws Throwable
      */
     public function callWithRetry(callable $do, callable $fail = null)
     {
@@ -57,18 +91,22 @@ class Retry
         while (true) {
             try {
                 return $do();
-            } catch (Retryable $e) {
-                ++$failures;
-
-                if ($fail !== null) {
-                    $fail($e);
+            } catch (Throwable $e) {
+                if (null !== $this->catchableExceptions && !in_array(get_class($e), $this->catchableExceptions)) {
+                    throw $e;
                 }
+
+                $backoff = $this->backoffStrategy->compute($failures);
+                ++$failures;
 
                 if ($this->retries >= 0 && $failures > $this->retries) {
                     throw $e;
                 }
 
-                $backoff = $this->backoffStrategy->compute($failures);
+                if ($fail !== null) {
+                    $fail($e);
+                }
+
                 if ($backoff > 0) {
                     usleep($backoff);
                 }

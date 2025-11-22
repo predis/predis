@@ -18,6 +18,8 @@ use Predis\Client;
 use Predis\Command;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Connection;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\NoBackoff;
 
 /**
  * Base test case class for the Predis test suite.

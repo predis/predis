@@ -656,7 +656,7 @@ class PipelineTest extends PredisTestCase
     {
         $parameters = $this->getDefaultParametersArray();
 
-        $client = $this->getClient(
+        $client = new Client(
             ["tcp://{$parameters['host']}:{$parameters['port']}?role=master&database={$parameters['database']}&password={$parameters['password']}"],
             ['replication' => 'predis']
         );

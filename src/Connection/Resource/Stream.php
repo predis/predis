@@ -329,14 +329,4 @@ class Stream implements StreamInterface
 
         return $metadata[$key] ?? null;
     }
-
-    /**
-     * Handle errors on read operation.
-     *
-     * @return void
-     */
-    private function handleReadError()
-    {
-
-    }
 }

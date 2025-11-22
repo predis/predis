@@ -12,7 +12,7 @@ class EqualBackoffTest extends TestCase
      */
     public function testCompute(): void
     {
-        $backoff = new EqualBackoff(1.5);
-        $this->assertEquals(1.5, $backoff->compute(1));
+        $backoff = new EqualBackoff(1);
+        $this->assertEquals(1, $backoff->compute(1));
     }
 }

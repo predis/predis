@@ -39,6 +39,10 @@ class ExponentialBackoff implements StrategyInterface
             return min($this->cap, (mt_rand(0, mt_getrandmax() - 1) / mt_getrandmax()) * ($this->base * 2**$failures));
         }
 
-        return min($this->cap, $this->base * 2**$failures);
+        if ($this->cap > 0) {
+            return min($this->cap, $this->base * 2**$failures);
+        }
+
+        return $this->base * 2**$failures;
     }
 }

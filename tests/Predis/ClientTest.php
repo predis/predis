@@ -16,13 +16,21 @@ use Iterator;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\Factory as CommandFactory;
 use Predis\Command\Processor\KeyPrefixProcessor;
+use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\Replication\MasterSlaveReplication;
+use Predis\Connection\Resource\Exception\StreamInitException;
+use Predis\Connection\Resource\StreamFactoryInterface;
+use Predis\Connection\StreamConnection;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
 use PredisTestCase;
+use Psr\Http\Message\StreamInterface;
 use ReflectionProperty;
 use stdClass;
+use Throwable;
 
 class ClientTest extends PredisTestCase
 {
@@ -610,6 +618,10 @@ class ClientTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->willReturn($expectedResponse);
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
 
         $client = new Client($connection);
         $client->executeCommand($ping);
@@ -628,6 +640,10 @@ class ClientTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->willReturn($expectedResponse);
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
 
         $client = new Client($connection, ['exceptions' => false]);
         $response = $client->executeCommand($ping);
@@ -689,6 +705,11 @@ class ClientTest extends PredisTestCase
             ->with($this->isRedisCommand('PING'))
             ->willReturn($expectedResponse);
 
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
+
         $client = new Client($connection);
         $client->ping();
     }
@@ -706,6 +727,10 @@ class ClientTest extends PredisTestCase
             ->method('executeCommand')
             ->with($this->isRedisCommand('PING'))
             ->willReturn($expectedResponse);
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
 
         $client = new Client($connection, ['exceptions' => false]);
         $response = $client->ping();
@@ -1306,6 +1331,60 @@ class ClientTest extends PredisTestCase
         $this->assertInstanceOf('\Predis\Client', $nodeClient = $iterator->current());
         $this->assertSame($connection, $nodeClient->getConnection());
         $this->assertSame('127.0.0.1:6381', $iterator->key());
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider retryableExceptionProvider
+     */
+    public function testExecuteCommandRetryCommandOnRetryableException(Throwable $exception)
+    {
+        $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3)
+        ]);
+
+        $mockStream
+            ->expects($this->atLeast(3))
+            ->method('close')
+            ->withAnyParameters();
+
+        $mockStream
+            ->expects($this->exactly(4))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException($exception),
+                $this->throwException($exception),
+                $this->throwException($exception),
+                1000
+            );
+
+        $mockStream
+            ->expects($this->once())
+            ->method('read')
+            ->withAnyParameters()
+            ->willReturn("+PONG\r\n");
+
+        $mockStreamFactory
+            ->expects($this->exactly(4))
+            ->method('createStream')
+            ->withAnyParameters()
+            ->willReturn($mockStream);
+
+        $connection = new StreamConnection($parameters, $mockStreamFactory);
+        $client = new Client($connection);
+        $this->assertEquals('PONG', $client->ping());
+    }
+
+    public function retryableExceptionProvider(): array
+    {
+        return [
+            [new TimeoutException()],
+            [new StreamInitException()],
+            [new ConnectionException($this->getMockConnection())]
+        ];
     }
 
     /**

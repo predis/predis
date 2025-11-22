@@ -34,6 +34,11 @@ class ExponentialBackoffTest extends TestCase
         // Test adjusted base
         $this->assertGreaterThanOrEqual(1000000, $backoff->compute(0));
 
+        $backoff = new ExponentialBackoff(StrategyInterface::DEFAULT_BASE, -1);
+
+        // Test with no cap
+        $this->assertEquals(StrategyInterface::DEFAULT_BASE * 2, $backoff->compute(1));
+
         $backoff = new ExponentialBackoff(
             StrategyInterface::DEFAULT_BASE,
             StrategyInterface::DEFAULT_CAP,
@@ -47,7 +52,6 @@ class ExponentialBackoffTest extends TestCase
         $this->assertLessThanOrEqual(StrategyInterface::DEFAULT_BASE, $interval);
 
         $interval = $backoff->compute(6);
-        var_dump($interval);
 
         // Test with jitter - default cap
         $this->assertGreaterThanOrEqual(0, $interval);

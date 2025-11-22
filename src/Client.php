@@ -22,6 +22,7 @@ use Predis\Command\RawCommand;
 use Predis\Command\ScriptCommand;
 use Predis\Configuration\Options;
 use Predis\Configuration\OptionsInterface;
+use Predis\Connection\AggregateConnectionInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
@@ -41,6 +42,7 @@ use Predis\Response\ServerException;
 use Predis\Transaction\MultiExec as MultiExecTransaction;
 use ReturnTypeWillChange;
 use RuntimeException;
+use Throwable;
 use Traversable;
 
 /**
@@ -376,11 +378,24 @@ class Client implements ClientInterface, IteratorAggregate
 
     /**
      * {@inheritdoc}
+     * @throws Throwable
      */
     public function executeCommand(CommandInterface $command)
     {
-        $response = $this->connection->executeCommand($command);
         $parameters = $this->connection->getParameters();
+
+        if ($this->connection instanceof AggregateConnectionInterface) {
+            $response = $this->connection->executeCommand($command);
+        } else {
+            $response = $parameters->retry->callWithRetry(
+                function () use ($command) {
+                    return $this->connection->executeCommand($command);
+                },
+                function () {
+                    $this->connection->disconnect();
+                }
+            );
+        }
 
         if ($response instanceof ResponseInterface) {
             if ($response instanceof ErrorResponseInterface) {

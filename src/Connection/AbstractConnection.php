@@ -19,6 +19,7 @@ use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Protocol\Parser\ParserStrategyResolver;
 use Predis\Protocol\Parser\Strategy\ParserStrategyInterface;
 use Predis\Protocol\ProtocolException;
+use Predis\TimeoutException;
 
 /**
  * Base class with the common logic used by connection classes to communicate

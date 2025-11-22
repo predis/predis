@@ -13,6 +13,8 @@
 namespace Predis\Connection;
 
 use InvalidArgumentException;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\NoBackoff;
 
 /**
  * Container for connection parameters used to initialize connections to Redis.
@@ -37,10 +39,22 @@ class Parameters implements ParametersInterface
     protected $parameters;
 
     /**
+     * @var bool
+     */
+    private $disabledRetry = true;
+
+    /**
      * @param array $parameters Named array of connection parameters.
      */
     public function __construct(array $parameters = [])
     {
+        if (!array_key_exists('retry', $parameters)) {
+            // Retries disabled by default
+            static::$defaults['retry'] = new Retry(new NoBackoff(), 0);
+        } else {
+            $this->disabledRetry = false;
+        }
+
         $this->parameters = $this->filter($parameters + static::$defaults);
     }
 
@@ -193,6 +207,16 @@ class Parameters implements ParametersInterface
         }
 
         return "$this->scheme://$this->host:$this->port";
+    }
+
+    /**
+     * Returns if retries is disabled.
+     *
+     * @return bool
+     */
+    public function isDisabledRetry(): bool
+    {
+        return $this->disabledRetry;
     }
 
     /**
