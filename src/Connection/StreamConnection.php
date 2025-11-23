@@ -129,6 +129,10 @@ class StreamConnection extends AbstractConnection
                 return;
             }
 
+            if (0 === $written) { // full stream buffer, wait to avoid "busy loop"
+                usleep(10000);
+            }
+
             $buffer = substr($buffer, $written); // @phpstan-ignore-line
         }
     }
