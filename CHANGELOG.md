@@ -1,6 +1,6 @@
 ## Changelog
 
-## v3.3.0 (2025-11-0)
+## v3.3.0 (2025-11-24)
 ### Added
 - Added cluster support for `XADD`, `XDEL` and `XRANGE` (#1587)
 - Added prefixable interface for `HEXPIRE` and `HEXPIRETIME` (#1592)
