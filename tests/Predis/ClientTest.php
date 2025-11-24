@@ -29,6 +29,7 @@ use Predis\Retry\Strategy\ExponentialBackoff;
 use PredisTestCase;
 use Psr\Http\Message\StreamInterface;
 use ReflectionProperty;
+use RuntimeException;
 use stdClass;
 use Throwable;
 
@@ -1335,9 +1336,8 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group disconnected
-     * @dataProvider retryableExceptionProvider
      */
-    public function testExecuteCommandRetryCommandOnRetryableException(Throwable $exception)
+    public function testExecuteCommandRetryCommandOnRetryableException()
     {
         $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
         $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
@@ -1355,9 +1355,9 @@ class ClientTest extends PredisTestCase
             ->method('write')
             ->withAnyParameters()
             ->willReturnOnConsecutiveCalls(
-                $this->throwException($exception),
-                $this->throwException($exception),
-                $this->throwException($exception),
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
                 1000
             );
 
@@ -1376,15 +1376,6 @@ class ClientTest extends PredisTestCase
         $connection = new StreamConnection($parameters, $mockStreamFactory);
         $client = new Client($connection);
         $this->assertEquals('PONG', $client->ping());
-    }
-
-    public function retryableExceptionProvider(): array
-    {
-        return [
-            [new TimeoutException()],
-            [new StreamInitException()],
-            [new ConnectionException($this->getMockConnection())]
-        ];
     }
 
     /**

@@ -25,7 +25,6 @@ use Predis\Protocol\Parser\Strategy\Resp3Strategy;
 use Predis\Protocol\Parser\UnexpectedTypeException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
-use Predis\TimeoutException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
@@ -122,7 +121,7 @@ class StreamConnection extends AbstractConnection
         while (($length = strlen($buffer)) > 0) {
             try {
                 $written = $stream->write($buffer);
-            } catch (RuntimeException|TimeoutException $e) {
+            } catch (RuntimeException $e) {
                 $this->onStreamError($e, 'Error while writing bytes to the server.');
             }
 
@@ -337,19 +336,18 @@ class StreamConnection extends AbstractConnection
     /**
      * Handles stream-related exceptions.
      *
-     * @param  RuntimeException|TimeoutException                        $e
+     * @param  RuntimeException                        $e
      * @param  string|null                                        $message
-     * @throws RuntimeException|CommunicationException|TimeoutException
+     * @throws RuntimeException|CommunicationException
      */
     protected function onStreamError($e, ?string $message = null)
     {
-        // Code = 1 represents issues related to read/write operation.
+        // Code = 1 represents issues related to read/write operation, connection broken.
         if ($e->getCode() === 1) {
             $this->onConnectionError($message);
-        }
-
-        if ($e instanceof TimeoutException) {
-            $e->setConnection($this);
+        } elseif ($e->getCode() === 2) {
+            // Operation has been timed out, connection not necessarily broken.
+            $this->onTimeoutError();
         }
 
         throw $e;

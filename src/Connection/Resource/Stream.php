@@ -13,7 +13,6 @@
 namespace Predis\Connection\Resource;
 
 use InvalidArgumentException;
-use Predis\TimeoutException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
@@ -195,7 +194,6 @@ class Stream implements StreamInterface
     /**
      * {@inheritDoc}
      * @throws RuntimeException
-     * @throws TimeoutException
      */
     public function write(string $string): int
     {
@@ -224,7 +222,10 @@ class Stream implements StreamInterface
             }
 
             if ($metadata['timed_out']) {
-                throw new TimeoutException();
+                throw new RuntimeException(
+                    'Stream has been timed out',
+                    2
+                );
             }
 
             throw new RuntimeException('Unable to write to stream', 1);
@@ -245,7 +246,6 @@ class Stream implements StreamInterface
      * {@inheritDoc}
      * @param int $length If length = -1, reads a stream line by line (e.g fgets())
      * @throws RuntimeException
-     * @throws TimeoutException
      */
     public function read(int $length): string
     {
@@ -286,7 +286,10 @@ class Stream implements StreamInterface
             }
 
             if ($metadata['timed_out']) {
-                throw new TimeoutException();
+                throw new RuntimeException(
+                    'Stream has been timed out',
+                    2
+                );
             }
 
             throw new RuntimeException('Unable to read from stream', 1);

@@ -160,6 +160,20 @@ abstract class AbstractConnection implements NodeConnectionInterface
     }
 
     /**
+     * Helper method to handle timeout errors.
+     *
+     * @param int $code
+     * @return void
+     * @throws CommunicationException
+     */
+    protected function onTimeoutError(int $code = 0): void
+    {
+        CommunicationException::handle(
+            new TimeoutException($this, $code)
+        );
+    }
+
+    /**
      * Helper method to handle protocol errors.
      *
      * @param  string                 $message Error message.

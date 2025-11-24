@@ -10,7 +10,7 @@ use Predis\Retry\Strategy\EqualBackoff;
 use Predis\Retry\Strategy\ExponentialBackoff;
 use Predis\Retry\Strategy\NoBackoff;
 use Predis\Retry\Strategy\StrategyInterface;
-use Predis\TimeoutException;
+use RuntimeException;
 use Throwable;
 
 class RetryTest extends TestCase
@@ -36,7 +36,7 @@ class RetryTest extends TestCase
             }
 
             ++$retriesCount;
-            throw new TimeoutException();
+            throw new StreamInitException();
         };
 
         $startTime = microtime(true);
@@ -64,7 +64,7 @@ class RetryTest extends TestCase
             ++$callCount;
 
             if ($callCount <= 3) {
-                throw new TimeoutException();
+                throw new RuntimeException();
             } else if ($callCount <= 7) {
                 throw new ConnectionException(
                     $this->getMockBuilder(NodeConnectionInterface::class)->getMock()
@@ -83,7 +83,7 @@ class RetryTest extends TestCase
             try {
                 $retry->callWithRetry($doCallable, $failCallable);
             } catch (Throwable $e) {
-                $this->assertInstanceOf(TimeoutException::class, $e);
+                $this->assertInstanceOf(RuntimeException::class, $e);
                 $this->assertEquals(0, $retriesCount);
             }
         }

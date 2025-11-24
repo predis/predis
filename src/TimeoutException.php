@@ -6,26 +6,10 @@ use Exception;
 use Predis\Connection\NodeConnectionInterface;
 use Throwable;
 
-class TimeoutException extends Exception
+class TimeoutException extends CommunicationException
 {
-    /**
-     * @var NodeConnectionInterface
-     */
-    protected $connection;
-
-    public function __construct(NodeConnectionInterface $connection = null, $code = 0, Throwable $previous = null)
+    public function __construct(NodeConnectionInterface $connection, $code = 0, Throwable $previous = null)
     {
-        parent::__construct("Operation has been timed out", $code, $previous);
-        $this->connection = $connection;
-    }
-
-    public function getConnection(): ?NodeConnectionInterface
-    {
-        return $this->connection;
-    }
-
-    public function setConnection(NodeConnectionInterface $connection)
-    {
-        $this->connection = $connection;
+        parent::__construct($connection, "Operation has been timed out", $code, $previous);
     }
 }

@@ -21,12 +21,8 @@ use Predis\Connection\Resource\StreamFactoryInterface;
 use Predis\Consumer\Push\PushResponse;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error as ErrorResponse;
-use Predis\Retry\Retry;
-use Predis\Retry\Strategy\ExponentialBackoff;
-use Predis\TimeoutException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
-use Throwable;
 
 /**
  * @method StreamConnection createConnection(bool $initialize = false)

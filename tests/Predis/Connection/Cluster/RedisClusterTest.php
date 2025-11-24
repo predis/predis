@@ -24,9 +24,9 @@ use Predis\Connection\StreamConnection;
 use Predis\Response;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
-use Predis\TimeoutException;
 use PredisTestCase;
 use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 class RedisClusterTest extends PredisTestCase
 {
@@ -1402,9 +1402,9 @@ class RedisClusterTest extends PredisTestCase
             ->method('write')
             ->withAnyParameters()
             ->willReturnOnConsecutiveCalls(
-                $this->throwException(new TimeoutException()),
-                $this->throwException(new TimeoutException()),
-                $this->throwException(new TimeoutException()),
+                $this->throwException(new RuntimeException("", 2)),
+                $this->throwException(new RuntimeException("", 2)),
+                $this->throwException(new RuntimeException("", 2)),
                 1000
             );
 
