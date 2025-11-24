@@ -1,23 +1,17 @@
 ## Changelog
 
-## Unreleased
+## v3.3.0 (2025-11-24)
 ### Added
 - Added cluster support for `XADD`, `XDEL` and `XRANGE` (#1587)
 - Added prefixable interface for `HEXPIRE` and `HEXPIRETIME` (#1592)
 - Added new experimental CAS/CAD functionality (#1609)
-- Added temporary XREADGROUP_CLAIM command (#1608)
-- Added support for MSET command (#1610)
-- Added experimental support for FT.HYBRID (#1607)
+- Added temporary `XREADGROUP_CLAIM` command (#1608)
+- Added support for `MSET` command (#1610)
+- Added experimental support for `FT.HYBRID` (#1607)
 
 ### Changed
-- Refactor pipeline data writing depends on connection type (#1586)
 - Improved compatiblity with Relay (#1597)
-
-### Maintenance
-- Added testing with 8.4-M01 (#1593)
-- Added testing with 8.4-RC1-pre image (#1602)
-- Added testing with 8.4-RC1-pre.2 image (#1605)
-- Added testing with 8.4-GA (#1611)
+- Refactor pipeline data writing depends on connection type (#1586)
 
 ## v3.2.0 (2025-08-05)
 ### Added
