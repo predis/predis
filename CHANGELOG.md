@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Fixed
-- Fixed wrong `@param` annotation
+- Fixed wrong `@param` annotation in `Parameters` (#1614)
 
 ## v3.3.0 (2025-11-24)
 ### Added
