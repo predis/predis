@@ -47,7 +47,7 @@ class Parameters implements ParametersInterface
     /**
      * Filters parameters removing entries with NULL or 0-length string values.
      *
-     * @params array $parameters Array of parameters to be filtered
+     * @param array $parameters Array of parameters to be filtered
      *
      * @return array
      */
