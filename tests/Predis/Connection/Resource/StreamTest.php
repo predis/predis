@@ -426,10 +426,9 @@ class StreamTest extends TestCase
     {
         $handle = fopen('php://temp', 'rb+');
         $stream = new Stream($handle);
-        $stream->write('');
-        $stream->rewind();
 
-        $this->assertSame('', $stream->getContents());
+        $this->expectException(RuntimeException::class);
+        $stream->write('');
     }
 
     public function writableModeProvider(): array
