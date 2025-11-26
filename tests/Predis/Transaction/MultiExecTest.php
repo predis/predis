@@ -19,18 +19,12 @@ use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
-use Predis\Connection\Replication\MasterSlaveReplication;
-use Predis\Connection\Resource\StreamFactoryInterface;
-use Predis\Connection\StreamConnection;
-use Predis\Pipeline\Pipeline;
-use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
 use Predis\TimeoutException;
 use Predis\Transaction\Exception\TransactionException;
 use PredisTestCase;
-use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
 /**

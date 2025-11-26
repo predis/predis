@@ -30,7 +30,7 @@ interface StrategyInterface
     /**
      * Compute backoff in micro seconds upon failure.
      *
-     * @param  int   $failures
+     * @param  int $failures
      * @return int
      */
     public function compute(int $failures): int;
