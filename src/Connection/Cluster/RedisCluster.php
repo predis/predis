@@ -61,7 +61,7 @@ use Traversable;
  */
 class RedisCluster extends AbstractAggregateConnection implements ClusterInterface, IteratorAggregate, Countable
 {
-    private $useClusterSlots = true;
+    public $useClusterSlots = true;
 
     /**
      * @var NodeConnectionInterface[]
@@ -541,23 +541,24 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
      * have to agree that something changed in the configuration of the cluster.
      *
      * @param CommandInterface $command Command instance.
-     * @param string $method Actual method.
+     * @param string           $method  Actual method.
      *
      * @return mixed
+     * @throws Throwable
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
         if ($this->connectionParameters->isDisabledRetry()) {
-            # Override default parameters, for backward-compatibility
-            # with current behaviour
+            // Override default parameters, for backward-compatibility
+            // with current behaviour
             $retry = new Retry(
                 new ExponentialBackoff($this->retryInterval * 1000, -1),
                 $this->retryLimit
             );
-            $retry->updateCatchableExceptions([ServerException::class]);
         } else {
             $retry = $this->connectionParameters->retry;
         }
+        $retry->updateCatchableExceptions([ServerException::class]);
 
         $doCallback = function () use ($command, $method) {
             $response = $this->getConnectionByCommand($command)->$method($command);
@@ -573,30 +574,12 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
             return $response;
         };
 
-        $failCallback = function (Throwable $exception) {
-            if ($exception instanceof ConnectionException) {
-                $connection = $exception->getConnection();
-
-                if ($connection) {
-                    $connection->disconnect();
-                    $this->remove($connection);
-                }
+        return $retry->callWithRetry(
+            $doCallback,
+            function (Throwable $e) {
+                $this->onFailCallback($e);
             }
-
-            if ($exception instanceof TimeoutException) {
-                $connection = $exception->getConnection();
-
-                if ($connection) {
-                    $connection->disconnect();
-                }
-            }
-
-            if ($this->useClusterSlots) {
-                $this->askSlotMap();
-            }
-        };
-
-        return $retry->callWithRetry($doCallback, $failCallback);
+        );
     }
 
     /**
@@ -745,6 +728,36 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
             }
 
             usleep($this->readTimeout);
+        }
+    }
+
+    /**
+     * Handle exceptions.
+     *
+     * @param  Throwable $exception
+     * @return void
+     */
+    private function onFailCallback(Throwable $exception)
+    {
+        if ($exception instanceof ConnectionException) {
+            $connection = $exception->getConnection();
+
+            if ($connection) {
+                $connection->disconnect();
+                $this->remove($connection);
+            }
+
+            if ($this->useClusterSlots) {
+                $this->askSlotMap();
+            }
+        }
+
+        if ($exception instanceof TimeoutException) {
+            $connection = $exception->getConnection();
+
+            if ($connection) {
+                $connection->disconnect();
+            }
         }
     }
 }

@@ -162,7 +162,7 @@ abstract class AbstractConnection implements NodeConnectionInterface
     /**
      * Helper method to handle timeout errors.
      *
-     * @param int $code
+     * @param  int                    $code
      * @return void
      * @throws CommunicationException
      */

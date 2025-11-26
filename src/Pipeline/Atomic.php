@@ -14,13 +14,16 @@ namespace Predis\Pipeline;
 
 use Predis\ClientException;
 use Predis\ClientInterface;
-use Predis\Connection\AggregateConnectionInterface;
+use Predis\Command\Command;
+use Predis\Command\CommandInterface;
+use Predis\CommunicationException;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
 use SplQueue;
+use Throwable;
 
 /**
  * Command pipeline wrapped into a MULTI / EXEC transaction.
@@ -63,24 +66,24 @@ class Atomic extends Pipeline
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
         $commandFactory = $this->getClient()->getCommandFactory();
-        $connection->executeCommand($commandFactory->create('multi'));
-
-        if ($connection instanceof AggregateConnectionInterface) {
-            $this->writeToMultiNode($connection, $commands);
-        } else {
-            $this->writeToSingleNode($connection, $commands);
-        }
+        $retry = $connection->getParameters()->retry;
+        $this->executeCommandWithRetry($connection, $commandFactory->create('multi'));
+        $this->writeToSingleNode($connection, $commands);
 
         foreach ($commands as $command) {
-            $response = $connection->readResponse($command);
+            $response = $retry->callWithRetry(function () use ($connection, $command) {
+                return $connection->readResponse($command);
+            }, function () use ($connection) {
+                $connection->disconnect();
+            });
 
             if ($response instanceof ErrorResponseInterface) {
-                $connection->executeCommand($commandFactory->create('discard'));
+                $this->executeCommandWithRetry($connection, $commandFactory->create('discard'));
                 throw new ServerException($response->getMessage());
             }
         }
 
-        $executed = $connection->executeCommand($commandFactory->create('exec'));
+        $executed = $this->executeCommandWithRetry($connection, $commandFactory->create('exec'));
 
         if (!isset($executed)) {
             throw new ClientException(
@@ -122,5 +125,24 @@ class Atomic extends Pipeline
         }
 
         return $responses;
+    }
+
+    /**
+     * @param  ConnectionInterface $connection
+     * @param  Command             $command
+     * @return mixed
+     * @throws Throwable
+     */
+    protected function executeCommandWithRetry(ConnectionInterface $connection, CommandInterface $command)
+    {
+        $retry = $connection->getParameters()->retry;
+
+        return $retry->callWithRetry(function () use ($connection, $command) {
+            return $connection->executeCommand($command);
+        }, function (Throwable $e) {
+            if ($e instanceof CommunicationException) {
+                $e->getConnection()->disconnect();
+            }
+        });
     }
 }

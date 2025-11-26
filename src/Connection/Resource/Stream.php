@@ -211,12 +211,12 @@ class Stream implements StreamInterface
             $metadata = $this->getMetadata();
 
             if ($this->eof()) {
-                throw new RuntimeException("Connection closed by peer during write", 1);
+                throw new RuntimeException('Connection closed by peer during write', 1);
             }
 
             if (!is_resource($this->stream)) {
                 throw new RuntimeException(
-                    "Stream resource is no longer valid",
+                    'Stream resource is no longer valid',
                     1
                 );
             }
@@ -244,7 +244,7 @@ class Stream implements StreamInterface
 
     /**
      * {@inheritDoc}
-     * @param int $length If length = -1, reads a stream line by line (e.g fgets())
+     * @param  int              $length If length = -1, reads a stream line by line (e.g fgets())
      * @throws RuntimeException
      */
     public function read(int $length): string
@@ -275,12 +275,12 @@ class Stream implements StreamInterface
             $metadata = $this->getMetadata();
 
             if ($this->eof()) {
-                throw new RuntimeException("Connection closed by peer during read", 1);
+                throw new RuntimeException('Connection closed by peer during read', 1);
             }
 
             if (!is_resource($this->stream)) {
                 throw new RuntimeException(
-                    "Stream resource is no longer valid",
+                    'Stream resource is no longer valid',
                     1
                 );
             }

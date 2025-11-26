@@ -18,13 +18,18 @@ use Predis\ClientContextInterface;
 use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
+use Predis\CommunicationException;
 use Predis\Connection\AggregateConnectionInterface;
+use Predis\Connection\Cluster\RedisCluster;
+use Predis\Connection\ConnectionException;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
+use Predis\TimeoutException;
 use SplQueue;
+use Throwable;
 
 /**
  * Implementation of a command pipeline in which write and read operations of
@@ -129,9 +134,12 @@ class Pipeline implements ClientContextInterface
      * @param SplQueue            $commands   Queued commands.
      *
      * @return array
+     * @throws Throwable
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
+        $retry = $connection->getParameters()->retry;
+
         if ($connection instanceof AggregateConnectionInterface) {
             $this->writeToMultiNode($connection, $commands);
         } else {
@@ -144,7 +152,16 @@ class Pipeline implements ClientContextInterface
 
         while (!$commands->isEmpty()) {
             $command = $commands->dequeue();
-            $response = $connection->readResponse($command);
+
+            if ($connection instanceof AggregateConnectionInterface) {
+                $response = $connection->readResponse($command);
+            } else {
+                $response = $retry->callWithRetry(function () use ($connection, $command) {
+                    return $connection->readResponse($command);
+                }, function () use ($connection) {
+                    $connection->disconnect();
+                });
+            }
 
             if (!$response instanceof ResponseInterface) {
                 if ($protocolVersion === 2) {
@@ -168,6 +185,7 @@ class Pipeline implements ClientContextInterface
      * @param  ConnectionInterface $connection
      * @param  SplQueue            $commands
      * @return void
+     * @throws Throwable
      */
     protected function writeToSingleNode(ConnectionInterface $connection, SplQueue $commands)
     {
@@ -177,7 +195,15 @@ class Pipeline implements ClientContextInterface
             $buffer .= $command->serializeCommand();
         }
 
-        $connection->write($buffer);
+        $retry = $connection->getParameters()->retry;
+
+        $retry->callWithRetry(function () use ($connection, $buffer) {
+            $connection->write($buffer);
+        }, function (Throwable $e) {
+            if ($e instanceof CommunicationException) {
+                $e->getConnection()->disconnect();
+            }
+        });
     }
 
     /**
@@ -186,12 +212,20 @@ class Pipeline implements ClientContextInterface
      * @param  AggregateConnectionInterface $connection
      * @param  SplQueue                     $commands
      * @return void
+     * @throws Throwable
      */
     protected function writeToMultiNode(AggregateConnectionInterface $connection, SplQueue $commands)
     {
+        $retry = $connection->getParameters()->retry;
+
         foreach ($commands as $command) {
             $nodeConnection = $connection->getConnectionByCommand($command);
-            $nodeConnection->write($command->serializeCommand());
+
+            $retry->callWithRetry(function () use ($nodeConnection, $command) {
+                $nodeConnection->write($command->serializeCommand());
+            }, function (Throwable $e) use ($connection) {
+                $this->onAggregateConnectionFailCallback($connection, $e);
+            });
         }
     }
 
@@ -285,5 +319,38 @@ class Pipeline implements ClientContextInterface
     public function getClient()
     {
         return $this->client;
+    }
+
+    /**
+     * Handle aggregate connection exception.
+     *
+     * @param  AggregateConnectionInterface $connection
+     * @param  CommunicationException       $e
+     * @return void
+     */
+    private function onAggregateConnectionFailCallback(AggregateConnectionInterface $connection, Throwable $e)
+    {
+        if ($e instanceof ConnectionException) {
+            $nodeConnection = $e->getConnection();
+
+            if ($nodeConnection) {
+                $nodeConnection->disconnect();
+                $connection->remove($nodeConnection);
+            }
+
+            if ($connection instanceof RedisCluster) {
+                if ($connection->useClusterSlots) {
+                    $connection->askSlotMap();
+                }
+            }
+        }
+
+        if ($e instanceof TimeoutException) {
+            $nodeConnection = $e->getConnection();
+
+            if ($nodeConnection) {
+                $nodeConnection->disconnect();
+            }
+        }
     }
 }

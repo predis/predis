@@ -20,9 +20,20 @@ use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\Command\Redis\ECHO_;
 use Predis\Command\Redis\PING;
+use Predis\Connection\Cluster\RedisCluster;
+use Predis\Connection\Factory;
 use Predis\Connection\Parameters;
+use Predis\Connection\Replication\MasterSlaveReplication;
+use Predis\Connection\Resource\StreamFactoryInterface;
+use Predis\Connection\StreamConnection;
+use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
+use Predis\TimeoutException;
 use PredisTestCase;
+use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 use stdClass;
 
 class PipelineTest extends PredisTestCase
@@ -91,7 +102,7 @@ class PipelineTest extends PredisTestCase
             ->willReturn($object);
 
         $connection
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -119,7 +130,7 @@ class PipelineTest extends PredisTestCase
             ->willReturn($error);
 
         $connection
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -145,7 +156,7 @@ class PipelineTest extends PredisTestCase
             ->willReturn($error);
 
         $connection
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -238,7 +249,7 @@ class PipelineTest extends PredisTestCase
             ->willReturnCallback($this->getReadCallback());
 
         $connection
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -301,7 +312,7 @@ class PipelineTest extends PredisTestCase
             ->willReturnCallback($this->getReadCallback());
 
         $connection
-            ->expects($this->exactly(2))
+            ->expects($this->exactly(6))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -341,7 +352,7 @@ class PipelineTest extends PredisTestCase
             ->method('readResponse')
             ->willReturn($pong);
         $connection
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -429,7 +440,7 @@ class PipelineTest extends PredisTestCase
             ->method('readResponse')
             ->willReturnCallback($this->getReadCallback());
         $connection
-            ->expects($this->once())
+            ->expects($this->exactly(3))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -476,6 +487,175 @@ class PipelineTest extends PredisTestCase
         $this->assertInstanceOf('Predis\ClientException', $exception);
         $this->assertSame('TEST', $exception->getMessage());
         $this->assertNull($responses);
+    }
+
+    /**
+     * @group disconnected
+     * @throws Exception
+     */
+    public function testRetryStandalonePipelineOnRetryableErrors(): void
+    {
+        $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+        ]);
+
+        $mockStream
+            ->expects($this->atLeast(3))
+            ->method('close')
+            ->withAnyParameters();
+
+        $mockStream
+            ->expects($this->exactly(4))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                1000
+            );
+
+        $mockStream
+            ->expects($this->exactly(3))
+            ->method('read')
+            ->withAnyParameters()
+            ->willReturn("+PONG\r\n");
+
+        $mockStreamFactory
+            ->expects($this->exactly(4))
+            ->method('createStream')
+            ->withAnyParameters()
+            ->willReturn($mockStream);
+
+        $connection = new StreamConnection($parameters, $mockStreamFactory);
+        $pipeline = new Pipeline(new Client($connection));
+
+        $responses = $pipeline->execute(function (Pipeline $pipe) {
+            $pipe->ping();
+            $pipe->ping();
+            $pipe->ping();
+        });
+
+        $this->assertEquals(['PONG', 'PONG', 'PONG'], $responses);
+    }
+
+    /**
+     * @group disconnected
+     * @throws Exception
+     */
+    public function testRetryClusterPipelineOnRetryableErrors(): void
+    {
+        $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
+        $mockConnectionFactory = $this->getMockBuilder(Factory::class)->getMock();
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+        ]);
+
+        $mockStream
+            ->expects($this->atLeast(3))
+            ->method('close')
+            ->withAnyParameters();
+
+        $mockStream
+            ->expects($this->exactly(6))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                1000,
+                1000,
+                1000
+            );
+
+        $mockStream
+            ->expects($this->exactly(3))
+            ->method('read')
+            ->withAnyParameters()
+            ->willReturn("+OK\r\n");
+
+        $mockStreamFactory
+            ->expects($this->exactly(4))
+            ->method('createStream')
+            ->withAnyParameters()
+            ->willReturn($mockStream);
+
+        $streamConnection = new StreamConnection($parameters, $mockStreamFactory);
+        $connection = new RedisCluster($mockConnectionFactory, $parameters);
+        $connection->add($streamConnection);
+
+        $pipeline = new Pipeline(new Client($connection));
+
+        $responses = $pipeline->execute(function (Pipeline $pipe) {
+            $pipe->set('key', 'value');
+            $pipe->set('key', 'value');
+            $pipe->set('key', 'value');
+        });
+
+        $this->assertEquals(['OK', 'OK', 'OK'], $responses);
+    }
+
+    /**
+     * @group disconnected
+     * @throws Exception
+     */
+    public function testRetryReplicationPipelineOnRetryableErrors(): void
+    {
+        $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+            'role' => 'master',
+        ]);
+
+        $mockStream
+            ->expects($this->atLeast(3))
+            ->method('close')
+            ->withAnyParameters();
+
+        $mockStream
+            ->expects($this->exactly(6))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                1000,
+                1000,
+                1000
+            );
+
+        $mockStream
+            ->expects($this->exactly(3))
+            ->method('read')
+            ->withAnyParameters()
+            ->willReturn("+OK\r\n");
+
+        $mockStreamFactory
+            ->expects($this->exactly(4))
+            ->method('createStream')
+            ->withAnyParameters()
+            ->willReturn($mockStream);
+
+        $streamConnection = new StreamConnection($parameters, $mockStreamFactory);
+
+        $connection = new MasterSlaveReplication(new ReplicationStrategy());
+        $connection->add($streamConnection);
+
+        $pipeline = new Pipeline(new Client($connection));
+
+        $responses = $pipeline->execute(function (Pipeline $pipe) {
+            $pipe->set('key', 'value');
+            $pipe->set('key', 'value');
+            $pipe->set('key', 'value');
+        });
+
+        $this->assertEquals(['OK', 'OK', 'OK'], $responses);
     }
 
     // ******************************************************************** //
@@ -646,6 +826,53 @@ class PipelineTest extends PredisTestCase
         ];
 
         $this->assertSameValues($expectedResults, $results);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.2.0
+     * @return void
+     */
+    public function testStandaloneRetryPipelineOnTimeoutException(): void
+    {
+        $retries = 0;
+        $client = $this->getClient([
+            'retry' => new Retry(new ExponentialBackoff(100, 1000), 3),
+            'read_write_timeout' => 0.1,
+        ]);
+
+        $this->expectException(TimeoutException::class);
+
+        $client->pipeline(function (Pipeline $pipe) use (&$retries) {
+            ++$retries;
+            $pipe->blpop('foo', 3);
+        });
+        $this->assertEquals(3, $retries);
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 6.2.0
+     * @return void
+     */
+    public function testClusterRetryPipelineOnTimeoutException(): void
+    {
+        $retries = 0;
+        $client = $this->getClient([], [
+            'parameters' => [
+                'retry' => new Retry(new ExponentialBackoff(100, 1000), 3),
+                'read_write_timeout' => 0.1,
+            ],
+        ]);
+
+        $this->expectException(TimeoutException::class);
+
+        $client->pipeline(function (Pipeline $pipe) use (&$retries) {
+            ++$retries;
+            $pipe->blpop('foo', 3);
+        });
+        $this->assertEquals(3, $retries);
     }
 
     /**

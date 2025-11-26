@@ -432,7 +432,7 @@ class ParametersTest extends PredisTestCase
             'host' => '127.0.0.1',
             'port' => 6379,
             'protocol' => 2,
-            'retry' => new Retry(new NoBackoff(), 0)
+            'retry' => new Retry(new NoBackoff(), 0),
         ];
     }
 

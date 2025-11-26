@@ -15,6 +15,7 @@ namespace Predis\Transaction\Strategy;
 use PHPUnit\Framework\TestCase;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Parameters;
 use Predis\Transaction\MultiExecState;
 
 class NodeConnectionStrategyTest extends TestCase
@@ -45,6 +46,11 @@ class NodeConnectionStrategyTest extends TestCase
             ->method('executeCommand')
             ->with($this->mockCommand)
             ->willReturn('OK');
+
+        $this->mockConnection
+            ->expects($this->any())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
 
         $strategy = new NodeConnectionStrategy($this->mockConnection, new MultiExecState());
 

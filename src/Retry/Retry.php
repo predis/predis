@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Retry;
 
 use Predis\Connection\ConnectionException;
@@ -26,19 +36,19 @@ class Retry
     protected $catchableExceptions = [
         TimeoutException::class,
         ConnectionException::class,
-        StreamInitException::class
+        StreamInitException::class,
     ];
 
     /**
      * @param StrategyInterface $backoffStrategy
-     * @param int $retries
-     * @param array|null $catchableExceptions A list of exceptions classes that should be caught.
-     *                                        Overrides default list of the catchable exceptions.
+     * @param int               $retries
+     * @param array|null        $catchableExceptions A list of exceptions classes that should be caught.
+     *                                               Overrides default list of the catchable exceptions.
      */
     public function __construct(
         StrategyInterface $backoffStrategy,
         int $retries,
-        array $catchableExceptions = null
+        ?array $catchableExceptions = null
     ) {
         $this->backoffStrategy = $backoffStrategy;
         $this->retries = $retries;
@@ -49,9 +59,9 @@ class Retry
     }
 
     /**
-     * Update the retry count
+     * Update the retry count.
      *
-     * @param int $retries
+     * @param  int  $retries
      * @return void
      */
     public function updateRetriesCount(int $retries): void
@@ -62,12 +72,12 @@ class Retry
     /**
      * Extend catchable exceptions list.
      *
-     * @param array $catchableExceptions
+     * @param  array $catchableExceptions
      * @return void
      */
     public function updateCatchableExceptions(array $catchableExceptions): void
     {
-        $this->catchableExceptions =  array_merge($this->catchableExceptions, $catchableExceptions);
+        $this->catchableExceptions = array_merge($this->catchableExceptions, $catchableExceptions);
     }
 
     /**
@@ -79,12 +89,12 @@ class Retry
     }
 
     /**
-     * @param callable(): void $do
-     * @param callable(Throwable): void|null $fail
+     * @param  callable(): void               $do
+     * @param  callable(Throwable): void|null $fail
      * @return mixed
      * @throws Throwable
      */
-    public function callWithRetry(callable $do, callable $fail = null)
+    public function callWithRetry(callable $do, ?callable $fail = null)
     {
         $failures = 0;
 
@@ -92,8 +102,17 @@ class Retry
             try {
                 return $do();
             } catch (Throwable $e) {
-                if (null !== $this->catchableExceptions && !in_array(get_class($e), $this->catchableExceptions)) {
-                    throw $e;
+                if (null !== $this->catchableExceptions) {
+                    $isCatchable = false;
+                    foreach ($this->catchableExceptions as $catchableException) {
+                        if ($e instanceof $catchableException) {
+                            $isCatchable = true;
+                        }
+                    }
+
+                    if (!$isCatchable) {
+                        throw $e;
+                    }
                 }
 
                 $backoff = $this->backoffStrategy->compute($failures);

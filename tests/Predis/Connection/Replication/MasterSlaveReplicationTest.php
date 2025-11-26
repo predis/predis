@@ -15,9 +15,16 @@ namespace Predis\Connection\Replication;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command;
 use Predis\Connection;
+use Predis\Connection\Parameters;
+use Predis\Connection\Resource\StreamFactoryInterface;
+use Predis\Connection\StreamConnection;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
 use PredisTestCase;
+use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 class MasterSlaveReplicationTest extends PredisTestCase
 {
@@ -1487,6 +1494,58 @@ repl_backlog_histlen:12978
         $replication->add($slave1);
 
         $replication->write($command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand());
+    }
+
+    /**
+     * @medium
+     * @group disconnected
+     * @group slow
+     */
+    public function testRetryCommandFailureOnCustomRetryConfiguration()
+    {
+        $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+            'role' => 'master',
+        ]);
+
+        $mockStream
+            ->expects($this->exactly(4))
+            ->method('close')
+            ->withAnyParameters();
+
+        $mockStream
+            ->expects($this->exactly(4))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                1000
+            );
+
+        $mockStream
+            ->expects($this->once())
+            ->method('read')
+            ->withAnyParameters()
+            ->willReturn("+OK\r\n");
+
+        $mockStreamFactory
+            ->expects($this->exactly(4))
+            ->method('createStream')
+            ->withAnyParameters()
+            ->willReturn($mockStream);
+
+        $connection = new StreamConnection($parameters, $mockStreamFactory);
+        $replication = new MasterSlaveReplication();
+        $replication->add($connection);
+
+        $this->assertEquals(
+            'OK',
+            $replication->executeCommand(Command\RawCommand::create('SET', 1001))
+        );
     }
 
     public function connectionsProvider(): array

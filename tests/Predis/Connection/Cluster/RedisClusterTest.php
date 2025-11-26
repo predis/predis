@@ -1389,7 +1389,7 @@ class RedisClusterTest extends PredisTestCase
         $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
         $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
         $parameters = new Parameters([
-            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3)
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
         ]);
 
         $mockStream
@@ -1402,9 +1402,10 @@ class RedisClusterTest extends PredisTestCase
             ->method('write')
             ->withAnyParameters()
             ->willReturnOnConsecutiveCalls(
-                $this->throwException(new RuntimeException("", 2)),
-                $this->throwException(new RuntimeException("", 2)),
-                $this->throwException(new RuntimeException("", 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                1000,
                 1000
             );
 

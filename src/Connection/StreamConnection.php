@@ -337,7 +337,7 @@ class StreamConnection extends AbstractConnection
      * Handles stream-related exceptions.
      *
      * @param  RuntimeException                        $e
-     * @param  string|null                                        $message
+     * @param  string|null                             $message
      * @throws RuntimeException|CommunicationException
      */
     protected function onStreamError($e, ?string $message = null)

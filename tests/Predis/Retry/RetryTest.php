@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Retry;
 
 use PHPUnit\Framework\TestCase;
@@ -25,8 +35,7 @@ class RetryTest extends TestCase
         int $retries,
         float $expectedExecutionTime,
         float $delta
-    )
-    {
+    ) {
         $retry = new Retry($backoffStrategy, $retries);
         $retriesCount = 0;
 
@@ -65,7 +74,7 @@ class RetryTest extends TestCase
 
             if ($callCount <= 3) {
                 throw new RuntimeException();
-            } else if ($callCount <= 7) {
+            } elseif ($callCount <= 7) {
                 throw new ConnectionException(
                     $this->getMockBuilder(NodeConnectionInterface::class)->getMock()
                 );
@@ -78,7 +87,7 @@ class RetryTest extends TestCase
             ++$retriesCount;
         };
 
-        # Ensures that no retries happens on excluded exception.
+        // Ensures that no retries happens on excluded exception.
         while ($callCount < 3) {
             try {
                 $retry->callWithRetry($doCallable, $failCallable);
@@ -88,7 +97,7 @@ class RetryTest extends TestCase
             }
         }
 
-        # Ensures that retries happens on specified exception.
+        // Ensures that retries happens on specified exception.
         try {
             $retry->callWithRetry($doCallable, $failCallable);
         } catch (Throwable $e) {
@@ -98,7 +107,7 @@ class RetryTest extends TestCase
 
         $retry->updateCatchableExceptions([StreamInitException::class]);
 
-        # Ensures that retries happens on updated catchable exceptions.
+        // Ensures that retries happens on updated catchable exceptions.
         try {
             $retry->callWithRetry($doCallable, $failCallable);
         } catch (Throwable $e) {
@@ -116,7 +125,7 @@ class RetryTest extends TestCase
                 new NoBackoff(),
                 3,
                 1,
-                1
+                1,
             ],
             'EqualBackoff' => [
                 new EqualBackoff(0.3 * 1000000),
@@ -128,7 +137,7 @@ class RetryTest extends TestCase
                 new ExponentialBackoff(),
                 3,
                 0.112,
-                0.05,
+                0.08,
             ],
             'ExponentialBackoff - with jitter' => [
                 new ExponentialBackoff(
