@@ -70,7 +70,7 @@ class KNNVectorSearchConfigTest extends TestCase
                     ->ef(5)
                     ->filter('*')
                     ->as('alias'),
-                ['VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 6, 'K', 5, 'EF_RUNTIME', 5, 'YIELD_SCORE_AS', 'alias', 'FILTER', '*']],
+                ['VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 5, 'FILTER', '*', 'YIELD_SCORE_AS', 'alias']],
         ];
     }
 }
