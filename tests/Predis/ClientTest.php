@@ -1516,7 +1516,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 2.0.0
+     * @requiresRedisVersion >= 7.0.0
      */
     public function testStandaloneNodeRetryCommandExecutionOnTimeoutException(): void
     {
@@ -1542,6 +1542,8 @@ class ClientTest extends PredisTestCase
             ->expects($this->exactly(7))
             ->method('disconnect')
             ->willReturnCallback($mockDisconnect);
+
+        $stubConnection->addConnectCommand(new RawCommand('auth', ['foobar']));
 
         $client = new Client($stubConnection);
 
