@@ -520,7 +520,7 @@ but you may provide your custom one. Retry may be configured with any type of co
 configuration:
 
 ```php
-# Standalone client
+// Standalone client
 $client = new Predis\Client([
     'retry' => new \Predis\Retry\Retry(
         new \Predis\Retry\Strategy\ExponentialBackoff(1000, 10000), // Base and cap configuration in microseconds
@@ -528,7 +528,7 @@ $client = new Predis\Client([
     ),
 ]);
 
-# Cluster configuration
+// Cluster configuration
 $client = new Predis\Client(
     ['tcp://host:port', 'tcp://host:port', 'tcp://host:port'],
     [
@@ -546,7 +546,7 @@ $retry = new \Predis\Retry\Retry(
     3
 );
 
-# Update a list of exceptions to catch
+// Update a list of exceptions to catch
 $retry->updateCatchableExceptions([Exception::class]);
 ```
 
