@@ -419,6 +419,19 @@ class StreamTest extends TestCase
         fclose($handle);
     }
 
+    /**
+     * @return void
+     */
+    public function testWriteEmptyData(): void
+    {
+        $handle = fopen('php://temp', 'rb+');
+        $stream = new Stream($handle);
+        $stream->write('');
+        $stream->rewind();
+
+        $this->assertSame('', $stream->getContents());
+    }
+
     public function writableModeProvider(): array
     {
         return [

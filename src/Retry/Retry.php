@@ -89,7 +89,7 @@ class Retry
     }
 
     /**
-     * @param  callable(): void               $do
+     * @param  callable(): mixed              $do
      * @param  callable(Throwable): void|null $fail
      * @return mixed
      * @throws Throwable

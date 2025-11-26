@@ -41,6 +41,7 @@ use Predis\Retry\Retry;
  * @property bool   $cache              (Relay only) Whether to use in-memory caching.
  * @property string $serializer         (Relay only) Serializer used for data serialization.
  * @property string $compression        (Relay only) Algorithm used for data compression.
+ * @method   bool   isDisabledRetry()   Specify if custom retry configuration was provided.
  */
 interface ParametersInterface
 {
