@@ -830,6 +830,7 @@ class PipelineTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 6.2.0
      * @return void
      */
