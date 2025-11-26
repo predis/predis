@@ -513,7 +513,7 @@ implementation of the standard connection classes available in the `Predis\Conne
 
 You can enable automatic retry that is disabled by default, to be able to reduce the amount
 false-positives in case of network issues. By default, we're retrying on any connection,
-timeout or socket initialisation exception, but you can update a list of retryable
+timeout or socket initialization exception, but you can update a list of retry
 exceptions. For now `EqualBackoff` and `ExponentialBackoff` strategies are available,
 but you may provide your custom one. Retry may be configured with any type of communication
 (standalone node, cluster, pipeline, transaction, replication). Here's an example of
@@ -523,8 +523,8 @@ configuration:
 # Standalone client
 $client = new Predis\Client([
     'retry' => new \Predis\Retry\Retry(
-        new \Predis\Retry\Strategy\ExponentialBackoff(1000, 10000), # Base and cap configuration in microseconds
-        3                                                           # Number of retries
+        new \Predis\Retry\Strategy\ExponentialBackoff(1000, 10000), // Base and cap configuration in microseconds
+        3                                                           // Number of retries
     ),
 ]);
 
