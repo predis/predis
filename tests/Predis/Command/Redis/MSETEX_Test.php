@@ -47,8 +47,6 @@ class MSETEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @group relay-incompatible
-     * @group relay-fixme
      * @requiresRedisVersion >= 8.3.224
      */
     public function testSetWithModifiers()
