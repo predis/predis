@@ -48,8 +48,6 @@ class DELEX_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @requires PHP >= 8.1
-     * @group relay-incompatible
-     * @group relay-fixme
      * @requiresRedisVersion >= 8.3.224
      */
     public function testDeleteValueWithDifferentModifiers(): void
