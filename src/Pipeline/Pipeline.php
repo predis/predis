@@ -139,6 +139,46 @@ class Pipeline implements ClientContextInterface
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
         $retry = $connection->getParameters()->retry;
+        $backupQueue = $this->createDeepCloneQueue($commands);
+
+        return $retry->callWithRetry(
+            function () use ($connection, &$commands) {
+                return $this->executePipelineInternal($connection, $commands);
+            },
+            function (Throwable $e) use (&$commands, $backupQueue, $connection) {
+                if (!$e instanceof CommunicationException) {
+                    throw $e;
+                }
+
+                if ($connection instanceof AggregateConnectionInterface) {
+                    $this->onAggregateConnectionFailCallback($connection, $e);
+                } else {
+                    $connection = $e->getConnection();
+                    $connection->disconnect();
+                }
+
+                // In case of error whole pipeline should be retried
+                // So we need to write all original commands again
+                $commands = $this->createDeepCloneQueue($backupQueue);
+            }
+        );
+    }
+
+    /**
+     * @param ConnectionInterface $connection
+     * @param SplQueue $commands
+     * @return array
+     * @throws ServerException
+     * @throws Throwable
+     */
+    protected function executePipelineInternal(
+        ConnectionInterface $connection,
+        SplQueue $commands
+    ): array
+    {
+        $responses = [];
+        $exceptions = $this->throwServerExceptions();
+        $protocolVersion = (int) $connection->getParameters()->protocol;
 
         if ($connection instanceof AggregateConnectionInterface) {
             $this->writeToMultiNode($connection, $commands);
@@ -146,21 +186,13 @@ class Pipeline implements ClientContextInterface
             $this->writeToSingleNode($connection, $commands);
         }
 
-        $responses = [];
-        $exceptions = $this->throwServerExceptions();
-        $protocolVersion = (int) $connection->getParameters()->protocol;
-
         while (!$commands->isEmpty()) {
             $command = $commands->dequeue();
 
             if ($connection instanceof AggregateConnectionInterface) {
-                $response = $connection->readResponse($command);
+                $response = $connection->getConnectionByCommand($command)->readResponse($command);
             } else {
-                $response = $retry->callWithRetry(function () use ($connection, $command) {
-                    return $connection->readResponse($command);
-                }, function () use ($connection) {
-                    $connection->disconnect();
-                });
+                $response = $connection->readResponse($command);
             }
 
             if (!$response instanceof ResponseInterface) {
@@ -180,6 +212,23 @@ class Pipeline implements ClientContextInterface
     }
 
     /**
+     * Creates a deep copy of commands queue for backup.
+     *
+     * @param SplQueue $queue
+     * @return SplQueue
+     */
+    private function createDeepCloneQueue(SplQueue $queue): SplQueue
+    {
+        $new = new SplQueue();
+
+        foreach ($queue as $command) {
+            $new->enqueue(clone $command);
+        }
+
+        return $new;
+    }
+
+    /**
      * Writes pipelined commands to single node connection.
      *
      * @param  ConnectionInterface $connection
@@ -195,15 +244,7 @@ class Pipeline implements ClientContextInterface
             $buffer .= $command->serializeCommand();
         }
 
-        $retry = $connection->getParameters()->retry;
-
-        $retry->callWithRetry(function () use ($connection, $buffer) {
-            $connection->write($buffer);
-        }, function (Throwable $e) {
-            if ($e instanceof CommunicationException) {
-                $e->getConnection()->disconnect();
-            }
-        });
+        $connection->write($buffer);
     }
 
     /**
@@ -220,12 +261,7 @@ class Pipeline implements ClientContextInterface
 
         foreach ($commands as $command) {
             $nodeConnection = $connection->getConnectionByCommand($command);
-
-            $retry->callWithRetry(function () use ($nodeConnection, $command) {
-                $nodeConnection->write($command->serializeCommand());
-            }, function (Throwable $e) use ($connection) {
-                $this->onAggregateConnectionFailCallback($connection, $e);
-            });
+            $nodeConnection->write($command->serializeCommand());
         }
     }
 

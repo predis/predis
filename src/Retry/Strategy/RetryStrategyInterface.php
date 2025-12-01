@@ -15,7 +15,7 @@ namespace Predis\Retry\Strategy;
 /**
  * Retry strategy interface.
  */
-interface StrategyInterface
+interface RetryStrategyInterface
 {
     /**
      * Minimum backoff between each retry in micro seconds.

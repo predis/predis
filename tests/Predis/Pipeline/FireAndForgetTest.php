@@ -80,7 +80,7 @@ class FireAndForgetTest extends PredisTestCase
             ->method('readResponse');
 
         $connection
-            ->expects($this->exactly(1))
+            ->expects($this->exactly(2))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -166,12 +166,12 @@ class FireAndForgetTest extends PredisTestCase
             ->withAnyParameters();
 
         $mockClusterConnection
-            ->expects($this->exactly(1))
+            ->expects($this->exactly(5))
             ->method('getParameters')
             ->willReturn($parameters);
 
         $mockClusterConnection
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(6))
             ->method('getConnectionByCommand')
             ->willReturn($mockConnection);
 
@@ -216,12 +216,12 @@ class FireAndForgetTest extends PredisTestCase
             ->withAnyParameters();
 
         $mockReplicationConnection
-            ->expects($this->exactly(1))
+            ->expects($this->exactly(5))
             ->method('getParameters')
             ->willReturn($parameters);
 
         $mockReplicationConnection
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(6))
             ->method('getConnectionByCommand')
             ->willReturn($mockConnection);
 

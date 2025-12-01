@@ -23,6 +23,7 @@ use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
+use Predis\Connection\RelayFactory;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Replication\RoleException;
 use Predis\Response\Error;
@@ -718,7 +719,7 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
     {
         $parameters = $this->getParameters();
 
-        if ($parameters->isDisabledRetry()) {
+        if ($parameters->isDisabledRetry() || $this->connectionFactory instanceof RelayFactory) {
             // Override default parameters, for backward-compatibility
             // with current behaviour
             $retry = new Retry(

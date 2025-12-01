@@ -22,6 +22,7 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
+use Predis\Connection\RelayFactory;
 use Predis\Replication\MissingMasterException;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Response\ErrorInterface as ResponseErrorInterface;
@@ -484,45 +485,16 @@ class MasterSlaveReplication extends AbstractAggregateConnection implements Repl
     {
         $parameters = $this->getParameters();
 
-        if (!$parameters->isDisabledRetry()) {
+        if (!$parameters->isDisabledRetry() && !$this->connectionFactory instanceof RelayFactory) {
             $retry = $parameters->retry;
             $retry->updateCatchableExceptions([MissingMasterException::class]);
 
             return $retry->callWithRetry(
                 function () use ($command, $method) {
-                    $connection = $this->getConnectionByCommand($command);
-                    $response = $connection->$method($command);
-
-                    if ($response instanceof ResponseErrorInterface && $response->getErrorType() === 'LOADING') {
-                        throw new ConnectionException($connection, "Redis is loading the dataset in memory [$connection]");
-                    }
-
-                    return $response;
+                    return $this->executeCommandInternal($command, $method);
                 },
                 function (Throwable $exception) {
-                    if ($exception instanceof ConnectionException) {
-                        $this->onConnectionExceptionCallback($exception);
-
-                        return;
-                    }
-
-                    if ($exception instanceof MissingMasterException) {
-                        $this->onMissingMasterException($exception);
-
-                        return;
-                    }
-
-                    if ($exception instanceof TimeoutException) {
-                        $connection = $exception->getConnection();
-
-                        if ($connection) {
-                            $connection->disconnect();
-
-                            return;
-                        }
-                    }
-
-                    throw $exception;
+                    $this->onFailCallback($exception);
                 }
             );
         }
@@ -542,6 +514,26 @@ class MasterSlaveReplication extends AbstractAggregateConnection implements Repl
             } catch (MissingMasterException $exception) {
                 $this->onMissingMasterException($exception);
             }
+        }
+
+        return $response;
+    }
+
+    /**
+     * Executes command against valid connection.
+     *
+     * @param CommandInterface $command
+     * @param string $method
+     * @return mixed
+     * @throws ConnectionException
+     */
+    protected function executeCommandInternal(CommandInterface $command, string $method)
+    {
+        $connection = $this->getConnectionByCommand($command);
+        $response = $connection->$method($command);
+
+        if ($response instanceof ResponseErrorInterface && $response->getErrorType() === 'LOADING') {
+            throw new ConnectionException($connection, "Redis is loading the dataset in memory [$connection]");
         }
 
         return $response;
@@ -626,6 +618,40 @@ class MasterSlaveReplication extends AbstractAggregateConnection implements Repl
         } elseif ($this->autoDiscovery) {
             $this->discover();
         }
+    }
+
+    /**
+     * Exception handling callback
+     *
+     * @param Throwable $exception
+     * @return void
+     * @throws Throwable
+     */
+    private function onFailCallback(Throwable $exception)
+    {
+        if ($exception instanceof ConnectionException) {
+            $this->onConnectionExceptionCallback($exception);
+
+            return;
+        }
+
+        if ($exception instanceof MissingMasterException) {
+            $this->onMissingMasterException($exception);
+
+            return;
+        }
+
+        if ($exception instanceof TimeoutException) {
+            $connection = $exception->getConnection();
+
+            if ($connection) {
+                $connection->disconnect();
+
+                return;
+            }
+        }
+
+        throw $exception;
     }
 
     /**

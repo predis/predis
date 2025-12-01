@@ -14,14 +14,14 @@ namespace Predis\Retry;
 
 use Predis\Connection\ConnectionException;
 use Predis\Connection\Resource\Exception\StreamInitException;
-use Predis\Retry\Strategy\StrategyInterface;
+use Predis\Retry\Strategy\RetryStrategyInterface;
 use Predis\TimeoutException;
 use Throwable;
 
 class Retry
 {
     /**
-     * @var StrategyInterface
+     * @var RetryStrategyInterface
      */
     protected $backoffStrategy;
 
@@ -40,15 +40,15 @@ class Retry
     ];
 
     /**
-     * @param StrategyInterface $backoffStrategy
+     * @param RetryStrategyInterface $backoffStrategy
      * @param int               $retries
      * @param array|null        $catchableExceptions A list of exceptions classes that should be caught.
      *                                               Overrides default list of the catchable exceptions.
      */
     public function __construct(
-        StrategyInterface $backoffStrategy,
-        int $retries,
-        ?array $catchableExceptions = null
+        RetryStrategyInterface $backoffStrategy,
+        int                    $retries,
+        ?array                 $catchableExceptions = null
     ) {
         $this->backoffStrategy = $backoffStrategy;
         $this->retries = $retries;

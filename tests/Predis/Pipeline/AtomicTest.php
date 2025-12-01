@@ -14,6 +14,7 @@ namespace Predis\Pipeline;
 
 use Exception;
 use Predis\Client;
+use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\Redis\PING;
 use Predis\Connection\Parameters;
@@ -60,7 +61,7 @@ class AtomicTest extends PredisTestCase
             );
 
         $connection
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(4))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -109,7 +110,7 @@ class AtomicTest extends PredisTestCase
                 $queued
             );
         $connection
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(3))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -159,7 +160,7 @@ class AtomicTest extends PredisTestCase
                 $error
             );
         $connection
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(3))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -204,7 +205,7 @@ class AtomicTest extends PredisTestCase
                 new Response\Error('ERR Test error')
             );
         $connection
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(3))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -252,7 +253,7 @@ class AtomicTest extends PredisTestCase
             );
 
         $connection
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(4))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -331,7 +332,7 @@ class AtomicTest extends PredisTestCase
             ->withAnyParameters();
 
         $mockConnection
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(4))
             ->method('getParameters')
             ->willReturn($parameters);
 

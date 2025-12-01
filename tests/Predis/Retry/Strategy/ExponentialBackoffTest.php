@@ -25,16 +25,16 @@ class ExponentialBackoffTest extends TestCase
         $backoff = new ExponentialBackoff();
 
         // Test default cap
-        $this->assertLessThanOrEqual(StrategyInterface::DEFAULT_CAP, $backoff->compute(100));
+        $this->assertLessThanOrEqual(RetryStrategyInterface::DEFAULT_CAP, $backoff->compute(100));
 
         // Test default base
-        $this->assertGreaterThanOrEqual(StrategyInterface::DEFAULT_BASE, $backoff->compute(0));
+        $this->assertGreaterThanOrEqual(RetryStrategyInterface::DEFAULT_BASE, $backoff->compute(0));
 
         $interval = $backoff->compute(2);
 
         // Test between
-        $this->assertGreaterThanOrEqual(StrategyInterface::DEFAULT_BASE, $interval);
-        $this->assertLessThanOrEqual(StrategyInterface::DEFAULT_CAP, $interval);
+        $this->assertGreaterThanOrEqual(RetryStrategyInterface::DEFAULT_BASE, $interval);
+        $this->assertLessThanOrEqual(RetryStrategyInterface::DEFAULT_CAP, $interval);
 
         $backoff = new ExponentialBackoff(1000000, 10000000);
 
@@ -44,14 +44,14 @@ class ExponentialBackoffTest extends TestCase
         // Test adjusted base
         $this->assertGreaterThanOrEqual(1000000, $backoff->compute(0));
 
-        $backoff = new ExponentialBackoff(StrategyInterface::DEFAULT_BASE, -1);
+        $backoff = new ExponentialBackoff(RetryStrategyInterface::DEFAULT_BASE, -1);
 
         // Test with no cap
-        $this->assertEquals(StrategyInterface::DEFAULT_BASE * 2, $backoff->compute(1));
+        $this->assertEquals(RetryStrategyInterface::DEFAULT_BASE * 2, $backoff->compute(1));
 
         $backoff = new ExponentialBackoff(
-            StrategyInterface::DEFAULT_BASE,
-            StrategyInterface::DEFAULT_CAP,
+            RetryStrategyInterface::DEFAULT_BASE,
+            RetryStrategyInterface::DEFAULT_CAP,
             true
         );
 
@@ -59,12 +59,12 @@ class ExponentialBackoffTest extends TestCase
 
         // Test with jitter - default base
         $this->assertGreaterThanOrEqual(0, $interval);
-        $this->assertLessThanOrEqual(StrategyInterface::DEFAULT_BASE, $interval);
+        $this->assertLessThanOrEqual(RetryStrategyInterface::DEFAULT_BASE, $interval);
 
         $interval = $backoff->compute(6);
 
         // Test with jitter - default cap
         $this->assertGreaterThanOrEqual(0, $interval);
-        $this->assertLessThanOrEqual(StrategyInterface::DEFAULT_CAP, $interval);
+        $this->assertLessThanOrEqual(RetryStrategyInterface::DEFAULT_CAP, $interval);
     }
 }

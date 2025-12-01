@@ -19,7 +19,7 @@ use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Retry\Strategy\EqualBackoff;
 use Predis\Retry\Strategy\ExponentialBackoff;
 use Predis\Retry\Strategy\NoBackoff;
-use Predis\Retry\Strategy\StrategyInterface;
+use Predis\Retry\Strategy\RetryStrategyInterface;
 use RuntimeException;
 use Throwable;
 
@@ -31,10 +31,10 @@ class RetryTest extends TestCase
      * @throws Throwable
      */
     public function testCallWithRetry(
-        StrategyInterface $backoffStrategy,
-        int $retries,
-        float $expectedExecutionTime,
-        float $delta
+        RetryStrategyInterface $backoffStrategy,
+        int                    $retries,
+        float                  $expectedExecutionTime,
+        float                  $delta
     ) {
         $retry = new Retry($backoffStrategy, $retries);
         $retriesCount = 0;
@@ -141,8 +141,8 @@ class RetryTest extends TestCase
             ],
             'ExponentialBackoff - with jitter' => [
                 new ExponentialBackoff(
-                    StrategyInterface::DEFAULT_BASE,
-                    StrategyInterface::DEFAULT_CAP,
+                    RetryStrategyInterface::DEFAULT_BASE,
+                    RetryStrategyInterface::DEFAULT_CAP,
                     true
                 ),
                 3,

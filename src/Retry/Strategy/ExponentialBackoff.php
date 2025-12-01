@@ -12,7 +12,7 @@
 
 namespace Predis\Retry\Strategy;
 
-class ExponentialBackoff implements StrategyInterface
+class ExponentialBackoff implements RetryStrategyInterface
 {
     /**
      * @var int

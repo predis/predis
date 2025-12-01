@@ -384,7 +384,7 @@ class Client implements ClientInterface, IteratorAggregate
     {
         $parameters = $this->connection->getParameters();
 
-        if ($this->connection instanceof AggregateConnectionInterface) {
+        if ($this->connection instanceof AggregateConnectionInterface || $this->connection instanceof RelayConnection) {
             $response = $this->connection->executeCommand($command);
         } else {
             $response = $parameters->retry->callWithRetry(

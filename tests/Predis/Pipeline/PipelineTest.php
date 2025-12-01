@@ -102,7 +102,7 @@ class PipelineTest extends PredisTestCase
             ->willReturn($object);
 
         $connection
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(2))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -130,7 +130,7 @@ class PipelineTest extends PredisTestCase
             ->willReturn($error);
 
         $connection
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(2))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -156,7 +156,7 @@ class PipelineTest extends PredisTestCase
             ->willReturn($error);
 
         $connection
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(2))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -249,7 +249,7 @@ class PipelineTest extends PredisTestCase
             ->willReturnCallback($this->getReadCallback());
 
         $connection
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(2))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -312,7 +312,7 @@ class PipelineTest extends PredisTestCase
             ->willReturnCallback($this->getReadCallback());
 
         $connection
-            ->expects($this->exactly(6))
+            ->expects($this->exactly(4))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -344,10 +344,10 @@ class PipelineTest extends PredisTestCase
             ->expects($this->once())
             ->method('switchToMaster');
         $connection
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(6))
             ->method('getConnectionByCommand')
             ->willReturn($nodeConnection);
-        $connection
+        $nodeConnection
             ->expects($this->exactly(3))
             ->method('readResponse')
             ->willReturn($pong);
@@ -440,7 +440,7 @@ class PipelineTest extends PredisTestCase
             ->method('readResponse')
             ->willReturnCallback($this->getReadCallback());
         $connection
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(2))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -836,7 +836,6 @@ class PipelineTest extends PredisTestCase
      */
     public function testStandaloneRetryPipelineOnTimeoutException(): void
     {
-        $retries = 0;
         $client = $this->getClient([
             'retry' => new Retry(new ExponentialBackoff(100, 1000), 3),
             'read_write_timeout' => 0.1,
@@ -845,10 +844,10 @@ class PipelineTest extends PredisTestCase
         $this->expectException(TimeoutException::class);
 
         $client->pipeline(function (Pipeline $pipe) use (&$retries) {
-            ++$retries;
+            $pipe->incr('test_key');
             $pipe->blpop('foo', 3);
         });
-        $this->assertEquals(3, $retries);
+        $this->assertEquals(3, $client->get('test_key'));
     }
 
     /**

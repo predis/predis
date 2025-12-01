@@ -28,6 +28,7 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
+use Predis\Connection\RelayFactory;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -548,7 +549,7 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
-        if ($this->connectionParameters->isDisabledRetry()) {
+        if ($this->connectionParameters->isDisabledRetry() || $this->connections instanceof RelayFactory) {
             // Override default parameters, for backward-compatibility
             // with current behaviour
             $retry = new Retry(

@@ -511,9 +511,9 @@ implementation of the standard connection classes available in the `Predis\Conne
 
 ### Retry exceptions
 
-You can enable automatic retry that is disabled by default, to be able to reduce the amount
+You can enable automatic retry that is disabled by default, to be able to reduce the amount of
 false-positives in case of network issues. By default, we're retrying on any connection,
-timeout or socket initialization exception, but you can update a list of retry
+timeout or socket initialization exception, but you can update the list of retry
 exceptions. For now `EqualBackoff` and `ExponentialBackoff` strategies are available,
 but you may provide your custom one. Retry may be configured with any type of communication
 (standalone node, cluster, pipeline, transaction, replication). Here's an example of

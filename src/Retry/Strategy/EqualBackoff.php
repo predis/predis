@@ -15,7 +15,7 @@ namespace Predis\Retry\Strategy;
 /**
  * Equal backoff between retry.
  */
-class EqualBackoff implements StrategyInterface
+class EqualBackoff implements RetryStrategyInterface
 {
     /**
      * @var int

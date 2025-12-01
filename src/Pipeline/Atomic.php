@@ -68,20 +68,14 @@ class Atomic extends Pipeline
         $commandFactory = $this->getClient()->getCommandFactory();
         $retry = $connection->getParameters()->retry;
         $this->executeCommandWithRetry($connection, $commandFactory->create('multi'));
-        $this->writeToSingleNode($connection, $commands);
 
-        foreach ($commands as $command) {
-            $response = $retry->callWithRetry(function () use ($connection, $command) {
-                return $connection->readResponse($command);
-            }, function () use ($connection) {
-                $connection->disconnect();
-            });
-
-            if ($response instanceof ErrorResponseInterface) {
-                $this->executeCommandWithRetry($connection, $commandFactory->create('discard'));
-                throw new ServerException($response->getMessage());
+        $retry->callWithRetry(function () use ($connection, $commands) {
+            $this->queuePipeline($connection, $commands);
+        }, function (Throwable $exception) {
+            if ($exception instanceof CommunicationException) {
+                $exception->getConnection()->disconnect();
             }
-        }
+        });
 
         $executed = $this->executeCommandWithRetry($connection, $commandFactory->create('exec'));
 
@@ -125,6 +119,27 @@ class Atomic extends Pipeline
         }
 
         return $responses;
+    }
+
+    /**
+     * @param ConnectionInterface $connection
+     * @param SplQueue $commands
+     * @return void
+     * @throws Throwable
+     */
+    protected function queuePipeline(ConnectionInterface $connection, SplQueue $commands)
+    {
+        $commandFactory = $this->getClient()->getCommandFactory();
+        $this->writeToSingleNode($connection, $commands);
+
+        foreach ($commands as $command) {
+            $response = $connection->readResponse($command);
+
+            if ($response instanceof ErrorResponseInterface) {
+                $this->executeCommandWithRetry($connection, $commandFactory->create('discard'));
+                throw new ServerException($response->getMessage());
+            }
+        }
     }
 
     /**
