@@ -221,7 +221,7 @@ class Stream implements StreamInterface
                 );
             }
 
-            if ($metadata['timed_out']) {
+            if (array_key_exists('timed_out', $metadata) && $metadata['timed_out']) {
                 throw new RuntimeException(
                     'Stream has been timed out',
                     2
@@ -285,7 +285,7 @@ class Stream implements StreamInterface
                 );
             }
 
-            if ($metadata['timed_out']) {
+            if (array_key_exists('timed_out', $metadata) && $metadata['timed_out']) {
                 throw new RuntimeException(
                     'Stream has been timed out',
                     2
