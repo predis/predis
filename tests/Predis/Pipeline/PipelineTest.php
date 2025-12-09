@@ -603,6 +603,166 @@ class PipelineTest extends PredisTestCase
      * @group disconnected
      * @throws Exception
      */
+    public function testExecutePipelineInvokesOnAggregateConnectionFailCallbackOnConnectionException(): void
+    {
+        $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
+        $mockConnectionFactory = $this->getMockBuilder(Factory::class)->getMock();
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+        ]);
+
+        $streamConnection = new StreamConnection($parameters, $mockStreamFactory);
+        $connection = $this->getMockBuilder(RedisCluster::class)
+            ->setConstructorArgs([$mockConnectionFactory, $parameters])
+            ->onlyMethods(['getConnectionByCommand', 'remove', 'askSlotMap'])
+            ->getMock();
+
+        // Disable useClusterSlots to avoid askSlotMap() calls
+        $connection->useClusterSlots = false;
+
+        $mockStream
+            ->expects($this->atLeast(3))
+            ->method('close')
+            ->withAnyParameters();
+
+        $mockStream
+            ->expects($this->exactly(6))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new \Predis\Connection\ConnectionException($streamConnection, 'Connection failed')),
+                $this->throwException(new \Predis\Connection\ConnectionException($streamConnection, 'Connection failed')),
+                $this->throwException(new \Predis\Connection\ConnectionException($streamConnection, 'Connection failed')),
+                1000,
+                1000,
+                1000
+            );
+
+        $mockStream
+            ->expects($this->exactly(3))
+            ->method('read')
+            ->withAnyParameters()
+            ->willReturn("+OK\r\n");
+
+        $mockStreamFactory
+            ->expects($this->exactly(4))
+            ->method('createStream')
+            ->withAnyParameters()
+            ->willReturn($mockStream);
+
+        // getConnectionByCommand is called during write and read phases
+        // Failed attempts: 3 attempts × 1 call (exception on first write) = 3 calls
+        // Successful attempt: 3 writes + 3 reads = 6 calls
+        // Total = 9 calls
+        $connection
+            ->expects($this->exactly(9))
+            ->method('getConnectionByCommand')
+            ->willReturn($streamConnection);
+
+        // Verify that remove() is called on the aggregate connection during retry
+        $connection
+            ->expects($this->exactly(3))
+            ->method('remove')
+            ->with($streamConnection);
+
+        // Verify that askSlotMap() is NOT called since useClusterSlots is false
+        $connection
+            ->expects($this->never())
+            ->method('askSlotMap');
+
+        $pipeline = new Pipeline(new Client($connection));
+
+        $responses = $pipeline->execute(function (Pipeline $pipe) {
+            $pipe->set('key', 'value');
+            $pipe->set('key', 'value');
+            $pipe->set('key', 'value');
+        });
+
+        $this->assertEquals(['OK', 'OK', 'OK'], $responses);
+    }
+
+    /**
+     * @group disconnected
+     * @throws Exception
+     */
+    public function testExecutePipelineInvokesOnAggregateConnectionFailCallbackOnTimeoutException(): void
+    {
+        $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
+        $mockConnectionFactory = $this->getMockBuilder(Factory::class)->getMock();
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+        ]);
+
+        $streamConnection = new StreamConnection($parameters, $mockStreamFactory);
+        $connection = $this->getMockBuilder(RedisCluster::class)
+            ->setConstructorArgs([$mockConnectionFactory, $parameters])
+            ->onlyMethods(['getConnectionByCommand', 'remove'])
+            ->getMock();
+
+        // Disable useClusterSlots to avoid askSlotMap() calls
+        $connection->useClusterSlots = false;
+
+        $mockStream
+            ->expects($this->atLeast(3))
+            ->method('close')
+            ->withAnyParameters();
+
+        $mockStream
+            ->expects($this->exactly(6))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new TimeoutException($streamConnection, 0)),
+                $this->throwException(new TimeoutException($streamConnection, 0)),
+                $this->throwException(new TimeoutException($streamConnection, 0)),
+                1000,
+                1000,
+                1000
+            );
+
+        $mockStream
+            ->expects($this->exactly(3))
+            ->method('read')
+            ->withAnyParameters()
+            ->willReturn("+OK\r\n");
+
+        $mockStreamFactory
+            ->expects($this->exactly(4))
+            ->method('createStream')
+            ->withAnyParameters()
+            ->willReturn($mockStream);
+
+        // getConnectionByCommand is called during write and read phases
+        // Failed attempts: 3 attempts × 1 call (exception on first write) = 3 calls
+        // Successful attempt: 3 writes + 3 reads = 6 calls
+        // Total = 9 calls
+        $connection
+            ->expects($this->exactly(9))
+            ->method('getConnectionByCommand')
+            ->willReturn($streamConnection);
+
+        // Verify that remove() is NOT called for TimeoutException
+        $connection
+            ->expects($this->never())
+            ->method('remove');
+
+        $pipeline = new Pipeline(new Client($connection));
+
+        $responses = $pipeline->execute(function (Pipeline $pipe) {
+            $pipe->set('key', 'value');
+            $pipe->set('key', 'value');
+            $pipe->set('key', 'value');
+        });
+
+        $this->assertEquals(['OK', 'OK', 'OK'], $responses);
+    }
+
+    /**
+     * @group disconnected
+     * @throws Exception
+     */
     public function testRetryReplicationPipelineOnRetryableErrors(): void
     {
         $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
