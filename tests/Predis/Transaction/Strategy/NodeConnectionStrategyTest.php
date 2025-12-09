@@ -16,6 +16,9 @@ use PHPUnit\Framework\TestCase;
 use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
+use Predis\TimeoutException;
 use Predis\Transaction\MultiExecState;
 
 class NodeConnectionStrategyTest extends TestCase
@@ -55,5 +58,64 @@ class NodeConnectionStrategyTest extends TestCase
         $strategy = new NodeConnectionStrategy($this->mockConnection, new MultiExecState());
 
         $this->assertEquals('OK', $strategy->executeCommand($this->mockCommand));
+    }
+
+    /**
+     * @return void
+     */
+    public function testUnwatch(): void
+    {
+        $this->mockConnection
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->callback(function ($command) {
+                return $command->getId() === 'UNWATCH';
+            }))
+            ->willReturn('OK');
+
+        $this->mockConnection
+            ->expects($this->any())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
+
+        $strategy = new NodeConnectionStrategy($this->mockConnection, new MultiExecState());
+
+        $this->assertEquals('OK', $strategy->unwatch());
+    }
+
+    /**
+     * @return void
+     */
+    public function testUnwatchWithRetries(): void
+    {
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+        ]);
+
+        $this->mockConnection
+            ->expects($this->exactly(4))
+            ->method('executeCommand')
+            ->with($this->callback(function ($command) {
+                return $command->getId() === 'UNWATCH';
+            }))
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new TimeoutException($this->mockConnection)),
+                $this->throwException(new TimeoutException($this->mockConnection)),
+                $this->throwException(new TimeoutException($this->mockConnection)),
+                'OK'
+            );
+
+        $this->mockConnection
+            ->expects($this->any())
+            ->method('getParameters')
+            ->willReturn($parameters);
+
+        $this->mockConnection
+            ->expects($this->exactly(3))
+            ->method('disconnect');
+
+        $strategy = new NodeConnectionStrategy($this->mockConnection, new MultiExecState());
+
+        $this->assertEquals('OK', $strategy->unwatch());
     }
 }
