@@ -41,14 +41,14 @@ class Retry
 
     /**
      * @param RetryStrategyInterface $backoffStrategy
-     * @param int               $retries
-     * @param array|null        $catchableExceptions A list of exceptions classes that should be caught.
-     *                                               Overrides default list of the catchable exceptions.
+     * @param int                    $retries
+     * @param array|null             $catchableExceptions A list of exceptions classes that should be caught.
+     *                                                    Overrides default list of the catchable exceptions.
      */
     public function __construct(
         RetryStrategyInterface $backoffStrategy,
-        int                    $retries,
-        ?array                 $catchableExceptions = null
+        int $retries,
+        ?array $catchableExceptions = null
     ) {
         $this->backoffStrategy = $backoffStrategy;
         $this->retries = $retries;

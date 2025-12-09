@@ -522,8 +522,8 @@ class MasterSlaveReplication extends AbstractAggregateConnection implements Repl
     /**
      * Executes command against valid connection.
      *
-     * @param CommandInterface $command
-     * @param string $method
+     * @param  CommandInterface    $command
+     * @param  string              $method
      * @return mixed
      * @throws ConnectionException
      */
@@ -621,9 +621,9 @@ class MasterSlaveReplication extends AbstractAggregateConnection implements Repl
     }
 
     /**
-     * Exception handling callback
+     * Exception handling callback.
      *
-     * @param Throwable $exception
+     * @param  Throwable $exception
      * @return void
      * @throws Throwable
      */

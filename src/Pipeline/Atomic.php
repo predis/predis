@@ -122,8 +122,8 @@ class Atomic extends Pipeline
     }
 
     /**
-     * @param ConnectionInterface $connection
-     * @param SplQueue $commands
+     * @param  ConnectionInterface $connection
+     * @param  SplQueue            $commands
      * @return void
      * @throws Throwable
      */

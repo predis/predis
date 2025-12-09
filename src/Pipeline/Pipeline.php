@@ -165,8 +165,8 @@ class Pipeline implements ClientContextInterface
     }
 
     /**
-     * @param ConnectionInterface $connection
-     * @param SplQueue $commands
+     * @param  ConnectionInterface $connection
+     * @param  SplQueue            $commands
      * @return array
      * @throws ServerException
      * @throws Throwable
@@ -174,8 +174,7 @@ class Pipeline implements ClientContextInterface
     protected function executePipelineInternal(
         ConnectionInterface $connection,
         SplQueue $commands
-    ): array
-    {
+    ): array {
         $responses = [];
         $exceptions = $this->throwServerExceptions();
         $protocolVersion = (int) $connection->getParameters()->protocol;
@@ -214,7 +213,7 @@ class Pipeline implements ClientContextInterface
     /**
      * Creates a deep copy of commands queue for backup.
      *
-     * @param SplQueue $queue
+     * @param  SplQueue $queue
      * @return SplQueue
      */
     private function createDeepCloneQueue(SplQueue $queue): SplQueue

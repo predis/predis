@@ -14,7 +14,6 @@ namespace Predis\Pipeline;
 
 use Exception;
 use Predis\Client;
-use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\Redis\PING;
 use Predis\Connection\Parameters;

@@ -32,9 +32,9 @@ class RetryTest extends TestCase
      */
     public function testCallWithRetry(
         RetryStrategyInterface $backoffStrategy,
-        int                    $retries,
-        float                  $expectedExecutionTime,
-        float                  $delta
+        int $retries,
+        float $expectedExecutionTime,
+        float $delta
     ) {
         $retry = new Retry($backoffStrategy, $retries);
         $retriesCount = 0;
