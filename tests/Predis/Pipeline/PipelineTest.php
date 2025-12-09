@@ -651,10 +651,6 @@ class PipelineTest extends PredisTestCase
             ->withAnyParameters()
             ->willReturn($mockStream);
 
-        // getConnectionByCommand is called during write and read phases
-        // Failed attempts: 3 attempts × 1 call (exception on first write) = 3 calls
-        // Successful attempt: 3 writes + 3 reads = 6 calls
-        // Total = 9 calls
         $connection
             ->expects($this->exactly(9))
             ->method('getConnectionByCommand')
@@ -734,10 +730,6 @@ class PipelineTest extends PredisTestCase
             ->withAnyParameters()
             ->willReturn($mockStream);
 
-        // getConnectionByCommand is called during write and read phases
-        // Failed attempts: 3 attempts × 1 call (exception on first write) = 3 calls
-        // Successful attempt: 3 writes + 3 reads = 6 calls
-        // Total = 9 calls
         $connection
             ->expects($this->exactly(9))
             ->method('getConnectionByCommand')
