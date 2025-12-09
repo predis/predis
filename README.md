@@ -533,7 +533,10 @@ $client = new Predis\Client(
     ['tcp://host:port', 'tcp://host:port', 'tcp://host:port'],
     [
       'parameters' => [
-           'retry' => new \Predis\Retry\Retry(new \Predis\Retry\Strategy\ExponentialBackoff(1000, 10000), 3),
+           'retry' => new \Predis\Retry\Retry(
+                new \Predis\Retry\Strategy\ExponentialBackoff(1000, 10000),
+                3
+           ),
        ],
     ]
 );
