@@ -89,6 +89,14 @@ class Retry
     }
 
     /**
+     * @return RetryStrategyInterface
+     */
+    public function getStrategy(): RetryStrategyInterface
+    {
+        return $this->backoffStrategy;
+    }
+
+    /**
      * @param  callable(): mixed              $do
      * @param  callable(Throwable): void|null $fail
      * @return mixed

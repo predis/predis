@@ -56,4 +56,20 @@ class ExponentialBackoff implements RetryStrategyInterface
 
         return $this->base * 2 ** $failures;
     }
+
+    /**
+     * @return int
+     */
+    public function getBase(): int
+    {
+        return $this->base;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCap(): int
+    {
+        return $this->cap;
+    }
 }
