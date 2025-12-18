@@ -129,44 +129,6 @@ class RelayConnection extends AbstractConnection
     }
 
     /**
-     * Creates a new instance of the client.
-     *
-     * @return Relay
-     */
-    private function createClient()
-    {
-        $client = new Relay();
-
-        // throw when errors occur and return `null` for non-existent keys
-        $client->setOption(Relay::OPT_PHPREDIS_COMPATIBILITY, false);
-
-        // use reply literals
-        $client->setOption(Relay::OPT_REPLY_LITERAL, true);
-
-        // disable Relay's command/connection retry
-        $client->setOption(Relay::OPT_MAX_RETRIES, 0);
-
-        // whether to use in-memory caching
-        $client->setOption(Relay::OPT_USE_CACHE, $this->parameters->cache ?? true);
-
-        // set data serializer
-        $client->setOption(Relay::OPT_SERIALIZER, constant(sprintf(
-            '%s::SERIALIZER_%s',
-            Relay::class,
-            strtoupper($this->parameters->serializer ?? 'none')
-        )));
-
-        // set data compression algorithm
-        $client->setOption(Relay::OPT_COMPRESSION, constant(sprintf(
-            '%s::COMPRESSION_%s',
-            Relay::class,
-            strtoupper($this->parameters->compression ?? 'none')
-        )));
-
-        return $client;
-    }
-
-    /**
      * Returns the underlying client.
      *
      * @return Relay
