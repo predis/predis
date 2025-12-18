@@ -102,31 +102,6 @@ class RelayFactory extends Factory
         // use reply literals
         $client->setOption(Relay::OPT_REPLY_LITERAL, true);
 
-        if ($parameters->isDisabledRetry()) {
-            // disable Relay's command/connection retry
-            $client->setOption(Relay::OPT_MAX_RETRIES, 0);
-        } else {
-            $client->setOption(Relay::OPT_MAX_RETRIES, $parameters->retry->getRetries());
-
-            $retryStrategy = $parameters->retry->getStrategy();
-            if ($retryStrategy instanceof ExponentialBackoff) {
-                $algorithm = Relay::BACKOFF_ALGORITHM_FULL_JITTER;
-                $base = $retryStrategy->getBase();
-                $cap = $retryStrategy->getCap();
-            } else {
-                $algorithm = Relay::BACKOFF_ALGORITHM_DEFAULT;
-                if ($retryStrategy instanceof EqualBackoff) {
-                    $base = $cap = $retryStrategy->compute(0);
-                } else {
-                    $base = $retryStrategy::DEFAULT_BASE;
-                    $cap = $retryStrategy::DEFAULT_CAP;
-                }
-            }
-            $client->setOption(Relay::OPT_BACKOFF_ALGORITHM, $algorithm);
-            $client->setOption(Relay::OPT_BACKOFF_BASE, $base / 1000);
-            $client->setOption(Relay::OPT_BACKOFF_CAP, $cap / 1000);
-        }
-
         // whether to use in-memory caching
         $client->setOption(Relay::OPT_USE_CACHE, $parameters->cache ?? true);
 
@@ -143,6 +118,33 @@ class RelayFactory extends Factory
             Relay::class,
             strtoupper($parameters->compression ?? 'none')
         )));
+
+        if ($parameters->isDisabledRetry()) {
+            $client->setOption(Relay::OPT_MAX_RETRIES, 0);
+        } else {
+            $client->setOption(Relay::OPT_MAX_RETRIES, $parameters->retry->getRetries());
+
+            $retryStrategy = $parameters->retry->getStrategy();
+
+            if ($retryStrategy instanceof ExponentialBackoff) {
+                $algorithm = Relay::BACKOFF_ALGORITHM_FULL_JITTER;
+                $base = $retryStrategy->getBase();
+                $cap = $retryStrategy->getCap();
+            } else {
+                $algorithm = Relay::BACKOFF_ALGORITHM_DEFAULT;
+
+                if ($retryStrategy instanceof EqualBackoff) {
+                    $base = $cap = $retryStrategy->compute(0);
+                } else {
+                    $base = $retryStrategy::DEFAULT_BASE;
+                    $cap = $retryStrategy::DEFAULT_CAP;
+                }
+            }
+
+            $client->setOption(Relay::OPT_BACKOFF_ALGORITHM, $algorithm);
+            $client->setOption(Relay::OPT_BACKOFF_BASE, $base / 1000);
+            $client->setOption(Relay::OPT_BACKOFF_CAP, $cap / 1000);
+        }
 
         return $client;
     }
