@@ -1556,6 +1556,7 @@ class ClientTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @return void
      * @requiresRedisVersion >= 7.0.0
      */
