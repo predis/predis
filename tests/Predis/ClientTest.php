@@ -12,6 +12,7 @@
 
 namespace Predis;
 
+use Exception;
 use Iterator;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\Factory as CommandFactory;
@@ -1551,6 +1552,54 @@ class ClientTest extends PredisTestCase
 
         $client->blmpop(3, ['random_key']);
         $this->assertEquals(3, $retries);
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testStandaloneNodeRetryCommandExecutionOnTimeoutExceptionIntegration(): void
+    {
+        // Retry used to wrap callback around, so we can count retries
+        $retry = new Retry(new ExponentialBackoff(100, 1000), 3);
+        $retriesCount = 0;
+        $retryWrapperFunc = function (callable $do, ?callable $fail = null) use ($retry, &$retriesCount) {
+            $failWrapperFunc = function (Exception $e) use (&$retriesCount, $fail) {
+                ++$retriesCount;
+                $fail($e);
+            };
+
+            return $retry->callWithRetry($do, $failWrapperFunc);
+        };
+
+        $mockRetry = $this->getMockBuilder(Retry::class)
+            ->setConstructorArgs([new ExponentialBackoff(100, 1000), 3])
+            ->onlyMethods(['callWithRetry'])
+            ->getMock();
+
+        $mockRetry
+            ->expects($this->exactly(1))
+            ->method('callWithRetry')
+            ->willReturnCallback($retryWrapperFunc);
+
+        // Create a real connection with mocked retry and short read_write_timeout
+        $parameters = $this->getParameters([
+            'retry' => $mockRetry,
+            'read_write_timeout' => 0.1,
+        ]);
+
+        $client = new Client($parameters);
+
+        $this->expectException(TimeoutException::class);
+
+        try {
+            // blmpop with 3 second timeout will exceed the 0.1 second read_write_timeout
+            // causing TimeoutException to be thrown and retried 3 times before failing
+            $client->blmpop(3, ['random_key_that_does_not_exist']);
+        } finally {
+            $this->assertGreaterThanOrEqual(3, $retriesCount);
+        }
     }
 
     /**
