@@ -256,7 +256,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
      *
      * @return Client
      */
-    protected function createClient(?array $parameters = null, ?array $options = null, ?bool $flushdb = true): Client
+    public function createClient(?array $parameters = null, ?array $options = null, ?bool $flushdb = true): Client
     {
         $parameters = array_merge(
             $this->getDefaultParametersArray(),

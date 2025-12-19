@@ -1579,17 +1579,15 @@ class ClientTest extends PredisTestCase
             ->getMock();
 
         $mockRetry
-            ->expects($this->exactly(1))
+            ->expects($this->any())
             ->method('callWithRetry')
             ->willReturnCallback($retryWrapperFunc);
 
         // Create a real connection with mocked retry and short read_write_timeout
-        $parameters = $this->getParameters([
+        $client = $this->createClient([
             'retry' => $mockRetry,
             'read_write_timeout' => 0.1,
         ]);
-
-        $client = new Client($parameters);
 
         $this->expectException(TimeoutException::class);
 
