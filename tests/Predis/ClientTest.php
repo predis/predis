@@ -12,16 +12,26 @@
 
 namespace Predis;
 
+use Exception;
 use Iterator;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\Factory as CommandFactory;
 use Predis\Command\Processor\KeyPrefixProcessor;
+use Predis\Command\RawCommand;
+use Predis\Connection\Cluster\RedisCluster;
+use Predis\Connection\Factory;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\Replication\MasterSlaveReplication;
+use Predis\Connection\Resource\StreamFactoryInterface;
+use Predis\Connection\StreamConnection;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
 use PredisTestCase;
+use Psr\Http\Message\StreamInterface;
 use ReflectionProperty;
+use RuntimeException;
 use stdClass;
 
 class ClientTest extends PredisTestCase
@@ -188,7 +198,7 @@ class ClientTest extends PredisTestCase
      */
     public function testConstructorWithConnectionArgument(): void
     {
-        $factory = new Connection\Factory();
+        $factory = new Factory();
         $connection = $factory->create('tcp://localhost:7000');
 
         $client = new Client($connection);
@@ -211,7 +221,7 @@ class ClientTest extends PredisTestCase
     {
         $cluster = new Connection\Cluster\PredisCluster(new Parameters());
 
-        $factory = new Connection\Factory();
+        $factory = new Factory();
         $cluster->add($factory->create('tcp://localhost:7000'));
         $cluster->add($factory->create('tcp://localhost:7001'));
 
@@ -228,7 +238,7 @@ class ClientTest extends PredisTestCase
     {
         $replication = new MasterSlaveReplication();
 
-        $factory = new Connection\Factory();
+        $factory = new Factory();
         $replication->add($factory->create('tcp://host1?alias=master'));
         $replication->add($factory->create('tcp://host2?alias=slave'));
 
@@ -610,6 +620,10 @@ class ClientTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->willReturn($expectedResponse);
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
 
         $client = new Client($connection);
         $client->executeCommand($ping);
@@ -628,6 +642,10 @@ class ClientTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->willReturn($expectedResponse);
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
 
         $client = new Client($connection, ['exceptions' => false]);
         $response = $client->executeCommand($ping);
@@ -689,6 +707,11 @@ class ClientTest extends PredisTestCase
             ->with($this->isRedisCommand('PING'))
             ->willReturn($expectedResponse);
 
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
+
         $client = new Client($connection);
         $client->ping();
     }
@@ -706,6 +729,10 @@ class ClientTest extends PredisTestCase
             ->method('executeCommand')
             ->with($this->isRedisCommand('PING'))
             ->willReturn($expectedResponse);
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
 
         $client = new Client($connection, ['exceptions' => false]);
         $response = $client->ping();
@@ -957,7 +984,7 @@ class ClientTest extends PredisTestCase
      */
     public function testGetClientByMethodSupportsSelectingConnectionByCommand(): void
     {
-        $command = Command\RawCommand::create('GET', 'key');
+        $command = RawCommand::create('GET', 'key');
         $connection = $this->getMockBuilder('Predis\Connection\ConnectionInterface')->getMock();
 
         $aggregate = $this->getMockBuilder('Predis\Connection\AggregateConnectionInterface')
@@ -1185,6 +1212,10 @@ class ClientTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->willReturn(new Response\Status('QUEUED'));
+        $connection
+            ->expects($this->any())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
 
         $callable = $this->getMockBuilder('stdClass')
             ->addMethods(['__invoke'])
@@ -1306,6 +1337,50 @@ class ClientTest extends PredisTestCase
         $this->assertInstanceOf('\Predis\Client', $nodeClient = $iterator->current());
         $this->assertSame($connection, $nodeClient->getConnection());
         $this->assertSame('127.0.0.1:6381', $iterator->key());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecuteCommandRetryCommandOnRetryableException()
+    {
+        $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+        ]);
+
+        $mockStream
+            ->expects($this->atLeast(3))
+            ->method('close')
+            ->withAnyParameters();
+
+        $mockStream
+            ->expects($this->exactly(4))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                1000
+            );
+
+        $mockStream
+            ->expects($this->once())
+            ->method('read')
+            ->withAnyParameters()
+            ->willReturn("+PONG\r\n");
+
+        $mockStreamFactory
+            ->expects($this->exactly(4))
+            ->method('createStream')
+            ->withAnyParameters()
+            ->willReturn($mockStream);
+
+        $connection = new StreamConnection($parameters, $mockStreamFactory);
+        $client = new Client($connection);
+        $this->assertEquals('PONG', $client->ping());
     }
 
     /**
@@ -1437,6 +1512,172 @@ class ClientTest extends PredisTestCase
         $this->assertEquals('OK', $clientTestUser->set('key', 'value'));
         $this->assertSame('value', $clientTestUser->get('key'));
         $this->assertEquals(1, $clientTestUser->acl->delUser('test_user'));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testStandaloneNodeRetryCommandExecutionOnTimeoutException(): void
+    {
+        $retries = 0;
+        $mockDisconnect = function () use (&$retries) {
+            $streamConnection = new StreamConnection(new Parameters([
+                'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+            ]));
+            $disconnectFunc = [$streamConnection, 'disconnect'];
+            ++$retries;
+            $disconnectFunc();
+        };
+
+        $stubConnection = $this->getMockBuilder(StreamConnection::class)
+            ->setConstructorArgs([new Parameters([
+                'retry' => new Retry(new ExponentialBackoff(100, 1000), 3),
+                'read_write_timeout' => 0.1,
+            ])])
+            ->onlyMethods(['disconnect'])
+            ->getMock();
+
+        $stubConnection
+            ->expects($this->exactly(7))
+            ->method('disconnect')
+            ->willReturnCallback($mockDisconnect);
+
+        $stubConnection->addConnectCommand(new RawCommand('auth', ['foobar']));
+
+        $client = new Client($stubConnection);
+
+        $this->expectException(TimeoutException::class);
+
+        $client->blmpop(3, ['random_key']);
+        $this->assertEquals(3, $retries);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @return void
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testStandaloneNodeRetryCommandExecutionOnTimeoutExceptionIntegration(): void
+    {
+        // Retry used to wrap callback around, so we can count retries
+        $retry = new Retry(new ExponentialBackoff(100, 1000), 3);
+        $retriesCount = 0;
+        $retryWrapperFunc = function (callable $do, ?callable $fail = null) use ($retry, &$retriesCount) {
+            $failWrapperFunc = function (Exception $e) use (&$retriesCount, $fail) {
+                ++$retriesCount;
+                $fail($e);
+            };
+
+            return $retry->callWithRetry($do, $failWrapperFunc);
+        };
+
+        $mockRetry = $this->getMockBuilder(Retry::class)
+            ->setConstructorArgs([new ExponentialBackoff(100, 1000), 3])
+            ->onlyMethods(['callWithRetry'])
+            ->getMock();
+
+        $mockRetry
+            ->expects($this->any())
+            ->method('callWithRetry')
+            ->willReturnCallback($retryWrapperFunc);
+
+        // Create a real connection with mocked retry and short read_write_timeout
+        $client = $this->createClient([
+            'retry' => $mockRetry,
+            'read_write_timeout' => 0.1,
+        ]);
+
+        $this->expectException(TimeoutException::class);
+
+        try {
+            // blmpop with 3 second timeout will exceed the 0.1 second read_write_timeout
+            // causing TimeoutException to be thrown and retried 3 times before failing
+            $client->blmpop(3, ['random_key_that_does_not_exist']);
+        } finally {
+            $this->assertGreaterThanOrEqual(3, $retriesCount);
+        }
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @return void
+     * @requiresRedisVersion >= 2.0.0
+     */
+    public function testClusterRetryCommandExecutionOnTimeoutException(): void
+    {
+        $defaultParams = $this->getDefaultParametersArray();
+        $parsedParams = [];
+
+        foreach ($defaultParams as $param) {
+            $parsedParam = Parameters::parse($param);
+            $parsedParam['retry'] = new Retry(new ExponentialBackoff(1000, 10000), 3);
+            $parsedParam['read_write_timeout'] = 0.1;
+            $parsedParams[] = Parameters::create($parsedParam);
+        }
+
+        $retries = 0;
+        $mockDisconnect = function () use (&$retries) {
+            $streamConnection = new StreamConnection(new Parameters([
+                'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+            ]));
+            $disconnectFunc = [$streamConnection, 'disconnect'];
+            ++$retries;
+            $disconnectFunc();
+        };
+
+        $stubConnection1 = $this->getMockBuilder(StreamConnection::class)
+            ->setConstructorArgs([$parsedParams[0]])
+            ->onlyMethods(['disconnect'])
+            ->getMock();
+
+        $stubConnection1
+            ->expects($this->any())
+            ->method('disconnect')
+            ->willReturnCallback($mockDisconnect);
+
+        $stubConnection1->addConnectCommand(new RawCommand('auth', [$parsedParams[0]->password]));
+
+        $stubConnection2 = $this->getMockBuilder(StreamConnection::class)
+            ->setConstructorArgs([$parsedParams[1]])
+            ->onlyMethods(['disconnect'])
+            ->getMock();
+
+        $stubConnection2
+            ->expects($this->any())
+            ->method('disconnect')
+            ->willReturnCallback($mockDisconnect);
+
+        $stubConnection2->addConnectCommand(new RawCommand('auth', [$parsedParams[1]->password]));
+
+        $stubConnection3 = $this->getMockBuilder(StreamConnection::class)
+            ->setConstructorArgs([$parsedParams[2]])
+            ->onlyMethods(['disconnect'])
+            ->getMock();
+
+        $stubConnection3
+            ->expects($this->any())
+            ->method('disconnect')
+            ->willReturnCallback($mockDisconnect);
+
+        $stubConnection3->addConnectCommand(new RawCommand('auth', [$parsedParams[2]->password]));
+
+        $mockFactory = $this->getMockBuilder(Factory::class)->getMock();
+        $clusterConnection = new RedisCluster($mockFactory, $parsedParams[0]);
+
+        $clusterConnection->add($stubConnection1);
+        $clusterConnection->add($stubConnection2);
+        $clusterConnection->add($stubConnection3);
+
+        $client = new Client($clusterConnection);
+
+        $this->expectException(TimeoutException::class);
+
+        $client->blpop(['random_key'], 3);
+        $this->assertEquals(3, $retries);
     }
 
     // ******************************************************************** //

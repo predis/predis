@@ -16,10 +16,17 @@ use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command;
 use Predis\Connection;
+use Predis\Connection\Parameters;
+use Predis\Connection\Resource\StreamFactoryInterface;
+use Predis\Connection\StreamConnection;
 use Predis\Replication;
 use Predis\Response;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
 use PredisTestCase;
+use Psr\Http\Message\StreamInterface;
 use ReflectionProperty;
+use RuntimeException;
 
 class SentinelReplicationTest extends PredisTestCase
 {
@@ -103,7 +110,7 @@ class SentinelReplicationTest extends PredisTestCase
      */
     public function testConnectionParametersInstanceForSentinelConnectionIsNotModified(): void
     {
-        $originalParameters = Connection\Parameters::create(
+        $originalParameters = Parameters::create(
             'tcp://127.0.0.1:5381?role=sentinel&database=1&password=secret'
         );
 
@@ -123,8 +130,8 @@ class SentinelReplicationTest extends PredisTestCase
      */
     public function testConnectionParametersInstanceForSentinelConnectionIsNotModifiedEmptyPassword(): void
     {
-        $sentinel1 = Connection\Parameters::create('tcp://127.0.0.1:5381?role=sentinel&database=1&password=');
-        $sentinel2 = Connection\Parameters::create('tcp://127.0.0.1:5381?role=sentinel&database=1');
+        $sentinel1 = Parameters::create('tcp://127.0.0.1:5381?role=sentinel&database=1&password=');
+        $sentinel2 = Parameters::create('tcp://127.0.0.1:5381?role=sentinel&database=1');
 
         $replication1 = $this->getReplicationConnection('svc', [$sentinel1]);
         $replication2 = $this->getReplicationConnection('svc', [$sentinel2]);
@@ -1772,6 +1779,73 @@ class SentinelReplicationTest extends PredisTestCase
             Command\RawCommand::create('get', 'key')
         ));
         $this->assertSame($slave2, $replication->getCurrent());
+    }
+
+    /**
+     * @medium
+     * @group disconnected
+     * @group slow
+     */
+    public function testRetryCommandFailureOnCustomRetryConfiguration()
+    {
+        $mockStream = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $mockStreamFactory = $this->getMockBuilder(StreamFactoryInterface::class)->getMock();
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+            'role' => 'master',
+        ]);
+
+        $mockStream
+            ->expects($this->exactly(3))
+            ->method('close')
+            ->withAnyParameters();
+
+        $mockStream
+            ->expects($this->exactly(6))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                1000,
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                $this->throwException(new RuntimeException('', 2)),
+                1000,
+                1000
+            );
+
+        $mockStream
+            ->expects($this->exactly(7))
+            ->method('read')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls("*1\r\n", "$5\r\n", "master\r\n", "*1\r\n", "$5\r\n", "master\r\n", "+OK\r\n");
+
+        $mockStreamFactory
+            ->expects($this->exactly(4))
+            ->method('createStream')
+            ->withAnyParameters()
+            ->willReturn($mockStream);
+
+        $connection = new StreamConnection($parameters, $mockStreamFactory);
+
+        $mockFactory = $this->getMockBuilder(Connection\Factory::class)->getMock();
+        $mockFactory
+            ->expects($this->any())
+            ->method('create')
+            ->willReturn($connection);
+
+        $sentinel = $this->getMockSentinelConnection();
+        $sentinel
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->willReturn(['127.0.0.1', '6381']);
+
+        $replication = new SentinelReplication('src', [$sentinel], $mockFactory);
+        $replication->add($connection);
+
+        $this->assertEquals(
+            'OK',
+            $replication->executeCommand(Command\RawCommand::create('SET', 1001))
+        );
     }
 
     // ******************************************************************** //

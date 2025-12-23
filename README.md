@@ -509,6 +509,43 @@ $client = new Predis\Client('tcp://127.0.0.1', [
 For a more in-depth insight on how to create new connection backends you can refer to the actual
 implementation of the standard connection classes available in the `Predis\Connection` namespace.
 
+### Retry exceptions
+
+You can enable automatic retry that is disabled by default, to be able to reduce the amount of
+false-positives in case of network issues. By default, we're retrying on any connection,
+timeout or socket initialization exception, but you can update the list of retry
+exceptions. For now `EqualBackoff` and `ExponentialBackoff` strategies are available,
+but you may provide your custom one. Retry may be configured with any type of communication
+(standalone node, cluster, pipeline, transaction, replication). Here's an example of
+configuration:
+
+```php
+// Standalone client
+$client = new Predis\Client([
+    'retry' => new \Predis\Retry\Retry(
+        new \Predis\Retry\Strategy\ExponentialBackoff(1000, 10000), // Base and cap configuration in microseconds
+        3                                                           // Number of retries
+    ),
+]);
+
+// Cluster configuration
+$options = [
+    'parameters' => [
+        'retry' => new \Predis\Retry\Retry(new \Predis\Retry\Strategy\ExponentialBackoff(1000, 10000), 3),
+    ],
+];
+
+$client = new Predis\Client(['tcp://host:port', 'tcp://host:port', 'tcp://host:port'], $options);
+
+$retry = new \Predis\Retry\Retry(
+    new \Predis\Retry\Strategy\ExponentialBackoff(1000, 10000),
+    3
+);
+
+// Update a list of exceptions to catch
+$retry->updateCatchableExceptions([Exception::class]);
+```
+
 ## RESP3 ##
 
 ### Connection ###

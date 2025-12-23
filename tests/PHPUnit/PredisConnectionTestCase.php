@@ -15,6 +15,7 @@ namespace Predis\Connection;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\TimeoutException;
 use PredisTestCase;
 
 /**
@@ -459,7 +460,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
      */
     public function testThrowsExceptionOnReadWriteTimeout(): void
     {
-        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectException(TimeoutException::class);
 
         $commands = $this->getCommandFactory();
 

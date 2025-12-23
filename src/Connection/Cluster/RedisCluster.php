@@ -28,10 +28,14 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
+use Predis\Connection\RelayFactory;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
+use Predis\TimeoutException;
 use ReturnTypeWillChange;
 use Throwable;
 use Traversable;
@@ -58,7 +62,7 @@ use Traversable;
  */
 class RedisCluster extends AbstractAggregateConnection implements ClusterInterface, IteratorAggregate, Countable
 {
-    private $useClusterSlots = true;
+    public $useClusterSlots = true;
 
     /**
      * @var NodeConnectionInterface[]
@@ -260,35 +264,31 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
      */
     private function queryClusterNodeForSlotMap(NodeConnectionInterface $connection)
     {
-        $retries = 0;
-        $retryAfter = $this->retryInterval;
+        // Backward-compatible hardcoded retry
+        $retry = new Retry(
+            new ExponentialBackoff($this->retryInterval * 1000, -1),
+            $this->retryLimit,
+            [ConnectionException::class]
+        );
+
         $command = RawCommand::create('CLUSTER', 'SLOTS');
 
-        while ($retries <= $this->retryLimit) {
-            try {
-                $response = $connection->executeCommand($command);
-                break;
-            } catch (ConnectionException $exception) {
-                $connection = $exception->getConnection();
-                $connection->disconnect();
+        $doCallback = function () use (&$connection, $command) {
+            return $connection->executeCommand($command);
+        };
 
-                $this->remove($connection);
+        $failCallback = function (ConnectionException $exception) use (&$connection) {
+            $connection = $exception->getConnection();
+            $connection->disconnect();
 
-                if ($retries === $this->retryLimit) {
-                    throw $exception;
-                }
+            $this->remove($connection);
 
-                if (!$connection = $this->getRandomConnection()) {
-                    throw new ClientException('No connections left in the pool for `CLUSTER SLOTS`');
-                }
-
-                usleep($retryAfter * 1000);
-                $retryAfter *= 2;
-                ++$retries;
+            if (!$connection = $this->getRandomConnection()) {
+                throw new ClientException('No connections left in the pool for `CLUSTER SLOTS`');
             }
-        }
+        };
 
-        return $response;
+        return $retry->callWithRetry($doCallback, $failCallback);
     }
 
     /**
@@ -545,51 +545,42 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
      * @param string           $method  Actual method.
      *
      * @return mixed
+     * @throws Throwable
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
-        $retries = 0;
-        $retryAfter = $this->retryInterval;
-
-        while ($retries <= $this->retryLimit) {
-            try {
-                $response = $this->getConnectionByCommand($command)->$method($command);
-
-                if ($response instanceof ErrorResponse) {
-                    $message = $response->getMessage();
-
-                    if (strpos($message, 'CLUSTERDOWN') !== false) {
-                        throw new ServerException($message);
-                    }
-                }
-
-                break;
-            } catch (Throwable $exception) {
-                usleep($retryAfter * 1000);
-                $retryAfter *= 2;
-
-                if ($exception instanceof ConnectionException) {
-                    $connection = $exception->getConnection();
-
-                    if ($connection) {
-                        $connection->disconnect();
-                        $this->remove($connection);
-                    }
-                }
-
-                if ($retries === $this->retryLimit) {
-                    throw $exception;
-                }
-
-                if ($this->useClusterSlots) {
-                    $this->askSlotMap();
-                }
-
-                ++$retries;
-            }
+        if ($this->connectionParameters->isDisabledRetry() || $this->connections instanceof RelayFactory) {
+            // Override default parameters, for backward-compatibility
+            // with current behaviour
+            $retry = new Retry(
+                new ExponentialBackoff($this->retryInterval * 1000, -1),
+                $this->retryLimit
+            );
+        } else {
+            $retry = $this->connectionParameters->retry;
         }
+        $retry->updateCatchableExceptions([ServerException::class]);
 
-        return $response;
+        $doCallback = function () use ($command, $method) {
+            $response = $this->getConnectionByCommand($command)->$method($command);
+
+            if ($response instanceof ErrorResponse) {
+                $message = $response->getMessage();
+
+                if (strpos($message, 'CLUSTERDOWN') !== false) {
+                    throw new ServerException($message);
+                }
+            }
+
+            return $response;
+        };
+
+        return $retry->callWithRetry(
+            $doCallback,
+            function (Throwable $e) {
+                $this->onFailCallback($e);
+            }
+        );
     }
 
     /**
@@ -738,6 +729,36 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
             }
 
             usleep($this->readTimeout);
+        }
+    }
+
+    /**
+     * Handle exceptions.
+     *
+     * @param  Throwable $exception
+     * @return void
+     */
+    private function onFailCallback(Throwable $exception)
+    {
+        if ($exception instanceof ConnectionException) {
+            $connection = $exception->getConnection();
+
+            if ($connection) {
+                $connection->disconnect();
+                $this->remove($connection);
+            }
+
+            if ($this->useClusterSlots) {
+                $this->askSlotMap();
+            }
+        }
+
+        if ($exception instanceof TimeoutException) {
+            $connection = $exception->getConnection();
+
+            if ($connection) {
+                $connection->disconnect();
+            }
         }
     }
 }

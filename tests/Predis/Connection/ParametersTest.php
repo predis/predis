@@ -12,6 +12,8 @@
 
 namespace Predis\Connection;
 
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\NoBackoff;
 use PredisTestCase;
 
 class ParametersTest extends PredisTestCase
@@ -430,6 +432,7 @@ class ParametersTest extends PredisTestCase
             'host' => '127.0.0.1',
             'port' => 6379,
             'protocol' => 2,
+            'retry' => new Retry(new NoBackoff(), 0),
         ];
     }
 

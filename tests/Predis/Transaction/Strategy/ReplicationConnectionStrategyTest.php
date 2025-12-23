@@ -14,6 +14,7 @@ namespace Predis\Transaction\Strategy;
 
 use PHPUnit\Framework\TestCase;
 use Predis\Command\CommandInterface;
+use Predis\Connection\Parameters;
 use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Transaction\MultiExecState;
 
@@ -45,6 +46,11 @@ class ReplicationConnectionStrategyTest extends TestCase
             ->method('executeCommand')
             ->with($this->mockCommand)
             ->willReturn('OK');
+
+        $this->mockConnection
+            ->expects($this->any())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
 
         $strategy = new ReplicationConnectionStrategy($this->mockConnection, new MultiExecState());
 

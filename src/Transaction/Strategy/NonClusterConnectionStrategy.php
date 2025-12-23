@@ -18,13 +18,17 @@ use Predis\Command\Redis\EXEC;
 use Predis\Command\Redis\MULTI;
 use Predis\Command\Redis\UNWATCH;
 use Predis\Command\Redis\WATCH;
+use Predis\CommunicationException;
+use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\RelayConnection;
 use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Response\ErrorInterface;
 use Predis\Response\ServerException;
+use Predis\TimeoutException;
 use Predis\Transaction\MultiExecState;
 use Predis\Transaction\Response\BypassTransactionResponse;
+use Throwable;
 
 /**
  * Defines strategy for connections that operates on non-distributed hash slots.
@@ -60,6 +64,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
 
     /**
      * {@inheritDoc}
+     * @throws Throwable
      */
     public function executeCommand(CommandInterface $command)
     {
@@ -67,7 +72,15 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
             return $this->executeBypassingTransaction($command);
         }
 
-        return $this->connection->executeCommand($command);
+        $retry = $this->connection->getParameters()->retry;
+
+        return $retry->callWithRetry(
+            function () use ($command) {
+                return $this->connection->executeCommand($command);
+            }, function (CommunicationException $e) {
+                $this->onFailCallback($e);
+            }
+        );
     }
 
     /**
@@ -99,10 +112,19 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
 
     /**
      * {@inheritDoc}
+     * @throws Throwable
      */
     public function unwatch()
     {
-        return $this->connection->executeCommand(new UNWATCH());
+        $retry = $this->connection->getParameters()->retry;
+
+        return $retry->callWithRetry(
+            function () {
+                return $this->connection->executeCommand(new UNWATCH());
+            }, function (CommunicationException $e) {
+                $this->onFailCallback($e);
+            }
+        );
     }
 
     /**
@@ -118,12 +140,20 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
      *
      * @param  CommandInterface          $command
      * @return BypassTransactionResponse
-     * @throws ServerException
+     * @throws ServerException|Throwable
      */
     protected function executeBypassingTransaction(CommandInterface $command): BypassTransactionResponse
     {
+        $retry = $this->connection->getParameters()->retry;
+
         try {
-            $response = $this->connection->executeCommand($command);
+            $response = $retry->callWithRetry(
+                function () use ($command) {
+                    return $this->connection->executeCommand($command);
+                }, function (CommunicationException $e) {
+                    $this->onFailCallback($e);
+                }
+            );
         } catch (ServerException $exception) {
             if (!$this->connection instanceof RelayConnection) {
                 throw $exception;
@@ -145,5 +175,39 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
         }
 
         return new BypassTransactionResponse($response);
+    }
+
+    /**
+     * Handle communication exception.
+     *
+     * @param  CommunicationException $e
+     * @return void
+     */
+    private function onFailCallback(CommunicationException $e)
+    {
+        $connection = $e->getConnection();
+
+        if ($connection instanceof NodeConnectionInterface) {
+            $connection->disconnect();
+
+            return;
+        }
+
+        if ($e instanceof ConnectionException) {
+            $nodeConnection = $e->getConnection();
+
+            if ($nodeConnection) {
+                $nodeConnection->disconnect();
+                $this->connection->remove($nodeConnection);
+            }
+        }
+
+        if ($e instanceof TimeoutException) {
+            $nodeConnection = $e->getConnection();
+
+            if ($nodeConnection) {
+                $nodeConnection->disconnect();
+            }
+        }
     }
 }
