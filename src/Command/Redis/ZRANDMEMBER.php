@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 use Predis\Command\Traits\With\WithScores;
 
 /**
@@ -32,5 +32,10 @@ class ZRANDMEMBER extends RedisCommand
     public function getId()
     {
         return 'ZRANDMEMBER';
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }

@@ -4,6 +4,7 @@
 
 ### Fixed
 - Fixed wrong `@param` annotation in `Parameters` (#1614)
+- Make `ZRANDMEMBER` prefixable (#1621)
 
 ### Added
 - Added retry support (#1616)

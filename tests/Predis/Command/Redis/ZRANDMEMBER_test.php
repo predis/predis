@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
 use Predis\Response\ServerException;
 
 class ZRANDMEMBER_test extends PredisCommandTestCase
@@ -91,6 +92,23 @@ class ZRANDMEMBER_test extends PredisCommandTestCase
         $redis->zadd('test-zset', 1, 'member1');
         $this->assertSame('member1', $redis->zrandmember('test-zset'));
         $this->assertNull($redis->zrandmember($notExpectedKey));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = ['key', 10];
+        $prefix = 'prefix:';
+        $expectedArguments = ['prefix:key', 10];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     /**
