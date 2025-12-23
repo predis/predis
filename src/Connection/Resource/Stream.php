@@ -207,7 +207,27 @@ class Stream implements StreamInterface
 
         $result = fwrite($this->stream, $string);
 
-        if ($result === false) {
+        if ($result === false || $result === 0) {
+            $metadata = $this->getMetadata();
+
+            if ($this->eof()) {
+                throw new RuntimeException('Connection closed by peer during write', 1);
+            }
+
+            if (!is_resource($this->stream)) {
+                throw new RuntimeException(
+                    'Stream resource is no longer valid',
+                    1
+                );
+            }
+
+            if (array_key_exists('timed_out', $metadata) && $metadata['timed_out']) {
+                throw new RuntimeException(
+                    'Stream has been timed out',
+                    2
+                );
+            }
+
             throw new RuntimeException('Unable to write to stream', 1);
         }
 
@@ -252,6 +272,26 @@ class Stream implements StreamInterface
         }
 
         if (false === $string) {
+            $metadata = $this->getMetadata();
+
+            if ($this->eof()) {
+                throw new RuntimeException('Connection closed by peer during read', 1);
+            }
+
+            if (!is_resource($this->stream)) {
+                throw new RuntimeException(
+                    'Stream resource is no longer valid',
+                    1
+                );
+            }
+
+            if (array_key_exists('timed_out', $metadata) && $metadata['timed_out']) {
+                throw new RuntimeException(
+                    'Stream has been timed out',
+                    2
+                );
+            }
+
             throw new RuntimeException('Unable to read from stream', 1);
         }
 

@@ -16,17 +16,21 @@ use InvalidArgumentException;
 use Predis\Command\Command;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\CommunicationException;
 use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface as ConnectionFactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
+use Predis\Connection\RelayFactory;
 use Predis\Replication\ReplicationStrategy;
 use Predis\Replication\RoleException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
 use Throwable;
 
 /**
@@ -566,7 +570,10 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
     protected function assertConnectionRole(NodeConnectionInterface $connection, $role)
     {
         $role = strtolower($role);
-        $actualRole = $connection->executeCommand(RawCommand::create('ROLE'));
+        $retry = $connection->getParameters()->retry;
+        $actualRole = $retry->callWithRetry(function () use ($connection) {
+            return $connection->executeCommand(RawCommand::create('ROLE'));
+        });
 
         if ($actualRole instanceof Error) {
             throw new ConnectionException($connection, $actualRole->getMessage());
@@ -710,33 +717,39 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
      */
     private function retryCommandOnFailure(CommandInterface $command, $method)
     {
-        $retries = 0;
+        $parameters = $this->getParameters();
 
-        while ($retries <= $this->retryLimit) {
-            try {
-                $response = $this->getConnectionByCommand($command)->$method($command);
-                if ($response instanceof Error && $response->getErrorType() === 'LOADING') {
-                    throw new ConnectionException($this->current, $response->getMessage());
-                }
-                break;
-            } catch (Throwable $exception) {
-                $this->wipeServerList();
-
-                if ($exception instanceof ConnectionException) {
-                    $exception->getConnection()->disconnect();
-                }
-
-                if ($retries === $this->retryLimit) {
-                    throw $exception;
-                }
-
-                usleep($this->retryWait * 1000);
-
-                ++$retries;
-            }
+        if ($parameters->isDisabledRetry() || $this->connectionFactory instanceof RelayFactory) {
+            // Override default parameters, for backward-compatibility
+            // with current behaviour
+            $retry = new Retry(
+                new ExponentialBackoff($this->retryWait * 1000, -1),
+                $this->retryLimit
+            );
+        } else {
+            $retry = $parameters->retry;
         }
+        $retry->updateCatchableExceptions([Throwable::class]);
 
-        return $response;
+        $doCallback = function () use ($method, $command) {
+            $response = $this->getConnectionByCommand($command)->{$method}($command);
+
+            if ($response instanceof Error && $response->getErrorType() === 'LOADING') {
+                throw new ConnectionException($this->current, $response->getMessage());
+            }
+
+            return $response;
+        };
+
+        $failCallback = function (Throwable $exception) {
+            $this->wipeServerList();
+
+            if ($exception instanceof CommunicationException) {
+                $exception->getConnection()->disconnect();
+            }
+        };
+
+        return $retry->callWithRetry($doCallback, $failCallback);
     }
 
     /**

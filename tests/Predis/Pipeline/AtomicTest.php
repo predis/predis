@@ -12,11 +12,15 @@
 
 namespace Predis\Pipeline;
 
+use Exception;
 use Predis\Client;
 use Predis\ClientInterface;
 use Predis\Command\Redis\PING;
 use Predis\Connection\Parameters;
 use Predis\Response;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
+use Predis\TimeoutException;
 use PredisTestCase;
 
 class AtomicTest extends PredisTestCase
@@ -56,7 +60,7 @@ class AtomicTest extends PredisTestCase
             );
 
         $connection
-            ->expects($this->once())
+            ->expects($this->exactly(4))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -104,6 +108,10 @@ class AtomicTest extends PredisTestCase
                 $queued,
                 $queued
             );
+        $connection
+            ->expects($this->exactly(3))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -150,6 +158,10 @@ class AtomicTest extends PredisTestCase
                 $queued,
                 $error
             );
+        $connection
+            ->expects($this->exactly(3))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -191,6 +203,10 @@ class AtomicTest extends PredisTestCase
             ->willReturn(
                 new Response\Error('ERR Test error')
             );
+        $connection
+            ->expects($this->exactly(3))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new Atomic(new Client($connection));
 
@@ -236,7 +252,7 @@ class AtomicTest extends PredisTestCase
             );
 
         $connection
-            ->expects($this->once())
+            ->expects($this->exactly(4))
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
 
@@ -266,6 +282,71 @@ class AtomicTest extends PredisTestCase
     }
 
     /**
+     * @group disconnected
+     * @throws Exception
+     */
+    public function testRetryStandalonePipelineOnRetryableErrors(): void
+    {
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+        ]);
+        $mockConnection = $this->getMockConnection();
+
+        $mockConnection
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('MULTI')],
+                [$this->isRedisCommand('EXEC')]
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                ['PONG', 'PONG', 'PONG']
+            );
+
+        $mockConnection
+            ->expects($this->exactly(4))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new TimeoutException($mockConnection)),
+                $this->throwException(new TimeoutException($mockConnection)),
+                $this->throwException(new TimeoutException($mockConnection)),
+                1000
+            );
+
+        $mockConnection
+            ->expects($this->exactly(3))
+            ->method('readResponse')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                "+QUEUED\r\n",
+                "+QUEUED\r\n",
+                "+QUEUED\r\n"
+            );
+
+        $mockConnection
+            ->expects($this->atLeast(3))
+            ->method('disconnect')
+            ->withAnyParameters();
+
+        $mockConnection
+            ->expects($this->exactly(4))
+            ->method('getParameters')
+            ->willReturn($parameters);
+
+        $pipeline = new Atomic(new Client($mockConnection));
+
+        $responses = $pipeline->execute(function (Pipeline $pipe) {
+            $pipe->ping();
+            $pipe->ping();
+            $pipe->ping();
+        });
+
+        $this->assertEquals(['PONG', 'PONG', 'PONG'], $responses);
+    }
+
+    /**
      * @group connected
      * @group relay-incompatible
      */
@@ -273,7 +354,7 @@ class AtomicTest extends PredisTestCase
     {
         $parameters = $this->getDefaultParametersArray();
 
-        $client = $this->getClient(
+        $client = new Client(
             ["tcp://{$parameters['host']}:{$parameters['port']}?role=master&database={$parameters['database']}&password={$parameters['password']}"],
             ['replication' => 'predis']
         );

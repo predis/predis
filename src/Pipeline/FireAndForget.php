@@ -12,9 +12,11 @@
 
 namespace Predis\Pipeline;
 
+use Predis\CommunicationException;
 use Predis\Connection\AggregateConnectionInterface;
 use Predis\Connection\ConnectionInterface;
 use SplQueue;
+use Throwable;
 
 /**
  * Command pipeline that writes commands to the servers but discards responses.
@@ -26,11 +28,19 @@ class FireAndForget extends Pipeline
      */
     protected function executePipeline(ConnectionInterface $connection, SplQueue $commands)
     {
-        if ($connection instanceof AggregateConnectionInterface) {
-            $this->writeToMultiNode($connection, $commands);
-        } else {
-            $this->writeToSingleNode($connection, $commands);
-        }
+        $retry = $connection->getParameters()->retry;
+
+        $retry->callWithRetry(function () use ($connection, $commands) {
+            if ($connection instanceof AggregateConnectionInterface) {
+                $this->writeToMultiNode($connection, $commands);
+            } else {
+                $this->writeToSingleNode($connection, $commands);
+            }
+        }, function (Throwable $e) {
+            if ($e instanceof CommunicationException) {
+                $e->getConnection()->disconnect();
+            }
+        });
 
         $connection->disconnect();
 

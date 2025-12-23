@@ -340,11 +340,14 @@ class StreamConnection extends AbstractConnection
      * @param  string|null                             $message
      * @throws RuntimeException|CommunicationException
      */
-    protected function onStreamError(RuntimeException $e, ?string $message = null)
+    protected function onStreamError($e, ?string $message = null)
     {
-        // Code = 1 represents issues related to read/write operation.
+        // Code = 1 represents issues related to read/write operation, connection broken.
         if ($e->getCode() === 1) {
             $this->onConnectionError($message);
+        } elseif ($e->getCode() === 2) {
+            // Operation has been timed out, connection not necessarily broken.
+            $this->onTimeoutError();
         }
 
         throw $e;

@@ -20,6 +20,9 @@ use Predis\Command\CommandInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Response;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
+use Predis\TimeoutException;
 use Predis\Transaction\Exception\TransactionException;
 use PredisTestCase;
 use RuntimeException;
@@ -673,6 +676,55 @@ class MultiExecTest extends PredisTestCase
         $tx = new MultiExec($client);
 
         $tx->multi()->echo('test')->exec();
+    }
+
+    /**
+     * @group disconnected
+     * @throws Exception
+     */
+    public function testRetryReplicationPipelineOnRetryableErrors(): void
+    {
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+            'role' => 'master',
+        ]);
+
+        $mockConnection = $this->getMockConnection();
+
+        $mockConnection
+            ->expects($this->any())
+            ->method('getParameters')
+            ->willReturn($parameters);
+
+        $mockConnection
+            ->expects($this->atLeast(3))
+            ->method('disconnect')
+            ->withAnyParameters();
+
+        $mockConnection
+            ->expects($this->exactly(8))
+            ->method('executeCommand')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new TimeoutException($mockConnection)),
+                $this->throwException(new TimeoutException($mockConnection)),
+                $this->throwException(new TimeoutException($mockConnection)),
+                new Response\Status('OK'),
+                new Response\Status('QUEUED'),
+                new Response\Status('QUEUED'),
+                new Response\Status('QUEUED'),
+                ['OK', 'OK', 'OK']
+            );
+
+        $tx = new MultiExec(new Client($mockConnection));
+
+        $responses = $tx->execute(function (MultiExec $tx) {
+            $tx->set('key', 'value');
+            $tx->set('key', 'value');
+            $tx->set('key', 'value');
+        });
+
+        $this->assertEquals(['OK', 'OK', 'OK'], $responses);
     }
 
     // ******************************************************************** //

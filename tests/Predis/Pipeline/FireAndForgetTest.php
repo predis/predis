@@ -12,10 +12,17 @@
 
 namespace Predis\Pipeline;
 
+use Exception;
 use Predis\Client;
 use Predis\ClientInterface;
 use Predis\Command\Redis\PING;
+use Predis\Connection\Cluster\RedisCluster;
+use Predis\Connection\Parameters;
+use Predis\Connection\Replication\MasterSlaveReplication;
 use Predis\Response;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
+use Predis\TimeoutException;
 use PredisTestCase;
 
 class FireAndForgetTest extends PredisTestCase
@@ -34,6 +41,10 @@ class FireAndForgetTest extends PredisTestCase
         $connection
             ->expects($this->never())
             ->method('readResponse');
+        $connection
+            ->expects($this->exactly(1))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
 
         $pipeline = new FireAndForget(new Client($connection));
 
@@ -68,6 +79,11 @@ class FireAndForgetTest extends PredisTestCase
             ->expects($this->never())
             ->method('readResponse');
 
+        $connection
+            ->expects($this->exactly(2))
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
         $pipeline = new FireAndForget(new Client($connection));
 
         $pipeline->ping();
@@ -75,6 +91,147 @@ class FireAndForgetTest extends PredisTestCase
         $pipeline->ping();
 
         $this->assertEmpty($pipeline->execute());
+    }
+
+    /**
+     * @group disconnected
+     * @throws Exception
+     */
+    public function testRetryStandalonePipelineOnRetryableErrors(): void
+    {
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+        ]);
+        $mockConnection = $this->getMockConnection();
+
+        $mockConnection
+            ->expects($this->exactly(4))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new TimeoutException($mockConnection)),
+                $this->throwException(new TimeoutException($mockConnection)),
+                $this->throwException(new TimeoutException($mockConnection)),
+                1000
+            );
+
+        $mockConnection
+            ->expects($this->atLeast(3))
+            ->method('disconnect')
+            ->withAnyParameters();
+
+        $mockConnection
+            ->expects($this->exactly(1))
+            ->method('getParameters')
+            ->willReturn($parameters);
+
+        $pipeline = new FireAndForget(new Client($mockConnection));
+
+        $pipeline->execute(function (Pipeline $pipe) {
+            $pipe->ping();
+            $pipe->ping();
+            $pipe->ping();
+        });
+    }
+
+    /**
+     * @group disconnected
+     * @throws Exception
+     */
+    public function testRetryClusterPipelineOnRetryableErrors(): void
+    {
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+        ]);
+        $mockConnection = $this->getMockConnection();
+        $mockClusterConnection = $this->getMockBuilder(RedisCluster::class)
+            ->disableOriginalConstructor()->getMock();
+
+        $mockConnection
+            ->expects($this->exactly(6))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new TimeoutException($mockConnection)),
+                $this->throwException(new TimeoutException($mockConnection)),
+                $this->throwException(new TimeoutException($mockConnection)),
+                1000,
+                1000,
+                1000
+            );
+
+        $mockConnection
+            ->expects($this->atLeast(3))
+            ->method('disconnect')
+            ->withAnyParameters();
+
+        $mockClusterConnection
+            ->expects($this->exactly(5))
+            ->method('getParameters')
+            ->willReturn($parameters);
+
+        $mockClusterConnection
+            ->expects($this->exactly(6))
+            ->method('getConnectionByCommand')
+            ->willReturn($mockConnection);
+
+        $pipeline = new FireAndForget(new Client($mockClusterConnection));
+
+        $pipeline->execute(function (Pipeline $pipe) {
+            $pipe->ping();
+            $pipe->ping();
+            $pipe->ping();
+        });
+    }
+
+    /**
+     * @group disconnected
+     * @throws Exception
+     */
+    public function testRetryReplicationPipelineOnRetryableErrors(): void
+    {
+        $parameters = new Parameters([
+            'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
+        ]);
+        $mockConnection = $this->getMockConnection();
+        $mockReplicationConnection = $this->getMockBuilder(MasterSlaveReplication::class)
+            ->disableOriginalConstructor()->getMock();
+
+        $mockConnection
+            ->expects($this->exactly(6))
+            ->method('write')
+            ->withAnyParameters()
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException(new TimeoutException($mockConnection)),
+                $this->throwException(new TimeoutException($mockConnection)),
+                $this->throwException(new TimeoutException($mockConnection)),
+                1000,
+                1000,
+                1000
+            );
+
+        $mockConnection
+            ->expects($this->atLeast(3))
+            ->method('disconnect')
+            ->withAnyParameters();
+
+        $mockReplicationConnection
+            ->expects($this->exactly(5))
+            ->method('getParameters')
+            ->willReturn($parameters);
+
+        $mockReplicationConnection
+            ->expects($this->exactly(6))
+            ->method('getConnectionByCommand')
+            ->willReturn($mockConnection);
+
+        $pipeline = new FireAndForget(new Client($mockReplicationConnection));
+
+        $pipeline->execute(function (Pipeline $pipe) {
+            $pipe->ping();
+            $pipe->ping();
+            $pipe->ping();
+        });
     }
 
     /**
@@ -105,7 +262,7 @@ class FireAndForgetTest extends PredisTestCase
     {
         $parameters = $this->getDefaultParametersArray();
 
-        $client = $this->getClient(
+        $client = new Client(
             ["tcp://{$parameters['host']}:{$parameters['port']}?role=master&database={$parameters['database']}&password={$parameters['password']}"],
             ['replication' => 'predis']
         );
