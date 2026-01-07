@@ -90,20 +90,44 @@ class StreamConnection extends AbstractConnection
     public function connect()
     {
         if (parent::connect() && $this->initCommands) {
-            $serialisedCommands = '';
+            $responses = $this->sendPipeline($this->initCommands);
 
-            foreach ($this->initCommands as $command) {
-                $serialisedCommands .= $command->serializeCommand();
+            if ($responses[0][0] instanceof ErrorResponseInterface) {
+                // Error in HELLO command, Redis < 6.0.
+                // We need to handle it separately and re-send other commands.
+                $this->handleOnConnectResponse($responses[0][0], $responses[0][1]);
+                $responses = $this->sendPipeline(array_slice($this->initCommands, 1));
             }
 
-            $this->write($serialisedCommands);
-
-            foreach ($this->initCommands as $command) {
-                $response = $this->readResponse($command);
-
-                $this->handleOnConnectResponse($response, $command);
+            foreach ($responses as $response) {
+                $this->handleOnConnectResponse($response[0], $response[1]);
             }
         }
+    }
+
+    /**
+     * Sends commands to the server as pipeline and returns responses.
+     *
+     * @param  CommandInterface[]     $commands
+     * @return array<int, array>
+     * @throws CommunicationException
+     */
+    protected function sendPipeline(array $commands): array
+    {
+        $serialisedCommands = '';
+
+        foreach ($commands as $command) {
+            $serialisedCommands .= $command->serializeCommand();
+        }
+
+        $this->write($serialisedCommands);
+        $responses = [];
+
+        foreach ($commands as $command) {
+            $responses[] = [$this->readResponse($command), $command];
+        }
+
+        return $responses;
     }
 
     /**
