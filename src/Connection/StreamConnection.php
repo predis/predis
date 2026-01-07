@@ -90,8 +90,16 @@ class StreamConnection extends AbstractConnection
     public function connect()
     {
         if (parent::connect() && $this->initCommands) {
+            $serialisedCommands = '';
+
             foreach ($this->initCommands as $command) {
-                $response = $this->executeCommand($command);
+                $serialisedCommands .= $command->serializeCommand();
+            }
+
+            $this->write($serialisedCommands);
+
+            foreach ($this->initCommands as $command) {
+                $response = $this->readResponse($command);
 
                 $this->handleOnConnectResponse($response, $command);
             }
