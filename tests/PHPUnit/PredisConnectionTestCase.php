@@ -341,6 +341,7 @@ abstract class PredisConnectionTestCase extends PredisTestCase
 
     /**
      * @group connected
+     * @requiresRedisVersion >= 6.0.0
      */
     public function testSendsInitializationCommandsOnConnection(): void
     {

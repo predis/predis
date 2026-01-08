@@ -129,19 +129,16 @@ class StreamConnectionTest extends PredisConnectionTestCase
             ->withAnyParameters()
             ->willReturn($this->mockStream);
 
+        // All handshake commands should be pipelined in a single write
+        $pipelinedCommands = $command1->serializeCommand()
+            . $command2->serializeCommand()
+            . $command3->serializeCommand();
+
         $this->mockStream
-            ->expects($this->exactly(3))
+            ->expects($this->once())
             ->method('write')
-            ->withConsecutive(
-                [$command1->serializeCommand()],
-                [$command2->serializeCommand()],
-                [$command3->serializeCommand()]
-            )
-            ->willReturnOnConsecutiveCalls(
-                strlen($command1->serializeCommand()),
-                strlen($command2->serializeCommand()),
-                strlen($command3->serializeCommand())
-            );
+            ->with($pipelinedCommands)
+            ->willReturn(strlen($pipelinedCommands));
 
         $this->mockStream
             ->expects($this->exactly(3))
@@ -156,6 +153,61 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $connection->addConnectCommand($command3);
 
         $connection->connect();
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testHandshakeCommandsArePipelinedInSingleNetworkRoundTrip(): void
+    {
+        $parameters = new Parameters();
+        $command1 = new RawCommand('AUTH', ['username', 'password']);
+        $command2 = new RawCommand('SELECT', [5]);
+        $command3 = new RawCommand('CLIENT', ['SETNAME', 'predis']);
+        $command4 = new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis']);
+
+        $this->mockStreamFactory
+            ->expects($this->once())
+            ->method('createStream')
+            ->withAnyParameters()
+            ->willReturn($this->mockStream);
+
+        // Verify that all handshake commands are serialized and sent together
+        // in a single write operation to reduce initial handshake latency
+        $pipelinedCommands = $command1->serializeCommand()
+            . $command2->serializeCommand()
+            . $command3->serializeCommand()
+            . $command4->serializeCommand();
+
+        $this->mockStream
+            ->expects($this->once())
+            ->method('write')
+            ->with($pipelinedCommands)
+            ->willReturn(strlen($pipelinedCommands));
+
+        // Verify that responses are read separately for each command
+        $this->mockStream
+            ->expects($this->exactly(4))
+            ->method('read')
+            ->with(-1)
+            ->willReturnOnConsecutiveCalls(
+                '+OK\r\n',
+                '+OK\r\n',
+                '+OK\r\n',
+                '+OK\r\n'
+            );
+
+        $connection = new StreamConnection($parameters, $this->mockStreamFactory);
+
+        $connection->addConnectCommand($command1);
+        $connection->addConnectCommand($command2);
+        $connection->addConnectCommand($command3);
+        $connection->addConnectCommand($command4);
+
+        $connection->connect();
+
+        // Verify connection is established
+        $this->assertTrue($connection->isConnected());
     }
 
     /**
