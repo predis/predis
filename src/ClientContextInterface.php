@@ -355,6 +355,7 @@ use Predis\Command\Redis\VADD;
  * @method $this vinfo(string $key)
  * @method $this vlinks(string $key, string $elem, bool $withScores = false)
  * @method $this vrandmember(string $key, int $count = null)
+ * @method $this vrange(string $key, string $start, string $end, int $count = null)
  * @method $this vrem(string $key, string $elem)
  * @method $this vsetattr(string $key, string $elem, string|array $attributes)
  * @method $this vsim(string $key, string|array $vectorOrElem, bool $isElem = false, bool $withScores = false, int $count = null, float $epsilon = null, int $ef = null, string $filter = null, int $filterEf = null, bool $truth = false, bool $noThread = false)
