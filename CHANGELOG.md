@@ -9,6 +9,7 @@
 
 ### Added
 - Added retry support (#1616)
+- Added support for VRANGE command (#1623)
 
 ## v3.3.0 (2025-11-24)
 ### Added
