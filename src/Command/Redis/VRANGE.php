@@ -25,7 +25,7 @@ class VRANGE extends RedisCommand
     }
 
     /**
-     * @param $prefix
+     * @param       $prefix
      * @return void
      */
     public function prefixKeys($prefix)
