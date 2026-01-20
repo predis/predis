@@ -11,6 +11,9 @@
 - Added retry support (#1616)
 - Added support for VRANGE command (#1623)
 
+### Maintenance
+- Added testing with SSL connection (#1624)
+
 ## v3.3.0 (2025-11-24)
 ### Added
 - Added cluster support for `XADD`, `XDEL` and `XRANGE` (#1587)

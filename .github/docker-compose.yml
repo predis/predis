@@ -71,6 +71,7 @@ services:
     command: ${REDIS_EXTRA_ARGS:---enable-debug-command yes --enable-module-command yes --tls-auth-clients optional --save "" --requirepass "foobar"}
     ports:
       - "6372-6377:6372-6377"
+      - "27379-27384:27379-27384"
     volumes:
       - "./dockers/cluster:/redis/work"
     profiles:

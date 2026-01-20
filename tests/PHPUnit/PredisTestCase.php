@@ -180,12 +180,14 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
         } elseif ($this->isUnprotectedTest()) {
             $port = constant('REDIS_UNPROTECTED_SERVER_PORT');
             $password = '';
+        } elseif ($this->isSSLTest()) {
+            $port = getenv('REDIS_SSL_PORT');
         } else {
             $port = constant('REDIS_SERVER_PORT');
         }
 
         return [
-            'scheme' => 'tcp',
+            'scheme' => $this->isSSLTest() ? 'tls' : 'tcp',
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => $port,
             'database' => constant('REDIS_SERVER_DBNUM'),
@@ -282,6 +284,28 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
                 ],
                 $options
             );
+
+            if ($this->isSSLTest()) {
+                $options = array_merge($options, [
+                    'parameters' => [
+                        'ssl' => [
+                            'cafile' => getenv('CLUSTER_CA_CERT_PATH'),
+                            'verify_peer' => true,
+                            'verify_peer_name' => false,
+                        ],
+                    ],
+                ]);
+            }
+        } else {
+            if ($this->isSSLTest()) {
+                $parameters = array_merge($parameters, [
+                    'ssl' => [
+                        'cafile' => getenv('STANDALONE_CA_CERT_PATH'),
+                        'verify_peer' => true,
+                        'verify_peer_name' => false,
+                    ],
+                ]);
+            }
         }
 
         $client = new Client($parameters, $options);
@@ -290,6 +314,54 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
         if ($flushdb) {
             $client->flushdb();
         }
+
+        return $client;
+    }
+
+    /**
+     * Creates a client for version checking without SSL configuration.
+     * This is used to check Redis version before attempting SSL connection.
+     *
+     * @return Client
+     */
+    protected function createClientForVersionCheck(): Client
+    {
+        // For SSL tests, temporarily override to use non-SSL configuration
+        $isSSL = $this->isSSLTest();
+        $isCluster = $this->isClusterTest();
+
+        if ($isSSL && $isCluster) {
+            // For cluster SSL tests, use non-SSL cluster endpoints
+            $endpoints = explode(',', constant('REDIS_CLUSTER_ENDPOINTS'));
+            $parameters = array_map(static function (string $elem) {
+                return 'tcp://' . $elem;
+            }, $endpoints);
+        } elseif ($isSSL) {
+            // For standalone SSL tests, use non-SSL port
+            $parameters = [
+                'scheme' => 'tcp',
+                'host' => constant('REDIS_SERVER_HOST'),
+                'port' => constant('REDIS_SERVER_PORT'),
+                'database' => constant('REDIS_SERVER_DBNUM'),
+                'password' => getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD'),
+            ];
+        } else {
+            // For non-SSL tests, use default parameters
+            $parameters = $this->getDefaultParametersArray();
+        }
+
+        $commandsFactory = $this->getCommandFactory();
+        $options = array_merge(
+            ['commands' => $commandsFactory],
+            getenv('USE_RELAY') ? ['connections' => 'relay'] : []
+        );
+
+        if ($isCluster) {
+            $options['cluster'] = 'redis';
+        }
+
+        $client = new Client($parameters, $options);
+        $client->connect();
 
         return $client;
     }
@@ -371,7 +443,9 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
         if (isset($this->info)) {
             $info = $this->info;
         } else {
-            $client = $this->createClient(null, null, true);
+            // For SSL tests, connect to non-SSL port to check version first
+            // This prevents connection failures on Redis < 7.2.0 which doesn't support SSL
+            $client = $this->createClientForVersionCheck();
             $info = array_change_key_case($client->info());
             $this->info = $info;
         }
@@ -383,7 +457,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
             // Redis < 2.6
             $version = $info['redis_version'];
         } else {
-            $client = $this->createClient(null, null, true);
+            $client = $this->createClientForVersionCheck();
             $connection = $client->getConnection();
             throw new RuntimeException("Unable to retrieve a valid server info payload from $connection");
         }
@@ -608,6 +682,34 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
     }
 
     /**
+     * Check annotations if it's matches to SSL test scenario.
+     *
+     * @return bool
+     */
+    protected function isSSLTest(): bool
+    {
+        $annotations = TestUtil::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
+
+        $annotationExists = isset($annotations['method']['requiresRedisVersion']);
+
+        if (!$annotationExists) {
+            foreach ($this->modulesMapping as $module => $configuration) {
+                if (isset($annotations['method'][$configuration['annotation']])) {
+                    $annotationExists = true;
+                }
+            }
+        }
+
+        return $annotationExists
+            && isset($annotations['method']['group'])
+            && in_array('connected', $annotations['method']['group'], true)
+            && in_array('ssl', $annotations['method']['group'], true);
+    }
+
+    /**
      * Check annotations if it's matches to stack test scenario.
      *
      * @return bool
@@ -646,10 +748,14 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
      */
     protected function prepareClusterEndpoints(): array
     {
-        $endpoints = explode(',', constant('REDIS_CLUSTER_ENDPOINTS'));
+        $endpoints = explode(
+            ',',
+            constant($this->isSSLTest() ? 'SSL_REDIS_CLUSTER_ENDPOINTS' : 'REDIS_CLUSTER_ENDPOINTS')
+        );
+        $scheme = $this->isSSLTest() ? 'tls' : 'tcp';
 
-        return array_map(static function (string $elem) {
-            return 'tcp://' . $elem;
+        return array_map(static function (string $elem) use ($scheme) {
+            return "{$scheme}://" . $elem;
         }, $endpoints);
     }
 }

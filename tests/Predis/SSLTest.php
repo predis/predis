@@ -1,0 +1,126 @@
+<?php
+
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis;
+
+use Predis\Connection\Resource\Exception\StreamInitException;
+use PredisTestCase;
+
+class SSLTest extends PredisTestCase
+{
+    /**
+     * @group connected
+     * @group ssl
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.2.0
+     * @return void
+     */
+    public function testExecuteCommandOverSSLConnection()
+    {
+        $redis = $this->createClient();
+        $this->assertEquals('PONG', $redis->ping());
+    }
+
+    /**
+     * @group connected
+     * @group ssl
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.2.0
+     * @return void
+     */
+    public function testExecuteCommandOverSSLConnectionFailsOnIncorrectCertificate()
+    {
+        $redis = new Client($this->getDefaultParametersArray() + [
+            'ssl' => ['cafile' => '/tmp/invalid.crt', 'verify_peer' => true, 'verify_peer_name' => false]]
+        );
+
+        $this->expectException(StreamInitException::class);
+        $this->expectExceptionMessage('Error while switching to encrypted communication');
+
+        $redis->ping();
+    }
+
+    /**
+     * @group connected
+     * @group ssl
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.2.0
+     * @return void
+     */
+    public function testExecuteCommandOverSSLConnectionWithoutSSLConfig()
+    {
+        $redis = new Client($this->getDefaultParametersArray());
+
+        $this->expectException(StreamInitException::class);
+        $this->expectExceptionMessage('Error while switching to encrypted communication');
+
+        $redis->ping();
+    }
+
+    /**
+     * @group connected
+     * @group ssl
+     * @group cluster
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.2.0
+     * @return void
+     */
+    public function testClusterExecuteCommandOverSSLConnection()
+    {
+        $redis = $this->createClient();
+        $redis->set('foo', 'bar');
+        $this->assertEquals('bar', $redis->get('foo'));
+    }
+
+    /**
+     * @group connected
+     * @group ssl
+     * @group cluster
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.2.0
+     * @return void
+     */
+    public function testClusterExecuteCommandOverSSLConnectionFailsOnIncorrectCertificate()
+    {
+        $redis = new Client($this->getDefaultParametersArray(), [
+            'cluster' => 'redis',
+            'parameters' => [
+                'ssl' => ['cafile' => '/tmp/invalid.crt', 'verify_peer' => true, 'verify_peer_name' => false],
+            ],
+        ]);
+
+        $this->expectException(StreamInitException::class);
+        $this->expectExceptionMessage('Error while switching to encrypted communication');
+
+        $redis->set('foo', 'bar');
+    }
+
+    /**
+     * @group connected
+     * @group ssl
+     * @group cluster
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.2.0
+     * @return void
+     */
+    public function testClusterExecuteCommandOverSSLConnectionWithoutSSLConfig()
+    {
+        $redis = new Client($this->getDefaultParametersArray(), [
+            'cluster' => 'redis',
+        ]);
+
+        $this->expectException(StreamInitException::class);
+        $this->expectExceptionMessage('Error while switching to encrypted communication');
+
+        $redis->set('foo', 'bar');
+    }
+}
