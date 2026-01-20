@@ -20,7 +20,7 @@ class SSLTest extends PredisTestCase
     /**
      * @group connected
      * @group ssl
-     * @requiresRedisVersion >= 2.0.0
+     * @requiresRedisVersion >= 7.2.0
      * @return void
      */
     public function testExecuteCommandOverSSLConnection()
@@ -32,7 +32,7 @@ class SSLTest extends PredisTestCase
     /**
      * @group connected
      * @group ssl
-     * @requiresRedisVersion >= 2.0.0
+     * @requiresRedisVersion >= 7.2.0
      * @return void
      */
     public function testExecuteCommandOverSSLConnectionFailsOnIncorrectCertificate()
@@ -50,7 +50,7 @@ class SSLTest extends PredisTestCase
     /**
      * @group connected
      * @group ssl
-     * @requiresRedisVersion >= 2.0.0
+     * @requiresRedisVersion >= 7.2.0
      * @return void
      */
     public function testExecuteCommandOverSSLConnectionWithoutSSLConfig()
@@ -67,7 +67,7 @@ class SSLTest extends PredisTestCase
      * @group connected
      * @group ssl
      * @group cluster
-     * @requiresRedisVersion >= 2.0.0
+     * @requiresRedisVersion >= 7.2.0
      * @return void
      */
     public function testClusterExecuteCommandOverSSLConnection()
@@ -81,7 +81,7 @@ class SSLTest extends PredisTestCase
      * @group connected
      * @group ssl
      * @group cluster
-     * @requiresRedisVersion >= 2.0.0
+     * @requiresRedisVersion >= 7.2.0
      * @return void
      */
     public function testClusterExecuteCommandOverSSLConnectionFailsOnIncorrectCertificate()
@@ -103,7 +103,7 @@ class SSLTest extends PredisTestCase
      * @group connected
      * @group ssl
      * @group cluster
-     * @requiresRedisVersion >= 2.0.0
+     * @requiresRedisVersion >= 7.2.0
      * @return void
      */
     public function testClusterExecuteCommandOverSSLConnectionWithoutSSLConfig()
