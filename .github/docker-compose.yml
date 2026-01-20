@@ -17,6 +17,7 @@ services:
     profiles:
       - all
       - official
+      - standalone
 
   redis-clients:
     image: ${REDIS_IMAGE_NAME:-redislabs/client-libs-test:8.0.2}
