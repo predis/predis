@@ -319,6 +319,55 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
     }
 
     /**
+     * Creates a client for version checking without SSL configuration.
+     * This is used to check Redis version before attempting SSL connection.
+     *
+     * @return Client
+     */
+    protected function createClientForVersionCheck(): Client
+    {
+        // For SSL tests, temporarily override to use non-SSL configuration
+        $isSSL = $this->isSSLTest();
+        $isCluster = $this->isClusterTest();
+
+        if ($isSSL && $isCluster) {
+            // For cluster SSL tests, use non-SSL cluster endpoints
+            $endpoints = explode(',', constant('REDIS_CLUSTER_ENDPOINTS'));
+            $parameters = array_map(static function (string $elem) {
+                return "tcp://" . $elem;
+            }, $endpoints);
+        } elseif ($isSSL) {
+            // For standalone SSL tests, use non-SSL port
+            $parameters = [
+                'scheme' => 'tcp',
+                'host' => constant('REDIS_SERVER_HOST'),
+                'port' => constant('REDIS_SERVER_PORT'),
+                'database' => constant('REDIS_SERVER_DBNUM'),
+                'password' => getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD'),
+            ];
+        } else {
+            // For non-SSL tests, use default parameters
+            $parameters = $this->getDefaultParametersArray();
+        }
+
+        $commandsFactory = $this->getCommandFactory();
+        $options = array_merge(
+            ['commands' => $commandsFactory],
+            getenv('USE_RELAY') ? ['connections' => 'relay'] : []
+        );
+
+        if ($isCluster) {
+            $options['cluster'] = 'redis';
+        }
+
+        $client = new Client($parameters, $options);
+        $client->connect();
+
+        return $client;
+    }
+
+
+    /**
      * Returns a basic mock object of a connection to a single Redis node.
      *
      * The specified target interface used for the mock object must implement
@@ -395,7 +444,9 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
         if (isset($this->info)) {
             $info = $this->info;
         } else {
-            $client = $this->createClient(null, null, true);
+            // For SSL tests, connect to non-SSL port to check version first
+            // This prevents connection failures on Redis < 7.2.0 which doesn't support SSL
+            $client = $this->createClientForVersionCheck();
             $info = array_change_key_case($client->info());
             $this->info = $info;
         }
@@ -407,7 +458,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
             // Redis < 2.6
             $version = $info['redis_version'];
         } else {
-            $client = $this->createClient(null, null, true);
+            $client = $this->createClientForVersionCheck();
             $connection = $client->getConnection();
             throw new RuntimeException("Unable to retrieve a valid server info payload from $connection");
         }
