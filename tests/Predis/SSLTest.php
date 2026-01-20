@@ -20,6 +20,7 @@ class SSLTest extends PredisTestCase
     /**
      * @group connected
      * @group ssl
+     * @group relay-incompatible
      * @requiresRedisVersion >= 7.2.0
      * @return void
      */
@@ -32,6 +33,7 @@ class SSLTest extends PredisTestCase
     /**
      * @group connected
      * @group ssl
+     * @group relay-incompatible
      * @requiresRedisVersion >= 7.2.0
      * @return void
      */
@@ -50,6 +52,7 @@ class SSLTest extends PredisTestCase
     /**
      * @group connected
      * @group ssl
+     * @group relay-incompatible
      * @requiresRedisVersion >= 7.2.0
      * @return void
      */
@@ -67,6 +70,7 @@ class SSLTest extends PredisTestCase
      * @group connected
      * @group ssl
      * @group cluster
+     * @group relay-incompatible
      * @requiresRedisVersion >= 7.2.0
      * @return void
      */
@@ -81,6 +85,7 @@ class SSLTest extends PredisTestCase
      * @group connected
      * @group ssl
      * @group cluster
+     * @group relay-incompatible
      * @requiresRedisVersion >= 7.2.0
      * @return void
      */
@@ -103,6 +108,7 @@ class SSLTest extends PredisTestCase
      * @group connected
      * @group ssl
      * @group cluster
+     * @group relay-incompatible
      * @requiresRedisVersion >= 7.2.0
      * @return void
      */
