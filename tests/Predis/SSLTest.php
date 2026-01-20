@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis;
 
 use Predis\Connection\Resource\Exception\StreamInitException;
@@ -32,7 +42,7 @@ class SSLTest extends PredisTestCase
         );
 
         $this->expectException(StreamInitException::class);
-        $this->expectExceptionMessage("Error while switching to encrypted communication");
+        $this->expectExceptionMessage('Error while switching to encrypted communication');
 
         $redis->ping();
     }
@@ -48,7 +58,7 @@ class SSLTest extends PredisTestCase
         $redis = new Client($this->getDefaultParametersArray());
 
         $this->expectException(StreamInitException::class);
-        $this->expectExceptionMessage("Error while switching to encrypted communication");
+        $this->expectExceptionMessage('Error while switching to encrypted communication');
 
         $redis->ping();
     }
@@ -79,12 +89,12 @@ class SSLTest extends PredisTestCase
         $redis = new Client($this->getDefaultParametersArray(), [
             'cluster' => 'redis',
             'parameters' => [
-                'ssl' => ['cafile' => '/tmp/invalid.crt', 'verify_peer' => true, 'verify_peer_name' => false]
-            ]
+                'ssl' => ['cafile' => '/tmp/invalid.crt', 'verify_peer' => true, 'verify_peer_name' => false],
+            ],
         ]);
 
         $this->expectException(StreamInitException::class);
-        $this->expectExceptionMessage("Error while switching to encrypted communication");
+        $this->expectExceptionMessage('Error while switching to encrypted communication');
 
         $redis->set('foo', 'bar');
     }
@@ -103,7 +113,7 @@ class SSLTest extends PredisTestCase
         ]);
 
         $this->expectException(StreamInitException::class);
-        $this->expectExceptionMessage("Error while switching to encrypted communication");
+        $this->expectExceptionMessage('Error while switching to encrypted communication');
 
         $redis->set('foo', 'bar');
     }
