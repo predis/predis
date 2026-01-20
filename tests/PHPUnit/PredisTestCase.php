@@ -180,12 +180,14 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
         } elseif ($this->isUnprotectedTest()) {
             $port = constant('REDIS_UNPROTECTED_SERVER_PORT');
             $password = '';
+        } elseif ($this->isSSLTest()) {
+            $port = getenv('REDIS_SSL_PORT');
         } else {
             $port = constant('REDIS_SERVER_PORT');
         }
 
         return [
-            'scheme' => 'tcp',
+            'scheme' => $this->isSSLTest() ? 'tls' : 'tcp',
             'host' => constant('REDIS_SERVER_HOST'),
             'port' => $port,
             'database' => constant('REDIS_SERVER_DBNUM'),
@@ -282,6 +284,28 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
                 ],
                 $options
             );
+
+            if ($this->isSSLTest()) {
+                $options = array_merge($options, [
+                    'parameters' => [
+                        'ssl' => [
+                            'cafile' => getenv('CLUSTER_CA_CERT_PATH'),
+                            'verify_peer' => true,
+                            'verify_peer_name' => false,
+                        ]
+                    ],
+                ]);
+            }
+        } else {
+            if ($this->isSSLTest()) {
+                $parameters = array_merge($parameters, [
+                    'ssl' => [
+                        'cafile' => getenv('STANDALONE_CA_CERT_PATH'),
+                        'verify_peer' => true,
+                        'verify_peer_name' => false,
+                    ]
+                ]);
+            }
         }
 
         $client = new Client($parameters, $options);
@@ -608,6 +632,34 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
     }
 
     /**
+     * Check annotations if it's matches to SSL test scenario.
+     *
+     * @return bool
+     */
+    protected function isSSLTest(): bool
+    {
+        $annotations = TestUtil::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
+
+        $annotationExists = isset($annotations['method']['requiresRedisVersion']);
+
+        if (!$annotationExists) {
+            foreach ($this->modulesMapping as $module => $configuration) {
+                if (isset($annotations['method'][$configuration['annotation']])) {
+                    $annotationExists = true;
+                }
+            }
+        }
+
+        return $annotationExists
+            && isset($annotations['method']['group'])
+            && in_array('connected', $annotations['method']['group'], true)
+            && in_array('ssl', $annotations['method']['group'], true);
+    }
+
+    /**
      * Check annotations if it's matches to stack test scenario.
      *
      * @return bool
@@ -646,10 +698,14 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
      */
     protected function prepareClusterEndpoints(): array
     {
-        $endpoints = explode(',', constant('REDIS_CLUSTER_ENDPOINTS'));
+        $endpoints = explode(
+            ',',
+            constant($this->isSSLTest() ? 'SSL_REDIS_CLUSTER_ENDPOINTS' : 'REDIS_CLUSTER_ENDPOINTS')
+        );
+        $scheme = $this->isSSLTest() ? 'tls' : 'tcp';
 
-        return array_map(static function (string $elem) {
-            return 'tcp://' . $elem;
+        return array_map(static function (string $elem) use ($scheme) {
+            return "{$scheme}://" . $elem;
         }, $endpoints);
     }
 }

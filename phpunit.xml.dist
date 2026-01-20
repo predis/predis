@@ -55,6 +55,15 @@
         <env name="USE_RELAY" value="false" />
         <env name="REDIS_STACK_SERVER_PORT" value="6479" />
 
+        <!-- SSL -->
+        <env name="STANDALONE_CA_CERT_PATH" value=".github/dockers/standalone/tls/ca.crt" />
+        <env name="REDIS_SSL_PORT" value="6666" />
+        <env name="CLUSTER_CA_CERT_PATH" value=".github/dockers/cluster/tls/ca.crt" />
+        <const
+            name="SSL_REDIS_CLUSTER_ENDPOINTS"
+            value="127.0.0.1:27379?password=foobar,127.0.0.1:27380?password=foobar,127.0.0.1:27381?password=foobar"
+        />
+
         <!-- Redis Cluster -->
         <!-- Only master nodes endpoints included -->
         <const

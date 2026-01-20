@@ -17,7 +17,6 @@ services:
     profiles:
       - all
       - official
-      - standalone
 
   redis-clients:
     image: ${REDIS_IMAGE_NAME:-redislabs/client-libs-test:8.0.2}
@@ -71,6 +70,7 @@ services:
     command: ${REDIS_EXTRA_ARGS:---enable-debug-command yes --enable-module-command yes --tls-auth-clients optional --save "" --requirepass "foobar"}
     ports:
       - "6372-6377:6372-6377"
+      - "27379-27384:27379-27384"
     volumes:
       - "./dockers/cluster:/redis/work"
     profiles:
