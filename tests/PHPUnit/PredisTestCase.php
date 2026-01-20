@@ -334,7 +334,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
             // For cluster SSL tests, use non-SSL cluster endpoints
             $endpoints = explode(',', constant('REDIS_CLUSTER_ENDPOINTS'));
             $parameters = array_map(static function (string $elem) {
-                return "tcp://" . $elem;
+                return 'tcp://' . $elem;
             }, $endpoints);
         } elseif ($isSSL) {
             // For standalone SSL tests, use non-SSL port
@@ -365,7 +365,6 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
 
         return $client;
     }
-
 
     /**
      * Returns a basic mock object of a connection to a single Redis node.
