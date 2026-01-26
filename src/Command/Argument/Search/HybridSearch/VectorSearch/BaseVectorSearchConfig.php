@@ -13,7 +13,6 @@
 namespace Predis\Command\Argument\Search\HybridSearch\VectorSearch;
 
 use Predis\Command\Argument\ArrayableArgument;
-use Predis\Command\Redis\Utils\VectorUtility;
 
 abstract class BaseVectorSearchConfig implements ArrayableArgument
 {
@@ -44,17 +43,13 @@ abstract class BaseVectorSearchConfig implements ArrayableArgument
     /**
      * Vector to perform search against.
      *
-     * @param  string         $field The vector field name to search against. Must start with "@".
-     * @param  string|float[] $value Binary vector representation or array of floats as vector.
+     * @param  string $field The vector field name to search against. Must start with "@".
+     * @param  string $value Name of the parameter to use in the query. Must start with "$".
      * @return self
      */
-    public function vector(string $field, $value): self
+    public function vector(string $field, string $value): self
     {
-        if (is_array($value)) {
-            array_push($this->vector, $field, VectorUtility::toBlob($value));
-        } else {
-            array_push($this->vector, $field, $value);
-        }
+        array_push($this->vector, $field, $value);
 
         return $this;
     }
