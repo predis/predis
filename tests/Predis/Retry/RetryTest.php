@@ -78,9 +78,8 @@ class RetryTest extends TestCase
                 throw new ConnectionException(
                     $this->getMockBuilder(NodeConnectionInterface::class)->getMock()
                 );
-            } else {
-                throw new StreamInitException();
             }
+            throw new StreamInitException();
         };
 
         $failCallable = function () use (&$retriesCount) {

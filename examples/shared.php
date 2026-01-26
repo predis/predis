@@ -22,9 +22,9 @@ function redis_version($info)
         return $info['Server']['redis_version'];
     } elseif (isset($info['redis_version'])) {
         return $info['redis_version'];
-    } else {
-        return 'unknown version';
     }
+
+    return 'unknown version';
 }
 
 $single_server = [
