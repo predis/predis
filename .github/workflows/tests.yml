@@ -41,7 +41,7 @@ jobs:
         run: |
           # Mapping of original redis versions to client test containers
           declare -A redis_clients_version_mapping=(
-            ["8.6"]="custom-21183968220-debian-amd64"
+            ["8.6"]="8.6-rc1-21356658603-debian-amd64"
             ["8.4"]="8.4.0"
             ["8.2"]="8.2.2-pre"
             ["8.0"]="8.0.2"
