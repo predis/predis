@@ -123,4 +123,74 @@ class SSLTest extends PredisTestCase
 
         $redis->set('foo', 'bar');
     }
+
+    /**
+     * @group connected
+     * @group ssl
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 8.6.0
+     * @return void
+     */
+    public function testAuthWithSSLCertificateWithCNSpecified()
+    {
+        $redis = $this->createClient();
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser('test_user', 'on', '>clientpass', 'allcommands', 'allkeys')
+        );
+
+        $redis->disconnect();
+
+        // Remove AUTH
+        $redis = $this->createClient(['password' => null]);
+
+        $this->assertEquals(getenv('CN_USER_NAME'), $redis->acl->whoami());
+        $this->assertEquals(1, $redis->acl->delUser(getenv('CN_USER_NAME')));
+    }
+
+    /**
+     * @group connected
+     * @group ssl
+     * @group cluster
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 8.6.0
+     * @return void
+     */
+    public function testClusterAuthWithSSLCertificateWithCNSpecified()
+    {
+        $redis = $this->createClient();
+
+        $this->assertEquals(
+            'OK',
+            $redis->acl->setUser('test_user', 'on', '>clientpass', 'allcommands', 'allkeys')
+        );
+
+        $redis->disconnect();
+
+        // Remove AUTH
+        $defaultParameters = $this->getDefaultParametersArray();
+        $trimmedParameters = array_map(function (string $parameter) {
+            return explode('?', $parameter)[0];
+        }, $defaultParameters);
+
+        $redis = new Client(
+            $trimmedParameters,
+            [
+                'cluster' => 'redis',
+                'parameters' => [
+                    'ssl' => [
+                        'cafile' => getenv('CLUSTER_CA_CERT_PATH'),
+                        'local_cert' => getenv('CLUSTER_LOCAL_CERT_PATH'),
+                        'local_pk' => getenv('CLUSTER_LOCAL_PK_PATH'),
+                        'verify_peer' => true,
+                        'verify_peer_name' => false,
+                    ],
+                ],
+            ]
+        );
+
+        $this->assertEquals(getenv('CN_USER_NAME'), $redis->acl->whoami());
+        $this->assertEquals(1, $redis->acl->delUser(getenv('CN_USER_NAME')));
+    }
 }

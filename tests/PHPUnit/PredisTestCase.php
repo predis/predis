@@ -286,10 +286,12 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
             );
 
             if ($this->isSSLTest()) {
-                $options = array_merge($options, [
+                $options = array_merge_recursive($options, [
                     'parameters' => [
                         'ssl' => [
                             'cafile' => getenv('CLUSTER_CA_CERT_PATH'),
+                            'local_cert' => getenv('CLUSTER_LOCAL_CERT_PATH'),
+                            'local_pk' => getenv('CLUSTER_LOCAL_PK_PATH'),
                             'verify_peer' => true,
                             'verify_peer_name' => false,
                         ],
@@ -301,6 +303,8 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
                 $parameters = array_merge($parameters, [
                     'ssl' => [
                         'cafile' => getenv('STANDALONE_CA_CERT_PATH'),
+                        'local_cert' => getenv('STANDALONE_LOCAL_CERT_PATH'),
+                        'local_pk' => getenv('STANDALONE_LOCAL_PK_PATH'),
                         'verify_peer' => true,
                         'verify_peer_name' => false,
                     ],
