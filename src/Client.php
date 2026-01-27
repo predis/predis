@@ -92,9 +92,8 @@ class Client implements ClientInterface, IteratorAggregate
             return new Options($options);
         } elseif ($options instanceof OptionsInterface) {
             return $options;
-        } else {
-            throw new InvalidArgumentException('Invalid type for client options');
         }
+        throw new InvalidArgumentException('Invalid type for client options');
     }
 
     /**
@@ -140,11 +139,10 @@ class Client implements ClientInterface, IteratorAggregate
                 return $initializer($parameters, true);
             } elseif ($options->defined('aggregate') && $initializer = $options->aggregate) {
                 return $initializer($parameters, false);
-            } else {
-                throw new InvalidArgumentException(
-                    'Array of connection parameters requires `cluster`, `replication` or `aggregate` client option'
-                );
             }
+            throw new InvalidArgumentException(
+                'Array of connection parameters requires `cluster`, `replication` or `aggregate` client option'
+            );
         }
 
         if (is_callable($parameters)) {

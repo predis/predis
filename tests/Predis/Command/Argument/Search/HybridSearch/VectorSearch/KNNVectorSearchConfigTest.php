@@ -13,7 +13,6 @@
 namespace Predis\Command\Argument\Search\HybridSearch\VectorSearch;
 
 use PHPUnit\Framework\TestCase;
-use Predis\Command\Redis\Utils\VectorUtility;
 use ValueError;
 
 class KNNVectorSearchConfigTest extends TestCase
@@ -48,29 +47,29 @@ class KNNVectorSearchConfigTest extends TestCase
         return [
             'with vector and K' => [
                 (new KNNVectorSearchConfig())
-                    ->vector('vector', [0.1, 0.2, 0.3])
+                    ->vector('vector', '$vector')
                     ->k(5),
-                ['VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 2, 'K', 5]],
+                ['VSIM', 'vector', '$vector', 'KNN', 2, 'K', 5]],
             'with vector, K and EF_RUNTIME' => [
                 (new KNNVectorSearchConfig())
-                    ->vector('vector', [0.1, 0.2, 0.3])
+                    ->vector('vector', '$vector')
                     ->k(5)
                     ->ef(5),
-                ['VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 5]],
+                ['VSIM', 'vector', '$vector', 'KNN', 4, 'K', 5, 'EF_RUNTIME', 5]],
             'with vector, K and FILTER' => [
                 (new KNNVectorSearchConfig())
-                    ->vector('vector', [0.1, 0.2, 0.3])
+                    ->vector('vector', '$vector')
                     ->k(5)
                     ->filter('*'),
-                ['VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 2, 'K', 5, 'FILTER', '*']],
+                ['VSIM', 'vector', '$vector', 'KNN', 2, 'K', 5, 'FILTER', '*']],
             'with all' => [
                 (new KNNVectorSearchConfig())
-                    ->vector('vector', VectorUtility::toBlob([0.1, 0.2, 0.3]))
+                    ->vector('vector', '$vector')
                     ->k(5)
                     ->ef(5)
                     ->filter('*')
                     ->as('alias'),
-                ['VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 5, 'FILTER', '*', 'YIELD_SCORE_AS', 'alias']],
+                ['VSIM', 'vector', '$vector', 'KNN', 4, 'K', 5, 'EF_RUNTIME', 5, 'FILTER', '*', 'YIELD_SCORE_AS', 'alias']],
         ];
     }
 }

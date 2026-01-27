@@ -109,6 +109,5 @@ class Aggregate implements OptionInterface
      */
     public function getDefault(OptionsInterface $options)
     {
-        return;
     }
 }

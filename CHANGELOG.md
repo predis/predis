@@ -13,6 +13,7 @@
 
 ### Maintenance
 - Added testing with SSL connection (#1624)
+- Added testing with SSL authentication using CN (#1627)
 
 ## v3.3.0 (2025-11-24)
 ### Added

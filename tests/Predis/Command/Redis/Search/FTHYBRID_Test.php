@@ -61,16 +61,19 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('vector', [0.1, 0.2, 0.3])
+                    ->vector('vector', '$vector')
                     ->k(5)
                     ->ef(10);
-            });
+            })
+            ->params([
+                'vector' => VectorUtility::toBlob([0.1, 0.2, 0.3]),
+            ]);
         $index = 'idx';
 
         $command->setArguments([$index, $query]);
 
         $this->assertSameValues(
-            ['idx', 'SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3]), 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10],
+            ['idx', 'SEARCH', '*', 'SCORER', ScorerConfig::TYPE_DISMAX, 'VSIM', 'vector', '$vector', 'KNN', 4, 'K', 5, 'EF_RUNTIME', 10, 'PARAMS', 2, 'vector', VectorUtility::toBlob([0.1, 0.2, 0.3])],
             $command->getArguments()
         );
     }
@@ -110,8 +113,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     });
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
-                $config->vector('@embedding', [-100, -200, -200, -300]);
-            });
+                $config->vector('@embedding', '$vector');
+            })
+            ->params([
+                'vector' => VectorUtility::toBlob([-100, -200, -200, -300]),
+            ]);
 
         $this->assertGreaterThan(0, $redis->fthybrid('idx', $query)['total_results']);
     }
@@ -137,8 +143,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     });
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
-                $config->vector('@embedding', [-100, -200, -200, -300]);
-            });
+                $config->vector('@embedding', '$vector');
+            })
+            ->params([
+                'vector' => VectorUtility::toBlob([-100, -200, -200, -300]),
+            ]);
 
         $this->assertGreaterThan(0, $redis->fthybrid('idx', $query)['total_results']);
     }
@@ -161,8 +170,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     ->query('@color:{red} @color:{green}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
-                $config->vector('@embedding', [-100, -200, -200, -300]);
-            });
+                $config->vector('@embedding', '$vector');
+            })
+            ->params([
+                'vector' => VectorUtility::toBlob([-100, -200, -200, -300]),
+            ]);
 
         $response = $redis->fthybrid('idx', $query);
 
@@ -190,8 +202,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     ->query('@color:{red} @color:{green}');
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
-                $config->vector('@embedding', [-100, -200, -200, -300]);
-            });
+                $config->vector('@embedding', '$vector');
+            })
+            ->params([
+                'vector' => VectorUtility::toBlob([-100, -200, -200, -300]),
+            ]);
 
         $response = $redis->fthybrid('idx', $query);
 
@@ -222,7 +237,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     });
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
-                $config->vector('@embedding', [1, 2, 2, 3]);
+                $config->vector('@embedding', '$vector');
             })
             ->buildCombineConfig(function (LinearCombineConfig $config) {
                 $config
@@ -230,7 +245,10 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     ->beta(0);
             })
             ->load(['@description', '@color', '@price', '@size', '@__score', '@__item'])
-            ->limit(0, 2);
+            ->limit(0, 2)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 2, 3]),
+            ]);
 
         $expectedResultsTFIDF = [
             [
@@ -261,7 +279,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     });
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
-                $config->vector('@embedding', [1, 2, 2, 3]);
+                $config->vector('@embedding', '$vector');
             })
             ->buildCombineConfig(function (LinearCombineConfig $config) {
                 $config
@@ -269,7 +287,10 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     ->beta(0);
             })
             ->load(['@description', '@color', '@price', '@size', '@__score', '@__item'])
-            ->limit(0, 2);
+            ->limit(0, 2)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 2, 3]),
+            ]);
 
         $expectedResultsBM25 = [
             [
@@ -311,10 +332,13 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding-hnsw', 'abcd1234efgh5678')
+                    ->vector('@embedding-hnsw', '$vector')
                     ->k(3)
                     ->ef(1);
-            });
+            })
+            ->params([
+                'vector' => 'abcd1234efgh5678',
+            ]);
         $response = $redis->fthybrid('idx', $query);
         $this->assertGreaterThan(0, count($response['results']));
     }
@@ -338,10 +362,13 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', 'abcd1234efgh5678')
+                    ->vector('@embedding', '$vector')
                     ->filter('@price:[15 16] @size:[10 11]');
             })
-            ->load(['@price', '@size']);
+            ->load(['@price', '@size'])
+            ->params([
+                'vector' => 'abcd1234efgh5678',
+            ]);
 
         $response = $redis->fthybrid('idx', $query);
         $this->assertGreaterThan(0, count($response['results']));
@@ -372,8 +399,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', 'abcd1234efgh5678');
-            });
+                    ->vector('@embedding', '$vector');
+            })
+            ->params([
+                'vector' => 'abcd1234efgh5678',
+            ]);
 
         $response = $redis->fthybrid('idx', $query);
         $this->assertGreaterThan(0, count($response['results']));
@@ -405,11 +435,14 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding-hnsw', 'abcd1234efgh5678')
+                    ->vector('@embedding-hnsw', '$vector')
                     ->k(3)
                     ->ef(1)
                     ->as('vsim_score');
-            });
+            })
+            ->params([
+                'vector' => 'abcd1234efgh5678',
+            ]);
 
         $response = $redis->fthybrid('idx', $query);
         $this->assertGreaterThan(0, count($response['results']));
@@ -442,7 +475,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding-hnsw', 'abcd1234efgh5678')
+                    ->vector('@embedding-hnsw', '$vector')
                     ->k(3)
                     ->ef(1)
                     ->as('vsim_score');
@@ -452,7 +485,10 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     ->alpha(0.5)
                     ->beta(0.5)
                     ->as('combine_score');
-            });
+            })
+            ->params([
+                'vector' => 'abcd1234efgh5678',
+            ]);
 
         $response = $redis->fthybrid('idx', $query);
         $this->assertGreaterThan(0, count($response['results']));
@@ -495,7 +531,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding-hnsw', 'abcd1234efgh5678')
+                    ->vector('@embedding-hnsw', '$vector')
                     ->k(3)
                     ->ef(1)
                     ->as('vsim_score');
@@ -505,7 +541,10 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     ->alpha(0.5)
                     ->beta(0.5)
                     ->as('combine_score');
-            });
+            })
+            ->params([
+                'vector' => 'abcd1234efgh5678',
+            ]);
 
         $response = $redis->fthybrid('idx', $query);
         $this->assertGreaterThan(0, count($response['results']));
@@ -535,9 +574,12 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', [1, 2, 2, 3])
+                    ->vector('@embedding', '$vector')
                     ->k(3);
-            });
+            })
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 2, 3]),
+            ]);
 
         $expected_results = [
             ['__key' => 'item:2', '__score' => '0.016393442623'],
@@ -555,10 +597,13 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding-hnsw', [1, 2, 2, 3])
+                    ->vector('@embedding-hnsw', '$vector')
                     ->k(3)
                     ->ef(1);
-            });
+            })
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 2, 3]),
+            ]);
 
         $expected_results = [
             ['__key' => 'item:12', '__score' => '0.016393442623'],
@@ -589,9 +634,12 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (RangeVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', [1, 2, 7, 6]);
+                    ->vector('@embedding', '$vector');
             })
-            ->limit(0, 3);
+            ->limit(0, 3)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 7, 6]),
+            ]);
 
         $expected_results = [
             ['__key' => 'item:2', '__score' => '0.016393442623'],
@@ -609,11 +657,14 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (RangeVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding-hnsw', [1, 2, 7, 6])
+                    ->vector('@embedding-hnsw', '$vector')
                     ->radius(2)
                     ->epsilon(0.5);
             })
-            ->limit(0, 3);
+            ->limit(0, 3)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 7, 6]),
+            ]);
 
         $expected_results = [
             ['__key' => 'item:27', '__score' => '0.016393442623'],
@@ -644,14 +695,17 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', [1, 2, 7, 6]);
+                    ->vector('@embedding', '$vector');
             })
             ->buildCombineConfig(function (LinearCombineConfig $config) {
                 $config
                     ->alpha(0.5)
                     ->beta(0.5);
             })
-            ->limit(0, 3);
+            ->limit(0, 3)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 7, 6]),
+            ]);
 
         $expected_results = [
             ['__key' => 'item:2', '__score' => '0.166666666667'],
@@ -669,14 +723,17 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', [1, 2, 7, 6]);
+                    ->vector('@embedding', '$vector');
             })
             ->buildCombineConfig(function (RRFCombineConfig $config) {
                 $config
                     ->window(3)
                     ->rrfConstant(0.5);
             })
-            ->limit(0, 3);
+            ->limit(0, 3)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 7, 6]),
+            ]);
 
         $expected_results = [
             ['__key' => 'item:2', '__score' => '1.5'],
@@ -707,7 +764,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', [1, 2, 7, 6]);
+                    ->vector('@embedding', '$vector');
             })
             ->buildCombineConfig(function (LinearCombineConfig $config) {
                 $config
@@ -715,7 +772,10 @@ class FTHYBRID_Test extends PredisCommandTestCase
                     ->beta(0.5);
             })
             ->load(['@description', '@color', '@price', '@size', '@__key'])
-            ->limit(0, 1);
+            ->limit(0, 1)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 7, 6]),
+            ]);
 
         $expected_results = [
             'description' => 'red dress',
@@ -748,14 +808,17 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', [1, 2, 7, 6]);
+                    ->vector('@embedding', '$vector');
             })
             ->load(['@color', '@price', '@size'])
             ->apply([
                 'price_discount' => '@price - (@price * 0.1)',
                 'tax_discount' => '@price_discount * 0.2',
             ])
-            ->limit(0, 3);
+            ->limit(0, 3)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 7, 6]),
+            ]);
 
         $expected_results = [
             [
@@ -804,11 +867,14 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', [1, 2, 7, 6]);
+                    ->vector('@embedding', '$vector');
             })
             ->load(['@description', '@color', '@price', '@size'])
             ->filter('@price=="15"')
-            ->limit(0, 3);
+            ->limit(0, 3)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 7, 6]),
+            ]);
 
         $response = $redis->fthybrid('idx', $query);
         $this->assertCount(3, $response['results']);
@@ -893,7 +959,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', [1, 2, 7, 6]);
+                    ->vector('@embedding', '$vector');
             })
             ->load(['@color', '@price'])
             ->apply([
@@ -903,7 +969,10 @@ class FTHYBRID_Test extends PredisCommandTestCase
                 '@price_discount' => 'DESC',
                 '@color' => 'ASC',
             ])
-            ->limit(0, 5);
+            ->limit(0, 5)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 7, 6]),
+            ]);
 
         $expected_results = [
             [
@@ -956,7 +1025,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', [1, 2, 7, 6]);
+                    ->vector('@embedding', '$vector');
             })
             ->load(['@color', '@price', '@size', '@item_type'])
             ->groupBy(
@@ -969,7 +1038,10 @@ class FTHYBRID_Test extends PredisCommandTestCase
             ->sortBy([
                 '@price' => 'ASC',
             ])
-            ->limit(0, 4);
+            ->limit(0, 4)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 7, 6]),
+            ]);
 
         $expected_results = [
             [
@@ -1021,9 +1093,12 @@ class FTHYBRID_Test extends PredisCommandTestCase
             })
             ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
                 $config
-                    ->vector('@embedding', [1, 2, 7, 6]);
+                    ->vector('@embedding', '$vector');
             })
-            ->withCursor(5, 100);
+            ->withCursor(5, 100)
+            ->params([
+                'vector' => VectorUtility::toBlob([1, 2, 7, 6]),
+            ]);
 
         $response = $redis->fthybrid('idx', $query);
         $this->assertGreaterThan(0, $response['SEARCH']);

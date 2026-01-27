@@ -40,7 +40,5 @@ class IntegerResponse implements ResponseHandlerInterface
                 $connection, "Cannot parse '$payload' as a valid numeric response [{$connection->getParameters()}]"
             ));
         }
-
-        return;
     }
 }

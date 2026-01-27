@@ -368,9 +368,8 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
     {
         if ($error->getErrorType() === 'IDONTKNOW') {
             throw new ConnectionException($sentinel, $error->getMessage());
-        } else {
-            throw new ServerException($error->getMessage());
         }
+        throw new ServerException($error->getMessage());
     }
 
     /**
@@ -624,9 +623,9 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
             return $this->pickSlave();
         } elseif ($role === 'sentinel') {
             return $this->getSentinelConnection();
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**

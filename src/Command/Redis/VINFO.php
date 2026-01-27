@@ -34,9 +34,9 @@ class VINFO extends RedisCommand
         if (!is_null($data)) {
             if ($data === array_values($data)) {
                 return CommandUtility::arrayToDictionary($data);
-            } else {
-                return $data; // Relay
             }
+
+            return $data; // Relay
         }
 
         return $data;

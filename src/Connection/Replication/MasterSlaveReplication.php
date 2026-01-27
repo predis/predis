@@ -405,9 +405,8 @@ class MasterSlaveReplication extends AbstractAggregateConnection implements Repl
                 } elseif ($connection = $this->pickSlave()) {
                     $this->discoverFromSlave($connection, $this->connectionFactory);
                     break;
-                } else {
-                    throw new ClientException('No connection available for discovery');
                 }
+                throw new ClientException('No connection available for discovery');
             } catch (ConnectionException $exception) {
                 $this->remove($connection);
             }
@@ -606,11 +605,10 @@ class MasterSlaveReplication extends AbstractAggregateConnection implements Repl
             // when the command represents a read-only operation, unless
             // automatic discovery has been enabled.
             throw $exception;
-        } else {
-            // Otherwise remove the failing slave and attempt to execute
-            // the command again on one of the remaining slaves...
-            $this->remove($connection);
         }
+        // Otherwise remove the failing slave and attempt to execute
+        // the command again on one of the remaining slaves...
+        $this->remove($connection);
 
         // ... that is, unless we have no more connections to use.
         if (!$this->slaves && !$this->master) {
