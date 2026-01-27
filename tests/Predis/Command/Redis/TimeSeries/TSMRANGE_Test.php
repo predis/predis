@@ -160,7 +160,7 @@ class TSMRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisTimeSeriesVersion >= 8.5.0
+     * @requiresRedisVersion >= 8.5.0
      */
     public function testAddSamplesIntoFewTimeSeriesWithNaNValues(): void
     {
