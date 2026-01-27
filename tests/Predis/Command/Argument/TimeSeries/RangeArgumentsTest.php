@@ -73,24 +73,24 @@ class RangeArgumentsTest extends TestCase
     {
         return [
             'with default arguments' => [
-                ['sum', 1000],
-                ['AGGREGATION', 'sum', 1000],
+                [RangeArguments::AGG_SUM, 1000],
+                ['AGGREGATION', RangeArguments::AGG_SUM, 1000],
             ],
             'with ALIGN modifier' => [
-                ['sum', 1000, 10],
-                ['ALIGN', 10, 'AGGREGATION', 'sum', 1000],
+                [RangeArguments::AGG_COUNT, 1000, 10],
+                ['ALIGN', 10, 'AGGREGATION', RangeArguments::AGG_COUNT, 1000],
             ],
             'with BUCKETTIMESTAMP modifier' => [
-                ['sum', 1000, 0, 10000],
-                ['AGGREGATION', 'sum', 1000, 'BUCKETTIMESTAMP', 10000],
+                [RangeArguments::AGG_MAX, 1000, 0, 10000],
+                ['AGGREGATION', RangeArguments::AGG_MAX, 1000, 'BUCKETTIMESTAMP', 10000],
             ],
             'with EMPTY modifier' => [
-                ['sum', 1000, 0, 0, true],
-                ['AGGREGATION', 'sum', 1000, 'EMPTY'],
+                [RangeArguments::AGG_MIN, 1000, 0, 0, true],
+                ['AGGREGATION', RangeArguments::AGG_MIN, 1000, 'EMPTY'],
             ],
             'with all arguments' => [
-                ['sum', 1000, 10, 10000, true],
-                ['ALIGN', 10, 'AGGREGATION', 'sum', 1000, 'BUCKETTIMESTAMP', 10000, 'EMPTY'],
+                [RangeArguments::AGG_COUNT_NAN, 1000, 10, 10000, true],
+                ['ALIGN', 10, 'AGGREGATION', RangeArguments::AGG_COUNT_NAN, 1000, 'BUCKETTIMESTAMP', 10000, 'EMPTY'],
             ],
         ];
     }

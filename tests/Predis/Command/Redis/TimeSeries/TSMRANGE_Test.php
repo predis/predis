@@ -12,8 +12,10 @@
 
 namespace Predis\Command\Redis\TimeSeries;
 
+use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
+use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
 
 /**
@@ -152,6 +154,76 @@ class TSMRANGE_Test extends PredisCommandTestCase
             ->groupBy('type', 'max');
 
         $this->assertEquals($expectedResponse, $redis->tsmrange('-', '+', $mrangeArguments));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisVersion >= 8.5.0
+     */
+    public function testAddSamplesIntoFewTimeSeriesWithNaNValues(): void
+    {
+        $redis = $this->getClient();
+
+        $createArguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('type', 'temperature', 'name', 'A');
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:A', $createArguments)
+        );
+
+        $createArguments = (new CreateArguments())
+            ->retentionMsecs(60000)
+            ->duplicatePolicy(CommonArguments::POLICY_MAX)
+            ->labels('type', 'temperature', 'name', 'B');
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('temperature:B', $createArguments)
+        );
+
+        // Add NaN value samples
+        $this->assertEquals(
+            [1000, 1001],
+            $redis->tsmadd(
+                'temperature:A', 1000, 'NaN', 'temperature:A', 1001, 27
+            )
+        );
+
+        $this->assertEquals(
+            [1000, 1001],
+            $redis->tsmadd(
+                'temperature:B', 1000, 'NaN', 'temperature:B', 1001, 28
+            )
+        );
+
+        // Ensure that we can count all values (included NaN)
+        $mRangeArguments = (new MRangeArguments())
+            ->aggregation(RangeArguments::AGG_COUNT_ALL, 1000)
+            ->filter('type=temperature');
+
+        $expectedResponse = [
+            ['temperature:A', [], [[1000, 2]]],
+            ['temperature:B', [], [[1000, 2]]],
+        ];
+
+        $this->assertEquals($expectedResponse, $redis->tsmrange(1000, 1001, $mRangeArguments));
+
+        // Ensure that we can count NaN values only
+        $mRangeArguments = (new MRangeArguments())
+            ->aggregation(RangeArguments::AGG_COUNT_NAN, 1000)
+            ->filter('type=temperature');
+
+        $expectedResponse = [
+            ['temperature:A', [], [[1000, 1]]],
+            ['temperature:B', [], [[1000, 1]]],
+        ];
+
+        $this->assertEquals($expectedResponse, $redis->tsmrange(1000, 1001, $mRangeArguments));
     }
 
     public function argumentsProvider(): array

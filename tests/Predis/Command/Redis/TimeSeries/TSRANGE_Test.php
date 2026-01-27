@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\TimeSeries;
 
+use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\PrefixableCommand;
@@ -123,6 +124,63 @@ class TSRANGE_Test extends PredisCommandTestCase
         $this->assertEquals(
             [[1000, '30'], [1010, '35'], [1030, '40']],
             $redis->tsrange('temp:TLV', '-', '+', $rangeArguments)
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisVersion >= 8.5.0
+     */
+    public function testAddSampleIntoTimeSeriesWithNaNValues(): void
+    {
+        $redis = $this->getClient();
+
+        $createArguments = (new CreateArguments())
+            ->retentionMsecs(31536000000)
+            ->duplicatePolicy(CommonArguments::POLICY_LAST)
+            ->ignore(10, 10);
+
+        $this->assertEquals('OK', $redis->tscreate('temperature:2:32', $createArguments));
+
+        // Add NaN value samples
+        $this->assertEquals(
+            1000,
+            $redis->tsadd('temperature:2:32', 1000, 'NaN')
+        );
+
+        $this->assertEquals(
+            1003,
+            $redis->tsadd('temperature:2:32', 1003, 25)
+        );
+
+        $this->assertEquals(
+            1005,
+            $redis->tsadd('temperature:2:32', 1005, 'NaN')
+        );
+
+        $this->assertEquals(
+            1006,
+            $redis->tsadd('temperature:2:32', 1006, 'NaN')
+        );
+
+        // Ensure that we can count NaN values only
+        $rangeArguments = (new RangeArguments())
+            ->aggregation(RangeArguments::AGG_COUNT_NAN, 1000);
+
+        $this->assertEquals(
+            [[1000, 3]],
+            $redis->tsrange('temperature:2:32', 1000, 1006, $rangeArguments)
+        );
+
+        // Ensure that we can count all values (included NaN)
+        $rangeArguments = (new RangeArguments())
+            ->aggregation(RangeArguments::AGG_COUNT_ALL, 1000);
+
+        $this->assertEquals(
+            [[1000, 4]],
+            $redis->tsrange('temperature:2:32', 1000, 1006, $rangeArguments)
         );
     }
 
