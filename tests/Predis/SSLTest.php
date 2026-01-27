@@ -26,7 +26,13 @@ class SSLTest extends PredisTestCase
      */
     public function testExecuteCommandOverSSLConnection()
     {
-        $redis = $this->createClient();
+        $redis = $this->createClient([
+            'ssl' => [
+                'cafile' => getenv('STANDALONE_CA_CERT_PATH'),
+                'verify_peer' => true,
+                'verify_peer_name' => false,
+            ],
+        ]);
         $this->assertEquals('PONG', $redis->ping());
     }
 
@@ -76,7 +82,16 @@ class SSLTest extends PredisTestCase
      */
     public function testClusterExecuteCommandOverSSLConnection()
     {
-        $redis = $this->createClient();
+        $redis = $this->createClient(null, [
+            'cluster' => 'redis',
+            'parameters' => [
+                'ssl' => [
+                    'cafile' => getenv('CLUSTER_CA_CERT_PATH'),
+                    'verify_peer' => true,
+                    'verify_peer_name' => false,
+                ],
+            ],
+        ]);
         $redis->set('foo', 'bar');
         $this->assertEquals('bar', $redis->get('foo'));
     }
@@ -128,7 +143,7 @@ class SSLTest extends PredisTestCase
      * @group connected
      * @group ssl
      * @group relay-incompatible
-     * @requiresRedisVersion >= 8.6.0
+     * @requiresRedisVersion >= 8.5.0
      * @return void
      */
     public function testAuthWithSSLCertificateWithCNSpecified()
@@ -154,7 +169,7 @@ class SSLTest extends PredisTestCase
      * @group ssl
      * @group cluster
      * @group relay-incompatible
-     * @requiresRedisVersion >= 8.6.0
+     * @requiresRedisVersion >= 8.5.0
      * @return void
      */
     public function testClusterAuthWithSSLCertificateWithCNSpecified()
