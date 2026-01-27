@@ -300,7 +300,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
             }
         } else {
             if ($this->isSSLTest()) {
-                $parameters = array_merge($parameters, [
+                $parameters = $parameters + [
                     'ssl' => [
                         'cafile' => getenv('STANDALONE_CA_CERT_PATH'),
                         'local_cert' => getenv('STANDALONE_LOCAL_CERT_PATH'),
@@ -308,7 +308,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
                         'verify_peer' => true,
                         'verify_peer_name' => false,
                     ],
-                ]);
+                ];
             }
         }
 
