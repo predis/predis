@@ -294,6 +294,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
                             'local_pk' => getenv('CLUSTER_LOCAL_PK_PATH'),
                             'verify_peer' => true,
                             'verify_peer_name' => false,
+                            'allow_self_signed' => false,
                         ],
                     ],
                 ];
@@ -307,6 +308,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
                         'local_pk' => getenv('STANDALONE_LOCAL_PK_PATH'),
                         'verify_peer' => true,
                         'verify_peer_name' => false,
+                        'allow_self_signed' => false,
                     ],
                 ];
             }

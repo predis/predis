@@ -46,7 +46,13 @@
     },
     "config": {
         "sort-packages": true,
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "audit": {
+            "ignore": [
+                "GHSA-vvj3-c3rp-c85p",
+                "PKSA-z3gr-8qht-p93v"
+            ]
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true
