@@ -292,6 +292,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
                             'cafile' => getenv('CLUSTER_CA_CERT_PATH'),
                             'verify_peer' => true,
                             'verify_peer_name' => false,
+                            'allow_self_signed' => false,
                         ],
                     ],
                 ]);
@@ -303,6 +304,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
                         'cafile' => getenv('STANDALONE_CA_CERT_PATH'),
                         'verify_peer' => true,
                         'verify_peer_name' => false,
+                        'allow_self_signed' => false,
                     ],
                 ]);
             }
