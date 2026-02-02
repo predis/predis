@@ -134,7 +134,7 @@ jobs:
 
       - name: Check exported files
         run: |
-          EXPECTED="LICENSE,README.md,autoload.php,composer.json"
+          EXPECTED="AGENTS.md,LICENSE,README.md,autoload.php,composer.json"
           CURRENT="$(
               git archive HEAD \
                   | tar --list --exclude="src" --exclude="src/*" --exclude="bin" --exclude="bin/*" \
