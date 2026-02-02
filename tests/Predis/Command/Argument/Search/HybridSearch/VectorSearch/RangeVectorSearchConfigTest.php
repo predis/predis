@@ -13,7 +13,6 @@
 namespace Predis\Command\Argument\Search\HybridSearch\VectorSearch;
 
 use PHPUnit\Framework\TestCase;
-use Predis\Command\Redis\Utils\VectorUtility;
 use ValueError;
 
 class RangeVectorSearchConfigTest extends TestCase

@@ -17,7 +17,6 @@ use Predis\Command\Argument\Search\HybridSearch\Combine\LinearCombineConfig;
 use Predis\Command\Argument\Search\HybridSearch\Combine\RRFCombineConfig;
 use Predis\Command\Argument\Search\HybridSearch\VectorSearch\KNNVectorSearchConfig;
 use Predis\Command\Argument\Search\HybridSearch\VectorSearch\RangeVectorSearchConfig;
-use Predis\Command\Redis\Utils\VectorUtility;
 
 class HybridSearchQueryTest extends TestCase
 {
