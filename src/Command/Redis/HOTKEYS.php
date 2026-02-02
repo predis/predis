@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2025 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Predis\Command\Redis;
 
 use Predis\Command\Command as RedisCommand;
@@ -9,7 +19,7 @@ use ValueError;
 class HOTKEYS extends RedisCommand
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function getId()
     {
@@ -17,7 +27,7 @@ class HOTKEYS extends RedisCommand
     }
 
     /**
-     * @param array $arguments
+     * @param  array $arguments
      * @return void
      */
     public function setArguments(array $arguments)
@@ -51,7 +61,7 @@ class HOTKEYS extends RedisCommand
     }
 
     /**
-     * @param array $arguments
+     * @param  array $arguments
      * @return void
      */
     private function setStartArguments(array $arguments)
@@ -64,7 +74,7 @@ class HOTKEYS extends RedisCommand
             if ($arguments[2] > 9 && $arguments[2] < 65) {
                 array_push($processedArguments, 'COUNT', $arguments[2]);
             } else {
-                throw new ValueError("Count value should be between 10 and 64");
+                throw new ValueError('Count value should be between 10 and 64');
             }
         }
 
@@ -76,7 +86,7 @@ class HOTKEYS extends RedisCommand
             if ($arguments[4] > 0) {
                 array_push($processedArguments, 'SAMPLE', $arguments[4]);
             } else {
-                throw new ValueError("Sample value should be greater than 0");
+                throw new ValueError('Sample value should be greater than 0');
             }
         }
 

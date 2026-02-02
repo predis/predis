@@ -17,6 +17,7 @@ use ValueError;
 
 /**
  * @group commands
+ * @group relay-incompatible
  * @group realm-generic
  */
 class HOTKEYS_Test extends PredisCommandTestCase
@@ -269,4 +270,3 @@ class HOTKEYS_Test extends PredisCommandTestCase
         ];
     }
 }
-
