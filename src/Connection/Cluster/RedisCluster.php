@@ -383,9 +383,9 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
 
         if (isset($this->slots[$slot])) {
             return $this->slots[$slot];
-        } else {
-            return $this->getConnectionBySlot($slot);
         }
+
+        return $this->getConnectionBySlot($slot);
     }
 
     /**

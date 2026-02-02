@@ -129,7 +129,36 @@ class XADD_Test extends PredisCommandTestCase
                 '*',
                 ['trim' => ['MINID', '~', '0-1'], 'limit' => 5, 'nomkstream' => true, 'trimming' => 'KEEPREF'],
             ],
-            ['stream', 'NOMKSTREAM', 'MINID', '~', '0-1', 'LIMIT', 5, 'KEEPREF', '*', 'key', 'val'],
+            ['stream', 'NOMKSTREAM', 'KEEPREF', 'MINID', '~', '0-1', 'LIMIT', 5, '*', 'key', 'val'],
+        ];
+
+        // Test IDMPAUTO option
+        $data[] = [
+            ['stream', ['key' => 'val'], '*', ['idmpauto' => 'producer1']],
+            ['stream', 'IDMPAUTO', 'producer1', '*', 'key', 'val'],
+        ];
+
+        // Test IDMP option
+        $data[] = [
+            ['stream', ['key' => 'val'], '*', ['idmp' => ['producer1', '42']]],
+            ['stream', 'IDMP', 'producer1', '42', '*', 'key', 'val'],
+        ];
+
+        // Test IDMPAUTO with trimming
+        $data[] = [
+            ['stream', ['key' => 'val'], '*', ['idmpauto' => 'producer1', 'trimming' => 'KEEPREF']],
+            ['stream', 'KEEPREF', 'IDMPAUTO', 'producer1', '*', 'key', 'val'],
+        ];
+
+        // Test IDMP with trim and nomkstream
+        $data[] = [
+            [
+                'stream',
+                ['key' => 'val'],
+                '*',
+                ['idmp' => ['producer1', '42'], 'trim' => ['MAXLEN', '~', '100'], 'nomkstream' => true],
+            ],
+            ['stream', 'NOMKSTREAM', 'IDMP', 'producer1', '42', 'MAXLEN', '~', '100', '*', 'key', 'val'],
         ];
 
         return $data;
@@ -339,5 +368,58 @@ class XADD_Test extends PredisCommandTestCase
 
         $redis->set('foo', 'bar');
         $redis->xadd('foo', ['key' => 'val']);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.5.0
+     */
+    public function testIdmpautoGeneratesSameIdForSameContent(): void
+    {
+        $redis = $this->getClient();
+
+        // Add the same message twice with IDMPAUTO
+        $id1 = $redis->xadd('stream', ['field1' => 'value1', 'field2' => 'value2'], '*', ['idmpauto' => 'producer1']);
+        $id2 = $redis->xadd('stream', ['field1' => 'value1', 'field2' => 'value2'], '*', ['idmpauto' => 'producer1']);
+
+        // Both should return the same ID (idempotent)
+        $this->assertSame($id1, $id2);
+        // Only one entry should exist in the stream
+        $this->assertSame(1, $redis->xlen('stream'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.5.0
+     */
+    public function testIdmpUsesSameIdForSameIid(): void
+    {
+        $redis = $this->getClient();
+
+        // Add the same message twice with IDMP using the same iid
+        $id1 = $redis->xadd('stream', ['field1' => 'value1', 'field2' => 'value2'], '*', ['idmp' => ['producer1', '42']]);
+        $id2 = $redis->xadd('stream', ['field1' => 'value1', 'field2' => 'value2'], '*', ['idmp' => ['producer1', '42']]);
+
+        // Both should return the same ID (idempotent)
+        $this->assertSame($id1, $id2);
+        // Only one entry should exist in the stream
+        $this->assertSame(1, $redis->xlen('stream'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.5.0
+     */
+    public function testIdmpWithDifferentIidCreatesNewEntry(): void
+    {
+        $redis = $this->getClient();
+
+        // Add messages with different iids
+        $id1 = $redis->xadd('stream', ['field1' => 'value1'], '*', ['idmp' => ['producer1', '42']]);
+        $id2 = $redis->xadd('stream', ['field1' => 'value1'], '*', ['idmp' => ['producer1', '43']]);
+
+        // Should create two different entries
+        $this->assertNotSame($id1, $id2);
+        $this->assertSame(2, $redis->xlen('stream'));
     }
 }

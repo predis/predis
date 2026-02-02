@@ -39,12 +39,11 @@ class Commands implements OptionInterface
             return $this->createFactoryByArray($options, $value);
         } elseif (is_string($value)) {
             return $this->createFactoryByString($options, $value);
-        } else {
-            throw new InvalidArgumentException(sprintf(
-                '%s expects a valid command factory',
-                static::class
-            ));
         }
+        throw new InvalidArgumentException(sprintf(
+            '%s expects a valid command factory',
+            static::class
+        ));
     }
 
     /**

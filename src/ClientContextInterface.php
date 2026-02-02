@@ -294,6 +294,7 @@ use Predis\Command\Redis\VADD;
  * @method $this xadd(string $key, array $dictionary, string $id = '*', array $options = null)
  * @method $this xautoclaim(string $key, string $group, string $consumer, int $minIdleTime, string $start, ?int $count = null, bool $justId = false)
  * @method $this xclaim(string $key, string $group, string $consumer, int $minIdleTime, string|array $ids, ?int $idle = null, ?int $time = null, ?int $retryCount = null, bool $force = false, bool $justId = false, ?string $lastId = null)
+ * @method $this xcfgset(string $key, ?int $duration = null, ?int $maxsize = null)
  * @method $this xdel(string $key, string ...$id)
  * @method $this xdelex(string $key, string $mode, array $ids)
  * @method $this xlen(string $key)

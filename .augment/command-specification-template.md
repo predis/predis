@@ -1,5 +1,9 @@
 # $COMMAND_NAME command specification
 
+## Supported version
+
+Add supported Redis version here. For example: Redis >= 6.2.0
+
 ## Command description
 
 Add a description of the command here.
@@ -11,6 +15,10 @@ Specify an API for the command in the format that official docs uses. For exampl
 ```
 $COMMAND_NAME $key $member [NX|XX] [CH] [INCR]
 ```
+
+## Redis-CLI examples
+
+Add relevant Redis-CLI examples here.
 
 ## Test plan
 

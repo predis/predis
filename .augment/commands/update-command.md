@@ -1,9 +1,9 @@
 ---
-description: Add new Redis command support
+description: Update existing Redis command
 argument-hint: [path-to-specification]
 ---
 
-# Execute: Add new Redis command support
+# Execute: Update existing Redis command
 
 ## Plan to Execute
 
@@ -14,8 +14,8 @@ Read specification file: `$ARGUMENTS`
 ### 1. Read and Understand
 
 - Read the ENTIRE specification carefully
-- Understand the command functionality from description
-- Check the command API and understand the arguments and return values
+- Identify from the specification title the command name and check if it exists
+- Identify if there's a need to change the command API
 - Check relevant Redis-Cli examples, if provided
 - Review the Test Plan
 
@@ -25,11 +25,11 @@ Read specification file: `$ARGUMENTS`
 - Identify the files and action required
 - Read existing related files if modifying
 
-#### b. Implement the command
-- Read command description and command API specification
-- Identify required and optional arguments
-- Maintain consistency with other commands
-- Include proper type hints and documentation
+#### b. Update command API
+- Skip this step if there's no need to change the command API
+- Update command API in `src/Command/Redis` directory
+- Update command API in `src/ClientInterface.php` and `src/ClientContextInterface.php`
+- Ask permission if changes are backward incompatible
 
 #### c. Verify as you go
 - After each file change, check syntax
@@ -40,9 +40,9 @@ Read specification file: `$ARGUMENTS`
 
 After completing implementation tasks:
 
-- Create all test files specified in the plan
-- Implement all test cases mentioned
-- Check supported version in the specification, ensure integration tests are skipped for older Redis versions
+- Check supported version for changes in specification, ensure integration tests are skipped for older Redis versions.
+- Update existing tests if specification has changed
+- Implement new test cases if mentioned
 - Follow the testing approach outlined
 - Ensure tests cover edge cases
 
@@ -68,5 +68,4 @@ Provide summary:
 - Test files created
 - Test cases implemented
 - Test results
-
 

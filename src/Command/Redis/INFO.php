@@ -38,9 +38,9 @@ class INFO extends RedisCommand
 
         if (strpos($lines[0], '#') === 0) {
             return $this->parseNewResponseFormat($lines);
-        } else {
-            return $this->parseOldResponseFormat($lines);
         }
+
+        return $this->parseOldResponseFormat($lines);
     }
 
     /**

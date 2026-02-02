@@ -2,6 +2,6 @@
 
 Read these documents when working on specific areas:
 
-| Document                                                  | When to Read                             |
-|-----------------------------------------------------------|------------------------------------------|
-| `.augment/reference/adding-new-command-best-practices.md` | Check existing commands, add new command |
+| Document                                              | When to Read                                    |
+|-------------------------------------------------------|-------------------------------------------------|
+| `.augment/reference/redis-commands-best-practices.md` | Check/Update existing commands, add new command |
