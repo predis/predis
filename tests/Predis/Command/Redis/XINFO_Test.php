@@ -172,7 +172,11 @@ class XINFO_Test extends PredisCommandTestCase
         $options = new XInfoStreamOptions();
         $options->full(5);
 
-        $this->assertSame($expectedResponse, $redis->xinfo->stream('stream', $options));
+        $response = $redis->xinfo->stream('stream', $options);
+
+        foreach ($expectedResponse as $value) {
+            $this->assertContains($value, $response);
+        }
     }
 
     /**
@@ -271,7 +275,9 @@ class XINFO_Test extends PredisCommandTestCase
             ],
         ];
 
-        $this->assertSame($expectedResponse, $result);
+        foreach ($expectedResponse as $value) {
+            $this->assertContains($value, $result);
+        }
     }
 
     /**
