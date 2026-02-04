@@ -42,11 +42,10 @@ class ConnectionErrorProof extends Pipeline
             return $this->executeSingleNode($connection, $commands);
         } elseif ($connection instanceof ClusterInterface) {
             return $this->executeCluster($connection, $commands);
-        } else {
-            $class = get_class($connection);
-
-            throw new NotSupportedException("The connection class '$class' is not supported.");
         }
+        $class = get_class($connection);
+
+        throw new NotSupportedException("The connection class '$class' is not supported.");
     }
 
     /**

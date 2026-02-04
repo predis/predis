@@ -63,15 +63,13 @@ class ResponseReader implements ResponseReaderInterface
      *
      * @param string $prefix Identifier of the type of response.
      *
-     * @return Handler\ResponseHandlerInterface
+     * @return Handler\ResponseHandlerInterface|void
      */
     public function getHandler($prefix)
     {
         if (isset($this->handlers[$prefix])) {
             return $this->handlers[$prefix];
         }
-
-        return;
     }
 
     /**
