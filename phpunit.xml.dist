@@ -57,8 +57,13 @@
 
         <!-- SSL -->
         <env name="STANDALONE_CA_CERT_PATH" value=".github/dockers/standalone/tls/ca.crt" />
+        <env name="STANDALONE_LOCAL_CERT_PATH" value=".github/dockers/standalone/tls/test_user.crt" />
+        <env name="STANDALONE_LOCAL_PK_PATH" value=".github/dockers/standalone/tls/test_user.key" />
+        <env name="CN_USER_NAME" value="test_user" />
         <env name="REDIS_SSL_PORT" value="6666" />
         <env name="CLUSTER_CA_CERT_PATH" value=".github/dockers/cluster/tls/ca.crt" />
+        <env name="CLUSTER_LOCAL_CERT_PATH" value=".github/dockers/cluster/tls/test_user.crt" />
+        <env name="CLUSTER_LOCAL_PK_PATH" value=".github/dockers/cluster/tls/test_user.key" />
         <const
             name="SSL_REDIS_CLUSTER_ENDPOINTS"
             value="127.0.0.1:27379?password=foobar,127.0.0.1:27380?password=foobar,127.0.0.1:27381?password=foobar"

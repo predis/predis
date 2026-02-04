@@ -114,6 +114,40 @@ The connection schemes [`redis`](http://www.iana.org/assignments/uri-schemes/pro
 also supported, with the difference that URI strings containing these schemes are parsed following
 the rules described on their respective IANA provisional registration documents.
 
+Since Redis 8.6, you can authenticate a client using the Subject CN from its TLS client certificate (mTLS).
+When this is enabled on the server, the client is authenticated during the TLS handshake, so you don’t need
+to send an AUTH command.
+
+To use this, configure:
+
+- a CA certificate used to verify the server certificate (cafile),
+- a client certificate (local_cert) signed by a CA trusted by the Redis server for client authentication,
+- the corresponding private key (local_pk).
+
+Make sure:
+
+- the Redis server certificate is signed by a CA trusted by the client, and
+- the client certificate is signed by a CA trusted by the Redis server (mTLS).
+
+```php
+// Named array of connection parameters:
+$client = new Predis\Client([
+    'scheme' => 'tls',
+    'ssl' => [
+        'cafile'      => 'ca.pem',          // CA used to verify the server certificate
+        'local_cert'  => 'client.crt',      // client certificate (Subject CN maps to ACL user)
+        'local_pk'    => 'client.key',      // client private key
+        'verify_peer' => true,
+    ],
+]);
+
+// ACL user must exist and match the certificate Subject CN (example: CN=CN_NAME).
+// Enable the user and grant permissions as needed:
+$client->acl->setUser('CN_NAME', 'on', '>clientpass', 'allcommands', 'allkeys')
+
+echo $client->acl->whoami() // CN_NAME
+```
+
 The actual list of supported connection parameters can vary depending on each connection backend so
 it is recommended to refer to their specific documentation or implementation for details.
 

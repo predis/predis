@@ -531,6 +531,9 @@ class RedisStrategyTest extends PredisTestCase
 
             /* cluster */
             'CLUSTER' => 'keys-fake',
+
+            /* control */
+            'ACL' => 'keys-fake',
         ];
 
         if (isset($type)) {
