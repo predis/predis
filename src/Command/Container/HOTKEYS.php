@@ -36,10 +36,10 @@ class HOTKEYS extends AbstractContainer
      * Starts a hotkeys tracking on server side.
      *
      * @param  array<self::CPU|self::NET> $metrics  One of the available metric types. Check class constants.
-     * @param  int|null                   $count
-     * @param  int|null                   $duration
-     * @param  int|null                   $sample
-     * @param  array<int>|null            $slots
+     * @param  int|null                   $count    Number of top keys to report. Default: 10, Min: 10, Max: 64
+     * @param  int|null                   $duration Auto-stop tracking after this many seconds. Default: 0 (no auto-stop)
+     * @param  int|null                   $sample   Sample ratio - track keys with probability 1/sample. Default: 1 (track every key), Min: 1
+     * @param  array<int>|null            $slots    All specified slots must be hosted by the receiving node! If not specified, all slots are tracked.
      * @return string|Status
      */
     public function start(array $metrics, ?int $count = null, ?int $duration = null, ?int $sample = null, ?array $slots = null)

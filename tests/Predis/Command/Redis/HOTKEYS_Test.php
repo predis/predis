@@ -98,8 +98,8 @@ class HOTKEYS_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->set('key', 'value'));
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
-        $hotkeysInfo = $redis->hotkeys->get();
-        $this->assertArrayHasKey('key', $hotkeysInfo['by-cpu-time']);
+        $hotkeysInfo = $redis->hotkeys->get()[0];
+        $this->assertContains('key', $hotkeysInfo['by-cpu-time-us']);
 
         // Starts hotkeys tracking (CPU and NET)
         $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU, Container::NET]));
@@ -107,12 +107,12 @@ class HOTKEYS_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->set('key1', 'value1'));
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
-        $hotkeysInfo = $redis->hotkeys->get();
+        $hotkeysInfo = $redis->hotkeys->get()[0];
 
-        $this->assertArrayHasKey('key', $hotkeysInfo['by-cpu-time']);
-        $this->assertArrayHasKey('key1', $hotkeysInfo['by-cpu-time']);
-        $this->assertArrayHasKey('key', $hotkeysInfo['by-net-bytes']);
-        $this->assertArrayHasKey('key1', $hotkeysInfo['by-net-bytes']);
+        $this->assertContains('key', $hotkeysInfo['by-cpu-time-us']);
+        $this->assertContains('key1', $hotkeysInfo['by-cpu-time-us']);
+        $this->assertContains('key', $hotkeysInfo['by-net-bytes']);
+        $this->assertContains('key1', $hotkeysInfo['by-net-bytes']);
 
         // Starts hotkeys tracking (limited COUNT)
         $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU, Container::NET], 12));
@@ -122,28 +122,89 @@ class HOTKEYS_Test extends PredisCommandTestCase
         }
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
-        $hotkeysInfo = $redis->hotkeys->get();
-        $this->assertArrayNotHasKey('key12', $hotkeysInfo['by-cpu-time']);
+        $hotkeysInfo = $redis->hotkeys->get()[0];
+        $this->assertContains('key:11', $hotkeysInfo['by-cpu-time-us']);
 
-        // Starts hotkeys tracking (with DURATION, SAMPLE and SLOTS)
+        // Starts hotkeys tracking (with DURATION, SAMPLE)
         $this->assertEquals(
             'OK',
-            $redis->hotkeys->start([Container::CPU, Container::NET], null, 1, 10, [1, 2, 3])
+            $redis->hotkeys->start([Container::CPU, Container::NET], null, 1, 10)
         );
         $this->sleep(1.2);
 
-        $hotkeysInfo = $redis->hotkeys->get();
+        $hotkeysInfo = $redis->hotkeys->get()[0];
         $this->assertEquals(0, $hotkeysInfo['tracking-active']);
         $this->assertEquals(10, $hotkeysInfo['sample-ratio']);
-        $this->assertEquals([1, 2, 3], $hotkeysInfo['selected-slots']);
 
         $this->assertEquals('OK', $redis->hotkeys->reset());
 
-        $hotkeysInfo = $redis->hotkeys->get();
+        $hotkeysInfo = $redis->hotkeys->get()[0];
         $this->assertEquals(0, $hotkeysInfo['tracking-active']);
         $this->assertNull($hotkeysInfo['sample-ratio']);
         $this->assertEmpty($hotkeysInfo['selected-slots']);
-        $this->assertEmpty($hotkeysInfo['by-cpu-time']);
+        $this->assertEmpty($hotkeysInfo['by-cpu-time-us']);
+        $this->assertEmpty($hotkeysInfo['by-net-bytes']);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.5.0
+     * @return void
+     */
+    public function testRetrieveHotKeysResp3()
+    {
+        $redis = $this->getResp3Client();
+
+        // Starts hotkeys tracking (CPU only)
+        $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU]));
+        $this->assertEquals('OK', $redis->set('key', 'value'));
+        $this->assertEquals('OK', $redis->hotkeys->stop());
+
+        $hotkeysInfo = $redis->hotkeys->get()[0];
+        $this->assertContains('key', $hotkeysInfo['by-cpu-time-us']);
+
+        // Starts hotkeys tracking (CPU and NET)
+        $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU, Container::NET]));
+        $this->assertEquals('OK', $redis->set('key', 'value'));
+        $this->assertEquals('OK', $redis->set('key1', 'value1'));
+        $this->assertEquals('OK', $redis->hotkeys->stop());
+
+        $hotkeysInfo = $redis->hotkeys->get()[0];
+
+        $this->assertContains('key', $hotkeysInfo['by-cpu-time-us']);
+        $this->assertContains('key1', $hotkeysInfo['by-cpu-time-us']);
+        $this->assertContains('key', $hotkeysInfo['by-net-bytes']);
+        $this->assertContains('key1', $hotkeysInfo['by-net-bytes']);
+
+        // Starts hotkeys tracking (limited COUNT)
+        $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU, Container::NET], 12));
+
+        for ($i = 0; $i < 13; $i++) {
+            $redis->set("key:$i", "value:$i");
+        }
+        $this->assertEquals('OK', $redis->hotkeys->stop());
+
+        $hotkeysInfo = $redis->hotkeys->get()[0];
+        $this->assertContains('key:11', $hotkeysInfo['by-cpu-time-us']);
+
+        // Starts hotkeys tracking (with DURATION, SAMPLE)
+        $this->assertEquals(
+            'OK',
+            $redis->hotkeys->start([Container::CPU, Container::NET], null, 1, 10)
+        );
+        $this->sleep(1.2);
+
+        $hotkeysInfo = $redis->hotkeys->get()[0];
+        $this->assertEquals(0, $hotkeysInfo['tracking-active']);
+        $this->assertEquals(10, $hotkeysInfo['sample-ratio']);
+
+        $this->assertEquals('OK', $redis->hotkeys->reset());
+
+        $hotkeysInfo = $redis->hotkeys->get()[0];
+        $this->assertEquals(0, $hotkeysInfo['tracking-active']);
+        $this->assertNull($hotkeysInfo['sample-ratio']);
+        $this->assertEmpty($hotkeysInfo['selected-slots']);
+        $this->assertEmpty($hotkeysInfo['by-cpu-time-us']);
         $this->assertEmpty($hotkeysInfo['by-net-bytes']);
     }
 

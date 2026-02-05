@@ -45,16 +45,10 @@ class HOTKEYS extends RedisCommand
     public function parseResponse($data)
     {
         if (is_array($data)) {
-            $dict = CommandUtility::arrayToDictionary($data, null, false);
-
-            // Convert nested arrays into dictionaries
-            foreach (['by-cpu-time', 'by-net-bytes'] as $dictKey) {
-                if (isset($dict[$dictKey])) {
-                    $dict[$dictKey] = CommandUtility::arrayToDictionary($dict[$dictKey]);
-                }
+            foreach ($data as $key => $item) {
+                $dict = CommandUtility::arrayToDictionary($item, null, false);
+                $data[$key] = $dict;
             }
-
-            return $dict;
         }
 
         return $data;
