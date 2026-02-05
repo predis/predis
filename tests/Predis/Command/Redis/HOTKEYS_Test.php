@@ -13,6 +13,7 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\Container\HOTKEYS as Container;
+use Predis\NotSupportedException;
 use ValueError;
 
 /**
@@ -180,6 +181,22 @@ class HOTKEYS_Test extends PredisCommandTestCase
         $this->assertEmpty($hotkeysInfo['selected-slots']);
         $this->assertEmpty($hotkeysInfo['by-cpu-time-us']);
         $this->assertEmpty($hotkeysInfo['by-net-bytes']);
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 8.5.0
+     * @return void
+     */
+    public function testHotkeysStartDisabledInClusterClient()
+    {
+        $redis = $this->getClient();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage("Cannot use 'HOTKEYS' with redis-cluster");
+
+        $redis->hotkeys->start([Container::CPU]);
     }
 
     /**
