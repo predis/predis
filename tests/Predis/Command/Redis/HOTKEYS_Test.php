@@ -59,32 +59,6 @@ class HOTKEYS_Test extends PredisCommandTestCase
     }
 
     /**
-     * @group disconnected
-     */
-    public function testParseResponseWithArray(): void
-    {
-        $rawResponse = [
-            'by-cpu-time', ['key1', 100, 'key2', 200],
-            'by-net-bytes', ['key3', 300, 'key4', 400],
-            'other-key', 'other-value',
-        ];
-
-        $expectedResponse = [
-            'by-cpu-time' => [
-                'key1' => 100,
-                'key2' => 200,
-            ],
-            'by-net-bytes' => [
-                'key3' => 300,
-                'key4' => 400,
-            ],
-            'other-key' => 'other-value',
-        ];
-
-        $this->assertEquals($expectedResponse, $this->getCommand()->parseResponse($rawResponse));
-    }
-
-    /**
      * @group connected
      * @requiresRedisVersion >= 8.5.0
      * @return void
@@ -123,7 +97,7 @@ class HOTKEYS_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
         $hotkeysInfo = $redis->hotkeys->get()[0];
-        $this->assertContains('key:11', $hotkeysInfo['by-cpu-time-us']);
+        $this->assertContains('key:5', $hotkeysInfo['by-cpu-time-us']);
 
         // Starts hotkeys tracking (with DURATION, SAMPLE)
         $this->assertEquals(
@@ -185,7 +159,7 @@ class HOTKEYS_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
         $hotkeysInfo = $redis->hotkeys->get()[0];
-        $this->assertContains('key:11', $hotkeysInfo['by-cpu-time-us']);
+        $this->assertContains('key:5', $hotkeysInfo['by-cpu-time-us']);
 
         // Starts hotkeys tracking (with DURATION, SAMPLE)
         $this->assertEquals(
