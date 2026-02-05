@@ -284,7 +284,7 @@ use Predis\Response\Status;
  * @method array             topklist(string $key, bool $withCount = false)
  * @method array             topkquery(string $key, ...$items)
  * @method Status            topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
- * @method int               tsadd(string $key, int $timestamp, float $value, ?AddArguments $arguments = null)
+ * @method int               tsadd(string $key, int $timestamp, string|float $value, ?AddArguments $arguments = null)
  * @method Status            tsalter(string $key, ?TSAlterArguments $arguments = null)
  * @method Status            tscreate(string $key, ?TSCreateArguments $arguments = null)
  * @method Status            tscreaterule(string $sourceKey, string $destKey, string $aggregator, int $bucketDuration, int $alignTimestamp = 0)
