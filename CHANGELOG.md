@@ -11,6 +11,7 @@
 - Added retry support (#1616)
 - Added support for VRANGE command (#1623)
 - Added support for idempotent stream API (#1632)
+- Added support for HOTKEYS container command (#1630)
 
 ### Maintenance
 - Added testing with SSL connection (#1624)

@@ -42,6 +42,7 @@ use Predis\Command\CommandInterface;
 use Predis\Command\Container\ACL;
 use Predis\Command\Container\CLIENT;
 use Predis\Command\Container\FUNCTIONS;
+use Predis\Command\Container\HOTKEYS;
 use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
 use Predis\Command\Container\Search\FTCURSOR;
@@ -409,6 +410,7 @@ use Predis\Response\Status;
  *
  * Container commands
  * @property CLIENT    $client
+ * @property HOTKEYS   $hotkeys
  * @property FUNCTIONS $function
  * @property FTCONFIG  $ftconfig
  * @property FTCURSOR  $ftcursor
