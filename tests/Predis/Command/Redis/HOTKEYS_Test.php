@@ -98,7 +98,7 @@ class HOTKEYS_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
         $hotkeysInfo = $redis->hotkeys->get()[0];
-        $this->assertContains('key:5', $hotkeysInfo['by-cpu-time-us']);
+        $this->assertCount(24, $hotkeysInfo['by-cpu-time-us']);
 
         // Starts hotkeys tracking (with DURATION, SAMPLE)
         $this->assertEquals(
@@ -160,7 +160,7 @@ class HOTKEYS_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
         $hotkeysInfo = $redis->hotkeys->get()[0];
-        $this->assertContains('key:5', $hotkeysInfo['by-cpu-time-us']);
+        $this->assertCount(24, $hotkeysInfo['by-cpu-time-us']);
 
         // Starts hotkeys tracking (with DURATION, SAMPLE)
         $this->assertEquals(
