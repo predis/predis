@@ -14,6 +14,13 @@ namespace Predis\Command\Argument\TimeSeries;
 
 class RangeArguments extends CommonArguments
 {
+    public const AGG_SUM = 'sum';
+    public const AGG_MIN = 'min';
+    public const AGG_MAX = 'max';
+    public const AGG_COUNT = 'count';
+    public const AGG_COUNT_NAN = 'countNan';
+    public const AGG_COUNT_ALL = 'countAll';
+
     /**
      * Filters samples by a list of specific timestamps.
      *
@@ -57,7 +64,7 @@ class RangeArguments extends CommonArguments
     /**
      * Aggregates samples into time buckets.
      *
-     * @param  string $aggregator
+     * @param  string $aggregator      Aggregation type. Check class constants.
      * @param  int    $bucketDuration  Is duration of each bucket, in milliseconds.
      * @param  int    $align           It controls the time bucket timestamps by changing the reference timestamp on which a bucket is defined.
      * @param  int    $bucketTimestamp Controls how bucket timestamps are reported.

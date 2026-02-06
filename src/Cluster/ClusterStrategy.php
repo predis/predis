@@ -189,6 +189,9 @@ abstract class ClusterStrategy implements StrategyInterface
 
             /* cluster */
             'CLUSTER' => [$this, 'getFakeKey'],
+
+            /* control */
+            'ACL' => [$this, 'getFakeKey'],
         ];
     }
 

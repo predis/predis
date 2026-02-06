@@ -1,11 +1,15 @@
 ACLs
+AUTH
 Autoloading
+cafile
 CAS
+CN
 Customizable
 ElastiCache
 FPM
 GC
 IANA
+mTLS
 Lua
 PSR
 Packagist

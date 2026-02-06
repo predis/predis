@@ -11,9 +11,12 @@
 - Added retry support (#1616)
 - Added support for VRANGE command (#1623)
 - Added support for idempotent stream API (#1632)
+- Added support for HOTKEYS container command (#1630)
 
 ### Maintenance
 - Added testing with SSL connection (#1624)
+- Added testing with SSL authentication using CN (#1627)
+- Added testing with TimeSeries NaN values (#1628)
 - Added support for Redis 8.6 (#1631)
 
 ## v3.3.0 (2025-11-24)
