@@ -27,6 +27,16 @@ class LPUSHX extends RedisCommand
         return 'LPUSHX';
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function setArguments(array $arguments)
+    {
+        $arguments = self::normalizeVariadic($arguments);
+
+        parent::setArguments($arguments);
+    }
+
     public function prefixKeys($prefix)
     {
         $this->applyPrefixForFirstArgument($prefix);

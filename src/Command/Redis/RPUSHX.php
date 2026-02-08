@@ -27,6 +27,16 @@ class RPUSHX extends RedisCommand
         return 'RPUSHX';
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function setArguments(array $arguments)
+    {
+        $arguments = self::normalizeVariadic($arguments);
+
+        parent::setArguments($arguments);
+    }
+
     public function prefixKeys($prefix)
     {
         $this->applyPrefixForFirstArgument($prefix);
