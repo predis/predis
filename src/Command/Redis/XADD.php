@@ -41,6 +41,20 @@ class XADD extends RedisCommand
             $args[] = 'NOMKSTREAM';
         }
 
+        if (isset($options['trimming'])) {
+            $args[] = strtoupper($options['trimming']);
+        }
+
+        // IDMPAUTO or IDMP options (mutually exclusive)
+        if (isset($options['idmpauto'])) {
+            $args[] = 'IDMPAUTO';
+            $args[] = $options['idmpauto'];
+        } elseif (isset($options['idmp']) && is_array($options['idmp'])) {
+            $args[] = 'IDMP';
+            $args[] = $options['idmp'][0]; // pid
+            $args[] = $options['idmp'][1]; // iid
+        }
+
         if (isset($options['trim']) && is_array($options['trim'])) {
             array_push($args, ...$options['trim']);
 
@@ -48,10 +62,6 @@ class XADD extends RedisCommand
                 $args[] = 'LIMIT';
                 $args[] = $options['limit'];
             }
-        }
-
-        if (isset($options['trimming'])) {
-            $args[] = strtoupper($options['trimming']);
         }
 
         // ID, default to * to let Redis set it
