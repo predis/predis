@@ -1,6 +1,6 @@
 ## Changelog
 
-## v3.4.0 (2025-11-24)
+## v3.4.0 (2026-02-11)
 ### Added
 - Added optional retry support (#1616)
 - Added support for `VRANGE` command (#1623)
