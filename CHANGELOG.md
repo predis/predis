@@ -18,6 +18,7 @@
 - Added testing with SSL authentication using CN (#1627)
 - Added testing with TimeSeries NaN values (#1628)
 - Added support for Redis 8.6 (#1631)
+- Added testing with Redis 8.6 GA (#1634)
 
 ## v3.3.0 (2025-11-24)
 ### Added
