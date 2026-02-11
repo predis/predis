@@ -53,6 +53,20 @@ class LPUSHX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
+    public function testFilterArgumentsValuesAsSingleArray(): void
+    {
+        $arguments = ['key', ['value1', 'value2', 'value3']];
+        $expected = ['key', 'value1', 'value2', 'value3'];
+
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
+
+        $this->assertSame($expected, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));

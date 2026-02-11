@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Fixed
+- Fixed `[L|R]PUSHX` variadic arguments normalization (#1633)
 - Fixed wrong `@param` annotation in `Parameters` (#1614)
 - Make `ZRANDMEMBER` prefixable (#1621)
 - Improve connection handshake by pipelining commands (#1622)
