@@ -1,5 +1,8 @@
 ## Changelog
 
+### Unreleased
+- Fixed getParameter() call on array + added integration testing with Sentinel (#2423)
+
 ## v3.4.0 (2026-02-11)
 ### Added
 - Added optional retry support (#1616)

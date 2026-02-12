@@ -1684,6 +1684,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group connected
      * @group sentinel
+     * @group relay-incompatible
      * @requiresRedisVersion >= 7.0.0
      */
     public function testConnectToSentinelAndExecuteCommands(): void
@@ -1699,6 +1700,7 @@ class ClientTest extends PredisTestCase
     /**
      * @group connected
      * @group sentinel
+     * @group relay-incompatible
      * @requiresRedisVersion >= 7.0.0
      */
     public function testSentinelReplicationConnection(): void

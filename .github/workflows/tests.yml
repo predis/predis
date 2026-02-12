@@ -153,7 +153,7 @@ jobs:
         run: vendor/bin/phpunit --group unprotected --coverage-php build/cov/coverage-unprotected.cov --coverage-filter ./src
 
       - name: Run sentinel tests
-        if: ${{ matrix.php != '8.4' || matrix.redis != '8.0' }}
+        if: ${{ (matrix.php != '8.4' || matrix.redis != '8.0') &&  matrix.redis > '4.0'}}
         run: vendor/bin/phpunit --group sentinel
 
       - name: Run sentinel tests with coverage
