@@ -107,6 +107,14 @@ jobs:
           compose-file: .github/docker-compose.yml
           services: redis-cluster
 
+      - name: Start Redis sentinels image
+        id: sentinel_infra
+        uses: hoverkraft-tech/compose-action@v2.0.1
+        if: ${{ matrix.redis > '4.0' }}
+        with:
+          compose-file: .github/docker-compose.yml
+          services: sentinel
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -143,6 +151,14 @@ jobs:
       - name: Run tests against unprotected Redis with coverage
         if: ${{ matrix.php == '8.4' && matrix.redis == '8.0' }}
         run: vendor/bin/phpunit --group unprotected --coverage-php build/cov/coverage-unprotected.cov --coverage-filter ./src
+
+      - name: Run sentinel tests
+        if: ${{ matrix.php != '8.4' || matrix.redis != '8.0' }}
+        run: vendor/bin/phpunit --group sentinel
+
+      - name: Run sentinel tests with coverage
+        if: ${{ matrix.php == '8.4' && matrix.redis == '8.0' }}
+        run: vendor/bin/phpunit --group sentinel --coverage-php build/cov/coverage-sentinel.cov --coverage-filter ./src
 
       - name: Run stack tests
         if: ${{ (matrix.php != '8.4' || matrix.redis != '8.0') && matrix.redis >= '7.2' }}
