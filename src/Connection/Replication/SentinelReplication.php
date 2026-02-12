@@ -816,6 +816,10 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
                 return new Parameters($sentinel);
             }
 
+            if ($sentinel instanceof ParametersInterface) {
+                return $sentinel;
+            }
+
             return $sentinel->getParameters();
         }
 
