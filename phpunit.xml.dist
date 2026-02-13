@@ -33,6 +33,7 @@
             <group>gears</group>
             <group>gears-cluster</group>
             <group>unprotected</group>
+            <group>sentinel</group>
             <!-- <group>connected</group> -->
             <!-- <group>disconnected</group> -->
             <!-- <group>commands</group> -->
@@ -54,6 +55,13 @@
         <const name="REDIS_PASSWORD" value="foobar" />
         <env name="USE_RELAY" value="false" />
         <env name="REDIS_STACK_SERVER_PORT" value="6479" />
+
+        <!-- Sentinel -->
+        <const name="REDIS_SENTINEL_SERVICE" value="predis-test" />
+        <const
+            name="REDIS_SENTINEL_ENDPOINTS"
+            value="127.0.0.1:26379,127.0.0.1:26380,127.0.0.1:26381"
+        />
 
         <!-- SSL -->
         <env name="STANDALONE_CA_CERT_PATH" value=".github/dockers/standalone/tls/ca.crt" />

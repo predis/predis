@@ -24,6 +24,7 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\Replication\MasterSlaveReplication;
+use Predis\Connection\Replication\SentinelReplication;
 use Predis\Connection\Resource\StreamFactoryInterface;
 use Predis\Connection\StreamConnection;
 use Predis\Retry\Retry;
@@ -1678,6 +1679,43 @@ class ClientTest extends PredisTestCase
 
         $client->blpop(['random_key'], 3);
         $this->assertEquals(3, $retries);
+    }
+
+    /**
+     * @group connected
+     * @group sentinel
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testConnectToSentinelAndExecuteCommands(): void
+    {
+        $client = $this->createClient();
+
+        $this->assertEquals('PONG', $client->ping());
+
+        $client->set('sentinel_test_key', 'sentinel_test_value');
+        $this->assertEquals('sentinel_test_value', $client->get('sentinel_test_key'));
+    }
+
+    /**
+     * @group connected
+     * @group sentinel
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testSentinelReplicationConnection(): void
+    {
+        $client = $this->createClient();
+        $connection = $client->getConnection();
+
+        $this->assertInstanceOf(SentinelReplication::class, $connection);
+
+        // Verify we can get master connection
+        $master = $connection->getMaster();
+        $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $master);
+
+        // Verify master is connected
+        $this->assertTrue($master->isConnected());
     }
 
     // ******************************************************************** //

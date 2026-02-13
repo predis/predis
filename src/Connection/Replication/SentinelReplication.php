@@ -809,7 +809,18 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
         }
 
         if (!empty($this->sentinels)) {
-            return $this->sentinels[0]->getParameters();
+            $sentinel = $this->sentinels[0];
+
+            // After querySentinels(), sentinels array contains plain arrays instead of connection objects
+            if (is_array($sentinel)) {
+                return new Parameters($sentinel);
+            }
+
+            if ($sentinel instanceof ParametersInterface) {
+                return $sentinel;
+            }
+
+            return $sentinel->getParameters();
         }
 
         return null;

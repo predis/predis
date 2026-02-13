@@ -173,6 +173,10 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
             return $this->prepareClusterEndpoints();
         }
 
+        if ($this->isSentinelTest()) {
+            return $this->prepareSentinelEndpoints();
+        }
+
         $password = getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD');
 
         if ($this->isStackTest()) {
@@ -299,6 +303,14 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
                     ],
                 ];
             }
+        } elseif ($this->isSentinelTest()) {
+            $options = array_merge(
+                [
+                    'replication' => 'sentinel',
+                    'service' => constant('REDIS_SENTINEL_SERVICE'),
+                ],
+                $options
+            );
         } else {
             if ($this->isSSLTest()) {
                 $parameters = $parameters + [
@@ -335,6 +347,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
         // For SSL tests, temporarily override to use non-SSL configuration
         $isSSL = $this->isSSLTest();
         $isCluster = $this->isClusterTest();
+        $isSentinel = $this->isSentinelTest();
 
         if ($isSSL && $isCluster) {
             // For cluster SSL tests, use non-SSL cluster endpoints
@@ -364,6 +377,9 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
 
         if ($isCluster) {
             $options['cluster'] = 'redis';
+        } elseif ($isSentinel) {
+            $options['replication'] = 'sentinel';
+            $options['service'] = constant('REDIS_SENTINEL_SERVICE');
         }
 
         $client = new Client($parameters, $options);
@@ -748,6 +764,22 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
     }
 
     /**
+     * Check annotations if it's matches to sentinel test scenario.
+     *
+     * @return bool
+     */
+    protected function isSentinelTest(): bool
+    {
+        $annotations = TestUtil::parseTestMethodAnnotations(
+            get_class($this),
+            $this->getName(false)
+        );
+
+        return isset($annotations['method']['group'])
+            && in_array('sentinel', $annotations['method']['group'], true);
+    }
+
+    /**
      * Parse comma-separated cluster endpoints and convert them into tcp strings.
      *
      * @return array
@@ -762,6 +794,20 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
 
         return array_map(static function (string $elem) use ($scheme) {
             return "{$scheme}://" . $elem;
+        }, $endpoints);
+    }
+
+    /**
+     * Parse comma-separated sentinel endpoints and convert them into tcp strings.
+     *
+     * @return array
+     */
+    protected function prepareSentinelEndpoints(): array
+    {
+        $endpoints = explode(',', constant('REDIS_SENTINEL_ENDPOINTS'));
+
+        return array_map(static function (string $elem) {
+            return "tcp://{$elem}";
         }, $endpoints);
     }
 }

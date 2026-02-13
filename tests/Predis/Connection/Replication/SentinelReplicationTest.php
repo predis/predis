@@ -1644,6 +1644,126 @@ class SentinelReplicationTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @return void
+     */
+    public function testGetParametersReturnsParametersFromArrayAfterUpdateSentinels(): void
+    {
+        $sentinel = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $sentinel
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('SENTINEL', ['sentinels', 'srv']))
+            ->willReturn([
+                [
+                    'name', '127.0.0.1:5382',
+                    'ip', '127.0.0.1',
+                    'port', '5382',
+                    'runid', 'a113aa7a0d4870a85bb22b4b605fd26eb93ed40e',
+                    'flags', 'sentinel',
+                ],
+            ]);
+
+        $replication = $this->getReplicationConnection('srv', [$sentinel]);
+        $replication->updateSentinels();
+
+        // After updateSentinels(), the sentinels array contains plain arrays
+        $parameters = $replication->getParameters();
+
+        $this->assertInstanceOf(Parameters::class, $parameters);
+        $this->assertEquals('127.0.0.1', $parameters->host);
+        $this->assertEquals('5381', $parameters->port);
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testGetParametersReturnsParametersFromArrayAfterQuerySentinel(): void
+    {
+        $sentinel = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $sentinel
+            ->expects($this->exactly(3))
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('SENTINEL', ['sentinels', 'srv'])],
+                [$this->isRedisCommand('SENTINEL', ['get-master-addr-by-name', 'srv'])],
+                [$this->isRedisCommand('SENTINEL', ['slaves', 'srv'])]
+            )
+            ->willReturnOnConsecutiveCalls(
+                // SENTINEL sentinels srv
+                [
+                    [
+                        'name', '127.0.0.1:5382',
+                        'ip', '127.0.0.1',
+                        'port', '5382',
+                        'runid', 'a113aa7a0d4870a85bb22b4b605fd26eb93ed40e',
+                        'flags', 'sentinel',
+                    ],
+                ],
+                // SENTINEL get-master-addr-by-name srv
+                ['127.0.0.1', '6381'],
+                // SENTINEL slaves srv
+                []
+            );
+
+        $replication = $this->getReplicationConnection('srv', [$sentinel]);
+
+        // Clear master and slaves to test sentinel array scenario
+        $replication->querySentinel();
+
+        // Remove master to force getParameters to use sentinels array
+        $reflectionMaster = new ReflectionProperty($replication, 'master');
+        $reflectionMaster->setAccessible(true);
+        $reflectionMaster->setValue($replication, null);
+
+        $reflectionSlaves = new ReflectionProperty($replication, 'slaves');
+        $reflectionSlaves->setAccessible(true);
+        $reflectionSlaves->setValue($replication, []);
+
+        // After querySentinel(), the sentinels array contains plain arrays
+        $parameters = $replication->getParameters();
+
+        $this->assertInstanceOf(Parameters::class, $parameters);
+        $this->assertEquals('127.0.0.1', $parameters->host);
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testGetParametersHandlesParametersInterfaceInSentinelsArray(): void
+    {
+        $parametersObject = Parameters::create('tcp://127.0.0.1:5381?role=sentinel');
+
+        $replication = $this->getReplicationConnection('srv', [$parametersObject]);
+
+        $parameters = $replication->getParameters();
+
+        $this->assertSame($parametersObject, $parameters);
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testGetParametersReturnsNullWhenNoConnectionsAvailable(): void
+    {
+        $sentinel = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+
+        $replication = $this->getReplicationConnection('srv', [$sentinel]);
+
+        // Clear all connections
+        $reflectionSentinels = new ReflectionProperty($replication, 'sentinels');
+        $reflectionSentinels->setAccessible(true);
+        $reflectionSentinels->setValue($replication, []);
+
+        $parameters = $replication->getParameters();
+
+        $this->assertNull($parameters);
+    }
+
+    /**
+     * @group disconnected
      */
     public function testWrite(): void
     {
