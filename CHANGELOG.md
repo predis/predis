@@ -1,6 +1,7 @@
 ## Changelog
 
 ### Unreleased
+- Added DriverInfo API for CLIENT SETINFO support
 - Fixed getParameter() call on array + added integration testing with Sentinel (#2423)
 
 ## v3.4.0 (2026-02-11)

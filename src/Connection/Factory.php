@@ -15,6 +15,7 @@ namespace Predis\Connection;
 use InvalidArgumentException;
 use Predis\Client;
 use Predis\Command\RawCommand;
+use Predis\DriverInfo;
 use ReflectionClass;
 use UnexpectedValueException;
 
@@ -164,6 +165,9 @@ class Factory implements FactoryInterface
     {
         $parameters = $connection->getParameters();
 
+        // Get driver info from parameters or use default
+        $driverInfo = $parameters->driver_info ?? DriverInfo::createDefault();
+
         if (!empty($parameters->password)) {
             $cmdAuthArgs = [$parameters->protocol, 'AUTH'];
 
@@ -183,10 +187,12 @@ class Factory implements FactoryInterface
             );
         }
 
+        // Set library name via CLIENT SETINFO
         $connection->addConnectCommand(
-            new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
+            new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', $driverInfo->getFormattedName()])
         );
 
+        // Set library version via CLIENT SETINFO (always Predis version)
         $connection->addConnectCommand(
             new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION])
         );

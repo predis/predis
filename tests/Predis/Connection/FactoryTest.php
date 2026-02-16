@@ -14,6 +14,7 @@ namespace Predis\Connection;
 
 use Predis\Client;
 use Predis\Command\RawCommand;
+use Predis\DriverInfo;
 use PredisTestCase;
 use ReflectionObject;
 use stdClass;
@@ -684,5 +685,35 @@ class FactoryTest extends PredisTestCase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrepareConnectionWithDriverInfo(): void
+    {
+        $factory = new Factory();
+        $driverInfo = (new DriverInfo())->addUpstreamDriver('my-framework', '1.0.0');
+        $parameters = new Parameters([
+            'scheme' => 'tcp',
+            'driver_info' => $driverInfo,
+        ]);
+
+        $connection = $factory->create($parameters);
+        $initCommands = $connection->getInitCommands();
+
+        $this->assertCount(3, $initCommands);
+        $this->assertEquals(
+            new RawCommand('HELLO', [2, 'SETNAME', 'predis']),
+            $initCommands[0]
+        );
+        $this->assertEquals(
+            new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis(my-framework_v1.0.0)']),
+            $initCommands[1]
+        );
+        $this->assertEquals(
+            new RawCommand('CLIENT', ['SETINFO', 'LIB-VER', Client::VERSION]),
+            $initCommands[2]
+        );
     }
 }
