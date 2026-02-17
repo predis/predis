@@ -16,7 +16,7 @@ use Predis\Cluster\Hash\HashGeneratorInterface;
 
 /**
  * This class implements an hashring-based distributor that uses the same
- * algorithm of memcache to distribute keys in a cluster using client-side
+ * algorithm of memcached to distribute keys in a cluster using client-side
  * sharding.
  * @author Lorenzo Castelli <lcastelli@gmail.com>
  */
