@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 
 class HTTL extends RedisCommand
 {
@@ -27,5 +27,10 @@ class HTTL extends RedisCommand
         $processedArguments = array_merge($processedArguments, $arguments[1]);
 
         parent::setArguments($processedArguments);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
     }
 }
