@@ -3,6 +3,9 @@
 ### Unreleased
 - Fixed getParameter() call on array + added integration testing with Sentinel (#2423)
 
+### Added
+- Make HTTL and HPTTL commands Prefixable (#1639)
+
 ## v3.4.0 (2026-02-11)
 ### Added
 - Added optional retry support (#1616)
