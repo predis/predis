@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 class HPTTL_Test extends PredisCommandTestCase
 {
     /**
@@ -50,6 +52,21 @@ class HPTTL_Test extends PredisCommandTestCase
 
         $this->assertSame(0, $command->parseResponse(0));
         $this->assertSame(1, $command->parseResponse(1));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $command->setArguments(['key', ['field1', 'field2']]);
+
+        // After setArguments, the arguments are transformed to: ['key', 'FIELDS', 2, 'field1', 'field2']
+        $command->prefixKeys('prefix:');
+
+        $this->assertSame(['prefix:key', 'FIELDS', 2, 'field1', 'field2'], $command->getArguments());
     }
 
     /**
