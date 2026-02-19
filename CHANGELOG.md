@@ -6,6 +6,10 @@
 ### Added
 - Make HTTL and HPTTL commands Prefixable (#1639)
 
+## v3.4.1 (2026-02-11)
+### Fixed
+- Removed static from callables because it is deprecated since PHP 8.2
+
 ## v3.4.0 (2026-02-11)
 ### Added
 - Added optional retry support (#1616)
