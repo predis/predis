@@ -352,7 +352,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
         if ($isSSL && $isCluster) {
             // For cluster SSL tests, use non-SSL cluster endpoints
             $endpoints = explode(',', constant('REDIS_CLUSTER_ENDPOINTS'));
-            $parameters = array_map(static function (string $elem) {
+            $parameters = array_map(function (string $elem) {
                 return 'tcp://' . $elem;
             }, $endpoints);
         } elseif ($isSSL) {
@@ -792,7 +792,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
         );
         $scheme = $this->isSSLTest() ? 'tls' : 'tcp';
 
-        return array_map(static function (string $elem) use ($scheme) {
+        return array_map(function (string $elem) use ($scheme) {
             return "{$scheme}://" . $elem;
         }, $endpoints);
     }
@@ -806,7 +806,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
     {
         $endpoints = explode(',', constant('REDIS_SENTINEL_ENDPOINTS'));
 
-        return array_map(static function (string $elem) {
+        return array_map(function (string $elem) {
             return "tcp://{$elem}";
         }, $endpoints);
     }
