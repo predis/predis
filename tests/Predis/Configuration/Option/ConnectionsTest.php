@@ -71,10 +71,10 @@ class ConnectionsTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $options
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('defined')
-            ->with('parameters')
-            ->willReturn(false);
+            ->withConsecutive(['parameters'], ['driver_info'])
+            ->willReturnOnConsecutiveCalls(false, false);
 
         $option = new Connections();
         $factory = $option->filter($options, 'relay');
@@ -91,10 +91,10 @@ class ConnectionsTest extends PredisTestCase
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
 
         $options
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('defined')
-            ->with('parameters')
-            ->willReturn(true);
+            ->withConsecutive(['parameters'], ['driver_info'])
+            ->willReturnOnConsecutiveCalls(true, false);
 
         $options
             ->expects($this->once())
@@ -160,10 +160,10 @@ class ConnectionsTest extends PredisTestCase
         /** @var OptionsInterface|\PHPUnit\Framework\MockObject\MockObject\MockObject */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
         $options
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('defined')
-            ->with('parameters')
-            ->willReturn(true);
+            ->withConsecutive(['parameters'], ['driver_info'])
+            ->willReturnOnConsecutiveCalls(true, false);
         $options
             ->expects($this->once())
             ->method('__get')

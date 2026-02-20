@@ -25,6 +25,11 @@ class Factory implements FactoryInterface
 {
     private $defaults = [];
 
+    /**
+     * @var string
+     */
+    private $upstreamDriver = '';
+
     protected $schemes = [
         'tcp' => 'Predis\Connection\StreamConnection',
         'unix' => 'Predis\Connection\StreamConnection',
@@ -134,6 +139,26 @@ class Factory implements FactoryInterface
     }
 
     /**
+     * Sets upstream driver information for CLIENT SETINFO.
+     *
+     * @param string $driver Upstream driver string (e.g., 'laravel_v11.0.0' or 'laravel_v11.0.0;my-app_v1.0.0').
+     */
+    public function setUpstreamDriver(string $driver): void
+    {
+        $this->upstreamDriver = $driver;
+    }
+
+    /**
+     * Returns the configured upstream driver.
+     *
+     * @return string
+     */
+    public function getUpstreamDriver(): string
+    {
+        return $this->upstreamDriver;
+    }
+
+    /**
      * Creates a connection parameters instance from the supplied argument.
      *
      * @param mixed $parameters Original connection parameters.
@@ -184,7 +209,7 @@ class Factory implements FactoryInterface
         }
 
         $connection->addConnectCommand(
-            new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', 'predis'])
+            new RawCommand('CLIENT', ['SETINFO', 'LIB-NAME', $this->buildLibraryName()])
         );
 
         $connection->addConnectCommand(
@@ -196,5 +221,19 @@ class Factory implements FactoryInterface
                 new RawCommand('SELECT', [$parameters->database])
             );
         }
+    }
+
+    /**
+     * Builds the library name string for CLIENT SETINFO.
+     *
+     * @return string
+     */
+    protected function buildLibraryName(): string
+    {
+        if ($this->upstreamDriver === '') {
+            return 'predis';
+        }
+
+        return 'predis(' . $this->upstreamDriver . ')';
     }
 }

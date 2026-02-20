@@ -26,6 +26,7 @@ use Predis\Connection\ParametersInterface;
  * @property array|ParametersInterface $parameters  Parameters associated with connection.
  * @property callable                  $replication Aggregate connection initializer for replication
  * @property int                       $readTimeout Timeout in milliseconds between read operations on reading from multiple connections.
+ * @property string|string[]           $driver_info Upstream driver info for CLIENT SETINFO.
  */
 interface OptionsInterface
 {

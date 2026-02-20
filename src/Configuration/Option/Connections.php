@@ -119,6 +119,10 @@ class Connections implements OptionInterface
             $factory->setDefaultParameters($options->parameters);
         }
 
+        if ($options->defined('driver_info')) {
+            $factory->setUpstreamDriver($options->driver_info);
+        }
+
         return $factory;
     }
 
@@ -134,6 +138,10 @@ class Connections implements OptionInterface
 
         if ($options->defined('parameters')) {
             $factory->setDefaultParameters($options->parameters);
+        }
+
+        if ($options->defined('driver_info')) {
+            $factory->setUpstreamDriver($options->driver_info);
         }
 
         return $factory;
