@@ -664,7 +664,7 @@ $client = new Predis\Client(['read_write_timeout' => 0, 'protocol' => 3]);
 // Create push notifications consumer.
 // Provides callback where current consumer subscribes to few channels before
 // enter the loop.
-$push = $client->push(static function (ClientInterface $client) {
+$push = $client->push(function (ClientInterface $client) {
     $response = $client->subscribe('channel', 'control');
     $status = ($response[2] === 1) ? 'OK' : 'FAILED';
     echo "Channel subscription status: {$status}\n";

@@ -33,7 +33,7 @@ abstract class PrefixableCommand extends Command implements PrefixableCommandInt
     public function applyPrefixForAllArguments(string $prefix): void
     {
         $this->setRawArguments(
-            array_map(static function ($key) use ($prefix) {
+            array_map(function ($key) use ($prefix) {
                 return $prefix . $key;
             }, $this->getArguments())
         );
