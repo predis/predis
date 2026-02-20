@@ -4,6 +4,7 @@
 - Fixed getParameter() call on array + added integration testing with Sentinel (#2423)
 
 ### Added
+- Added `driver_info` option for CLIENT SETINFO upstream reporting (#1645)
 - Make HTTL and HPTTL commands Prefixable (#1639)
 
 ## v3.4.1 (2026-02-11)

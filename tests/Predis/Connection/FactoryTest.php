@@ -586,6 +586,80 @@ class FactoryTest extends PredisTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testSettingUpstreamDriver(): void
+    {
+        $factory = new Factory();
+
+        $this->assertSame('', $factory->getUpstreamDriver());
+
+        $factory->setUpstreamDriver('laravel_v11.0.0');
+
+        $this->assertSame('laravel_v11.0.0', $factory->getUpstreamDriver());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testBuildLibraryNameWithoutUpstreamDriver(): void
+    {
+        $factory = new Factory();
+
+        $reflection = new ReflectionObject($factory);
+        $buildLibraryName = $reflection->getMethod('buildLibraryName');
+        $buildLibraryName->setAccessible(true);
+
+        $this->assertSame('predis', $buildLibraryName->invoke($factory));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testBuildLibraryNameWithUpstreamDriver(): void
+    {
+        $factory = new Factory();
+        $factory->setUpstreamDriver('laravel_v11.0.0');
+
+        $reflection = new ReflectionObject($factory);
+        $buildLibraryName = $reflection->getMethod('buildLibraryName');
+        $buildLibraryName->setAccessible(true);
+
+        $this->assertSame('predis(laravel_v11.0.0)', $buildLibraryName->invoke($factory));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testBuildLibraryNameWithMultipleUpstreamDrivers(): void
+    {
+        $factory = new Factory();
+        $factory->setUpstreamDriver('laravel_v11.0.0;my-app_v1.0.0');
+
+        $reflection = new ReflectionObject($factory);
+        $buildLibraryName = $reflection->getMethod('buildLibraryName');
+        $buildLibraryName->setAccessible(true);
+
+        $this->assertSame('predis(laravel_v11.0.0;my-app_v1.0.0)', $buildLibraryName->invoke($factory));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testConnectionUsesUpstreamDriverInClientSetInfo(): void
+    {
+        $factory = new Factory();
+        $factory->setUpstreamDriver('laravel_v11.0.0');
+
+        $connection = $factory->create([]);
+        $initCommands = $connection->getInitCommands();
+
+        $this->assertInstanceOf(RawCommand::class, $initCommands[1]);
+        $this->assertSame('CLIENT', $initCommands[1]->getId());
+        $this->assertSame(['SETINFO', 'LIB-NAME', 'predis(laravel_v11.0.0)'], $initCommands[1]->getArguments());
+    }
+
+    /**
      * @dataProvider onConnectionProvider
      * @group disconnected
      * @param  array $parameters
