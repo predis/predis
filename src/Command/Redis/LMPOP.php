@@ -12,7 +12,7 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\Command as RedisCommand;
+use Predis\Command\PrefixableCommand as RedisCommand;
 use Predis\Command\Traits\Count;
 use Predis\Command\Traits\Keys;
 use Predis\Command\Traits\LeftRight;
@@ -62,5 +62,26 @@ class LMPOP extends RedisCommand
     public function parseResp3Response($data)
     {
         return $this->parseResponse($data);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $arguments = $this->getArguments();
+
+        $keysOffset = static::$keysArgumentPositionOffset;
+        $keysCount = $arguments[$keysOffset];
+        $keys = array_slice($arguments, $keysOffset + 1, $keysCount);
+        $prefixedKeys = array_map(static function ($key) use ($prefix) {
+            return $prefix . $key;
+        }, $keys);
+
+        $argumentsBefore = array_slice($arguments, 0, $keysOffset + 1);
+        $argumentsAfter = array_slice($arguments, $keysOffset + $keysCount + 1);
+
+        $this->setRawArguments(array_merge(
+            $argumentsBefore,
+            $prefixedKeys,
+            $argumentsAfter
+        ));
     }
 }

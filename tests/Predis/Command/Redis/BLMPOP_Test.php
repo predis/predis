@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Command\PrefixableCommand;
+
 /**
  * @group commands
  * @group realm-list
@@ -104,6 +106,23 @@ class BLMPOP_Test extends PredisCommandTestCase
 
         $this->assertSame(['key' => ['elem3']], $actualResponse);
         $this->assertSame(['elem2', 'elem1'], $redis->lrange('key', 0, -1));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrefixKeys(): void
+    {
+        /** @var PrefixableCommand $command */
+        $command = $this->getCommand();
+        $actualArguments = [10, ['key1', 'key2'], 'left', 10];
+        $prefix = 'prefix:';
+        $expectedArguments = [10, 2, 'prefix:key1', 'prefix:key2', 'LEFT', 'COUNT', 10];
+
+        $command->setArguments($actualArguments);
+        $command->prefixKeys($prefix);
+
+        $this->assertSame($expectedArguments, $command->getArguments());
     }
 
     public function argumentsProvider(): array
