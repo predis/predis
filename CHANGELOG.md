@@ -1,15 +1,13 @@
 ## Changelog
 
-### Unreleased
-- Fixed getParameter() call on array + added integration testing with Sentinel (#2423)
-
-### Added
-- Make HTTL and HPTTL commands Prefixable (#1639)
-- Make LMPOP and BLMPOP commands prefixable (#1643)
-
 ## v3.4.1 (2026-02-11)
+### Added
+- Made `H(P)TTL` commands prefixable (#1639)
+- Made `(B)LMPOP` commands prefixable (#1643)
+
 ### Fixed
-- Removed static from callables because it is deprecated since PHP 8.2
+- Fixed Sentinel `getParameter()` call on array error (#2423)
+- Removed deprecated `static` from callables (#1642)
 
 ## v3.4.0 (2026-02-11)
 ### Added
