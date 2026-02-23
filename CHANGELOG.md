@@ -1,6 +1,6 @@
 ## Changelog
 
-## v3.4.1 (2026-02-11)
+## v3.4.1 (2026-02-23)
 ### Added
 - Made `H(P)TTL` commands prefixable (#1639)
 - Made `(B)LMPOP` commands prefixable (#1643)
