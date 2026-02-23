@@ -28,7 +28,7 @@ class Factory implements FactoryInterface
     /**
      * @var string|null
      */
-    private $upstreamDriver = null;
+    private $upstreamDriver;
 
     protected $schemes = [
         'tcp' => 'Predis\Connection\StreamConnection',
