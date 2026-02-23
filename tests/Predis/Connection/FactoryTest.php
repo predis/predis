@@ -592,7 +592,7 @@ class FactoryTest extends PredisTestCase
     {
         $factory = new Factory();
 
-        $this->assertSame('', $factory->getUpstreamDriver());
+        $this->assertNull($factory->getUpstreamDriver());
 
         $factory->setUpstreamDriver('laravel_v11.0.0');
 

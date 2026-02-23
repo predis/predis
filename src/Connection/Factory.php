@@ -26,9 +26,9 @@ class Factory implements FactoryInterface
     private $defaults = [];
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $upstreamDriver = '';
+    private $upstreamDriver = null;
 
     protected $schemes = [
         'tcp' => 'Predis\Connection\StreamConnection',
@@ -151,9 +151,9 @@ class Factory implements FactoryInterface
     /**
      * Returns the configured upstream driver.
      *
-     * @return string
+     * @return string|null
      */
-    public function getUpstreamDriver(): string
+    public function getUpstreamDriver(): ?string
     {
         return $this->upstreamDriver;
     }
@@ -230,10 +230,6 @@ class Factory implements FactoryInterface
      */
     protected function buildLibraryName(): string
     {
-        if ($this->upstreamDriver === '') {
-            return 'predis';
-        }
-
-        return 'predis(' . $this->upstreamDriver . ')';
+        return $this->upstreamDriver ? 'predis(' . $this->upstreamDriver . ')' : 'predis';
     }
 }
