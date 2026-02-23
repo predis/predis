@@ -6,6 +6,7 @@
 ### Added
 - Added `driver_info` option for CLIENT SETINFO upstream reporting (#1645)
 - Make HTTL and HPTTL commands Prefixable (#1639)
+- Make LMPOP and BLMPOP commands prefixable (#1643)
 
 ## v3.4.1 (2026-02-11)
 ### Fixed
