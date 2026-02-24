@@ -1,16 +1,14 @@
 ## Changelog
 
-### Unreleased
-- Fixed getParameter() call on array + added integration testing with Sentinel (#2423)
-
+## v3.4.1 (2026-02-23)
 ### Added
 - Added `driver_info` option for CLIENT SETINFO upstream reporting (#1645)
-- Make HTTL and HPTTL commands Prefixable (#1639)
-- Make LMPOP and BLMPOP commands prefixable (#1643)
+- Made `H(P)TTL` commands prefixable (#1639)
+- Made `(B)LMPOP` commands prefixable (#1643)
 
-## v3.4.1 (2026-02-11)
 ### Fixed
-- Removed static from callables because it is deprecated since PHP 8.2
+- Fixed Sentinel `getParameter()` call on array error (#2423)
+- Removed deprecated `static` from callables (#1642)
 
 ## v3.4.0 (2026-02-11)
 ### Added
