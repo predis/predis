@@ -811,6 +811,11 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
         if (!empty($this->sentinels)) {
             $sentinel = $this->sentinels[0];
 
+            // Handle string URIs (e.g., "tcp://127.0.0.1:26379")
+            if (is_string($sentinel)) {
+                return new Parameters(Parameters::parse($sentinel));
+            }
+
             // After querySentinels(), sentinels array contains plain arrays instead of connection objects
             if (is_array($sentinel)) {
                 return new Parameters($sentinel);

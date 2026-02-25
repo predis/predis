@@ -17,6 +17,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Connection\Parameters;
+use Predis\Connection\ParametersInterface;
 use Predis\Connection\Resource\StreamFactoryInterface;
 use Predis\Connection\StreamConnection;
 use Predis\Replication;
@@ -1760,6 +1761,24 @@ class SentinelReplicationTest extends PredisTestCase
         $parameters = $replication->getParameters();
 
         $this->assertNull($parameters);
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testGetParametersHandlesStringUriInSentinelsArray(): void
+    {
+        // Test with string URI (e.g., "tcp://127.0.0.1:26379")
+        $sentinelUri = 'tcp://127.0.0.1:5381?role=sentinel';
+
+        $replication = $this->getReplicationConnection('srv', [$sentinelUri]);
+
+        $parameters = $replication->getParameters();
+
+        $this->assertInstanceOf(ParametersInterface::class, $parameters);
+        $this->assertSame('127.0.0.1', $parameters->host);
+        $this->assertSame(5381, $parameters->port);
     }
 
     /**
