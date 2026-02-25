@@ -1,4 +1,6 @@
 ## Changelog
+## Unreleased
+- Fixed Sentinel getParameters() executed on string configuration (#1649)
 
 ## v3.4.1 (2026-02-23)
 ### Added
