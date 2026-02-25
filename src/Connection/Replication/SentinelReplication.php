@@ -75,7 +75,7 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
     protected $strategy;
 
     /**
-     * @var NodeConnectionInterface[]
+     * @var NodeConnectionInterface[]|string[]|array<int, array>
      */
     protected $sentinels = [];
 
