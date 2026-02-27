@@ -32,7 +32,7 @@ class Options implements OptionsInterface
         'exceptions' => Option\Exceptions::class,
         'prefix' => Option\Prefix::class,
         'crc16' => Option\CRC16::class,
-        'driver_info' => Option\DriverInfo::class,
+        'upstream_driver' => Option\UpstreamDriver::class,
     ];
 
     /** @var array */

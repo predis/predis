@@ -73,7 +73,7 @@ class ConnectionsTest extends PredisTestCase
         $options
             ->expects($this->exactly(2))
             ->method('defined')
-            ->withConsecutive(['parameters'], ['driver_info'])
+            ->withConsecutive(['parameters'], ['upstream_driver'])
             ->willReturnOnConsecutiveCalls(false, false);
 
         $option = new Connections();
@@ -93,7 +93,7 @@ class ConnectionsTest extends PredisTestCase
         $options
             ->expects($this->exactly(2))
             ->method('defined')
-            ->withConsecutive(['parameters'], ['driver_info'])
+            ->withConsecutive(['parameters'], ['upstream_driver'])
             ->willReturnOnConsecutiveCalls(true, false);
 
         $options
@@ -162,7 +162,7 @@ class ConnectionsTest extends PredisTestCase
         $options
             ->expects($this->exactly(2))
             ->method('defined')
-            ->withConsecutive(['parameters'], ['driver_info'])
+            ->withConsecutive(['parameters'], ['upstream_driver'])
             ->willReturnOnConsecutiveCalls(true, false);
         $options
             ->expects($this->once())

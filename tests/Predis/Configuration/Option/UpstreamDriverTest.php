@@ -15,14 +15,14 @@ namespace Predis\Configuration\Option;
 use Predis\Configuration\OptionsInterface;
 use PredisTestCase;
 
-class DriverInfoTest extends PredisTestCase
+class UpstreamDriverTest extends PredisTestCase
 {
     /**
      * @group disconnected
      */
     public function testDefaultOptionValue(): void
     {
-        $option = new DriverInfo();
+        $option = new UpstreamDriver();
 
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -35,7 +35,7 @@ class DriverInfoTest extends PredisTestCase
      */
     public function testAcceptsString(): void
     {
-        $option = new DriverInfo();
+        $option = new UpstreamDriver();
 
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -51,7 +51,7 @@ class DriverInfoTest extends PredisTestCase
      */
     public function testAcceptsArrayAndNormalizesToString(): void
     {
-        $option = new DriverInfo();
+        $option = new UpstreamDriver();
 
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -67,7 +67,7 @@ class DriverInfoTest extends PredisTestCase
      */
     public function testAcceptsEmptyArray(): void
     {
-        $option = new DriverInfo();
+        $option = new UpstreamDriver();
 
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -81,9 +81,9 @@ class DriverInfoTest extends PredisTestCase
     public function testThrowsExceptionOnInvalidValue(): void
     {
         $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('DriverInfo option expects a string or an array of strings');
+        $this->expectExceptionMessage('UpstreamDriver option expects a string or an array of strings');
 
-        $option = new DriverInfo();
+        $option = new UpstreamDriver();
 
         /** @var OptionsInterface */
         $options = $this->getMockBuilder('Predis\Configuration\OptionsInterface')->getMock();
@@ -91,3 +91,4 @@ class DriverInfoTest extends PredisTestCase
         $option->filter($options, 123);
     }
 }
+

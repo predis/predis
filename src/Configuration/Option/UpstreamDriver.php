@@ -23,7 +23,7 @@ use Predis\Configuration\OptionsInterface;
  * (e.g., 'laravel_v11.0.0' or ['laravel_v11.0.0', 'my-app_v1.0.0']) that will
  * be included in the LIB-NAME sent to Redis via CLIENT SETINFO.
  */
-class DriverInfo implements OptionInterface
+class UpstreamDriver implements OptionInterface
 {
     /**
      * {@inheritdoc}
@@ -39,7 +39,7 @@ class DriverInfo implements OptionInterface
         }
 
         throw new InvalidArgumentException(
-            'DriverInfo option expects a string or an array of strings'
+            'UpstreamDriver option expects a string or an array of strings'
         );
     }
 
@@ -51,3 +51,4 @@ class DriverInfo implements OptionInterface
         return '';
     }
 }
+
