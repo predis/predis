@@ -91,4 +91,3 @@ class UpstreamDriverTest extends PredisTestCase
         $option->filter($options, 123);
     }
 }
-

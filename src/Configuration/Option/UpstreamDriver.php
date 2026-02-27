@@ -51,4 +51,3 @@ class UpstreamDriver implements OptionInterface
         return '';
     }
 }
-
