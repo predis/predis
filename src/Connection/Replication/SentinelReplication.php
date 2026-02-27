@@ -347,7 +347,7 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
                         'role' => 'sentinel',
                     ];
                 }
-            } catch (ConnectionException | StreamInitException $exception) {
+            } catch (ConnectionException|StreamInitException $exception) {
                 $this->sentinelConnection = null;
 
                 goto SENTINEL_QUERY;
@@ -481,7 +481,7 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
                 $masterConnection = $this->connectionFactory->create($masterParameters);
 
                 $this->add($masterConnection);
-            } catch (ConnectionException | StreamInitException $exception) {
+            } catch (ConnectionException|StreamInitException $exception) {
                 $this->sentinelConnection = null;
 
                 goto SENTINEL_QUERY;
@@ -513,7 +513,7 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
                 foreach ($slavesParameters as $slaveParameters) {
                     $this->add($this->connectionFactory->create($slaveParameters));
                 }
-            } catch (ConnectionException | StreamInitException $exception) {
+            } catch (ConnectionException|StreamInitException $exception) {
                 $this->sentinelConnection = null;
 
                 goto SENTINEL_QUERY;
