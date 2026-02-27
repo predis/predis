@@ -75,7 +75,15 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
     protected $strategy;
 
     /**
-     * @var NodeConnectionInterface[]
+     * Sentinel connection parameters.
+     *
+     * Can contain:
+     * - String URIs (e.g., "tcp://127.0.0.1:26379")
+     * - Arrays of connection parameters (e.g., ['host' => '127.0.0.1', 'port' => 26379])
+     * - ParametersInterface objects
+     * - NodeConnectionInterface objects
+     *
+     * @var array<string|array|ParametersInterface|NodeConnectionInterface>
      */
     protected $sentinels = [];
 
@@ -810,6 +818,11 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
 
         if (!empty($this->sentinels)) {
             $sentinel = $this->sentinels[0];
+
+            // Handle string URIs (e.g., "tcp://127.0.0.1:26379")
+            if (is_string($sentinel)) {
+                return new Parameters(Parameters::parse($sentinel));
+            }
 
             // After querySentinels(), sentinels array contains plain arrays instead of connection objects
             if (is_array($sentinel)) {
