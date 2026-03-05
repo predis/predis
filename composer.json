@@ -36,8 +36,15 @@
     },
     "scripts": {
         "phpstan": "phpstan analyse",
+        "phpunit": "phpunit",
+        "phpunit-exclude-connected": "phpunit --exclude-group connected",
         "style": "php-cs-fixer fix --diff --dry-run",
-        "style:fix": "php-cs-fixer fix"
+        "style:fix": "php-cs-fixer fix",
+        "test": [
+            "@phpstan",
+            "@phpunit-exclude-connected",
+            "@style"
+        ]
     },
     "autoload": {
         "psr-4": {
