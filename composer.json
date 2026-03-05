@@ -28,8 +28,8 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.3",
         "phpstan/phpstan": "^1.9",
-        "phpunit/phpunit": "^8.0 || ~9.4.4",
-        "phpunit/phpcov": "^6.0 || ^8.0"
+        "phpunit/phpcov": "^6.0 || ^8.0",
+        "phpunit/phpunit": "^8.0 || ~9.4.4"
     },
     "suggest": {
         "ext-relay": "Faster connection with in-memory caching (>=0.6.2)"
@@ -37,12 +37,12 @@
     "scripts": {
         "phpstan": "phpstan analyse",
         "phpunit": "phpunit",
-        "phpunit-exclude-connected": "phpunit --exclude-group connected",
+        "phpunit:exclude-connected": "phpunit --exclude-group connected",
         "style": "php-cs-fixer fix --diff --dry-run",
         "style:fix": "php-cs-fixer fix",
         "test": [
             "@phpstan",
-            "@phpunit-exclude-connected",
+            "@phpunit:exclude-connected",
             "@style"
         ]
     },
