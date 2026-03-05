@@ -104,14 +104,14 @@ class CommandUtilityTest extends PredisTestCase
             'with callback applied' => [
                 ['key1', ['key2', ['key3', '0.1']]],
                 ['key1' => ['key2' => ['key3' => 0.1]]],
-                function ($key, $value) {
+                static function ($key, $value) {
                     return [$key, (float) $value];
                 },
             ],
             'with non-recursive approach' => [
                 ['key1', ['key2', ['key3', '0.1']]],
                 ['key1' => ['key2', ['key3', '0.1']]],
-                function ($key, $value) {
+                static function ($key, $value) {
                     return [$key, (float) $value];
                 },
                 false,

@@ -218,7 +218,7 @@ class OptionsTest extends PredisTestCase
             ->expects($this->never())
             ->method('autoload');
 
-        spl_autoload_register($autoload = function ($class) use ($trigger) {
+        spl_autoload_register($autoload = static function ($class) use ($trigger) {
             $trigger->autoload($class);
         }, true, false);
 

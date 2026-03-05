@@ -69,20 +69,18 @@ class XINFO extends RedisCommand
         }
 
         if (isset($result['groups']) && is_array($result['groups'])) {
-            $result['groups'] = array_map(function ($group) {
+            $result['groups'] = array_map(static function ($group) {
                 if ($group === array_values($group)) {
                     $group = CommandUtility::arrayToDictionary($group, null, false);
                 }
                 if (isset($group['consumers'])) {
-                    $group['consumers'] = array_map(function ($consumer) {
+                    $group['consumers'] = array_map(static function ($consumer) {
                         if ($consumer === array_values($consumer)) {
                             $consumer = CommandUtility::arrayToDictionary($consumer, null, false);
                         }
-
                         return $consumer;
                     }, $group['consumers']);
                 }
-
                 return $group;
             }, $result['groups']);
         }

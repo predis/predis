@@ -578,7 +578,7 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
     {
         $role = strtolower($role);
         $retry = $connection->getParameters()->retry;
-        $actualRole = $retry->callWithRetry(function () use ($connection) {
+        $actualRole = $retry->callWithRetry(static function () use ($connection) {
             return $connection->executeCommand(RawCommand::create('ROLE'));
         });
 

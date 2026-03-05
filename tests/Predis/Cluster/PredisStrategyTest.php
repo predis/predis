@@ -514,7 +514,7 @@ class PredisStrategyTest extends PredisTestCase
         ];
 
         if (isset($type)) {
-            $commands = array_filter($commands, function (string $expectedType) use ($type) {
+            $commands = array_filter($commands, static function (string $expectedType) use ($type) {
                 return $expectedType === $type;
             });
         }

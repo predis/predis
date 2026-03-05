@@ -23,7 +23,7 @@ $pubsub = $client->pubSubLoop();
 
 // When using Relay you cannot use foreach-loops to iterate
 // over messages instead use a callback function
-$poorMansKafka = function ($message, $client) {
+$poorMansKafka = static function ($message, $client) {
     switch ($message->kind) {
         case 'subscribe':
             echo "Subscribed to {$message->channel}", PHP_EOL;

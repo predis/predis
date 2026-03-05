@@ -244,7 +244,7 @@ class RedisFactoryTest extends PredisTestCase
             ->method('process')
             ->with($this->isInstanceOf('Predis\Command\CommandInterface'))
             ->willReturnCallback(
-                function (CommandInterface $cmd) use (&$argsRef) {
+                static function (CommandInterface $cmd) use (&$argsRef) {
                     $cmd->setRawArguments($argsRef = array_map('strtoupper', $cmd->getArguments()));
                 }
             );
