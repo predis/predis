@@ -1084,6 +1084,7 @@ class PipelineTest extends PredisTestCase
                 throw new InvalidArgumentException("Expected ECHO, got {$id}");
             }
             [$echoed] = $command->getArguments();
+
             return $echoed;
         };
     }

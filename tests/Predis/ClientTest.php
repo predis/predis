@@ -1573,6 +1573,7 @@ class ClientTest extends PredisTestCase
                 ++$retriesCount;
                 $fail($e);
             };
+
             return $retry->callWithRetry($do, $failWrapperFunc);
         };
 

@@ -160,6 +160,7 @@ class Consumer implements Iterator
                 $database = (int) $matches[2];
                 $client = $matches[3];
             }
+
             return ' ';
         };
 

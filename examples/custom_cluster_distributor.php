@@ -93,6 +93,7 @@ $options = [
         $distributor = new NaiveDistributor();
         $strategy = new PredisStrategy($distributor);
         $cluster = new PredisCluster($strategy);
+
         return $cluster;
     },
 ];

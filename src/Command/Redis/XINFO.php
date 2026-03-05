@@ -78,9 +78,11 @@ class XINFO extends RedisCommand
                         if ($consumer === array_values($consumer)) {
                             $consumer = CommandUtility::arrayToDictionary($consumer, null, false);
                         }
+
                         return $consumer;
                     }, $group['consumers']);
                 }
+
                 return $group;
             }, $result['groups']);
         }

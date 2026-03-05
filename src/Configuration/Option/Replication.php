@@ -96,6 +96,7 @@ class Replication extends Aggregate
                 $connection->setConnectionFactory($options->connections);
                 $connection->setAutoDiscovery(true);
             }
+
             return $connection;
         };
     }

@@ -60,6 +60,7 @@ $options = [
         $strategy = new ReplicationStrategy();
         $strategy->setScriptReadOnly(HashMultipleGetAll::BODY);
         $replication = new MasterSlaveReplication($strategy);
+
         return $replication;
     },
 ];

@@ -374,6 +374,7 @@ class SlotMap implements ArrayAccess, IteratorAggregate, Countable
                 if ($a->getStart() == $b->getStart()) {
                     return 0;
                 }
+
                 return $a->getStart() < $b->getStart() ? -1 : 1;
             }
         );
