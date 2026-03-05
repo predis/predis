@@ -1,7 +1,7 @@
 ## Changelog
 ## Unreleased
 - Fixed Sentinel getParameters() executed on string configuration (#1649)
-- Readded `static` to callables, as this isn't deprecated. Even added to more closures than before. (PR link TODO)
+- Readded `static` to callables, as this isn't deprecated. Even added to more closures than before. (#1651)
 
 ## v3.4.1 (2026-02-23)
 ### Added
