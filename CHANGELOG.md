@@ -2,6 +2,7 @@
 ## Unreleased
 - Fixed Sentinel getParameters() executed on string configuration (#1649)
 - Fixed Sentinel discovery methods not catching `StreamInitException` on connection failure (#1650)
+- Readded `static` to callables, as this isn't deprecated. Even added to more closures than before. (#1651)
 
 ## v3.4.1 (2026-02-23)
 ### Added
