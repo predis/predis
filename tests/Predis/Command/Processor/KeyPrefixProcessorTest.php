@@ -123,7 +123,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($command, 'prefix:')
-            ->willReturnCallback(function ($command, $prefix) {
+            ->willReturnCallback(static function ($command, $prefix) {
                 $command->setRawArguments(['prefix:key', 'value']);
             });
 
@@ -148,7 +148,7 @@ class KeyPrefixProcessorTest extends PredisTestCase
             ->expects($this->once())
             ->method('__invoke')
             ->with($command, 'prefix:')
-            ->willReturnCallback(function ($command, $prefix) {
+            ->willReturnCallback(static function ($command, $prefix) {
                 $command->setRawArguments(['prefix:key', 'value']);
             });
 

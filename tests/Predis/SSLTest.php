@@ -185,7 +185,7 @@ class SSLTest extends PredisTestCase
 
         // Remove AUTH
         $defaultParameters = $this->getDefaultParametersArray();
-        $trimmedParameters = array_map(function (string $parameter) {
+        $trimmedParameters = array_map(static function (string $parameter) {
             return explode('?', $parameter)[0];
         }, $defaultParameters);
 

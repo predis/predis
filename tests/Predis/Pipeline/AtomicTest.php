@@ -337,7 +337,7 @@ class AtomicTest extends PredisTestCase
 
         $pipeline = new Atomic(new Client($mockConnection));
 
-        $responses = $pipeline->execute(function (Pipeline $pipe) {
+        $responses = $pipeline->execute(static function (Pipeline $pipe) {
             $pipe->ping();
             $pipe->ping();
             $pipe->ping();
@@ -359,7 +359,7 @@ class AtomicTest extends PredisTestCase
             ['replication' => 'predis']
         );
 
-        $results = $client->pipeline(function (Pipeline $pipe) {
+        $results = $client->pipeline(static function (Pipeline $pipe) {
             $pipe->set('foo', "bar\r\nbaz");
             $pipe->get('foo');
         });

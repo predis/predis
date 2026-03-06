@@ -18,7 +18,7 @@ require __DIR__ . '/shared.php';
 
 $client = new Predis\Client($single_server);
 
-$responses = $client->pipeline(function ($pipe) {
+$responses = $client->pipeline(static function ($pipe) {
     $pipe->flushdb();
     $pipe->incrby('counter', 10);
     $pipe->incrby('counter', 30);

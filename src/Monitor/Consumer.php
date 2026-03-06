@@ -150,12 +150,11 @@ class Consumer implements Iterator
         $client = null;
         $event = $this->client->getConnection()->read();
 
-        $callback = function ($matches) use (&$database, &$client) {
+        $callback = static function ($matches) use (&$database, &$client) {
             if (2 === $count = count($matches)) {
                 // Redis <= 2.4
                 $database = (int) $matches[1];
             }
-
             if (4 === $count) {
                 // Redis >= 2.6
                 $database = (int) $matches[2];

@@ -58,7 +58,7 @@ class HSETEX extends RedisCommand
         $flatArray = [];
 
         // Convert key => value, into key, value
-        array_walk($arguments[1], function ($value, $key) use (&$flatArray) {
+        array_walk($arguments[1], static function ($value, $key) use (&$flatArray) {
             array_push($flatArray, $key, $value);
         });
 

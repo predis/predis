@@ -80,7 +80,7 @@ class CommandUtility
     {
         $array = [];
 
-        array_walk($dict, function ($value, $key) use (&$array) {
+        array_walk($dict, static function ($value, $key) use (&$array) {
             array_push($array, $key, $value);
         });
 

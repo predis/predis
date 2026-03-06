@@ -36,7 +36,7 @@ class FireAndForget extends Pipeline
             } else {
                 $this->writeToSingleNode($connection, $commands);
             }
-        }, function (Throwable $e) {
+        }, static function (Throwable $e) {
             if ($e instanceof CommunicationException) {
                 $e->getConnection()->disconnect();
             }

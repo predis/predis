@@ -52,7 +52,9 @@ class VEMB extends RedisCommand
     public function parseResponse($data)
     {
         if (!$this->isRaw) {
-            return array_map(function ($value) { return (float) $value; }, $data);
+            return array_map(static function ($value) {
+                return (float) $value;
+            }, $data);
         }
 
         $parsedData = [];

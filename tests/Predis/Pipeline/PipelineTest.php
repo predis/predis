@@ -373,7 +373,7 @@ class PipelineTest extends PredisTestCase
         $test = $this;
         $pipeline = new Pipeline(new Client());
 
-        $callable = function (Pipeline $pipe) use ($test, $pipeline) {
+        $callable = static function (Pipeline $pipe) use ($test, $pipeline) {
             $test->assertSame($pipeline, $pipe);
             $pipe->flushPipeline(false);
         };
@@ -403,7 +403,7 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client());
 
-        $pipeline->execute(function (Pipeline $pipe) {
+        $pipeline->execute(static function (Pipeline $pipe) {
             $pipe->execute();
         });
     }
@@ -446,7 +446,7 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client($connection));
 
-        $responses = $pipeline->execute(function (Pipeline $pipe) {
+        $responses = $pipeline->execute(static function (Pipeline $pipe) {
             $pipe->echo('one');
             $pipe->echo('two');
             $pipe->echo('three');
@@ -475,7 +475,7 @@ class PipelineTest extends PredisTestCase
         $pipeline = new Pipeline(new Client($connection));
 
         try {
-            $responses = $pipeline->execute(function (Pipeline $pipe) {
+            $responses = $pipeline->execute(static function (Pipeline $pipe) {
                 $pipe->echo('one');
                 $pipe->echo('two');
                 throw new ClientException('TEST');
@@ -532,7 +532,7 @@ class PipelineTest extends PredisTestCase
         $connection = new StreamConnection($parameters, $mockStreamFactory);
         $pipeline = new Pipeline(new Client($connection));
 
-        $responses = $pipeline->execute(function (Pipeline $pipe) {
+        $responses = $pipeline->execute(static function (Pipeline $pipe) {
             $pipe->ping();
             $pipe->ping();
             $pipe->ping();
@@ -590,7 +590,7 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client($connection));
 
-        $responses = $pipeline->execute(function (Pipeline $pipe) {
+        $responses = $pipeline->execute(static function (Pipeline $pipe) {
             $pipe->set('key', 'value');
             $pipe->set('key', 'value');
             $pipe->set('key', 'value');
@@ -669,7 +669,7 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client($connection));
 
-        $responses = $pipeline->execute(function (Pipeline $pipe) {
+        $responses = $pipeline->execute(static function (Pipeline $pipe) {
             $pipe->set('key', 'value');
             $pipe->set('key', 'value');
             $pipe->set('key', 'value');
@@ -742,7 +742,7 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client($connection));
 
-        $responses = $pipeline->execute(function (Pipeline $pipe) {
+        $responses = $pipeline->execute(static function (Pipeline $pipe) {
             $pipe->set('key', 'value');
             $pipe->set('key', 'value');
             $pipe->set('key', 'value');
@@ -801,7 +801,7 @@ class PipelineTest extends PredisTestCase
 
         $pipeline = new Pipeline(new Client($connection));
 
-        $responses = $pipeline->execute(function (Pipeline $pipe) {
+        $responses = $pipeline->execute(static function (Pipeline $pipe) {
             $pipe->set('key', 'value');
             $pipe->set('key', 'value');
             $pipe->set('key', 'value');
@@ -854,7 +854,7 @@ class PipelineTest extends PredisTestCase
     {
         $client = $this->getClient();
 
-        $results = $client->pipeline(function (Pipeline $pipe) {
+        $results = $client->pipeline(static function (Pipeline $pipe) {
             $pipe->set('foo', 'bar');
             $pipe->get('foo');
         });
@@ -871,7 +871,7 @@ class PipelineTest extends PredisTestCase
         $oob = null;
         $client = $this->getClient();
 
-        $results = $client->pipeline(function (Pipeline $pipe) use (&$oob) {
+        $results = $client->pipeline(static function (Pipeline $pipe) use (&$oob) {
             $pipe->set('foo', 'bar');
             $oob = $pipe->getClient()->echo('oob message');
             $pipe->get('foo');
@@ -892,7 +892,7 @@ class PipelineTest extends PredisTestCase
         $client = $this->getClient();
 
         try {
-            $client->pipeline(function (Pipeline $pipe) {
+            $client->pipeline(static function (Pipeline $pipe) {
                 $pipe->set('foo', 'bar');
                 throw new ClientException('TEST');
             });
@@ -915,7 +915,7 @@ class PipelineTest extends PredisTestCase
         $client = $this->getClient();
 
         try {
-            $client->pipeline(function (Pipeline $pipe) {
+            $client->pipeline(static function (Pipeline $pipe) {
                 $pipe->set('foo', 'bar');
                 // LPUSH on a string key fails, but won't stop
                 // the pipeline to send the commands.
@@ -938,9 +938,10 @@ class PipelineTest extends PredisTestCase
     {
         $client = $this->getClient([], ['exceptions' => false]);
 
-        $results = $client->pipeline(function (Pipeline $pipe) {
+        $results = $client->pipeline(static function (Pipeline $pipe) {
             $pipe->set('foo', 'bar');
-            $pipe->lpush('foo', 'bar'); // LPUSH on a string key fails.
+            $pipe->lpush('foo', 'bar');
+            // LPUSH on a string key fails.
             $pipe->get('foo');
         });
 
@@ -959,7 +960,7 @@ class PipelineTest extends PredisTestCase
     {
         $client = $this->getClient();
 
-        $results = $client->pipeline(function (Pipeline $pipe) {
+        $results = $client->pipeline(static function (Pipeline $pipe) {
             $pipe->set('foo', 'bar');
             $pipe->set('bar', 'foo');
             $pipe->set('baz', 'baz');
@@ -995,7 +996,7 @@ class PipelineTest extends PredisTestCase
 
         $this->expectException(TimeoutException::class);
 
-        $client->pipeline(function (Pipeline $pipe) use (&$retries) {
+        $client->pipeline(static function (Pipeline $pipe) use (&$retries) {
             $pipe->incr('test_key');
             $pipe->blpop('foo', 3);
         });
@@ -1021,7 +1022,7 @@ class PipelineTest extends PredisTestCase
 
         $this->expectException(TimeoutException::class);
 
-        $client->pipeline(function (Pipeline $pipe) use (&$retries) {
+        $client->pipeline(static function (Pipeline $pipe) use (&$retries) {
             ++$retries;
             $pipe->blpop('foo', 3);
         });
@@ -1041,7 +1042,7 @@ class PipelineTest extends PredisTestCase
             ['replication' => 'predis']
         );
 
-        $results = $client->pipeline(function (Pipeline $pipe) {
+        $results = $client->pipeline(static function (Pipeline $pipe) {
             $pipe->set('foo', "bar\r\nbaz");
             $pipe->get('foo');
         });
@@ -1078,11 +1079,10 @@ class PipelineTest extends PredisTestCase
      */
     protected function getReadCallback(): callable
     {
-        return function (CommandInterface $command) {
+        return static function (CommandInterface $command) {
             if (($id = $command->getId()) !== 'ECHO') {
                 throw new InvalidArgumentException("Expected ECHO, got {$id}");
             }
-
             [$echoed] = $command->getArguments();
 
             return $echoed;

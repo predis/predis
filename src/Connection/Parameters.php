@@ -67,7 +67,7 @@ class Parameters implements ParametersInterface
      */
     protected function filter(array $parameters)
     {
-        return array_filter($parameters, function ($value) {
+        return array_filter($parameters, static function ($value) {
             return $value !== null && $value !== '';
         });
     }

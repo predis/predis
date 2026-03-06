@@ -30,7 +30,8 @@ $fixer->setRules([
     'single_line_throw' => false,
     'concat_space' => ['spacing' => 'one'],
     'increment_style' => false,
-    'trailing_comma_in_multiline' => ['after_heredoc' => true, 'elements' => ['array_destructuring', 'arrays']]
+    'trailing_comma_in_multiline' => ['after_heredoc' => true, 'elements' => ['array_destructuring', 'arrays']],
+    'static_lambda' => true,
 ])
     ->setFinder(
         PhpCsFixer\Finder::create()
@@ -38,6 +39,7 @@ $fixer->setRules([
             ->in(__DIR__ . '/examples')
             ->in(__DIR__ . '/src')
             ->in(__DIR__ . '/tests')
-    );
+    )
+    ->setRiskyAllowed(true);
 
 return $fixer;

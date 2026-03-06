@@ -311,7 +311,7 @@ class ReplicationStrategyTest extends PredisTestCase
         $commands = $this->getCommandFactory();
         $strategy = new ReplicationStrategy();
 
-        $strategy->setCommandReadOnly('SET', function (CommandInterface $command) {
+        $strategy->setCommandReadOnly('SET', static function (CommandInterface $command) {
             return $command->getArgument(1) === true;
         });
 
@@ -362,7 +362,7 @@ class ReplicationStrategyTest extends PredisTestCase
             ->method('getScript')
             ->willReturn($script = 'return true');
 
-        $strategy->setScriptReadOnly($script, function (CommandInterface $command) {
+        $strategy->setScriptReadOnly($script, static function (CommandInterface $command) {
             return $command->getArgument(2) === true;
         });
 
@@ -557,7 +557,7 @@ class ReplicationStrategyTest extends PredisTestCase
         ];
 
         if (isset($type)) {
-            $commands = array_filter($commands, function (string $expectedType) use ($type) {
+            $commands = array_filter($commands, static function (string $expectedType) use ($type) {
                 return $expectedType === $type;
             });
         }
