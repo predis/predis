@@ -1,9 +1,11 @@
 ## Changelog
 ## Unreleased
 - Fixed Sentinel getParameters() executed on string configuration (#1649)
+- Fixed Sentinel discovery methods not catching `StreamInitException` on connection failure (#1650)
 
 ## v3.4.1 (2026-02-23)
 ### Added
+- Added `upstream_driver` option for CLIENT SETINFO upstream reporting (#1645)
 - Made `H(P)TTL` commands prefixable (#1639)
 - Made `(B)LMPOP` commands prefixable (#1643)
 
