@@ -34,7 +34,7 @@ class RelayConsumer extends Consumer
 
         $command = $this->client->createCommand('subscribe', [
             $channels,
-            function ($relay, $channel, $message) use ($callback) {
+            static function ($relay, $channel, $message) use ($callback) {
                 $callback((object) [
                     'kind' => is_null($message) ? self::SUBSCRIBE : self::MESSAGE,
                     'channel' => $channel,
@@ -63,7 +63,7 @@ class RelayConsumer extends Consumer
 
         $command = $this->client->createCommand('psubscribe', [
             $patterns,
-            function ($relay, $pattern, $channel, $message) use ($callback) {
+            static function ($relay, $pattern, $channel, $message) use ($callback) {
                 $callback((object) [
                     'kind' => is_null($message) ? self::PSUBSCRIBE : self::PMESSAGE,
                     'pattern' => $pattern,

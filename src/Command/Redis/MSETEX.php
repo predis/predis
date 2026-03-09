@@ -29,7 +29,7 @@ class MSETEX extends PrefixableCommand
     {
         $processedArguments = [count(array_keys($arguments[0]))];
 
-        array_walk($arguments[0], function ($value, $key) use (&$processedArguments) {
+        array_walk($arguments[0], static function ($value, $key) use (&$processedArguments) {
             array_push($processedArguments, $key, $value);
         });
 

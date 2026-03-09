@@ -44,7 +44,7 @@ class HRANDFIELD extends RedisCommand
         // flatten Relay (RESP3) maps
         $return = [];
 
-        array_walk_recursive($data, function ($value) use (&$return) {
+        array_walk_recursive($data, static function ($value) use (&$return) {
             $return[] = $value;
         });
 

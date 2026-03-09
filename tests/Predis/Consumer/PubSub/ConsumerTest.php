@@ -99,7 +99,7 @@ class ConsumerTest extends PredisTestCase
                 $this->equalTo('psubscribe'),
                 $this->equalTo('ssubscribe')
             ))
-            ->willReturnCallback(function ($id, $args) use ($commands) {
+            ->willReturnCallback(static function ($id, $args) use ($commands) {
                 return $commands->create($id, $args);
             });
 

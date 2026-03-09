@@ -43,7 +43,7 @@ class ACL extends RedisCommand
         // flatten Relay (RESP3) maps
         $return = [];
 
-        array_walk($data, function ($value, $key) use (&$return) {
+        array_walk($data, static function ($value, $key) use (&$return) {
             $return[] = $key;
             $return[] = $value;
         });

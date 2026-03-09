@@ -53,13 +53,13 @@ class FTHYBRID_Test extends PredisCommandTestCase
     {
         $command = $this->getCommand();
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
-                $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
+                $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                     $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                 })
                     ->query('*');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('vector', '$vector')
                     ->k(5)
@@ -105,14 +105,14 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 5);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red} @color:{green}')
-                    ->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                         $scorerConfig->type(ScorerConfig::TYPE_TFIDF);
                     });
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config->vector('@embedding', '$vector');
             })
             ->params([
@@ -135,14 +135,14 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 5);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red} @color:{green}')
-                    ->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                         $scorerConfig->type(ScorerConfig::TYPE_TFIDF);
                     });
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config->vector('@embedding', '$vector');
             })
             ->params([
@@ -165,11 +165,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 5);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red} @color:{green}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config->vector('@embedding', '$vector');
             })
             ->params([
@@ -197,11 +197,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 5);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red} @color:{green}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config->vector('@embedding', '$vector');
             })
             ->params([
@@ -229,17 +229,17 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 10);
 
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('shoes')
-                    ->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                         $scorerConfig->type(ScorerConfig::TYPE_TFIDF);
                     });
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config->vector('@embedding', '$vector');
             })
-            ->buildCombineConfig(function (LinearCombineConfig $config) {
+            ->buildCombineConfig(static function (LinearCombineConfig $config) {
                 $config
                     ->alpha(1)
                     ->beta(0);
@@ -271,17 +271,17 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->assertEquals($expectedResultsTFIDF, $response['results']);
 
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('shoes')
-                    ->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                         $scorerConfig->type(ScorerConfig::TYPE_BM25);
                     });
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config->vector('@embedding', '$vector');
             })
-            ->buildCombineConfig(function (LinearCombineConfig $config) {
+            ->buildCombineConfig(static function (LinearCombineConfig $config) {
                 $config
                     ->alpha(1)
                     ->beta(0);
@@ -326,11 +326,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 5);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('shoes');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding-hnsw', '$vector')
                     ->k(3)
@@ -356,11 +356,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 5);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{missing}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector')
                     ->filter('@price:[15 16] @size:[10 11]');
@@ -392,12 +392,12 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('shoes')
                     ->as('search_score');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector');
             })
@@ -429,11 +429,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('shoes');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding-hnsw', '$vector')
                     ->k(3)
@@ -468,19 +468,19 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis);
 
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('shoes')
                     ->as('search_score');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding-hnsw', '$vector')
                     ->k(3)
                     ->ef(1)
                     ->as('vsim_score');
             })
-            ->buildCombineConfig(function (LinearCombineConfig $config) {
+            ->buildCombineConfig(static function (LinearCombineConfig $config) {
                 $config
                     ->alpha(0.5)
                     ->beta(0.5)
@@ -524,19 +524,19 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis);
 
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('shoes')
                     ->as('search_score');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding-hnsw', '$vector')
                     ->k(3)
                     ->ef(1)
                     ->as('vsim_score');
             })
-            ->buildCombineConfig(function (LinearCombineConfig $config) {
+            ->buildCombineConfig(static function (LinearCombineConfig $config) {
                 $config
                     ->alpha(0.5)
                     ->beta(0.5)
@@ -568,11 +568,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 10);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{none}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector')
                     ->k(3);
@@ -591,11 +591,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->assertEquals($expected_results, $response['results']);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{none}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding-hnsw', '$vector')
                     ->k(3)
@@ -628,11 +628,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 10);
 
         $query = (new HybridSearchQuery(RangeVectorSearchConfig::class))
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{none}');
             })
-            ->buildVectorSearchConfig(function (RangeVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (RangeVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector');
             })
@@ -651,11 +651,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->assertEquals($expected_results, $response['results']);
 
         $query = (new HybridSearchQuery(RangeVectorSearchConfig::class))
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{none}');
             })
-            ->buildVectorSearchConfig(function (RangeVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (RangeVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding-hnsw', '$vector')
                     ->radius(2)
@@ -689,15 +689,15 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 10);
 
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector');
             })
-            ->buildCombineConfig(function (LinearCombineConfig $config) {
+            ->buildCombineConfig(static function (LinearCombineConfig $config) {
                 $config
                     ->alpha(0.5)
                     ->beta(0.5);
@@ -717,15 +717,15 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->assertEquals($expected_results, $response['results']);
 
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, RRFCombineConfig::class))
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector');
             })
-            ->buildCombineConfig(function (RRFCombineConfig $config) {
+            ->buildCombineConfig(static function (RRFCombineConfig $config) {
                 $config
                     ->window(3)
                     ->rrfConstant(0.5);
@@ -758,15 +758,15 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 10);
 
         $query = (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red|green|black}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector');
             })
-            ->buildCombineConfig(function (LinearCombineConfig $config) {
+            ->buildCombineConfig(static function (LinearCombineConfig $config) {
                 $config
                     ->alpha(0.5)
                     ->beta(0.5);
@@ -802,11 +802,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 10);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector');
             })
@@ -861,11 +861,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 10);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red|green|black}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector');
             })
@@ -897,11 +897,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 5);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{$color_criteria}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector');
             })
@@ -953,11 +953,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red|green}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector');
             })
@@ -1019,11 +1019,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 10);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red|green}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector');
             })
@@ -1087,11 +1087,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         $this->generateData($redis, 10);
 
         $query = (new HybridSearchQuery())
-            ->buildSearchConfig(function (SearchConfig $config) {
+            ->buildSearchConfig(static function (SearchConfig $config) {
                 $config
                     ->query('@color:{red|green}');
             })
-            ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+            ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                 $config
                     ->vector('@embedding', '$vector');
             })
@@ -1143,7 +1143,7 @@ class FTHYBRID_Test extends PredisCommandTestCase
             $mergedItems = array_merge($mergedItems, $items);
         }
 
-        $client->pipeline(function (ClientContextInterface $pipe) use ($mergedItems) {
+        $client->pipeline(static function (ClientContextInterface $pipe) use ($mergedItems) {
             for ($i = 0; $i < count($mergedItems); ++$i) {
                 [$vec, $description] = $mergedItems[$i];
 

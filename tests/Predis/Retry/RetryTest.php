@@ -39,7 +39,7 @@ class RetryTest extends TestCase
         $retry = new Retry($backoffStrategy, $retries);
         $retriesCount = 0;
 
-        $callable = function () use (&$retriesCount, $retries) {
+        $callable = static function () use (&$retriesCount, $retries) {
             if ($retriesCount >= $retries) {
                 return;
             }
@@ -82,7 +82,7 @@ class RetryTest extends TestCase
             throw new StreamInitException();
         };
 
-        $failCallable = function () use (&$retriesCount) {
+        $failCallable = static function () use (&$retriesCount) {
             ++$retriesCount;
         };
 

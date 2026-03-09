@@ -1,5 +1,9 @@
 ## Changelog
 ## Unreleased
+### Changed
+- Switch to `static` closures
+
+### Fixed
 - Fixed Sentinel `getParameters()` executed on string configuration (#1649)
 - Fixed Sentinel discovery methods not catching `StreamInitException` on connection failure (#1650)
 
