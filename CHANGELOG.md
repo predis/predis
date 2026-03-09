@@ -1,5 +1,10 @@
 ## Changelog
 
+## Unreleased
+### Added
+### Changed
+### Fixed
+
 ## v3.4.2 (2026-03-09)
 ### Changed
 - Switch to `static` closures
