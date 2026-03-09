@@ -74,7 +74,7 @@ class EventsListener implements Countable
 $dispatcher->attachCallback('{channels}_events', $events = new EventsListener());
 
 // 6. Attach a function to control the dispatcher loop termination with a message.
-$dispatcher->attachCallback('control', function ($payload, $dispatcher) {
+$dispatcher->attachCallback('control', static function ($payload, $dispatcher) {
     if ($payload === 'terminate_dispatcher') {
         $dispatcher->stop();
     }

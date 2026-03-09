@@ -154,13 +154,13 @@ class RedisClusterTest extends PredisTestCase
         $connection1
             ->expects($this->once())
             ->method('connect')
-            ->willReturnCallback(function () use (&$connect1) {
+            ->willReturnCallback(static function () use (&$connect1) {
                 $connect1 = true;
             });
         $connection1
             ->expects($this->any())
             ->method('isConnected')
-            ->willReturnCallback(function () use (&$connect1) {
+            ->willReturnCallback(static function () use (&$connect1) {
                 return $connect1;
             });
 
@@ -168,13 +168,13 @@ class RedisClusterTest extends PredisTestCase
         $connection2
             ->expects($this->once())
             ->method('connect')
-            ->willReturnCallback(function () use (&$connect2) {
+            ->willReturnCallback(static function () use (&$connect2) {
                 $connect2 = true;
             });
         $connection2
             ->expects($this->any())
             ->method('isConnected')
-            ->willReturnCallback(function () use (&$connect2) {
+            ->willReturnCallback(static function () use (&$connect2) {
                 return $connect2;
             });
 

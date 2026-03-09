@@ -67,7 +67,7 @@ class Replication extends Aggregate
         switch ($description) {
             case 'sentinel':
             case 'redis-sentinel':
-                return function ($parameters, $options) {
+                return static function ($parameters, $options) {
                     return new SentinelReplication($options->service, $parameters, $options->connections);
                 };
 
@@ -90,7 +90,7 @@ class Replication extends Aggregate
      */
     protected function getDefaultConnectionInitializer()
     {
-        return function ($parameters, $options) {
+        return static function ($parameters, $options) {
             $connection = new MasterSlaveReplication();
 
             if ($options->autodiscovery) {

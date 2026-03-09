@@ -34,7 +34,7 @@ class BITFIELD_RO extends RedisCommand
 
         if (array_key_exists(1, $arguments) && is_array($arguments[1])) {
             // Convert encoding => offset, into GET, encoding, offset
-            array_walk($arguments[1], function ($value, $key) use (&$processedArguments) {
+            array_walk($arguments[1], static function ($value, $key) use (&$processedArguments) {
                 array_push($processedArguments, 'GET', $key, $value);
             });
         }

@@ -482,7 +482,7 @@ class FactoryTest extends PredisTestCase
         $parameters = new Parameters(['scheme' => 'foobar']);
         $factory = new Factory();
 
-        $initializer = function ($parameters) use ($connectionClass) {
+        $initializer = static function ($parameters) use ($connectionClass) {
             return new $connectionClass($parameters);
         };
 

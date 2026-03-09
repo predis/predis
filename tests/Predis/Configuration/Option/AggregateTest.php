@@ -301,7 +301,7 @@ class AggregateTest extends PredisTestCase
         $factory
             ->expects($this->exactly(3))
             ->method('create')
-            ->willReturnCallback(function () use ($connectionClass) {
+            ->willReturnCallback(static function () use ($connectionClass) {
                 return new $connectionClass();
             });
 

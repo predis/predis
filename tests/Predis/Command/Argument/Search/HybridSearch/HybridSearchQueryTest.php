@@ -34,13 +34,13 @@ class HybridSearchQueryTest extends TestCase
         return [
             'with default configs' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                         ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
@@ -50,13 +50,13 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with RANGE vector search' => [
                 (new HybridSearchQuery(RangeVectorSearchConfig::class))
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (RangeVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (RangeVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->radius(5)
@@ -66,19 +66,19 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with COMBINE config - RRF' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
                             ->ef(10);
                     })
-                    ->buildCombineConfig(function (RRFCombineConfig $config) {
+                    ->buildCombineConfig(static function (RRFCombineConfig $config) {
                         $config
                             ->window(5)
                             ->rrfConstant(10);
@@ -87,19 +87,19 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with COMBINE config - LINEAR' => [
                 (new HybridSearchQuery(KNNVectorSearchConfig::class, LinearCombineConfig::class))
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
                             ->ef(10);
                     })
-                    ->buildCombineConfig(function (LinearCombineConfig $config) {
+                    ->buildCombineConfig(static function (LinearCombineConfig $config) {
                         $config
                             ->alpha(0.2)
                             ->beta(0.3);
@@ -108,13 +108,13 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with LOAD' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
@@ -125,13 +125,13 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with GROUPBY' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
@@ -148,13 +148,13 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with APPLY' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
@@ -165,13 +165,13 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with SORTBY' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
@@ -182,13 +182,13 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with FILTER' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
@@ -199,13 +199,13 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with LIMIT' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
@@ -216,13 +216,13 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with PARAMS' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
@@ -233,13 +233,13 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with EXPLAINSCORE' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
@@ -250,13 +250,13 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with TIMEOUT' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)
@@ -267,13 +267,13 @@ class HybridSearchQueryTest extends TestCase
             ],
             'with WITHCURSOR' => [
                 (new HybridSearchQuery())
-                    ->buildSearchConfig(function (SearchConfig $config) {
-                        $config->buildScorerConfig(function (ScorerConfig $scorerConfig) {
+                    ->buildSearchConfig(static function (SearchConfig $config) {
+                        $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) {
                             $scorerConfig->type(ScorerConfig::TYPE_DISMAX);
                         })
                             ->query('*');
                     })
-                    ->buildVectorSearchConfig(function (KNNVectorSearchConfig $config) {
+                    ->buildVectorSearchConfig(static function (KNNVectorSearchConfig $config) {
                         $config
                             ->vector('vector', '$vector')
                             ->k(5)

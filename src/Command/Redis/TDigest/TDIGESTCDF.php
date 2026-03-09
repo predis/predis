@@ -38,7 +38,7 @@ class TDIGESTCDF extends RedisCommand
         }
 
         // convert Relay (RESP3) constants to strings
-        return array_map(function ($value) {
+        return array_map(static function ($value) {
             if (is_string($value) || !is_float($value)) {
                 return $value;
             }

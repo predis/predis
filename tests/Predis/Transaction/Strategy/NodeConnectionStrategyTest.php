@@ -68,7 +68,7 @@ class NodeConnectionStrategyTest extends TestCase
         $this->mockConnection
             ->expects($this->once())
             ->method('executeCommand')
-            ->with($this->callback(function ($command) {
+            ->with($this->callback(static function ($command) {
                 return $command->getId() === 'UNWATCH';
             }))
             ->willReturn('OK');
@@ -95,7 +95,7 @@ class NodeConnectionStrategyTest extends TestCase
         $this->mockConnection
             ->expects($this->exactly(4))
             ->method('executeCommand')
-            ->with($this->callback(function ($command) {
+            ->with($this->callback(static function ($command) {
                 return $command->getId() === 'UNWATCH';
             }))
             ->willReturnOnConsecutiveCalls(

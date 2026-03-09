@@ -273,7 +273,7 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
 
         $command = RawCommand::create('CLUSTER', 'SLOTS');
 
-        $doCallback = function () use (&$connection, $command) {
+        $doCallback = static function () use (&$connection, $command) {
             return $connection->executeCommand($command);
         };
 

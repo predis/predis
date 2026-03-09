@@ -35,7 +35,7 @@ function zpop($client, $key)
         // which the client bails out with an exception.
     ];
 
-    $client->transaction($options, function ($tx) use ($key, &$element) {
+    $client->transaction($options, static function ($tx) use ($key, &$element) {
         @[$element] = $tx->zrange($key, 0, 0);
 
         if (isset($element)) {

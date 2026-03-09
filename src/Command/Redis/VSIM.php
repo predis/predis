@@ -85,7 +85,7 @@ class VSIM extends RedisCommand
     {
         if ($this->withScores) {
             if ($data === array_values($data)) {
-                $data = CommandUtility::arrayToDictionary($data, function ($key, $value) {
+                $data = CommandUtility::arrayToDictionary($data, static function ($key, $value) {
                     return [$key, (float) $value];
                 });
             }

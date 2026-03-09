@@ -127,7 +127,7 @@ class FireAndForgetTest extends PredisTestCase
 
         $pipeline = new FireAndForget(new Client($mockConnection));
 
-        $pipeline->execute(function (Pipeline $pipe) {
+        $pipeline->execute(static function (Pipeline $pipe) {
             $pipe->ping();
             $pipe->ping();
             $pipe->ping();
@@ -177,7 +177,7 @@ class FireAndForgetTest extends PredisTestCase
 
         $pipeline = new FireAndForget(new Client($mockClusterConnection));
 
-        $pipeline->execute(function (Pipeline $pipe) {
+        $pipeline->execute(static function (Pipeline $pipe) {
             $pipe->ping();
             $pipe->ping();
             $pipe->ping();
@@ -227,7 +227,7 @@ class FireAndForgetTest extends PredisTestCase
 
         $pipeline = new FireAndForget(new Client($mockReplicationConnection));
 
-        $pipeline->execute(function (Pipeline $pipe) {
+        $pipeline->execute(static function (Pipeline $pipe) {
             $pipe->ping();
             $pipe->ping();
             $pipe->ping();
@@ -267,7 +267,7 @@ class FireAndForgetTest extends PredisTestCase
             ['replication' => 'predis']
         );
 
-        $results = $client->pipeline(function (Pipeline $pipe) {
+        $results = $client->pipeline(static function (Pipeline $pipe) {
             $pipe->set('foo', "bar\r\nbaz");
             $pipe->get('foo');
         });

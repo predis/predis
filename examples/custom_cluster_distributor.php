@@ -40,7 +40,7 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
 
     public function remove($node)
     {
-        $this->nodes = array_filter($this->nodes, function ($n) use ($node) {
+        $this->nodes = array_filter($this->nodes, static function ($n) use ($node) {
             return $n !== $node;
         });
 
@@ -89,7 +89,7 @@ class NaiveDistributor implements DistributorInterface, HashGeneratorInterface
 }
 
 $options = [
-    'cluster' => function () {
+    'cluster' => static function () {
         $distributor = new NaiveDistributor();
         $strategy = new PredisStrategy($distributor);
         $cluster = new PredisCluster($strategy);

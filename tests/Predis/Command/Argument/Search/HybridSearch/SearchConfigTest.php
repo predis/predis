@@ -33,7 +33,7 @@ class SearchConfigTest extends TestCase
         }
 
         if ($type) {
-            $this->assertEquals($config, $config->buildScorerConfig(function (ScorerConfig $scorerConfig) use ($type) {
+            $this->assertEquals($config, $config->buildScorerConfig(static function (ScorerConfig $scorerConfig) use ($type) {
                 $scorerConfig->type($type);
             }));
         }

@@ -1224,7 +1224,7 @@ class ClientTest extends PredisTestCase
         $callable
             ->expects($this->once())
             ->method('__invoke')
-            ->willReturnCallback(function ($tx) { $tx->ping(); });
+            ->willReturnCallback(static function ($tx) { $tx->ping(); });
 
         $client = new Client($connection);
         $client->transaction($options, $callable);
@@ -1523,7 +1523,7 @@ class ClientTest extends PredisTestCase
     public function testStandaloneNodeRetryCommandExecutionOnTimeoutException(): void
     {
         $retries = 0;
-        $mockDisconnect = function () use (&$retries) {
+        $mockDisconnect = static function () use (&$retries) {
             $streamConnection = new StreamConnection(new Parameters([
                 'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
             ]));
@@ -1566,8 +1566,8 @@ class ClientTest extends PredisTestCase
         // Retry used to wrap callback around, so we can count retries
         $retry = new Retry(new ExponentialBackoff(100, 1000), 3);
         $retriesCount = 0;
-        $retryWrapperFunc = function (callable $do, ?callable $fail = null) use ($retry, &$retriesCount) {
-            $failWrapperFunc = function (Exception $e) use (&$retriesCount, $fail) {
+        $retryWrapperFunc = static function (callable $do, ?callable $fail = null) use ($retry, &$retriesCount) {
+            $failWrapperFunc = static function (Exception $e) use (&$retriesCount, $fail) {
                 ++$retriesCount;
                 $fail($e);
             };
@@ -1621,7 +1621,7 @@ class ClientTest extends PredisTestCase
         }
 
         $retries = 0;
-        $mockDisconnect = function () use (&$retries) {
+        $mockDisconnect = static function () use (&$retries) {
             $streamConnection = new StreamConnection(new Parameters([
                 'retry' => new Retry(new ExponentialBackoff(1000, 10000), 3),
             ]));
