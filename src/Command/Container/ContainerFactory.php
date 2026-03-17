@@ -46,7 +46,7 @@ class ContainerFactory
                 return new $containerClass($client);
             }
 
-            throw new UnexpectedValueException('Given module container command is not supported.');
+            throw new UnexpectedValueException("Given module container command '{$containerCommandID}' is not supported.");
         }
 
         if (class_exists($containerClass = self::CONTAINER_NAMESPACE . '\\' . $containerCommandID)) {
@@ -59,7 +59,7 @@ class ContainerFactory
             return new $containerClass($client);
         }
 
-        throw new UnexpectedValueException('Given container command is not supported.');
+        throw new UnexpectedValueException("Given container command '{$containerCommandID}' is not supported.");
     }
 
     /**
