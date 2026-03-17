@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 ### Changed
+- Include command name in unsupported container command error messages (#1653)
 ### Fixed
 
 ## v3.4.2 (2026-03-09)
