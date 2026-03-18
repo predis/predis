@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- Handle `-READONLY` responses in Redis Cluster for AWS ElastiCache Redis OSS failover events
 ### Changed
 - Include command name in unsupported container command error messages (#1653)
 ### Fixed
