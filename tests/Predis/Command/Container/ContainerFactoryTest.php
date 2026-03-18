@@ -81,8 +81,8 @@ class ContainerFactoryTest extends TestCase
     public function unexpectedValuesProvider(): array
     {
         return [
-            'not supported module container command' => ['ftfoobar', 'Given module container command is not supported.'],
-            'not supported core container command' => ['foobar', 'Given container command is not supported.'],
+            'not supported module container command' => ['ftfoobar', "Given module container command 'FTFOOBAR' is not supported."],
+            'not supported core container command' => ['foobar', "Given container command 'FOOBAR' is not supported."],
         ];
     }
 }
