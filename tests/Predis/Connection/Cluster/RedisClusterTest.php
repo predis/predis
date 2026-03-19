@@ -740,6 +740,45 @@ class RedisClusterTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testRetriesExecutingCommandOnReadonlyServerExceptionDoesNotUpdateSlotMap(): void
+    {
+        $serverException = new Response\ServerException('READONLY You can\'t write against a read only replica.');
+        $command = $this->getCommandFactory()->create('get', ['node:1001']);
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=0-5460');
+        $connection1
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->with($this->isRedisCommand($command))
+            ->willThrowException($serverException);
+
+        $connection1
+            ->expects($this->never())
+            ->method('disconnect');
+
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->never())
+            ->method('create');
+
+        $cluster = new RedisCluster($factory, new Parameters());
+        $cluster->useClusterSlots(true);
+        $cluster->setRetryInterval(0);
+        $cluster->setRetryLimit(1);
+
+        $cluster->add($connection1);
+        $cluster->getSlotMap()->setSlots(0, 5460, '127.0.0.1:6381');
+
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('READONLY You can\'t write against a read only replica.');
+
+        $cluster->executeCommand($command);
+    }
+
+    /**
+     * @group disconnected
      * @group slow
      */
     public function testThrowsClientExceptionWhenExecutingCommandWithEmptyPool(): void
