@@ -286,4 +286,3 @@ class GCRA_Test extends PredisCommandTestCase
         ];
     }
 }
-

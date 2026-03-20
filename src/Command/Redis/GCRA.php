@@ -33,6 +33,7 @@ class GCRA extends RedisCommand
         'retryAfter',
         'fullBurstAfter',
     ];
+
     /**
      * {@inheritdoc}
      */
@@ -80,4 +81,3 @@ class GCRA extends RedisCommand
         $this->applyPrefixForFirstArgument($prefix);
     }
 }
-

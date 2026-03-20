@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- Added support for GCRA command (#1657)
 ### Changed
 - Include command name in unsupported container command error messages (#1653)
 ### Fixed
