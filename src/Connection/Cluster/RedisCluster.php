@@ -465,6 +465,9 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
         $details = explode(' ', $error->getMessage(), 2);
 
         switch ($details[0]) {
+            case 'READONLY':
+                return $this->onReadOnlyResponse($command);
+
             case 'MOVED':
                 return $this->onMovedResponse($command, $details[1]);
 
@@ -474,6 +477,30 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
             default:
                 return $error;
         }
+    }
+
+    /**
+     * Handles -READONLY responses by disconnecting the current node's connection
+     * and refreshing the slots map (when cluster slots are enabled), then
+     * re-executing the command so it is routed to the updated primary node.
+     *
+     * This is a workaround for AWS ElastiCache Redis OSS, which may return
+     * -READONLY errors during failover events. Standard Redis clusters do not
+     * exhibit this behavior.
+     *
+     * @param CommandInterface $command Command that generated the -READONLY response.
+     *
+     * @return mixed
+     */
+    protected function onReadOnlyResponse(CommandInterface $command)
+    {
+        if ($this->useClusterSlots) {
+            $connection = $this->getConnectionByCommand($command);
+            $connection->disconnect();
+            $this->askSlotMap();
+        }
+
+        return $this->executeCommand($command);
     }
 
     /**
