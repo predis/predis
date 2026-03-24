@@ -17,9 +17,9 @@ use Predis\Command\PrefixableCommand as RedisCommand;
 /**
  * @see https://redis.io/commands/gcra/
  *
- * Rate limit via GCRA. requests_per_period are allowed per period at a sustained
- * rate. max_burst allows for occasional spikes by granting up to max_burst
- * additional requests to be consumed at once.
+ * Rate limit via GCRA. requests_per_period are allowed per period (in seconds)
+ * at a sustained rate. max_burst allows for occasional spikes by granting up to
+ * max_burst additional requests to be consumed at once.
  */
 class GCRA extends RedisCommand
 {
