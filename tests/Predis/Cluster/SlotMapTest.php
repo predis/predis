@@ -406,6 +406,25 @@ class SlotMapTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testOffsetUnsetDoesNotPolluteSlotMapOnGapSlot(): void
+    {
+        $slotmap = new SlotMap();
+
+        $slotmap->setSlots(0, 100, '127.0.0.1:6379');
+        $slotmap->setSlots(200, 300, '127.0.0.1:6380');
+
+        $this->assertFalse(isset($slotmap[150]));
+        $this->assertNull($slotmap[150]);
+
+        unset($slotmap[150]);
+
+        $this->assertFalse(isset($slotmap[150]));
+        $this->assertNull($slotmap[150]);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testOffsetSetAssignsNodeToSlot(): void
     {
         $slotmap = new SlotMap();
