@@ -2,11 +2,14 @@
 
 ## Unreleased
 ### Added
-- Added support for GCRA command (#1657)
-- Handle `-READONLY` responses in Redis Cluster for AWS ElastiCache Redis OSS failover events
+- Added support for `GCRA` command (#1657)
+- Handle Redis Cluster `-READONLY` responses failover events (#1656)
+
 ### Changed
 - Include command name in unsupported container command error messages (#1653)
+
 ### Fixed
+- Fixed handling of gap slots in `SlotMap::offsetUnset()` (#1660)
 
 ## v3.4.2 (2026-03-09)
 ### Changed
