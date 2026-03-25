@@ -8,6 +8,8 @@
 - Include command name in unsupported container command error messages (#1653)
 ### Fixed
 
+- Fixed `offsetUnset` not properly handling gap slots in `SlotMap` (#1660)
+
 ## v3.4.2 (2026-03-09)
 ### Changed
 - Switch to `static` closures
