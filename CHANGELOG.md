@@ -4,6 +4,7 @@
 ### Added
 - Added support for `GCRA` command (#1657)
 - Handle Redis Cluster `-READONLY` responses failover events (#1656)
+- Added FPHA argument for JSON.SET command (#1661)
 
 ### Changed
 - Include command name in unsupported container command error messages (#1653)
