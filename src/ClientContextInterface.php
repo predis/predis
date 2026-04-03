@@ -47,6 +47,7 @@ use Predis\Command\Container\Json\JSONDEBUG;
 use Predis\Command\Container\Search\FTCONFIG;
 use Predis\Command\Container\Search\FTCURSOR;
 use Predis\Command\Container\XGROUP;
+use Predis\Command\Redis\HSETEX;
 use Predis\Command\Redis\VADD;
 
 /**
@@ -208,7 +209,7 @@ use Predis\Command\Redis\VADD;
  * @method $this jsonobjkeys(string $key, string $path = '$')
  * @method $this jsonobjlen(string $key, string $path = '$')
  * @method $this jsonresp(string $key, string $path = '$')
- * @method $this jsonset(string $key, string $path, string $value, ?string $subcommand = null)
+ * @method $this jsonset(string $key, string $path, string $value, ?string $subcommand = null, ?string $fpha = null)
  * @method $this jsonstrappend(string $key, string $path, string $value)
  * @method $this jsonstrlen(string $key, string $path = '$')
  * @method $this jsontoggle(string $key, string $path)
