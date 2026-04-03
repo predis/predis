@@ -135,6 +135,36 @@ class JSONSET_Test extends PredisCommandTestCase
         $redis->jsonset('key', '$', 'value', 'wrong');
     }
 
+    /**
+     * @group disconnected
+     */
+    public function testThrowsExceptionOnUnexpectedFphaValueGiven(): void
+    {
+        $command = $this->getCommand();
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('FPHA argument accepts only: bf16, fp16, fp32, fp64 values');
+
+        $command->setArguments(['key', '$', 'value', null, 'wrong']);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @dataProvider fphaProvider
+     * @param  string $fpha
+     * @return void
+     * @requiresRedisVersion >= 8.7.0
+     */
+    public function testSetFloatArrayWithFphaTypeAndReturnsOk(string $fpha): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->jsonset('key', '$', '[1.1, 2.2, 3.3]', null, $fpha));
+        $storedValue = $redis->jsonget('key');
+        $this->assertIsString($storedValue);
+    }
+
     public function argumentsProvider(): array
     {
         return [
@@ -150,6 +180,36 @@ class JSONSET_Test extends PredisCommandTestCase
                 ['key', 'path', 'value', 'xx'],
                 ['key', 'path', 'value', 'XX'],
             ],
+            'with FPHA BF16 argument' => [
+                ['key', 'path', 'value', null, 'bf16'],
+                ['key', 'path', 'value', 'FPHA', 'BF16'],
+            ],
+            'with FPHA FP16 argument' => [
+                ['key', 'path', 'value', null, 'fp16'],
+                ['key', 'path', 'value', 'FPHA', 'FP16'],
+            ],
+            'with FPHA FP32 argument' => [
+                ['key', 'path', 'value', null, 'fp32'],
+                ['key', 'path', 'value', 'FPHA', 'FP32'],
+            ],
+            'with FPHA FP64 argument' => [
+                ['key', 'path', 'value', null, 'fp64'],
+                ['key', 'path', 'value', 'FPHA', 'FP64'],
+            ],
+            'with NX and FPHA FP32 arguments' => [
+                ['key', 'path', 'value', 'nx', 'fp32'],
+                ['key', 'path', 'value', 'NX', 'FPHA', 'FP32'],
+            ],
+        ];
+    }
+
+    public function fphaProvider(): array
+    {
+        return [
+            'with BF16 type' => ['bf16'],
+            'with FP16 type' => ['fp16'],
+            'with FP32 type' => ['fp32'],
+            'with FP64 type' => ['fp64'],
         ];
     }
 

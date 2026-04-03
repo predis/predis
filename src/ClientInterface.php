@@ -49,6 +49,7 @@ use Predis\Command\Container\Search\FTCURSOR;
 use Predis\Command\Container\XGROUP;
 use Predis\Command\Container\XINFO;
 use Predis\Command\FactoryInterface;
+use Predis\Command\Redis\HSETEX;
 use Predis\Command\Redis\VADD;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
@@ -218,7 +219,7 @@ use Predis\Response\Status;
  * @method array             jsonobjkeys(string $key, string $path = '$')
  * @method array             jsonobjlen(string $key, string $path = '$')
  * @method array             jsonresp(string $key, string $path = '$')
- * @method string            jsonset(string $key, string $path, string $value, ?string $subcommand = null)
+ * @method string            jsonset(string $key, string $path, string $value, ?string $subcommand = null, ?string $fpha = null)
  * @method array             jsonstrappend(string $key, string $path, string $value)
  * @method array             jsonstrlen(string $key, string $path = '$')
  * @method array             jsontoggle(string $key, string $path)
