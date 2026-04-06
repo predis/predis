@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis;
 
+use InvalidArgumentException;
 use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
@@ -62,6 +63,26 @@ class ZRANGE extends RedisCommand
         $opts = array_change_key_case($options, CASE_UPPER);
         $finalizedOpts = [];
 
+        if (!empty($opts['BYSCORE']) && !empty($opts['BYLEX'])) {
+            throw new InvalidArgumentException('BYSCORE and BYLEX are mutually exclusive');
+        }
+
+        if (!empty($opts['BYSCORE'])) {
+            $finalizedOpts[] = 'BYSCORE';
+        }
+
+        if (!empty($opts['BYLEX'])) {
+            $finalizedOpts[] = 'BYLEX';
+        }
+
+        if (!empty($opts['REV'])) {
+            $finalizedOpts[] = 'REV';
+        }
+
+        if (!empty($opts['LIMIT']) && is_array($opts['LIMIT'])) {
+            $finalizedOpts = array_merge($finalizedOpts, ['LIMIT'], $opts['LIMIT']);
+        }
+
         if (!empty($opts['WITHSCORES'])) {
             $finalizedOpts[] = 'WITHSCORES';
         }
@@ -82,7 +103,8 @@ class ZRANGE extends RedisCommand
             return false;
         }
 
-        return strtoupper($arguments[3]) === 'WITHSCORES';
+        // WITHSCORES can be at any position in the arguments array
+        return in_array('WITHSCORES', $arguments, true);
     }
 
     /**

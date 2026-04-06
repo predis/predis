@@ -39,9 +39,12 @@ class ZRANGEBYSCORE extends ZRANGE
             $finalizedOpts[] = 'LIMIT';
             $finalizedOpts[] = $limit['OFFSET'] ?? $limit[0];
             $finalizedOpts[] = $limit['COUNT'] ?? $limit[1];
+
+            // Remove LIMIT from options to prevent parent from processing it again
+            unset($opts['LIMIT']);
         }
 
-        return array_merge($finalizedOpts, parent::prepareOptions($options));
+        return array_merge($finalizedOpts, parent::prepareOptions($opts));
     }
 
     /**
