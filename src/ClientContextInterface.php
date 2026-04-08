@@ -301,6 +301,7 @@ use Predis\Command\Redis\VADD;
  * @method $this xdel(string $key, string ...$id)
  * @method $this xdelex(string $key, string $mode, array $ids)
  * @method $this xlen(string $key)
+ * @method $this xnack(string $key, string $group, string $mode, array $ids, ?int $retryCount = null, bool $force = false)
  * @method $this xpending(string $key, string $group, ?int $minIdleTime = null, ?string $start = null, ?string $end = null, ?int $count = null, ?string $consumer = null)
  * @method $this xrevrange(string $key, string $end, string $start, ?int $count = null)
  * @method $this xrange(string $key, string $start, string $end, ?int $count = null)

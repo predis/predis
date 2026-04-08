@@ -312,6 +312,7 @@ use Predis\Response\Status;
  * @method int               xdel(string $key, string ...$id)
  * @method array             xdelex(string $key, string $mode, array $ids)
  * @method int               xlen(string $key)
+ * @method int               xnack(string $key, string $group, string $mode, array $ids, ?int $retryCount = null, bool $force = false)
  * @method array             xpending(string $key, string $group, ?int $minIdleTime = null, ?string $start = null, ?string $end = null, ?int $count = null, ?string $consumer = null)
  * @method array             xrevrange(string $key, string $end, string $start, ?int $count = null)
  * @method array             xrange(string $key, string $start, string $end, ?int $count = null)
