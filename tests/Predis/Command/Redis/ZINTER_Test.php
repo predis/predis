@@ -72,6 +72,10 @@ class ZINTER_Test extends PredisCommandTestCase
                 [['key1', 'key2'], [1, 2], 'min', true],
                 [2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN', 'WITHSCORES'],
             ],
+            'with count aggregate' => [
+                [['key1', 'key2'], [], 'count'],
+                [2, 'key1', 'key2', 'AGGREGATE', 'COUNT'],
+            ],
         ];
     }
 
@@ -108,6 +112,28 @@ class ZINTER_Test extends PredisCommandTestCase
         );
 
         $this->assertEquals($expectedResponse, $actualResponse);
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 8.8.0
+     */
+    public function testReturnsIntersectedValuesWithCountAggregate(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->zadd('test-zinter1', 1, 'member1', 2, 'member2', 3, 'member3');
+        $redis->zadd('test-zinter2', 1, 'member1', 2, 'member2');
+
+        $actualResponse = $redis->zinter(
+            ['test-zinter1', 'test-zinter2'],
+            [],
+            'count',
+            true
+        );
+
+        $this->assertSame(['member1' => '2', 'member2' => '2'], $actualResponse);
     }
 
     /**
@@ -226,7 +252,7 @@ class ZINTER_Test extends PredisCommandTestCase
                 [],
                 'wrong',
                 false,
-                'Aggregate argument accepts only: min, max, sum values',
+                'Aggregate argument accepts only: min, max, sum, count values',
             ],
         ];
     }
