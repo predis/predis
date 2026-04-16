@@ -85,7 +85,7 @@ class GCRA_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testRequiredArgumentsDrainAllowanceByOne(): void
     {
@@ -120,7 +120,7 @@ class GCRA_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testRequiredArgumentsDrainAllowanceByOneResp3(): void
     {
@@ -155,7 +155,7 @@ class GCRA_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testTokensPerPeriodAndPeriodCombination(): void
     {
@@ -186,7 +186,7 @@ class GCRA_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testTokensDrainsAllowanceByCount(): void
     {
@@ -240,7 +240,7 @@ class GCRA_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testRetryAfterBehaviorAllowsRequestsAfterWaiting(): void
     {
