@@ -125,7 +125,7 @@ class XNACK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testNackWithSilentMode(): void
     {
@@ -143,7 +143,7 @@ class XNACK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testNackWithFailMode(): void
     {
@@ -160,7 +160,7 @@ class XNACK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testNackWithFatalMode(): void
     {
@@ -177,7 +177,7 @@ class XNACK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testNackWithSomeIdsNotInPel(): void
     {
@@ -196,7 +196,7 @@ class XNACK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testNackWithRetryCount(): void
     {
@@ -213,7 +213,7 @@ class XNACK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testNackWithForceFlag(): void
     {
@@ -230,7 +230,7 @@ class XNACK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testNackOnNonExistentStreamReturnsError(): void
     {
@@ -243,7 +243,7 @@ class XNACK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testNackWithNonExistentGroupReturnsError(): void
     {
@@ -257,7 +257,7 @@ class XNACK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testNackOnWrongTypeReturnsError(): void
     {
@@ -271,7 +271,7 @@ class XNACK_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testNackWithResp3Protocol(): void
     {
