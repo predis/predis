@@ -91,7 +91,7 @@ class GCRA_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        // max_burst=4, requests_per_period=10, period=10 => 10 req/10s, emission_interval=1s
+        // max_burst=4, tokens_per_period=10, period=10 => 10 tokens/10s, emission_interval=1s
         // With max_burst=4, max-req-num = 4+1 = 5
         $result = $redis->gcra('ratelimit:user1', 4, 10, 10);
         $expectedResult = [
@@ -126,7 +126,7 @@ class GCRA_Test extends PredisCommandTestCase
     {
         $redis = $this->getResp3Client();
 
-        // max_burst=4, requests_per_period=10, period=10 => 10 req/10s, emission_interval=1s
+        // max_burst=4, tokens_per_period=10, period=10 => 10 tokens/10s, emission_interval=1s
         // With max_burst=4, max-req-num = 4+1 = 5
         $result = $redis->gcra('ratelimit:user1', 4, 10, 10);
         $expectedResult = [
@@ -157,12 +157,12 @@ class GCRA_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 8.7.2
      */
-    public function testRequestsPerPeriodAndPeriodCombination(): void
+    public function testTokensPerPeriodAndPeriodCombination(): void
     {
         $redis = $this->getClient();
 
-        // max_burst=0, requests_per_period=1, period=60
-        // Only 1 request allowed per 60 seconds, no burst
+        // max_burst=0, tokens_per_period=1, period=60
+        // Only 1 token allowed per 60 seconds, no burst
         // max-req-num = 0+1 = 1
         $result1 = $redis->gcra('ratelimit:strict', 0, 1, 60);
         $expectedResult1 = [
@@ -188,12 +188,12 @@ class GCRA_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 8.7.2
      */
-    public function testNumRequestsDrainsAllowanceByCount(): void
+    public function testTokensDrainsAllowanceByCount(): void
     {
         $redis = $this->getClient();
 
-        // max_burst=9, requests_per_period=10, period=10 => max-req-num = 10
-        // Use NUM_REQUESTS=3 to drain 3 at once
+        // max_burst=9, tokens_per_period=10, period=10 => max-req-num = 10
+        // Use TOKENS=3 to drain 3 at once
         $result1 = $redis->gcra('ratelimit:bulk', 9, 10, 10, 3);
         $expectedResult1 = [
             'limited' => 0,
@@ -206,7 +206,7 @@ class GCRA_Test extends PredisCommandTestCase
         // First request: not limited, 7 available (10 - 3)
         $this->assertSame($expectedResult1, $result1);
 
-        // Another request with NUM_REQUESTS=3
+        // Another request with TOKENS=3
         $result2 = $redis->gcra('ratelimit:bulk', 9, 10, 10, 3);
         $expectedResult2 = [
             'limited' => 0,
@@ -219,7 +219,7 @@ class GCRA_Test extends PredisCommandTestCase
         // Second request: not limited, 4 available (7 - 3)
         $this->assertSame($expectedResult2, $result2);
 
-        // Another request with NUM_REQUESTS=3
+        // Another request with TOKENS=3
         $result3 = $redis->gcra('ratelimit:bulk', 9, 10, 10, 3);
         $expectedResult3 = [
             'limited' => 0,
@@ -232,7 +232,7 @@ class GCRA_Test extends PredisCommandTestCase
         // Third request: not limited, 1 available (4 - 3)
         $this->assertSame($expectedResult3, $result3);
 
-        // Next request with NUM_REQUESTS=3 should be limited (only 1 left)
+        // Next request with TOKENS=3 should be limited (only 1 left)
         $result4 = $redis->gcra('ratelimit:bulk', 9, 10, 10, 3);
         $this->assertSame(1, $result4['limited']);
         $this->assertGreaterThan(0, $result4['retryAfter']); // must wait
@@ -246,7 +246,7 @@ class GCRA_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        // max_burst=2, requests_per_period=3, period=3 => 3 req/3s, emission_interval=1s
+        // max_burst=2, tokens_per_period=3, period=3 => 3 tokens/3s, emission_interval=1s
         // max-req-num = 2+1 = 3
         // Drain all allowance with 3 requests
         $redis->gcra('ratelimit:retry', 2, 3, 3);
@@ -275,11 +275,11 @@ class GCRA_Test extends PredisCommandTestCase
                 ['mykey', 4, 10, 1.0],
                 ['mykey', 4, 10, 1.0],
             ],
-            'with NUM_REQUESTS' => [
+            'with TOKENS' => [
                 ['mykey', 4, 10, 1.0, 5],
-                ['mykey', 4, 10, 1.0, 'NUM_REQUESTS', 5],
+                ['mykey', 4, 10, 1.0, 'TOKENS', 5],
             ],
-            'with null NUM_REQUESTS (omitted)' => [
+            'with null TOKENS (omitted)' => [
                 ['mykey', 4, 10, 1.0, null],
                 ['mykey', 4, 10, 1.0],
             ],
