@@ -58,7 +58,7 @@ class AggregateTest extends PredisTestCase
     public function testThrowsExceptionOnUnexpectedValueGiven(array $actualArguments): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Aggregate argument accepts only: min, max, sum values');
+        $this->expectExceptionMessage('Aggregate argument accepts only: min, max, sum, count values');
 
         $this->testClass->setArguments($actualArguments);
     }
