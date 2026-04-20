@@ -42,7 +42,7 @@ jobs:
         run: |
           # Mapping of original redis versions to client test containers
           declare -A redis_clients_version_mapping=(
-            ["8.8"]="unstable-23321515778-debian"
+            ["8.8"]="8.8-m02"
             ["8.6"]="8.6.1"
             ["8.4"]="8.4.0"
             ["8.2"]="8.2.2"
