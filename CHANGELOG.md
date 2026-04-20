@@ -13,6 +13,7 @@
 ### Fixed
 - Fixed handling of gap slots in `SlotMap::offsetUnset()` (#1660)
 - Fixed ZRANGE to include 6.2 arguments (#1662)
+- Fixed Sentinel retry to narrow retryable exceptions to CommunicationException (#1665)
 
 ## v3.4.2 (2026-03-09)
 ### Changed
