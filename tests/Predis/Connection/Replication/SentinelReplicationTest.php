@@ -12,7 +12,6 @@
 
 namespace Predis\Connection\Replication;
 
-use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command;
 use Predis\Connection;
@@ -1335,7 +1334,7 @@ class SentinelReplicationTest extends PredisTestCase
                 $this->isRedisCommand('GET', ['key'])
             )
             ->willThrowException(
-                new Exception('message')
+                new Connection\ConnectionException($slave1, 'message')
             );
 
         $slave2 = $this->getMockConnection('tcp://127.0.0.1:6383?role=slave');
@@ -1918,6 +1917,93 @@ class SentinelReplicationTest extends PredisTestCase
             Command\RawCommand::create('get', 'key')
         ));
         $this->assertSame($slave2, $replication->getCurrent());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDoesNotRetryOnNonCommunicationException(): void
+    {
+        $master = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
+        $master
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+        $master
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('SET', ['key', 'value']))
+            ->willThrowException(new RuntimeException('Non-communication error'));
+
+        $sentinel = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+
+        /** @var Connection\FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+
+        $replication = $this->getReplicationConnection('svc', [$sentinel], $factory);
+        $replication->add($master);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Non-communication error');
+
+        $replication->executeCommand(Command\RawCommand::create('set', 'key', 'value'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRetriesOnlyOnCommunicationException(): void
+    {
+        $master1 = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
+        $master1
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+        $master1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('SET', ['key', 'value']))
+            ->willThrowException(new Connection\ConnectionException($master1, 'Connection failed'));
+        $master1
+            ->expects($this->once())
+            ->method('disconnect');
+
+        $master2 = $this->getMockConnection('tcp://127.0.0.1:6382?role=master');
+        $master2
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+        $master2
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('SET', ['key', 'value']))
+            ->willReturn('OK');
+
+        $sentinel = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $sentinel
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('SENTINEL', ['get-master-addr-by-name', 'svc']))
+            ->willReturn(['127.0.0.1', '6382']);
+
+        /** @var Connection\FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with([
+                'host' => '127.0.0.1',
+                'port' => '6382',
+                'role' => 'master',
+            ])
+            ->willReturn($master2);
+
+        $replication = $this->getReplicationConnection('svc', [$sentinel], $factory);
+        $replication->add($master1);
+
+        $this->assertSame('OK', $replication->executeCommand(
+            Command\RawCommand::create('set', 'key', 'value')
+        ));
     }
 
     /**
