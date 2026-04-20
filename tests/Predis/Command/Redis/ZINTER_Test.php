@@ -117,7 +117,7 @@ class ZINTER_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.7.2
      */
     public function testReturnsIntersectedValuesWithCountAggregate(): void
     {
