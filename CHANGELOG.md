@@ -5,6 +5,7 @@
 - Added support for `GCRA` command (#1657)
 - Handle Redis Cluster `-READONLY` responses failover events (#1656)
 - Added FPHA argument for JSON.SET command (#1661)
+- Added new COUNT aggregator for Sorted Set commands (#1668)
 
 ### Changed
 - Include command name in unsupported container command error messages (#1653)
