@@ -86,6 +86,29 @@ class ZUNION_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisVersion >= 8.7.2
+     */
+    public function testReturnsUnionValuesWithCountAggregate(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->zadd('test-zunion1', 1, 'member1', 2, 'member2', 3, 'member3');
+        $redis->zadd('test-zunion2', 1, 'member1', 2, 'member2');
+
+        $actualResponse = $redis->zunion(
+            ['test-zunion1', 'test-zunion2'],
+            [],
+            'count',
+            true
+        );
+
+        $this->assertSame(['member3' => '1', 'member1' => '2', 'member2' => '2'], $actualResponse);
+    }
+
+    /**
+     * @group connected
      * @return void
      * @requiresRedisVersion >= 6.2.0
      */
@@ -163,6 +186,10 @@ class ZUNION_Test extends PredisCommandTestCase
                 [['key1', 'key2'], [1, 2], 'min', true],
                 [2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN', 'WITHSCORES'],
             ],
+            'with count aggregate' => [
+                [['key1', 'key2'], [], 'count'],
+                [2, 'key1', 'key2', 'AGGREGATE', 'COUNT'],
+            ],
         ];
     }
 
@@ -226,7 +253,7 @@ class ZUNION_Test extends PredisCommandTestCase
                 [],
                 'wrong',
                 false,
-                'Aggregate argument accepts only: min, max, sum values',
+                'Aggregate argument accepts only: min, max, sum, count values',
             ],
         ];
     }

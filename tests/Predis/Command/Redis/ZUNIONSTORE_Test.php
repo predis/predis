@@ -119,6 +119,32 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisVersion >= 8.7.2
+     */
+    public function testStoresUnionValuesWithCountAggregate(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->zadd('test-zunionstore1', 1, 'member1', 2, 'member2', 3, 'member3');
+        $redis->zadd('test-zunionstore2', 1, 'member1', 2, 'member2');
+
+        $actualResponse = $redis->zunionstore(
+            'destination',
+            ['test-zunionstore1', 'test-zunionstore2'],
+            [],
+            'count'
+        );
+
+        $this->assertSame(3, $actualResponse);
+        $this->assertEquals(
+            ['member3' => '1', 'member1' => '2', 'member2' => '2'],
+            $redis->zrange('destination', 0, -1, ['withscores' => true])
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisVersion >= 6.0.0
      */
     public function testStoresUnionValuesOnSortedSetsResp3(): void
@@ -201,6 +227,10 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
                 ]],
                 ['destination', 2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN'],
             ],
+            'with count aggregate' => [
+                ['destination', ['key1', 'key2'], [], 'count'],
+                ['destination', 2, 'key1', 'key2', 'AGGREGATE', 'COUNT'],
+            ],
         ];
     }
 
@@ -268,7 +298,7 @@ class ZUNIONSTORE_Test extends PredisCommandTestCase
                 ['key1'],
                 [],
                 'wrong',
-                'Aggregate argument accepts only: min, max, sum values',
+                'Aggregate argument accepts only: min, max, sum, count values',
             ],
         ];
     }

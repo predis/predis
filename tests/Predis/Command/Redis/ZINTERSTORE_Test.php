@@ -119,6 +119,32 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @requiresRedisVersion >= 8.7.2
+     */
+    public function testStoresIntersectedValuesWithCountAggregate(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->zadd('test-zinterstore1', 1, 'member1', 2, 'member2', 3, 'member3');
+        $redis->zadd('test-zinterstore2', 1, 'member1', 2, 'member2');
+
+        $actualResponse = $redis->zinterstore(
+            'destination',
+            ['test-zinterstore1', 'test-zinterstore2'],
+            [],
+            'count'
+        );
+
+        $this->assertSame(2, $actualResponse);
+        $this->assertEquals(
+            ['member1' => '2', 'member2' => '2'],
+            $redis->zrange('destination', 0, -1, ['withscores' => true])
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
      * @requiresRedisVersion >= 6.0.0
      */
     public function testStoresIntersectedValuesOnSortedSetsResp3(): void
@@ -201,6 +227,10 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
                 ]],
                 ['destination', 2, 'key1', 'key2', 'WEIGHTS', 1, 2, 'AGGREGATE', 'MIN'],
             ],
+            'with count aggregate' => [
+                ['destination', ['key1', 'key2'], [], 'count'],
+                ['destination', 2, 'key1', 'key2', 'AGGREGATE', 'COUNT'],
+            ],
         ];
     }
 
@@ -268,7 +298,7 @@ class ZINTERSTORE_Test extends PredisCommandTestCase
                 ['key1'],
                 [],
                 'wrong',
-                'Aggregate argument accepts only: min, max, sum values',
+                'Aggregate argument accepts only: min, max, sum, count values',
             ],
         ];
     }
