@@ -116,6 +116,7 @@ class ZINTER_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-resp3
      * @return void
      * @requiresRedisVersion >= 8.7.2
      */
