@@ -7,6 +7,7 @@
 - Added FPHA argument for JSON.SET command (#1661)
 - Added new COUNT aggregator for Sorted Set commands (#1668)
 - Added XNACK support (#1666)
+- Added support for multiple aggregators for TS range commands (#1670)
 
 ### Changed
 - Include command name in unsupported container command error messages (#1653)
