@@ -92,6 +92,22 @@ class RangeArgumentsTest extends TestCase
                 [RangeArguments::AGG_COUNT_NAN, 1000, 10, 10000, true],
                 ['ALIGN', 10, 'AGGREGATION', RangeArguments::AGG_COUNT_NAN, 1000, 'BUCKETTIMESTAMP', 10000, 'EMPTY'],
             ],
+            'with multiple aggregators as array' => [
+                [[RangeArguments::AGG_MIN, RangeArguments::AGG_MAX], 1000],
+                ['AGGREGATION', 'min,max', 1000],
+            ],
+            'with multiple aggregators as comma-separated string' => [
+                ['min,max', 1000],
+                ['AGGREGATION', 'min,max', 1000],
+            ],
+            'with multiple aggregators and all arguments' => [
+                [[RangeArguments::AGG_MIN, RangeArguments::AGG_MAX, RangeArguments::AGG_SUM], 1000, 10, 10000, true],
+                ['ALIGN', 10, 'AGGREGATION', 'min,max,sum', 1000, 'BUCKETTIMESTAMP', 10000, 'EMPTY'],
+            ],
+            'with single-element aggregator array' => [
+                [[RangeArguments::AGG_SUM], 1000],
+                ['AGGREGATION', RangeArguments::AGG_SUM, 1000],
+            ],
         ];
     }
 }

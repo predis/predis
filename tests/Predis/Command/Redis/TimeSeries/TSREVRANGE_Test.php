@@ -63,6 +63,27 @@ class TSREVRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group disconnected
+     * @dataProvider parseResponseProvider
+     */
+    public function testParseResponsePassesThroughSingleAndMultipleAggregatorResults(array $response): void
+    {
+        $this->assertSame($response, $this->getCommand()->parseResponse($response));
+    }
+
+    public function parseResponseProvider(): array
+    {
+        return [
+            'single aggregator' => [
+                [[1020, '120'], [1000, '100']],
+            ],
+            'multiple aggregators' => [
+                [[1020, '120', '170'], [1000, '100', '200']],
+            ],
+        ];
+    }
+
+    /**
+     * @group disconnected
      */
     public function testPrefixKeys(): void
     {
@@ -188,6 +209,34 @@ class TSREVRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
+     * @requiresRedisVersion >= 8.7.2
+     */
+    public function testReturnsQueriedRangeWithMultipleAggregators(): void
+    {
+        $redis = $this->getClient();
+
+        $createArguments = (new CreateArguments())->labels('type', 'stock', 'name', 'A');
+        $this->assertEquals('OK', $redis->tscreate('stock:A', $createArguments));
+
+        $this->assertSame(
+            [1000, 1010, 1020],
+            $redis->tsmadd('stock:A', 1000, 100, 'stock:A', 1010, 110, 'stock:A', 1020, 120)
+        );
+
+        $rangeArguments = (new RangeArguments())
+            ->aggregation([RangeArguments::AGG_MIN, RangeArguments::AGG_MAX], 1000);
+
+        $response = $redis->tsrevrange('stock:A', '-', '+', $rangeArguments);
+
+        $this->assertCount(1, $response);
+        $this->assertCount(3, $response[0]);
+        $this->assertSame(1000, $response[0][0]);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
     public function testThrowsExceptionOnNonExistingKey(): void
@@ -238,6 +287,18 @@ class TSREVRANGE_Test extends PredisCommandTestCase
             'with AGGREGATION modifier - with EMPTY' => [
                 ['key', 10000, 10001, (new RangeArguments())->aggregation('sum', 100, 0, 0, true)],
                 ['key', 10000, 10001, 'AGGREGATION', 'sum', 100, 'EMPTY'],
+            ],
+            'with AGGREGATION modifier - multiple aggregators as array' => [
+                ['key', 10000, 10001, (new RangeArguments())->aggregation(['min', 'max'], 100)],
+                ['key', 10000, 10001, 'AGGREGATION', 'min,max', 100],
+            ],
+            'with AGGREGATION modifier - multiple aggregators as string' => [
+                ['key', 10000, 10001, (new RangeArguments())->aggregation('min,max', 100)],
+                ['key', 10000, 10001, 'AGGREGATION', 'min,max', 100],
+            ],
+            'with AGGREGATION modifier - multiple aggregators with all options' => [
+                ['key', 10000, 10001, (new RangeArguments())->aggregation(['min', 'max', 'avg'], 100, 10, 1000, true)],
+                ['key', 10000, 10001, 'ALIGN', 10, 'AGGREGATION', 'min,max,avg', 100, 'BUCKETTIMESTAMP', 1000, 'EMPTY'],
             ],
             'with all modifiers' => [
                 ['key', 10000, 10001, (new RangeArguments())->latest()->filterByTs(1000, 1001)->filterByValue(1000, 1001)->count(100)->aggregation('sum', 100)],

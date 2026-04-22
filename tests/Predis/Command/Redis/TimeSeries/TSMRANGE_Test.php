@@ -17,6 +17,7 @@ use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\Redis\PredisCommandTestCase;
+use UnexpectedValueException;
 
 /**
  * @group commands
@@ -58,6 +59,46 @@ class TSMRANGE_Test extends PredisCommandTestCase
     public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider parseResponseProvider
+     */
+    public function testParseResponsePassesThroughSingleAndMultipleAggregatorResults(array $response): void
+    {
+        $this->assertSame($response, $this->getCommand()->parseResponse($response));
+    }
+
+    public function parseResponseProvider(): array
+    {
+        return [
+            'single aggregator' => [
+                [
+                    ['stock:A', [['type', 'stock'], ['name', 'A']], [[1000, '110'], [2000, '210']]],
+                ],
+            ],
+            'multiple aggregators' => [
+                [
+                    ['stock:A', [['type', 'stock'], ['name', 'A']], [[1000, '110', '2'], [2000, '210', '3']]],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testThrowsOnGroupByCombinedWithMultipleAggregators(): void
+    {
+        $mrangeArguments = (new MRangeArguments())
+            ->aggregation([RangeArguments::AGG_MIN, RangeArguments::AGG_MAX], 1000)
+            ->filter('type=stock');
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('GROUPBY cannot be combined with multiple aggregators.');
+
+        $mrangeArguments->groupBy('type', 'max');
     }
 
     /**
@@ -226,6 +267,39 @@ class TSMRANGE_Test extends PredisCommandTestCase
         $this->assertEquals($expectedResponse, $redis->tsmrange(1000, 1001, $mRangeArguments));
     }
 
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisVersion >= 8.7.2
+     */
+    public function testQueryMultipleTimeSeriesWithMultipleAggregators(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('stock:A', (new CreateArguments())->labels('type', 'stock', 'name', 'A'))
+        );
+        $this->assertSame(
+            [1000, 1010, 1020],
+            $redis->tsmadd('stock:A', 1000, 100, 'stock:A', 1010, 110, 'stock:A', 1020, 120)
+        );
+
+        $mrangeArguments = (new MRangeArguments())
+            ->aggregation([RangeArguments::AGG_MIN, RangeArguments::AGG_MAX], 1000)
+            ->filter('type=stock');
+
+        $response = $redis->tsmrange('-', '+', $mrangeArguments);
+
+        $this->assertCount(1, $response);
+        $this->assertSame('stock:A', $response[0][0]);
+        $samples = $response[0][2];
+        $this->assertCount(1, $samples);
+        $this->assertCount(3, $samples[0]);
+        $this->assertSame(1000, $samples[0][0]);
+    }
+
     public function argumentsProvider(): array
     {
         return [
@@ -272,6 +346,18 @@ class TSMRANGE_Test extends PredisCommandTestCase
             'with AGGREGATION modifier - with EMPTY' => [
                 [1000, 1001, (new MRangeArguments())->aggregation('sum', 2, 0, 0, true)->filter('filterExpression1', 'filterExpression2')],
                 [1000, 1001, 'AGGREGATION', 'sum', 2, 'EMPTY', 'FILTER', 'filterExpression1', 'filterExpression2'],
+            ],
+            'with AGGREGATION modifier - multiple aggregators as array' => [
+                [1000, 1001, (new MRangeArguments())->aggregation(['min', 'max'], 2)->filter('filterExpression1', 'filterExpression2')],
+                [1000, 1001, 'AGGREGATION', 'min,max', 2, 'FILTER', 'filterExpression1', 'filterExpression2'],
+            ],
+            'with AGGREGATION modifier - multiple aggregators as string' => [
+                [1000, 1001, (new MRangeArguments())->aggregation('min,max', 2)->filter('filterExpression1', 'filterExpression2')],
+                [1000, 1001, 'AGGREGATION', 'min,max', 2, 'FILTER', 'filterExpression1', 'filterExpression2'],
+            ],
+            'with AGGREGATION modifier - multiple aggregators with all options' => [
+                [1000, 1001, (new MRangeArguments())->aggregation(['min', 'max', 'avg'], 2, 2, 10000, true)->filter('filterExpression1', 'filterExpression2')],
+                [1000, 1001, 'ALIGN', 2, 'AGGREGATION', 'min,max,avg', 2, 'BUCKETTIMESTAMP', 10000, 'EMPTY', 'FILTER', 'filterExpression1', 'filterExpression2'],
             ],
             'with GROUPBY modifier' => [
                 [1000, 1001, (new MRangeArguments())->filter('filterExpression1', 'filterExpression2')->groupBy('label', 'reducer')],
