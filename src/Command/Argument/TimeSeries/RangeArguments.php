@@ -64,20 +64,25 @@ class RangeArguments extends CommonArguments
     /**
      * Aggregates samples into time buckets.
      *
-     * @param  string $aggregator      Aggregation type. Check class constants.
-     * @param  int    $bucketDuration  Is duration of each bucket, in milliseconds.
-     * @param  int    $align           It controls the time bucket timestamps by changing the reference timestamp on which a bucket is defined.
-     * @param  int    $bucketTimestamp Controls how bucket timestamps are reported.
-     * @param  bool   $empty           Is a flag, which, when specified, reports aggregations also for empty buckets.
+     * Multiple aggregators may be specified by passing an array of aggregation types
+     * (e.g. ['min', 'max']) or a comma-separated string (e.g. "min,max").
+     *
+     * @param  string|array $aggregator      Aggregation type, or list of aggregation types. Check class constants.
+     * @param  int          $bucketDuration  Is duration of each bucket, in milliseconds.
+     * @param  int          $align           It controls the time bucket timestamps by changing the reference timestamp on which a bucket is defined.
+     * @param  int          $bucketTimestamp Controls how bucket timestamps are reported.
+     * @param  bool         $empty           Is a flag, which, when specified, reports aggregations also for empty buckets.
      * @return $this
      */
-    public function aggregation(string $aggregator, int $bucketDuration, int $align = 0, int $bucketTimestamp = 0, bool $empty = false): self
+    public function aggregation($aggregator, int $bucketDuration, int $align = 0, int $bucketTimestamp = 0, bool $empty = false): self
     {
+        $aggString = is_array($aggregator) ? implode(',', $aggregator) : (string) $aggregator;
+
         if ($align > 0) {
             array_push($this->arguments, 'ALIGN', $align);
         }
 
-        array_push($this->arguments, 'AGGREGATION', $aggregator, $bucketDuration);
+        array_push($this->arguments, 'AGGREGATION', $aggString, $bucketDuration);
 
         if ($bucketTimestamp > 0) {
             array_push($this->arguments, 'BUCKETTIMESTAMP', $bucketTimestamp);
