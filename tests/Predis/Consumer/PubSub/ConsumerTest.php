@@ -511,10 +511,10 @@ class ConsumerTest extends PredisTestCase
 
         $pubsub = new PubSubConsumer($consumer);
         $pubsub->subscribe(
-            "__subkeyspace@0__:test:hash",
-            "__subkeyevent@0__:hset",
+            '__subkeyspace@0__:test:hash',
+            '__subkeyevent@0__:hset',
             "__subkeyspaceitem@0__:test:hash\nfield",
-            "__subkeyspaceevent@0__:hset|test:hash"
+            '__subkeyspaceevent@0__:hset|test:hash'
         );
 
         $producer->hset('test:hash', 'field', 'value');
@@ -528,7 +528,7 @@ class ConsumerTest extends PredisTestCase
             $pubsub->stop();
         }
 
-        $this->assertSameValues(["hset|5:field", "9:test:hash|5:field", "hset", "5:field"], $messages);
+        $this->assertSameValues(['hset|5:field', '9:test:hash|5:field', 'hset', '5:field'], $messages);
     }
 
     /**
