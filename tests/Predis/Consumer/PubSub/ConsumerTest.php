@@ -490,45 +490,46 @@ class ConsumerTest extends PredisTestCase
      */
     public function testPubSubSupportsSubkeyNotificationSubscription(): void
     {
-        $parameters = [
-            'host' => constant('REDIS_SERVER_HOST'),
-            'port' => constant('REDIS_SERVER_PORT'),
-            'database' => constant('REDIS_SERVER_DBNUM'),
-            // Prevents suite from handing on broken test
-            'read_write_timeout' => 2,
-        ];
-
         $messages = [];
 
-        $consumer = new Client($parameters);
+        $consumer = $this->createClient(['read_write_timeout' => 2]);
         $consumer->connect();
 
-        $producer = new Client($parameters);
+        $producer = $this->createClient(['read_write_timeout' => 2]);
         $producer->connect();
 
-        // Enable keyspace notification + subkey notifications
-        $producer->config('SET', 'notify-keyspace-events', 'KEASTIV');
+        // Save original notify-keyspace-events configuration
+        $previousConfig = $producer->config('GET', 'notify-keyspace-events');
+        $previousValue = $previousConfig['notify-keyspace-events'] ?? '';
 
-        $pubsub = new PubSubConsumer($consumer);
-        $pubsub->subscribe(
-            '__subkeyspace@0__:test:hash',
-            '__subkeyevent@0__:hset',
-            "__subkeyspaceitem@0__:test:hash\nfield",
-            '__subkeyspaceevent@0__:hset|test:hash'
-        );
+        try {
+            // Enable keyspace notification + subkey notifications
+            $producer->config('SET', 'notify-keyspace-events', 'KEASTIV');
 
-        $producer->hset('test:hash', 'field', 'value');
+            $pubsub = new PubSubConsumer($consumer);
+            $pubsub->subscribe(
+                '__subkeyspace@0__:test:hash',
+                '__subkeyevent@0__:hset',
+                "__subkeyspaceitem@0__:test:hash\nfield",
+                '__subkeyspaceevent@0__:hset|test:hash'
+            );
 
-        foreach ($pubsub as $message) {
-            if ($message->kind !== 'message') {
-                continue;
+            $producer->hset('test:hash', 'field', 'value');
+
+            foreach ($pubsub as $message) {
+                if ($message->kind !== 'message') {
+                    continue;
+                }
+
+                $messages[] = $message->payload;
+                $pubsub->stop();
             }
 
-            $messages[] = $message->payload;
-            $pubsub->stop();
+            $this->assertSameValues(['hset|5:field', '9:test:hash|5:field', 'hset', '5:field'], $messages);
+        } finally {
+            // Restore original notify-keyspace-events configuration
+            $producer->config('SET', 'notify-keyspace-events', $previousValue);
         }
-
-        $this->assertSameValues(['hset|5:field', '9:test:hash|5:field', 'hset', '5:field'], $messages);
     }
 
     /**
