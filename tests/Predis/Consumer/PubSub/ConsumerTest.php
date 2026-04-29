@@ -486,6 +486,7 @@ class ConsumerTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 8.7.2
      */
     public function testPubSubSupportsSubkeyNotificationSubscription(): void
