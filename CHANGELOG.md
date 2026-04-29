@@ -8,6 +8,7 @@
 - Added new COUNT aggregator for Sorted Set commands (#1668)
 - Added XNACK support (#1666)
 - Added support for multiple aggregators for TS range commands (#1670)
+- Added testing for subkey notification channels (#1671)
 
 ### Changed
 - Include command name in unsupported container command error messages (#1653)
