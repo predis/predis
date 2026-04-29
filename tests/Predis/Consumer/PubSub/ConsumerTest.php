@@ -486,6 +486,55 @@ class ConsumerTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 8.7.2
+     */
+    public function testPubSubSupportsSubkeyNotificationSubscription(): void
+    {
+        $messages = [];
+
+        $consumer = $this->createClient(['read_write_timeout' => 2]);
+        $consumer->connect();
+
+        $producer = $this->createClient(['read_write_timeout' => 2]);
+        $producer->connect();
+
+        // Save original notify-keyspace-events configuration
+        $previousConfig = $producer->config('GET', 'notify-keyspace-events');
+        $previousValue = $previousConfig['notify-keyspace-events'] ?? '';
+
+        try {
+            // Enable keyspace notification + subkey notifications
+            $producer->config('SET', 'notify-keyspace-events', 'KEASTIV');
+
+            $pubsub = new PubSubConsumer($consumer);
+            $pubsub->subscribe(
+                '__subkeyspace@0__:test:hash',
+                '__subkeyevent@0__:hset',
+                "__subkeyspaceitem@0__:test:hash\nfield",
+                '__subkeyspaceevent@0__:hset|test:hash'
+            );
+
+            $producer->hset('test:hash', 'field', 'value');
+
+            foreach ($pubsub as $message) {
+                if ($message->kind !== 'message') {
+                    continue;
+                }
+
+                $messages[] = $message->payload;
+                $pubsub->stop();
+            }
+
+            $this->assertSameValues(['hset|5:field', '9:test:hash|5:field', 'hset', '5:field'], $messages);
+        } finally {
+            // Restore original notify-keyspace-events configuration
+            $producer->config('SET', 'notify-keyspace-events', $previousValue);
+        }
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      * @requires extension pcntl
      */
