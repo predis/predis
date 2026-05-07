@@ -441,6 +441,26 @@ class RedisStrategyTest extends PredisTestCase
             'LSET' => 'keys-first',
             'LTRIM' => 'keys-first',
 
+            /* commands operating on arrays */
+            'ARCOUNT' => 'keys-first',
+            'ARDEL' => 'keys-first',
+            'ARDELRANGE' => 'keys-first',
+            'ARGET' => 'keys-first',
+            'ARGETRANGE' => 'keys-first',
+            'ARGREP' => 'keys-first',
+            'ARINFO' => 'keys-first',
+            'ARINSERT' => 'keys-first',
+            'ARLASTITEMS' => 'keys-first',
+            'ARLEN' => 'keys-first',
+            'ARMGET' => 'keys-first',
+            'ARMSET' => 'keys-first',
+            'ARNEXT' => 'keys-first',
+            'AROP' => 'keys-first',
+            'ARRING' => 'keys-first',
+            'ARSCAN' => 'keys-first',
+            'ARSEEK' => 'keys-first',
+            'ARSET' => 'keys-first',
+
             /* commands operating on sets */
             'SADD' => 'keys-first',
             'SCARD' => 'keys-first',

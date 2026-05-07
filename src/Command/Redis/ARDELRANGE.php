@@ -1,0 +1,57 @@
+<?php
+
+/*
+ * This file is part of the Predis package.
+ *
+ * (c) 2009-2020 Daniele Alessandri
+ * (c) 2021-2026 Till Krüss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Predis\Command\Redis;
+
+use Predis\Command\PrefixableCommand as RedisCommand;
+
+/**
+ * @see http://redis.io/commands/ardelrange
+ */
+class ARDELRANGE extends RedisCommand
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
+    {
+        return 'ARDELRANGE';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setArguments(array $arguments)
+    {
+        if (count($arguments) === 2 && is_array($arguments[1])) {
+            $flat = [$arguments[0]];
+
+            foreach ($arguments[1] as $pair) {
+                if (is_array($pair)) {
+                    $flat[] = $pair[0];
+                    $flat[] = $pair[1];
+                } else {
+                    $flat[] = $pair;
+                }
+            }
+
+            $arguments = $flat;
+        }
+
+        parent::setArguments($arguments);
+    }
+
+    public function prefixKeys($prefix)
+    {
+        $this->applyPrefixForFirstArgument($prefix);
+    }
+}

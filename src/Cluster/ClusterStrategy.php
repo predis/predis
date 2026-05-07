@@ -99,6 +99,26 @@ abstract class ClusterStrategy implements StrategyInterface
             'LSET' => $getKeyFromFirstArgument,
             'LTRIM' => $getKeyFromFirstArgument,
 
+            /* commands operating on arrays */
+            'ARCOUNT' => $getKeyFromFirstArgument,
+            'ARDEL' => $getKeyFromFirstArgument,
+            'ARDELRANGE' => $getKeyFromFirstArgument,
+            'ARGET' => $getKeyFromFirstArgument,
+            'ARGETRANGE' => $getKeyFromFirstArgument,
+            'ARGREP' => $getKeyFromFirstArgument,
+            'ARINFO' => $getKeyFromFirstArgument,
+            'ARINSERT' => $getKeyFromFirstArgument,
+            'ARLASTITEMS' => $getKeyFromFirstArgument,
+            'ARLEN' => $getKeyFromFirstArgument,
+            'ARMGET' => $getKeyFromFirstArgument,
+            'ARMSET' => $getKeyFromFirstArgument,
+            'ARNEXT' => $getKeyFromFirstArgument,
+            'AROP' => $getKeyFromFirstArgument,
+            'ARRING' => $getKeyFromFirstArgument,
+            'ARSCAN' => $getKeyFromFirstArgument,
+            'ARSEEK' => $getKeyFromFirstArgument,
+            'ARSET' => $getKeyFromFirstArgument,
+
             /* commands operating on sets */
             'SADD' => $getKeyFromFirstArgument,
             'SCARD' => $getKeyFromFirstArgument,
