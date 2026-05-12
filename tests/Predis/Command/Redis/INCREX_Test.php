@@ -13,6 +13,7 @@
 namespace Predis\Command\Redis;
 
 use Predis\Command\PrefixableCommand;
+use stdClass;
 use UnexpectedValueException;
 
 /**
@@ -146,7 +147,7 @@ class INCREX_Test extends PredisCommandTestCase
         $this->expectException(UnexpectedValueException::class);
 
         $command = $this->getCommand();
-        $command->setArguments(['key', new \stdClass()]);
+        $command->setArguments(['key', new stdClass()]);
     }
 
     /**
