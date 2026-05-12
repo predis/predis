@@ -188,8 +188,20 @@ class INCREX_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
+        // BYINT response — ints stay ints
         $this->assertSame([5, 1], $this->getCommand()->parseResponse([5, 1]));
-        $this->assertSame(['5.5', '1.5'], $this->getCommand()->parseResponse(['5.5', '1.5']));
+
+        // RESP2 BYFLOAT response — bulk strings converted to native floats
+        $this->assertSame([5.5, 1.5], $this->getCommand()->parseResponse(['5.5', '1.5']));
+
+        // RESP3 BYFLOAT response — already native floats, untouched
+        $this->assertSame([5.5, 1.5], $this->getCommand()->parseResponse([5.5, 1.5]));
+
+        // Scientific notation
+        $this->assertSame([1000.0, 500.0], $this->getCommand()->parseResponse(['1e3', '5e2']));
+
+        // Non-array response — passed through (e.g. null)
+        $this->assertNull($this->getCommand()->parseResponse(null));
     }
 
     /**
@@ -232,7 +244,7 @@ class INCREX_Test extends PredisCommandTestCase
 
         $redis->set('cnt', '10');
 
-        $this->assertSame(['11.5', '1.5'], $redis->increx('cnt', 1.5));
+        $this->assertSame([11.5, 1.5], $redis->increx('cnt', 1.5));
     }
 
     /**
@@ -258,7 +270,7 @@ class INCREX_Test extends PredisCommandTestCase
 
         $redis->set('cnt', '10');
 
-        $this->assertSame(['12.5', '2.5'], $redis->increx('cnt', '2.5'));
+        $this->assertSame([12.5, 2.5], $redis->increx('cnt', '2.5'));
     }
 
     /**
@@ -392,6 +404,43 @@ class INCREX_Test extends PredisCommandTestCase
         $redis->set('cnt', 10);
 
         $this->assertSame([15, 5], $redis->increx('cnt', 5));
+    }
+
+    /**
+     * RESP2 returns BYFLOAT results as bulk strings while RESP3 returns native
+     * doubles. After parseResponse, callers should see the same native numeric
+     * types regardless of protocol.
+     *
+     * @group connected
+     * @requiresRedisVersion >= 8.8.0
+     */
+    public function testResponseTypesAreConsistentAcrossResp2AndResp3(): void
+    {
+        $resp2 = $this->getClient();
+        $resp2->set('cnt', '10');
+        $resp2Float = $resp2->increx('cnt', 1.5);
+        $resp2->set('cnt', 10);
+        $resp2Int = $resp2->increx('cnt', 5);
+
+        $resp3 = $this->getResp3Client(false);
+        $resp3->set('cnt', '10');
+        $resp3Float = $resp3->increx('cnt', 1.5);
+        $resp3->set('cnt', 10);
+        $resp3Int = $resp3->increx('cnt', 5);
+
+        // BYFLOAT: both protocols yield native floats after normalization
+        $this->assertSame($resp2Float, $resp3Float);
+        $this->assertIsFloat($resp2Float[0]);
+        $this->assertIsFloat($resp2Float[1]);
+        $this->assertIsFloat($resp3Float[0]);
+        $this->assertIsFloat($resp3Float[1]);
+
+        // BYINT: both protocols yield native ints
+        $this->assertSame($resp2Int, $resp3Int);
+        $this->assertIsInt($resp2Int[0]);
+        $this->assertIsInt($resp2Int[1]);
+        $this->assertIsInt($resp3Int[0]);
+        $this->assertIsInt($resp3Int[1]);
     }
 
     /**

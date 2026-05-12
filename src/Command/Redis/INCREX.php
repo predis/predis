@@ -70,13 +70,6 @@ class INCREX extends RedisCommand
      * {@inheritdoc}
      *
      * Arguments: [key, value, ?lbound, ?ubound, ?overflow, ?expireType, ?expireValue, ?enx]
-     *
-     * Value is required at the public API layer. The increment type (BYINT or BYFLOAT)
-     * is inferred from the runtime type of $value:
-     *   - int       → BYINT
-     *   - float     → BYFLOAT
-     *   - string    → must be numeric. BYFLOAT when it contains a decimal point or
-     *                 exponent, BYINT otherwise.
      */
     public function setArguments(array $arguments)
     {
@@ -137,6 +130,28 @@ class INCREX extends RedisCommand
         }
 
         parent::setArguments($processed);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Normalizes the response to native numeric types so RESP2 and RESP3 are
+     * consistent: RESP2 returns BYFLOAT results as bulk strings while RESP3
+     * returns native doubles. After parsing, callers always see int|float.
+     */
+    public function parseResponse($data)
+    {
+        if (!is_array($data)) {
+            return $data;
+        }
+
+        return array_map(static function ($v) {
+            if (!is_string($v) || !is_numeric($v)) {
+                return $v;
+            }
+
+            return strpbrk($v, '.eE') !== false ? (float) $v : (int) $v;
+        }, $data);
     }
 
     /**
