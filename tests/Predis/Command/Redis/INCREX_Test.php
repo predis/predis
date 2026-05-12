@@ -52,27 +52,27 @@ class INCREX_Test extends PredisCommandTestCase
     public function argumentsProvider(): array
     {
         return [
-            'int value → BYINT' => [
+            'int value BYINT' => [
                 ['key', 5],
                 ['key', 'BYINT', 5],
             ],
-            'negative int → BYINT' => [
+            'negative int BYINT' => [
                 ['key', -3],
                 ['key', 'BYINT', -3],
             ],
-            'float value → BYFLOAT' => [
+            'float value BYFLOAT' => [
                 ['key', 1.5],
                 ['key', 'BYFLOAT', 1.5],
             ],
-            'numeric string without decimal → BYINT' => [
+            'numeric string without decimal BYINT' => [
                 ['key', '5'],
                 ['key', 'BYINT', '5'],
             ],
-            'numeric string with decimal → BYFLOAT' => [
+            'numeric string with decimal BYFLOAT' => [
                 ['key', '1.5'],
                 ['key', 'BYFLOAT', '1.5'],
             ],
-            'numeric string with exponent → BYFLOAT' => [
+            'numeric string with exponent BYFLOAT' => [
                 ['key', '1e3'],
                 ['key', 'BYFLOAT', '1e3'],
             ],
@@ -188,19 +188,19 @@ class INCREX_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        // BYINT response — ints stay ints
+        // BYINT response - ints stay ints
         $this->assertSame([5, 1], $this->getCommand()->parseResponse([5, 1]));
 
-        // RESP2 BYFLOAT response — bulk strings converted to native floats
+        // RESP2 BYFLOAT response - bulk strings converted to native floats
         $this->assertSame([5.5, 1.5], $this->getCommand()->parseResponse(['5.5', '1.5']));
 
-        // RESP3 BYFLOAT response — already native floats, untouched
+        // RESP3 BYFLOAT response - already native floats, untouched
         $this->assertSame([5.5, 1.5], $this->getCommand()->parseResponse([5.5, 1.5]));
 
         // Scientific notation
         $this->assertSame([1000.0, 500.0], $this->getCommand()->parseResponse(['1e3', '5e2']));
 
-        // Non-array response — passed through (e.g. null)
+        // Non-array response - passed through (e.g. null)
         $this->assertNull($this->getCommand()->parseResponse(null));
     }
 
