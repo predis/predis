@@ -1684,7 +1684,6 @@ class ClientTest extends PredisTestCase
     /**
      * @group connected
      * @group sentinel
-     * @group relay-incompatible
      * @requiresRedisVersion >= 7.0.0
      */
     public function testConnectToSentinelAndExecuteCommands(): void
@@ -1700,7 +1699,6 @@ class ClientTest extends PredisTestCase
     /**
      * @group connected
      * @group sentinel
-     * @group relay-incompatible
      * @requiresRedisVersion >= 7.0.0
      */
     public function testSentinelReplicationConnection(): void
@@ -1716,6 +1714,34 @@ class ClientTest extends PredisTestCase
 
         // Verify master is connected
         $this->assertTrue($master->isConnected());
+    }
+
+    /**
+     * @group connected
+     * @group sentinel
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testSentinelReplicationConnectionWithResp3(): void
+    {
+        $client = $this->createClient(['protocol' => 3]);
+        $connection = $client->getConnection();
+
+        $this->assertInstanceOf(SentinelReplication::class, $connection);
+
+        // SENTINEL slaves returns a map under RESP3 — calling getSlaves()
+        // exercises the parsing path that previously read fields by
+        // positional index. We do not assert on cardinality because the
+        // CI topology may not include replicas; we only require that the
+        // call completes without protocol-incompatibility errors.
+        $slaves = $connection->getSlaves();
+        $this->assertIsArray($slaves);
+
+        foreach ($slaves as $slave) {
+            $this->assertInstanceOf('Predis\Connection\NodeConnectionInterface', $slave);
+        }
+
+        $client->set('sentinel_resp3_test_key', 'sentinel_resp3_test_value');
+        $this->assertEquals('sentinel_resp3_test_value', $client->get('sentinel_resp3_test_key'));
     }
 
     // ******************************************************************** //
