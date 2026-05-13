@@ -1728,7 +1728,7 @@ class ClientTest extends PredisTestCase
 
         $this->assertInstanceOf(SentinelReplication::class, $connection);
 
-        // SENTINEL slaves returns a map under RESP3 — calling getSlaves()
+        // SENTINEL slaves returns a map under RESP3 - calling getSlaves()
         // exercises the parsing path that previously read fields by
         // positional index. We do not assert on cardinality because the
         // CI topology may not include replicas; we only require that the
