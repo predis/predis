@@ -428,7 +428,6 @@ class PredisStrategyTest extends PredisTestCase
             'ARGREP' => 'keys-first',
             'ARINFO' => 'keys-first',
             'ARINSERT' => 'keys-first',
-            'ARLASTITEMS' => 'keys-first',
             'ARLEN' => 'keys-first',
             'ARMGET' => 'keys-first',
             'ARMSET' => 'keys-first',
