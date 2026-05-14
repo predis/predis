@@ -68,9 +68,13 @@ class PredisStrategyTest extends PredisTestCase
     {
         $strategy = $this->getClusterStrategy();
         $commands = $this->getCommandFactory();
-        $arguments = ['key'];
+        $arguments = ['key', 10];
 
         foreach ($this->getExpectedCommands('keys-first') as $commandID) {
+            if ($commandID === 'ARLASTITEMS') {
+                $arguments[] = 10;
+            }
+
             $command = $commands->create($commandID, $arguments);
             $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
@@ -428,6 +432,7 @@ class PredisStrategyTest extends PredisTestCase
             'ARGREP' => 'keys-first',
             'ARINFO' => 'keys-first',
             'ARINSERT' => 'keys-first',
+            'ARLASTITEMS' => 'keys-first',
             'ARLEN' => 'keys-first',
             'ARMGET' => 'keys-first',
             'ARMSET' => 'keys-first',

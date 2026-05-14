@@ -69,6 +69,10 @@ class RedisStrategyTest extends PredisTestCase
         $arguments = ['key'];
 
         foreach ($this->getExpectedCommands('keys-first') as $commandID) {
+            if ($commandID === 'ARLASTITEMS') {
+                $arguments[] = 10;
+            }
+
             $command = $commands->create($commandID, $arguments);
             $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
@@ -451,6 +455,7 @@ class RedisStrategyTest extends PredisTestCase
             'ARGREP' => 'keys-first',
             'ARINFO' => 'keys-first',
             'ARINSERT' => 'keys-first',
+            'ARLASTITEMS' => 'keys-first',
             'ARLEN' => 'keys-first',
             'ARMGET' => 'keys-first',
             'ARMSET' => 'keys-first',
