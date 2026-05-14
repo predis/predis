@@ -387,6 +387,7 @@ class PredisStrategyTest extends PredisTestCase
             'INCR' => 'keys-first',
             'INCRBY' => 'keys-first',
             'INCRBYFLOAT' => 'keys-first',
+            'INCREX' => 'keys-first',
             'SETBIT' => 'keys-first',
             'SETEX' => 'keys-first',
             'MSET' => 'keys-interleaved',

@@ -16,6 +16,7 @@ use InvalidArgumentException;
 use Predis\Command\Command;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\Command\Redis\Utils\CommandUtility;
 use Predis\CommunicationException;
 use Predis\Connection\AbstractAggregateConnection;
 use Predis\Connection\ConnectionException;
@@ -430,20 +431,24 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
         }
 
         foreach ($payload as $slave) {
-            $flags = explode(',', $slave[9]);
+            if ($slave !== [] && !is_string(key($slave))) {
+                $slave = CommandUtility::arrayToDictionary($slave, null, false);
+            }
+
+            $flags = explode(',', $slave['flags']);
 
             if (array_intersect($flags, ['s_down', 'o_down', 'disconnected'])) {
                 continue;
             }
 
             // ensure `master-link-status` is ok
-            if (isset($slave[31]) && $slave[31] === 'err') {
+            if (isset($slave['master-link-status']) && $slave['master-link-status'] === 'err') {
                 continue;
             }
 
             $slaves[] = [
-                'host' => $slave[3],
-                'port' => $slave[5],
+                'host' => $slave['ip'],
+                'port' => $slave['port'],
                 'role' => 'slave',
             ];
         }
