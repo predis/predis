@@ -69,7 +69,7 @@ class ARSCAN_Test extends PredisCommandTestCase
      */
     public function testParseResponse(): void
     {
-        $response = [0, 'a', 1, 'b'];
+        $response = [[0, 'a'], [1, 'b']];
 
         $this->assertSame($response, $this->getCommand()->parseResponse($response));
     }
@@ -95,13 +95,13 @@ class ARSCAN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 8.8.0
      */
-    public function testReturnsAlternatingIndexValuePairs(): void
+    public function testReturnsIndexValuePairs(): void
     {
         $redis = $this->getClient();
 
         $redis->arset('arr', 0, 'a', 'b', 'c');
 
-        $this->assertSame([0, 'a', 1, 'b', 2, 'c'], $redis->arscan('arr', 0, 2));
+        $this->assertSame([[0, 'a'], [1, 'b'], [2, 'c']], $redis->arscan('arr', 0, 2));
     }
 
     /**
@@ -114,7 +114,7 @@ class ARSCAN_Test extends PredisCommandTestCase
 
         $redis->armset('arr', [0 => 'a', 5 => 'b', 10 => 'c']);
 
-        $this->assertSame([0, 'a', 5, 'b', 10, 'c'], $redis->arscan('arr', 0, 10));
+        $this->assertSame([[0, 'a'], [5, 'b'], [10, 'c']], $redis->arscan('arr', 0, 10));
     }
 
     /**
@@ -127,7 +127,7 @@ class ARSCAN_Test extends PredisCommandTestCase
 
         $redis->arset('arr', 0, 'a', 'b', 'c');
 
-        $this->assertSame([2, 'c', 1, 'b', 0, 'a'], $redis->arscan('arr', 2, 0));
+        $this->assertSame([[2, 'c'], [1, 'b'], [0, 'a']], $redis->arscan('arr', 2, 0));
     }
 
     /**
@@ -140,7 +140,7 @@ class ARSCAN_Test extends PredisCommandTestCase
 
         $redis->arset('arr', 0, 'a', 'b', 'c', 'd');
 
-        $this->assertSame([0, 'a', 1, 'b'], $redis->arscan('arr', 0, 3, 2));
+        $this->assertSame([[0, 'a'], [1, 'b']], $redis->arscan('arr', 0, 3, 2));
     }
 
     /**
@@ -158,13 +158,13 @@ class ARSCAN_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 8.8.0
      */
-    public function testReturnsAlternatingPairsResp3(): void
+    public function testReturnsIndexValuePairsResp3(): void
     {
         $redis = $this->getResp3Client();
 
         $redis->arset('arr', 0, 'a', 'b', 'c');
 
-        $this->assertSame([0, 'a', 1, 'b', 2, 'c'], $redis->arscan('arr', 0, 2));
+        $this->assertSame([[0, 'a'], [1, 'b'], [2, 'c']], $redis->arscan('arr', 0, 2));
     }
 
     /**

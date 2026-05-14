@@ -201,7 +201,7 @@ class ARGREP_Test extends PredisCommandTestCase
         $redis->arset('arr', 0, 'foo', 'bar');
 
         $this->assertSame(
-            [0, 'foo'],
+            [[0, 'foo']],
             $redis->argrep('arr', 0, 1, [['EXACT', 'foo']], null, null, true)
         );
     }
