@@ -9,6 +9,7 @@
 - Added XNACK support (#1666)
 - Added support for multiple aggregators for TS range commands (#1670)
 - Added testing for subkey notification channels (#1671)
+- Added support for INCREX command (#1674)
 
 ### Changed
 - Include command name in unsupported container command error messages (#1653)
@@ -18,6 +19,7 @@
 - Fixed handling of gap slots in `SlotMap::offsetUnset()` (#1660)
 - Fixed ZRANGE to include 6.2 arguments (#1662)
 - Fixed Sentinel retry to narrow retryable exceptions to CommunicationException (#1665)
+- Fixed SENTINEL SLAVES RESP3 incompatible response (#1676)
 
 ## v3.4.2 (2026-03-09)
 ### Changed

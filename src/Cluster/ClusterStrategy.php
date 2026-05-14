@@ -68,6 +68,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'INCR' => $getKeyFromFirstArgument,
             'INCRBY' => $getKeyFromFirstArgument,
             'INCRBYFLOAT' => $getKeyFromFirstArgument,
+            'INCREX' => $getKeyFromFirstArgument,
             'SETBIT' => $getKeyFromFirstArgument,
             'SETEX' => $getKeyFromFirstArgument,
             'MSET' => [$this, 'getKeyFromInterleavedArguments'],
