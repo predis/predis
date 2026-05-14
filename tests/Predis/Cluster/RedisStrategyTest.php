@@ -73,6 +73,10 @@ class RedisStrategyTest extends PredisTestCase
                 $arguments[] = 10;
             }
 
+            if ($commandID === 'ARSCAN') {
+                $arguments[] = 11;
+            }
+
             $command = $commands->create($commandID, $arguments);
             $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
