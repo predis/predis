@@ -596,6 +596,61 @@ class SentinelReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testMethodGetSlavesParsesResp3MapResponse(): void
+    {
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $sentinel1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('SENTINEL', ['slaves', 'svc'])]
+            )
+            ->willReturnOnConsecutiveCalls(
+                [
+                    [
+                        'name' => '127.0.0.1:6382',
+                        'ip' => '127.0.0.1',
+                        'port' => '6382',
+                        'runid' => '112cdebd22924a7d962be496f3a1c4c7c9bad93f',
+                        'flags' => 'slave',
+                        'master-host' => '127.0.0.1',
+                        'master-port' => '6381',
+                        'master-link-status' => 'ok',
+                    ],
+                    [
+                        'name' => '127.0.0.1:6383',
+                        'ip' => '127.0.0.1',
+                        'port' => '6383',
+                        'runid' => '1c0bf1291797fbc5608c07a17da394147dc62817',
+                        'flags' => 's_down,slave',
+                        'master-host' => '127.0.0.1',
+                        'master-port' => '6381',
+                        'master-link-status' => 'ok',
+                    ],
+                    [
+                        'name' => '127.0.0.1:6384',
+                        'ip' => '127.0.0.1',
+                        'port' => '6384',
+                        'runid' => '8c0bf1291797fbc5608c07a17da394147dc62818',
+                        'flags' => 'slave',
+                        'master-host' => '127.0.0.1',
+                        'master-port' => '6381',
+                        'master-link-status' => 'err',
+                    ],
+                ]
+            );
+
+        $replication = $this->getReplicationConnection('svc', [$sentinel1]);
+
+        $slaves = $replication->getSlaves();
+
+        $this->assertCount(1, $slaves);
+        $this->assertSame('127.0.0.1:6382', (string) $slaves[0]);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testMethodGetSlavesThrowsExceptionOnNoAvailableSentinels(): void
     {
         $this->expectException('Predis\ClientException');
