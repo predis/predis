@@ -71,7 +71,7 @@ class VGETATTR_Test extends PredisCommandTestCase
 
         $this->assertTrue(
             $redis->vadd(
-                'key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', 10, false,
+                'key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', null, false,
                 null, null, ['key' => 'value', 'key1' => 'value1']
             )
         );
@@ -95,7 +95,7 @@ class VGETATTR_Test extends PredisCommandTestCase
 
         $this->assertTrue(
             $redis->vadd(
-                'key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', 10, false,
+                'key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', null, false,
                 null, null, ['key' => 'value', 'key1' => 'value1']
             )
         );

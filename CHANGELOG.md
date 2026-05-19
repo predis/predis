@@ -8,6 +8,7 @@
 - Added XNACK support (#1666)
 - Added support for multiple aggregators for TS range commands (#1670)
 - Added testing for subkey notification channels (#1671)
+- Added support for new array commands (#1672)
 - Added support for INCREX command (#1674)
 
 ### Changed
