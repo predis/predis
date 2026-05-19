@@ -98,7 +98,12 @@ class HOTKEYS_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
         $hotkeysInfo = $redis->hotkeys->get()[0];
-        $this->assertCount(24, $hotkeysInfo['by-cpu-time-us']);
+        $tracked = count($hotkeysInfo['by-cpu-time-us']);
+        // COUNT 12 is an upper bound on tracked keys (24 = 12 key/score pairs);
+        // sampling may return fewer entries, but always in even-sized key/score pairs.
+        $this->assertNotEmpty($hotkeysInfo['by-cpu-time-us']);
+        $this->assertLessThanOrEqual(24, $tracked);
+        $this->assertSame(0, $tracked % 2);
 
         // Starts hotkeys tracking (with DURATION, SAMPLE)
         $this->assertEquals(
@@ -160,7 +165,12 @@ class HOTKEYS_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
         $hotkeysInfo = $redis->hotkeys->get()[0];
-        $this->assertCount(24, $hotkeysInfo['by-cpu-time-us']);
+        $tracked = count($hotkeysInfo['by-cpu-time-us']);
+        // COUNT 12 is an upper bound on tracked keys (24 = 12 key/score pairs);
+        // sampling may return fewer entries, but always in even-sized key/score pairs.
+        $this->assertNotEmpty($hotkeysInfo['by-cpu-time-us']);
+        $this->assertLessThanOrEqual(24, $tracked);
+        $this->assertSame(0, $tracked % 2);
 
         // Starts hotkeys tracking (with DURATION, SAMPLE)
         $this->assertEquals(

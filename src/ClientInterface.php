@@ -171,7 +171,6 @@ use Predis\Response\Status;
  * @method array             ftsyndump(string $index)
  * @method Status            ftsynupdate(string $index, string $synonymGroupId, ?SynUpdateArguments $arguments = null, string ...$terms)
  * @method array             fttagvals(string $index, string $fieldName)
- * @method array             gcra(string $key, int $maxBurst, int $tokensPerPeriod, float $period, ?int $tokens = null)
  * @method string|null       get(string $key)
  * @method int               getbit(string $key, $offset)
  * @method int|null          getex(string $key, $modifier = '', $value = false)
