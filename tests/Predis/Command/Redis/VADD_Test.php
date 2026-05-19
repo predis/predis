@@ -83,31 +83,31 @@ class VADD_Test extends PredisCommandTestCase
 
         // Vector as blob string
         $this->assertTrue(
-            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', 10)
+            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2]), 'elem1', 10)
         );
         // Vector as array
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem2', 10)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], 'elem2', 10)
         );
         // With CAS
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem3', 10, true)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], 'elem3', 10, true)
         );
         // With quantisation
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem4', 10, true, VADD::QUANT_Q8)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], 'elem4', 10, true, VADD::QUANT_Q8)
         );
         // With attributes as JSON
         $this->assertTrue(
             $redis->vadd(
-                'key', [0.1, 0.2, 0.3, 0.4], 'elem5', 10, true, VADD::QUANT_Q8, null,
+                'key', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], 'elem5', 10, true, VADD::QUANT_Q8, null,
                 '{"key1":"value1","key2":"value2"}'
             )
         );
         // With attributes as associative array
         $this->assertTrue(
             $redis->vadd(
-                'key', [0.1, 0.2, 0.3, 0.4], 'elem6', 10, true, VADD::QUANT_Q8, null,
+                'key', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], 'elem6', 10, true, VADD::QUANT_Q8, null,
                 ['key1' => 'value1', 'key2' => 'value2']
             )
         );
@@ -124,31 +124,31 @@ class VADD_Test extends PredisCommandTestCase
 
         // Vector as blob string
         $this->assertTrue(
-            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', 10)
+            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2]), 'elem1', 10)
         );
         // Vector as array
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem2', 10)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], 'elem2', 10)
         );
         // With CAS
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem3', 10, true)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], 'elem3', 10, true)
         );
         // With quantisation
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem4', 10, true, VADD::QUANT_Q8)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], 'elem4', 10, true, VADD::QUANT_Q8)
         );
         // With attributes as JSON
         $this->assertTrue(
             $redis->vadd(
-                'key', [0.1, 0.2, 0.3, 0.4], 'elem5', 10, true, VADD::QUANT_Q8, null,
+                'key', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], 'elem5', 10, true, VADD::QUANT_Q8, null,
                 '{"key1":"value1","key2":"value2"}'
             )
         );
         // With attributes as associative array
         $this->assertTrue(
             $redis->vadd(
-                'key', [0.1, 0.2, 0.3, 0.4], 'elem6', 10, true, VADD::QUANT_Q8, null,
+                'key', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2], 'elem6', 10, true, VADD::QUANT_Q8, null,
                 ['key1' => 'value1', 'key2' => 'value2']
             )
         );

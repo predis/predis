@@ -62,13 +62,13 @@ class VREM_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertTrue(
-            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', 10)
+            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1')
         );
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem2', 10)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem2')
         );
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem3', 10, true)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem3', null, true)
         );
 
         $this->assertTrue($redis->vrem('key', 'elem2'));
@@ -86,13 +86,13 @@ class VREM_Test extends PredisCommandTestCase
         $redis = $this->getResp3Client();
 
         $this->assertTrue(
-            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', 10)
+            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1')
         );
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem2', 10)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem2')
         );
         $this->assertTrue(
-            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem3', 10, true)
+            $redis->vadd('key', [0.1, 0.2, 0.3, 0.4], 'elem3', null, true)
         );
 
         $this->assertTrue($redis->vrem('key', 'elem2'));

@@ -61,7 +61,7 @@ class VDIM_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertTrue(
-            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', 10)
+            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]), 'elem1')
         );
         $this->assertEquals(10, $redis->vdim('key'));
     }
@@ -76,7 +76,7 @@ class VDIM_Test extends PredisCommandTestCase
         $redis = $this->getResp3Client();
 
         $this->assertTrue(
-            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', 10)
+            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]), 'elem1')
         );
         $this->assertEquals(10, $redis->vdim('key'));
     }

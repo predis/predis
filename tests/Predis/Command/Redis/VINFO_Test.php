@@ -61,7 +61,7 @@ class VINFO_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertTrue(
-            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', 10)
+            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1')
         );
 
         $info = $redis->vinfo('key');
@@ -82,7 +82,7 @@ class VINFO_Test extends PredisCommandTestCase
         $redis = $this->getResp3Client();
 
         $this->assertTrue(
-            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1', 10)
+            $redis->vadd('key', VectorUtility::toBlob([0.1, 0.2, 0.3, 0.4]), 'elem1')
         );
 
         $info = $redis->vinfo('key');
