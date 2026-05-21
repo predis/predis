@@ -170,7 +170,7 @@ use Predis\Command\Redis\VADD;
  * @method $this incr($key)
  * @method $this incrby($key, $increment)
  * @method $this incrbyfloat($key, $increment)
- * @method $this increx(string $key, int|float|string $value, ?int $lbound = null, ?int $ubound = null, ?string $overflow = null, ?string $expireType = null, $expireValue = null, bool $enx = false)
+ * @method $this increx(string $key, int|float|string $value, ?int $lbound = null, ?int $ubound = null, bool $saturate = false, ?string $expireType = null, $expireValue = null, bool $enx = false)
  * @method $this mget(array $keys)
  * @method $this mset(array $dictionary)
  * @method $this msetex(array $dictionary, ?string $existModifier = null, ?string $expireResolution = null, ?int $expireTTL = null)

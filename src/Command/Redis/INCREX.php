@@ -23,29 +23,11 @@ class INCREX extends RedisCommand
     public const BY_INT = 'BYINT';
     public const BY_FLOAT = 'BYFLOAT';
 
-    public const OVERFLOW_FAIL = 'FAIL';
-    public const OVERFLOW_SAT = 'SAT';
-    public const OVERFLOW_REJECT = 'REJECT';
-
     public const EXPIRE_EX = 'EX';
     public const EXPIRE_PX = 'PX';
     public const EXPIRE_EXAT = 'EXAT';
     public const EXPIRE_PXAT = 'PXAT';
     public const EXPIRE_PERSIST = 'PERSIST';
-
-    /**
-     * @var string[]
-     */
-    private static $byEnum = [self::BY_INT, self::BY_FLOAT];
-
-    /**
-     * @var string[]
-     */
-    private static $overflowEnum = [
-        self::OVERFLOW_FAIL,
-        self::OVERFLOW_SAT,
-        self::OVERFLOW_REJECT,
-    ];
 
     /**
      * @var string[]
@@ -69,7 +51,7 @@ class INCREX extends RedisCommand
     /**
      * {@inheritdoc}
      *
-     * Arguments: [key, value, ?lbound, ?ubound, ?overflow, ?expireType, ?expireValue, ?enx]
+     * Arguments: [key, value, ?lbound, ?ubound, ?saturate, ?expireType, ?expireValue, ?enx]
      */
     public function setArguments(array $arguments)
     {
@@ -91,17 +73,8 @@ class INCREX extends RedisCommand
             $processed[] = $arguments[3];
         }
 
-        $overflow = $arguments[4] ?? null;
-        if ($overflow !== null && $overflow !== '') {
-            $overflow = strtoupper($overflow);
-
-            if (!in_array($overflow, self::$overflowEnum, true)) {
-                $allowed = implode(', ', self::$overflowEnum);
-                throw new UnexpectedValueException("Overflow policy accepts only: {$allowed} values");
-            }
-
-            $processed[] = 'OVERFLOW';
-            $processed[] = $overflow;
+        if (!empty($arguments[4])) {
+            $processed[] = 'SATURATE';
         }
 
         $expireType = $arguments[5] ?? null;
