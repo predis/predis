@@ -180,7 +180,7 @@ use Predis\Response\Status;
  * @method int               incr(string $key)
  * @method int               incrby(string $key, int $increment)
  * @method string            incrbyfloat(string $key, int|float $increment)
- * @method array             increx(string $key, int|float|string $value, ?int $lbound = null, ?int $ubound = null, ?string $overflow = null, ?string $expireType = null, $expireValue = null, bool $enx = false)
+ * @method array             increx(string $key, int|float|string $value, ?int $lbound = null, ?int $ubound = null, bool $saturate = false, ?string $expireType = null, $expireValue = null, bool $enx = false)
  * @method array             mget(string[]|string $keyOrKeys, string ...$keys = null)
  * @method mixed             mset(array $dictionary)
  * @method array             msetex(array $dictionary, ?string $existModifier = null, ?string $expireResolution = null, ?int $expireTTL = null)

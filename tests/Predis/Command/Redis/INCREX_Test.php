@@ -89,29 +89,33 @@ class INCREX_Test extends PredisCommandTestCase
                 ['key', 1, null, 100],
                 ['key', 'BYINT', 1, 'UBOUND', 100],
             ],
-            'with OVERFLOW SAT' => [
-                ['key', 5, null, 100, 'SAT'],
-                ['key', 'BYINT', 5, 'UBOUND', 100, 'OVERFLOW', 'SAT'],
+            'with SATURATE' => [
+                ['key', 5, null, 100, true],
+                ['key', 'BYINT', 5, 'UBOUND', 100, 'SATURATE'],
+            ],
+            'without SATURATE (default reject)' => [
+                ['key', 5, null, 100, false],
+                ['key', 'BYINT', 5, 'UBOUND', 100],
             ],
             'with EX expiration' => [
-                ['key', 1, null, null, null, 'EX', 60],
+                ['key', 1, null, null, false, 'EX', 60],
                 ['key', 'BYINT', 1, 'EX', 60],
             ],
             'with PERSIST' => [
-                ['key', 1, null, null, null, 'PERSIST'],
+                ['key', 1, null, null, false, 'PERSIST'],
                 ['key', 'BYINT', 1, 'PERSIST'],
             ],
             'with ENX flag' => [
-                ['key', 1, null, null, null, 'EX', 60, true],
+                ['key', 1, null, null, false, 'EX', 60, true],
                 ['key', 'BYINT', 1, 'EX', 60, 'ENX'],
             ],
             'all options with int' => [
-                ['key', 5, 0, 100, 'REJECT', 'PX', 5000, true],
-                ['key', 'BYINT', 5, 'LBOUND', 0, 'UBOUND', 100, 'OVERFLOW', 'REJECT', 'PX', 5000, 'ENX'],
+                ['key', 5, 0, 100, true, 'PX', 5000, true],
+                ['key', 'BYINT', 5, 'LBOUND', 0, 'UBOUND', 100, 'SATURATE', 'PX', 5000, 'ENX'],
             ],
             'all options with float' => [
-                ['key', 1.5, 0, 100, 'REJECT', 'PX', 5000, true],
-                ['key', 'BYFLOAT', 1.5, 'LBOUND', 0, 'UBOUND', 100, 'OVERFLOW', 'REJECT', 'PX', 5000, 'ENX'],
+                ['key', 1.5, 0, 100, true, 'PX', 5000, true],
+                ['key', 'BYFLOAT', 1.5, 'LBOUND', 0, 'UBOUND', 100, 'SATURATE', 'PX', 5000, 'ENX'],
             ],
         ];
     }
@@ -153,23 +157,12 @@ class INCREX_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
-    public function testThrowsExceptionOnInvalidOverflow(): void
-    {
-        $this->expectException(UnexpectedValueException::class);
-
-        $command = $this->getCommand();
-        $command->setArguments(['key', 1, null, null, 'INVALID']);
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testThrowsExceptionOnInvalidExpireType(): void
     {
         $this->expectException(UnexpectedValueException::class);
 
         $command = $this->getCommand();
-        $command->setArguments(['key', 1, null, null, null, 'INVALID', 60]);
+        $command->setArguments(['key', 1, null, null, false, 'INVALID', 60]);
     }
 
     /**
@@ -181,7 +174,7 @@ class INCREX_Test extends PredisCommandTestCase
         $this->expectExceptionMessage('EX requires a value');
 
         $command = $this->getCommand();
-        $command->setArguments(['key', 1, null, null, null, 'EX']);
+        $command->setArguments(['key', 1, null, null, false, 'EX']);
     }
 
     /**
@@ -291,42 +284,31 @@ class INCREX_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 8.8.0
      */
-    public function testOverflowSatSaturatesToBound(): void
+    public function testSaturateClampsResultToBound(): void
     {
         $redis = $this->getClient();
 
         $redis->set('cnt', 10);
 
-        $this->assertSame([50, 40], $redis->increx('cnt', 1000, null, 50, 'SAT'));
+        $this->assertSame([50, 40], $redis->increx('cnt', 1000, null, 50, true));
         $this->assertSame('50', $redis->get('cnt'));
     }
 
     /**
+     * Without SATURATE, an out-of-bounds operation is rejected silently:
+     * the key value and TTL remain unchanged and the reply is [current_value, 0].
+     *
      * @group connected
      * @requiresRedisVersion >= 8.8.0
      */
-    public function testOverflowRejectLeavesValueUnchanged(): void
+    public function testDefaultRejectLeavesValueUnchanged(): void
     {
         $redis = $this->getClient();
 
         $redis->set('cnt', 10);
 
-        $redis->increx('cnt', 1000, null, 50, 'REJECT');
+        $this->assertSame([10, 0], $redis->increx('cnt', 1000, null, 50));
         $this->assertSame('10', $redis->get('cnt'));
-    }
-
-    /**
-     * @group connected
-     * @requiresRedisVersion >= 8.8.0
-     */
-    public function testOverflowFailRaisesError(): void
-    {
-        $this->expectException('Predis\Response\ServerException');
-
-        $redis = $this->getClient();
-
-        $redis->set('cnt', 10);
-        $redis->increx('cnt', 1000, null, 50, 'FAIL');
     }
 
     /**
@@ -339,7 +321,7 @@ class INCREX_Test extends PredisCommandTestCase
 
         $redis->set('cnt', 10);
 
-        $redis->increx('cnt', 1, null, null, null, 'PX', 60000);
+        $redis->increx('cnt', 1, null, null, false, 'PX', 60000);
         $this->assertGreaterThan(0, $redis->pttl('cnt'));
     }
 
@@ -355,7 +337,7 @@ class INCREX_Test extends PredisCommandTestCase
 
         $future = (int) ((microtime(true) + 60) * 1000);
 
-        $redis->increx('cnt', 1, null, null, null, 'PXAT', $future);
+        $redis->increx('cnt', 1, null, null, false, 'PXAT', $future);
         $this->assertGreaterThan(0, $redis->pttl('cnt'));
     }
 
@@ -371,7 +353,7 @@ class INCREX_Test extends PredisCommandTestCase
         $redis->expire('cnt', 60);
         $this->assertGreaterThan(0, $redis->ttl('cnt'));
 
-        $redis->increx('cnt', 1, null, null, null, 'PERSIST');
+        $redis->increx('cnt', 1, null, null, false, 'PERSIST');
         $this->assertSame(-1, $redis->ttl('cnt'));
     }
 
@@ -385,11 +367,11 @@ class INCREX_Test extends PredisCommandTestCase
 
         $redis->set('cnt', 10);
 
-        $redis->increx('cnt', 1, null, null, null, 'EX', 60, true);
+        $redis->increx('cnt', 1, null, null, false, 'EX', 60, true);
         $firstTtl = $redis->ttl('cnt');
         $this->assertGreaterThan(0, $firstTtl);
 
-        $redis->increx('cnt', 1, null, null, null, 'EX', 9999, true);
+        $redis->increx('cnt', 1, null, null, false, 'EX', 9999, true);
         $secondTtl = $redis->ttl('cnt');
         $this->assertLessThanOrEqual($firstTtl, $secondTtl);
     }
