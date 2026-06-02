@@ -392,6 +392,7 @@ class RedisStrategyTest extends PredisTestCase
             /* commands operating on the key space */
             'EXISTS' => 'keys-all',
             'DEL' => 'keys-all',
+            'UNLINK' => 'keys-all',
             'TYPE' => 'keys-first',
             'EXPIRE' => 'keys-first',
             'EXPIREAT' => 'keys-first',
