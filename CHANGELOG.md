@@ -10,6 +10,7 @@
 - Added testing for subkey notification channels (#1671)
 - Added support for new array commands (#1672)
 - Added support for INCREX command (#1674)
+- Added support for UNLINK command (#1680)
 
 ### Changed
 - Include command name in unsupported container command error messages (#1653)
