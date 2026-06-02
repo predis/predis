@@ -15,6 +15,7 @@
 - Include command name in unsupported container command error messages (#1653)
 - Updated arguments name for GCRA command (#1667)
 - Updated INCREX arguments (#1677)
+- Updated 8.8 GA test image (#1679)
 
 ### Fixed
 - Fixed handling of gap slots in `SlotMap::offsetUnset()` (#1660)
