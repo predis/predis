@@ -5,12 +5,11 @@
 - Added support for `XNACK` command (#1666)
 - Added support for `INCREX` command (#1674)
 - Added support for `UNLINK` command (#1680)
-- Added support for new array commands (#1672)
+- Added support for `AR*` array commands (#1672)
 - Handle Redis Cluster `-READONLY` responses failover events (#1656)
 - Added `FPHA` argument for `JSON.SET` command (#1661)
 - Added new `COUNT` aggregator for Sorted Set commands (#1668)
 - Added support for multiple aggregators for `TS.range` commands (#1670)
-- Added testing for subkey notification channels (#1671)
 
 ### Changed
 - Include command name in unsupported container command error messages (#1653)
