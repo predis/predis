@@ -27,7 +27,7 @@ jobs:
 
     steps:
 
-      - uses: release-drafter/release-drafter@v5
+      - uses: release-drafter/release-drafter@v7
         with:
           config-name: release-drafter-config.yml
         env:

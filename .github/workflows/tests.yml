@@ -78,16 +78,16 @@ jobs:
           fi
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Start Redis standalone image
-        uses: hoverkraft-tech/compose-action@v2.0.1
+        uses: hoverkraft-tech/compose-action@v2.6.0
         with:
           compose-file: .github/docker-compose.yml
           services: ${{ env.DOCKER_SERVICE }}
 
       - name: Start Redis unprotected image
-        uses: hoverkraft-tech/compose-action@v2.0.1
+        uses: hoverkraft-tech/compose-action@v2.6.0
         if: ${{ matrix.redis > '4.0' }}
         with:
           compose-file: .github/docker-compose.yml
@@ -95,7 +95,7 @@ jobs:
 
       - name: Start Redis stack image
         id: stack_infra
-        uses: hoverkraft-tech/compose-action@v2.0.1
+        uses: hoverkraft-tech/compose-action@v2.6.0
         if: ${{ matrix.redis >= '7.2' && matrix.redis < '8.0' }}
         with:
           compose-file: .github/docker-compose.yml
@@ -103,7 +103,7 @@ jobs:
 
       - name: Start Redis cluster image
         id: cluster_infra
-        uses: hoverkraft-tech/compose-action@v2.0.1
+        uses: hoverkraft-tech/compose-action@v2.6.0
         if: ${{ matrix.redis > '4.0' }}
         with:
           compose-file: .github/docker-compose.yml
@@ -111,7 +111,7 @@ jobs:
 
       - name: Start Redis sentinels image
         id: sentinel_infra
-        uses: hoverkraft-tech/compose-action@v2.0.1
+        uses: hoverkraft-tech/compose-action@v2.6.0
         if: ${{ matrix.redis > '4.0' }}
         with:
           compose-file: .github/docker-compose.yml
@@ -125,7 +125,7 @@ jobs:
           coverage: ${{ (matrix.php == '8.4' && matrix.redis == '8.0') && 'xdebug' || 'none' }}
 
       - name: Install Composer dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@v4
         with:
           dependency-versions: highest
           composer-options: ${{ matrix.php == '8.0' && '--ignore-platform-reqs' || '' }}
