@@ -1,4 +1,8 @@
 ## Changelog
+### Unreleased
+
+### Changed
+- Update GH runners based on NodeJS <= 20 (#1684)
 
 ## v3.5.0 (2026-06-02)
 ### Added
