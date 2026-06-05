@@ -73,7 +73,7 @@ jobs:
         run: composer validate --no-interaction --strict
 
       - name: Install dependencies
-        uses: ramsey/composer-install@4.0.0
+        uses: ramsey/composer-install@v4
         with:
           dependency-versions: highest
 
@@ -110,7 +110,7 @@ jobs:
         uses: greut/eclint-action@v0
 
       - name: Install dependencies
-        uses: ramsey/composer-install@4.0.0
+        uses: ramsey/composer-install@v4
         with:
           dependency-versions: highest
 

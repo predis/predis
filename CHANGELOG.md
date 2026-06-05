@@ -1,26 +1,24 @@
 ## Changelog
 
-## Unreleased
+## v3.5.0 (2026-06-02)
 ### Added
+- Added support for `XNACK` command (#1666)
+- Added support for `INCREX` command (#1674)
+- Added support for `UNLINK` command (#1680)
+- Added support for `AR*` array commands (#1672)
 - Handle Redis Cluster `-READONLY` responses failover events (#1656)
-- Added FPHA argument for JSON.SET command (#1661)
-- Added new COUNT aggregator for Sorted Set commands (#1668)
-- Added XNACK support (#1666)
-- Added support for multiple aggregators for TS range commands (#1670)
-- Added testing for subkey notification channels (#1671)
-- Added support for new array commands (#1672)
-- Added support for INCREX command (#1674)
+- Added `FPHA` argument for `JSON.SET` command (#1661)
+- Added new `COUNT` aggregator for Sorted Set commands (#1668)
+- Added support for multiple aggregators for `TS.range` commands (#1670)
 
 ### Changed
 - Include command name in unsupported container command error messages (#1653)
-- Updated arguments name for GCRA command (#1667)
-- Updated INCREX arguments (#1677)
 
 ### Fixed
 - Fixed handling of gap slots in `SlotMap::offsetUnset()` (#1660)
-- Fixed ZRANGE to include 6.2 arguments (#1662)
-- Fixed Sentinel retry to narrow retryable exceptions to CommunicationException (#1665)
-- Fixed SENTINEL SLAVES RESP3 incompatible response (#1676)
+- Fixed `ZRANGE` to include 6.2 arguments (#1662)
+- Fixed Sentinel retry to narrow retryable exceptions to `CommunicationException` (#1665)
+- Fixed `SENTINEL SLAVES` RESP3 incompatible response (#1676)
 
 ## v3.4.2 (2026-03-09)
 ### Changed
