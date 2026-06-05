@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Check file permissions
         run: test "$(find . -type f -not -path './.git/*' -executable)" = "./bin/create-command-test"
@@ -47,7 +47,7 @@ jobs:
           tools: parallel-lint
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Check source code for syntax errors
         run: composer exec -- parallel-lint bin/ examples/ src/ tests/
@@ -67,13 +67,13 @@ jobs:
           coverage: none
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Validate Composer configuration
         run: composer validate --no-interaction --strict
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@4.0.0
         with:
           dependency-versions: highest
 
@@ -101,7 +101,7 @@ jobs:
           coverage: none
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Check EditorConfig configuration
         run: test -f .editorconfig
@@ -110,7 +110,7 @@ jobs:
         uses: greut/eclint-action@v0
 
       - name: Install dependencies
-        uses: ramsey/composer-install@v2
+        uses: ramsey/composer-install@4.0.0
         with:
           dependency-versions: highest
 
@@ -130,7 +130,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Check exported files
         run: |
@@ -159,7 +159,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
