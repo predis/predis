@@ -53,6 +53,7 @@ use Predis\Command\Redis\HSETEX;
 use Predis\Command\Redis\VADD;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
+use Predis\Pipeline\Pipeline;
 use Predis\Response\Status;
 
 /**
@@ -429,6 +430,7 @@ use Predis\Response\Status;
  * @method array             georadiusbymember(string $key, $member, $radius, $unit, ?array $options = null)
  * @method array             geosearch(string $key, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $withCoord = false, bool $withDist = false, bool $withHash = false)
  * @method int               geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
+ * @method Pipeline|array    pipeline(mixed ...$arguments)
  *
  * Container commands
  * @property CLIENT    $client
