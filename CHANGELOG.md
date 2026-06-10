@@ -3,7 +3,7 @@
 - Expose pipeline API via ClientInterface (#1686)
 
 ### Fixed
-- Allow `UNLINK` to accept an array of keys as a single argument
+- Allow `UNLINK` to accept an array of keys as a single argument (#1687)
 
 ## v3.5.0 (2026-06-02)
 ### Added
