@@ -1,4 +1,6 @@
 ## Changelog
+### Added
+- Expose pipeline API via ClientInterface (#1686)
 
 ## v3.5.0 (2026-06-02)
 ### Added

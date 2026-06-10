@@ -53,6 +53,7 @@ use Predis\Command\Redis\HSETEX;
 use Predis\Command\Redis\VADD;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
+use Predis\Pipeline\Pipeline;
 use Predis\Response\Status;
 
 /**
@@ -381,6 +382,7 @@ use Predis\Response\Status;
  * @method mixed             discard()
  * @method array|null        exec()
  * @method mixed             multi()
+ * @method Pipeline|array    pipeline(mixed ...$arguments)
  * @method mixed             unwatch()
  * @method array             unsubscribe(string ...$channels)
  * @method bool              vadd(string $key, string|array $vector, string $elem, int $dim = null, bool $cas = false, string $quant = VADD::QUANT_DEFAULT, int $bef = null, string|array $attributes = null, int $numlinks = null)
