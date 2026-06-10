@@ -2,6 +2,9 @@
 ### Added
 - Expose pipeline API via ClientInterface (#1686)
 
+### Fixed
+- Allow `UNLINK` to accept an array of keys as a single argument
+
 ## v3.5.0 (2026-06-02)
 ### Added
 - Added support for `XNACK` command (#1666)

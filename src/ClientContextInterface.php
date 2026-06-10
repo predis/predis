@@ -77,7 +77,7 @@ use Predis\Command\Redis\VADD;
  * @method $this sort_ro(string $key, ?string $byPattern = null, ?LimitOffsetCount $limit = null, array $getPatterns = [], ?string $sorting = null, bool $alpha = false)
  * @method $this ttl($key)
  * @method $this type($key)
- * @method $this unlink(string ...$keys)
+ * @method $this unlink(array|string $keys)
  * @method $this append($key, $value)
  * @method $this arcount(string $key)
  * @method $this ardel(string $key, int ...$index)

@@ -88,7 +88,7 @@ use Predis\Response\Status;
  * @method array             sort_ro(string $key, ?string $byPattern = null, ?LimitOffsetCount $limit = null, array $getPatterns = [], ?string $sorting = null, bool $alpha = false)
  * @method int               ttl(string $key)
  * @method mixed             type(string $key)
- * @method int               unlink(string ...$keys)
+ * @method int               unlink(string[]|string $keyOrKeys, string ...$keys = null)
  * @method int               append(string $key, $value)
  * @method int               arcount(string $key)
  * @method int               ardel(string $key, int ...$index)
