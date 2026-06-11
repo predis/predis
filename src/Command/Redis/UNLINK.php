@@ -27,6 +27,16 @@ class UNLINK extends RedisCommand
         return 'UNLINK';
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function setArguments(array $arguments)
+    {
+        $arguments = self::normalizeArguments($arguments);
+
+        parent::setArguments($arguments);
+    }
+
     public function prefixKeys($prefix)
     {
         $this->applyPrefixForAllArguments($prefix);

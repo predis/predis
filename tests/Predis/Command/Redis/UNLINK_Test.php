@@ -52,6 +52,20 @@ class UNLINK_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
+    public function testFilterArgumentsAsSingleArray(): void
+    {
+        $arguments = [['key1', 'key2', 'key3']];
+        $expected = ['key1', 'key2', 'key3'];
+
+        $command = $this->getCommand();
+        $command->setArguments($arguments);
+
+        $this->assertSame($expected, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testParseResponse(): void
     {
         $command = $this->getCommand();
