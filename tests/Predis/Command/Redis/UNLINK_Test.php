@@ -12,8 +12,6 @@
 
 namespace Predis\Command\Redis;
 
-use Predis\Command\PrefixableCommand;
-
 /**
  * @group commands
  * @group realm-key
@@ -78,13 +76,13 @@ class UNLINK_Test extends PredisCommandTestCase
      */
     public function testPrefixKeys(): void
     {
-        /** @var PrefixableCommand $command */
+        /** @var \Predis\Command\Redis\UNLINK $command */
         $command = $this->getCommand();
-        $actualArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
+        $inputArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
         $prefix = 'prefix:';
         $expectedArguments = ['prefix:arg1', 'prefix:arg2', 'prefix:arg3', 'prefix:arg4'];
 
-        $command->setArguments($actualArguments);
+        $command->setArguments($inputArguments);
         $command->prefixKeys($prefix);
 
         $this->assertSame($expectedArguments, $command->getArguments());
