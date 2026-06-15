@@ -17,6 +17,10 @@ jobs:
   predis:
     name: PHP ${{ matrix.php }} (Redis ${{ matrix.redis }})
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write
+      pull-requests: write
 
     strategy:
       fail-fast: false
@@ -216,6 +220,11 @@ jobs:
     needs: predis
     if: ${{ always() }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write
+      pull-requests: write
+
     steps:
       - name: Coveralls Finished
         uses: coverallsapp/github-action@v2
