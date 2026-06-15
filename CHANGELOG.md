@@ -6,7 +6,7 @@
 
 ### Fixed
 - Allow `UNLINK` to accept an array of keys (#1687)
-- Correct `Client::pack()` and `Client::unpack()` PHPDoc return types to `mixed`
+- Fixed `Client::(un)pack()` return types
 
 ## v3.5.0 (2026-06-02)
 ### Added
