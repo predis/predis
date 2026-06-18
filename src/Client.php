@@ -272,7 +272,7 @@ class Client implements ClientInterface, IteratorAggregate
     /**
      * Applies the configured serializer and compression to given value.
      *
-     * @param  mixed  $value
+     * @param  mixed $value
      * @return mixed
      */
     public function pack($value)
@@ -285,7 +285,7 @@ class Client implements ClientInterface, IteratorAggregate
     /**
      * Deserializes and decompresses to given value.
      *
-     * @param  mixed  $value
+     * @param  mixed $value
      * @return mixed
      */
     public function unpack($value)

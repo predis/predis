@@ -76,7 +76,7 @@ class UNLINK_Test extends PredisCommandTestCase
      */
     public function testPrefixKeys(): void
     {
-        /** @var \Predis\Command\Redis\UNLINK $command */
+        /** @var UNLINK $command */
         $command = $this->getCommand();
         $inputArguments = ['arg1', 'arg2', 'arg3', 'arg4'];
         $prefix = 'prefix:';
