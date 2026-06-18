@@ -153,6 +153,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'ZREVRANGEBYSCORE' => $getKeyFromFirstArgument,
             'ZREVRANK' => $getKeyFromFirstArgument,
             'ZSCORE' => $getKeyFromFirstArgument,
+            'ZMSCORE' => $getKeyFromFirstArgument,
             'ZUNIONSTORE' => [$this, 'getKeyFromZsetAggregationCommands'],
             'ZSCAN' => $getKeyFromFirstArgument,
             'ZLEXCOUNT' => $getKeyFromFirstArgument,
