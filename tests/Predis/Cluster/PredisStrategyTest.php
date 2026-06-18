@@ -480,6 +480,7 @@ class PredisStrategyTest extends PredisTestCase
             'ZREVRANGEBYSCORE' => 'keys-first',
             'ZREVRANK' => 'keys-first',
             'ZSCORE' => 'keys-first',
+            'ZMSCORE' => 'keys-first',
             'ZUNIONSTORE' => 'keys-zaggregated',
             'ZSCAN' => 'keys-first',
             'ZLEXCOUNT' => 'keys-first',

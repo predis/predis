@@ -1,4 +1,8 @@
 ## Changelog
+## Unreleased
+
+### Added
+- Make ZMSCORE command Prefixable and add to a ClusterStrategy (#1692)
 
 ## v3.5.1 (2026-06-11)
 ### Added
