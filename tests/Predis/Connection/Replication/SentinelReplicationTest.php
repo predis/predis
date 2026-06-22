@@ -17,6 +17,7 @@ use Predis\Command;
 use Predis\Connection;
 use Predis\Connection\Parameters;
 use Predis\Connection\ParametersInterface;
+use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Connection\Resource\StreamFactoryInterface;
 use Predis\Connection\StreamConnection;
 use Predis\Replication;
@@ -1458,6 +1459,73 @@ class SentinelReplicationTest extends PredisTestCase
             )
             ->willThrowException(
                 new Connection\ConnectionException($masterOld, 'Unknown connection error [127.0.0.1:6381]')
+            );
+
+        $masterNew = $this->getMockConnection('tcp://127.0.0.1:6391?role=master');
+        $masterNew
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+        $masterNew
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('DEL', ['key'])]
+            )
+            ->willReturnOnConsecutiveCalls(
+                1
+            );
+
+        /** @var Connection\FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with([
+                'host' => '127.0.0.1',
+                'port' => '6391',
+                'role' => 'master',
+            ])
+            ->willReturn($masterNew);
+
+        $replication = $this->getReplicationConnection('svc', [$sentinel1], $factory);
+
+        $replication->add($masterOld);
+
+        $this->assertSame(1, $replication->executeCommand(
+            Command\RawCommand::create('del', 'key')
+        ));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testMethodExecuteCommandRetriesWriteCommandOnNewMasterOnStreamInitException(): void
+    {
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $sentinel1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', ['get-master-addr-by-name', 'svc']
+            ))
+            ->willReturn(
+                ['127.0.0.1', '6391']
+            );
+
+        $masterOld = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
+        $masterOld
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+        $masterOld
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with(
+                $this->isRedisCommand('DEL', ['key'])
+            )
+            ->willThrowException(
+                new StreamInitException('Connection refused [tcp://127.0.0.1:6381]')
             );
 
         $masterNew = $this->getMockConnection('tcp://127.0.0.1:6391?role=master');
