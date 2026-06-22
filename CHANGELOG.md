@@ -4,6 +4,9 @@
 ### Added
 - Make ZMSCORE command Prefixable and add to a ClusterStrategy (#1692)
 
+### Fixed
+- Fixed Sentinel does not wipe servers on exception caused (#1694)
+
 ## v3.5.1 (2026-06-11)
 ### Added
 - Expose `pipeline()` API via `ClientInterface` (#1686)
