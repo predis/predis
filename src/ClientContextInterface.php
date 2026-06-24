@@ -30,6 +30,7 @@ use Predis\Command\Argument\Server\LimitOffsetCount;
 use Predis\Command\Argument\Server\To;
 use Predis\Command\Argument\TimeSeries\AddArguments;
 use Predis\Command\Argument\TimeSeries\AlterArguments as TSAlterArguments;
+use Predis\Command\Argument\TimeSeries\BGetArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments as TSCreateArguments;
 use Predis\Command\Argument\TimeSeries\DecrByArguments;
 use Predis\Command\Argument\TimeSeries\GetArguments;
@@ -37,6 +38,7 @@ use Predis\Command\Argument\TimeSeries\IncrByArguments;
 use Predis\Command\Argument\TimeSeries\InfoArguments;
 use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
+use Predis\Command\Argument\TimeSeries\NRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\ACL;
@@ -296,6 +298,7 @@ use Predis\Command\Redis\VADD;
  * @method $this topkreserve(string $key, int $topK, int $width = 8, int $depth = 7, float $decay = 0.9)
  * @method $this tsadd(string $key, int $timestamp, string|float $value, ?AddArguments $arguments = null)
  * @method $this tsalter(string $key, ?TSAlterArguments $arguments = null)
+ * @method $this tsbget(string $key, $timestamp, int $timeout, ?BGetArguments $arguments = null)
  * @method $this tscreate(string $key, ?TSCreateArguments $arguments = null)
  * @method $this tscreaterule(string $sourceKey, string $destKey, string $aggregator, int $bucketDuration, int $alignTimestamp = 0)
  * @method $this tsdecrby(string $key, float $value, ?DecrByArguments $arguments = null)
@@ -308,6 +311,8 @@ use Predis\Command\Redis\VADD;
  * @method $this tsmget(MGetArguments $arguments, string ...$filterExpression)
  * @method $this tsmrange($fromTimestamp, $toTimestamp, MRangeArguments $arguments)
  * @method $this tsmrevrange($fromTimestamp, $toTimestamp, MRangeArguments $arguments)
+ * @method $this tsnrange(array $keys, $fromTimestamp, $toTimestamp, ?NRangeArguments $arguments = null)
+ * @method $this tsnrevrange(array $keys, $fromTimestamp, $toTimestamp, ?NRangeArguments $arguments = null)
  * @method $this tsqueryindex(string ...$filterExpression)
  * @method $this tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method $this tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
