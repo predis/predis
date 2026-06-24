@@ -102,7 +102,7 @@ class TSNREVRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsQueriedRangeForMultipleKeysInReverseDirection(): void
     {
@@ -127,7 +127,7 @@ class TSNREVRANGE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsQueriedRangeForMultipleKeysInReverseDirectionResp3(): void
     {
@@ -153,7 +153,7 @@ class TSNREVRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testPreservesInputKeyOrder(): void
     {
@@ -176,7 +176,7 @@ class TSNREVRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsRangeLimitedByCount(): void
     {
@@ -204,7 +204,7 @@ class TSNREVRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsRangeWithAggregationPerKey(): void
     {
@@ -235,7 +235,7 @@ class TSNREVRANGE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testThrowsExceptionOnNonExistingKey(): void
     {

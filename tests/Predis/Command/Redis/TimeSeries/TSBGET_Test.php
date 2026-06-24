@@ -81,7 +81,7 @@ class TSBGET_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testRetrievesAvailableSamplesImmediatelyWhenTimeoutIsZero(): void
     {
@@ -104,7 +104,7 @@ class TSBGET_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testRetrievesAvailableSamplesImmediatelyWhenTimeoutIsZeroResp3(): void
     {
@@ -128,7 +128,7 @@ class TSBGET_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsMinCountSamplesImmediatelyWhenAvailable(): void
     {
@@ -155,7 +155,7 @@ class TSBGET_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsNoMoreThanMaxCountSamples(): void
     {
@@ -181,7 +181,7 @@ class TSBGET_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsEmptyListWhenNoSamplesAvailable(): void
     {
@@ -198,7 +198,7 @@ class TSBGET_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testBlocksForTimeoutWhenMinCountNotReached(): void
     {

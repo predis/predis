@@ -3,6 +3,7 @@
 
 ### Added
 - Make ZMSCORE command Prefixable and add to a ClusterStrategy (#1692)
+- Added support for new TS commands + Indonesian language support integration test (#1695)
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)

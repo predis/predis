@@ -185,7 +185,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.8.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testSearchValuesByIndonesianLanguage(): void
     {
