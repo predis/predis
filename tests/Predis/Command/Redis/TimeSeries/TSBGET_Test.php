@@ -16,7 +16,6 @@ use Predis\Command\Argument\TimeSeries\BGetArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
-use Predis\Response\ServerException;
 
 /**
  * @group commands
