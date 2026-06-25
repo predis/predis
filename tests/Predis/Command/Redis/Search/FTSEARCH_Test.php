@@ -185,6 +185,41 @@ class FTSEARCH_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testSearchValuesByIndonesianLanguage(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals(
+            'OK',
+            $redis->hmset('doc:1', 'content', 'mereka membaca buku di perpustakaan')
+        );
+
+        $ftCreateArguments = (new CreateArguments())
+            ->prefix(['doc:'])
+            ->language('indonesian');
+
+        $schema = [new TextField('content')];
+
+        $this->assertEquals('OK', $redis->ftcreate('idx_indonesian', $schema, $ftCreateArguments));
+
+        // Timeout to make sure that index created before search performed.
+        usleep(10000);
+
+        // The Indonesian stemmer reduces "membaca" to its root "baca", so querying
+        // the stem with LANGUAGE indonesian matches the indexed document.
+        $ftSearchArguments = (new SearchArguments())
+            ->language('indonesian')
+            ->noContent();
+
+        $this->assertSame([1, 'doc:1'], $redis->ftsearch('idx_indonesian', 'baca', $ftSearchArguments));
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
      * @requiresRedisVersion >= 7.9.0
      */
     public function testVectorSearchWithDefaultDialect(): void

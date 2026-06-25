@@ -37,6 +37,7 @@ use Predis\Command\Argument\TimeSeries\IncrByArguments;
 use Predis\Command\Argument\TimeSeries\InfoArguments;
 use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
+use Predis\Command\Argument\TimeSeries\NRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\ACL;
@@ -320,6 +321,8 @@ use Predis\Response\Status;
  * @method array             tsmget(MGetArguments $arguments, string ...$filterExpression)
  * @method array             tsmrange($fromTimestamp, $toTimestamp, MRangeArguments $arguments)
  * @method array             tsmrevrange($fromTimestamp, $toTimestamp, MRangeArguments $arguments)
+ * @method array             tsnrange(array $keys, $fromTimestamp, $toTimestamp, ?NRangeArguments $arguments = null)
+ * @method array             tsnrevrange(array $keys, $fromTimestamp, $toTimestamp, ?NRangeArguments $arguments = null)
  * @method array             tsqueryindex(string ...$filterExpression)
  * @method array             tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method array             tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
