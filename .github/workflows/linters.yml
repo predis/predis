@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Check file permissions
         run: test "$(find . -type f -not -path './.git/*' -executable)" = "./bin/create-command-test"
@@ -47,7 +47,7 @@ jobs:
           tools: parallel-lint
 
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Check source code for syntax errors
         run: composer exec -- parallel-lint bin/ examples/ src/ tests/
@@ -67,7 +67,7 @@ jobs:
           coverage: none
 
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Validate Composer configuration
         run: composer validate --no-interaction --strict
@@ -101,7 +101,7 @@ jobs:
           coverage: none
 
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Check EditorConfig configuration
         run: test -f .editorconfig
@@ -130,7 +130,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Check exported files
         run: |
@@ -159,7 +159,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
