@@ -82,16 +82,16 @@ jobs:
           fi
 
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Start Redis standalone image
-        uses: hoverkraft-tech/compose-action@v2.6.0
+        uses: hoverkraft-tech/compose-action@v3.0.0
         with:
           compose-file: .github/docker-compose.yml
           services: ${{ env.DOCKER_SERVICE }}
 
       - name: Start Redis unprotected image
-        uses: hoverkraft-tech/compose-action@v2.6.0
+        uses: hoverkraft-tech/compose-action@v3.0.0
         if: ${{ matrix.redis > '4.0' }}
         with:
           compose-file: .github/docker-compose.yml
@@ -99,7 +99,7 @@ jobs:
 
       - name: Start Redis stack image
         id: stack_infra
-        uses: hoverkraft-tech/compose-action@v2.6.0
+        uses: hoverkraft-tech/compose-action@v3.0.0
         if: ${{ matrix.redis >= '7.2' && matrix.redis < '8.0' }}
         with:
           compose-file: .github/docker-compose.yml
@@ -107,7 +107,7 @@ jobs:
 
       - name: Start Redis cluster image
         id: cluster_infra
-        uses: hoverkraft-tech/compose-action@v2.6.0
+        uses: hoverkraft-tech/compose-action@v3.0.0
         if: ${{ matrix.redis > '4.0' }}
         with:
           compose-file: .github/docker-compose.yml
@@ -115,7 +115,7 @@ jobs:
 
       - name: Start Redis sentinels image
         id: sentinel_infra
-        uses: hoverkraft-tech/compose-action@v2.6.0
+        uses: hoverkraft-tech/compose-action@v3.0.0
         if: ${{ matrix.redis > '4.0' }}
         with:
           compose-file: .github/docker-compose.yml
