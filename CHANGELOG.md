@@ -7,6 +7,7 @@
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)
+- Fixed `@method cmsincrby()` annotation
 
 ## v3.5.1 (2026-06-11)
 ### Added
