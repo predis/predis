@@ -128,7 +128,7 @@ use Predis\Command\Redis\VADD;
  * @method $this cfinsertnx(string $key, int $capacity = -1, bool $noCreate = false, string ...$item)
  * @method $this cfreserve(string $key, int $capacity, int $bucketSize = -1, int $maxIterations = -1, int $expansion = -1)
  * @method $this cfscandump(string $key, int $iterator)
- * @method $this cmsincrby(string $key, string|int...$itemIncrementDictionary)
+ * @method $this cmsincrby(string $key, string|int ...$itemIncrementDictionary)
  * @method $this cmsinfo(string $key)
  * @method $this cmsinitbydim(string $key, int $width, int $depth)
  * @method $this cmsinitbyprob(string $key, float $errorRate, float $probability)
