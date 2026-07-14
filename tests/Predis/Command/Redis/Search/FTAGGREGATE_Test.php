@@ -318,10 +318,46 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
     }
 
     /**
+     * @var \Predis\ClientInterface|null Client used to toggle the unstable-features gate, kept for teardown restoration.
+     */
+    private $unstableFeaturesClient;
+
+    /**
+     * @var string|null Original value of the unstable-features gate, restored on teardown.
+     */
+    private $originalUnstableFeatures;
+
+    /**
+     * Restores any global server state mutated by the connected tests.
+     */
+    protected function tearDown(): void
+    {
+        if ($this->unstableFeaturesClient !== null && $this->originalUnstableFeatures !== null) {
+            $this->unstableFeaturesClient->config(
+                'set',
+                'search-enable-unstable-features',
+                $this->originalUnstableFeatures
+            );
+
+            $this->unstableFeaturesClient = null;
+            $this->originalUnstableFeatures = null;
+        }
+
+        parent::tearDown();
+    }
+
+    /**
      * Enables the unstable-features gate that COLLECT is currently behind.
+     *
+     * The previous value is captured and restored on teardown so the connected
+     * tests do not leave the gate flipped on the shared server.
      */
     private function enableUnstableSearchFeatures($redis): void
     {
+        $config = $redis->config('get', 'search-enable-unstable-features');
+        $this->originalUnstableFeatures = $config['search-enable-unstable-features'] ?? array_pop($config);
+        $this->unstableFeaturesClient = $redis;
+
         $redis->config('set', 'search-enable-unstable-features', 'yes');
     }
 
