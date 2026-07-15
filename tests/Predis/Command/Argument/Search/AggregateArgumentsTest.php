@@ -63,6 +63,50 @@ class AggregateArgumentsTest extends TestCase
     }
 
     /**
+     * @dataProvider reduceCollectProvider
+     * @param  CollectArguments $collectArguments
+     * @param  string|null      $alias
+     * @param  array            $expectedResponse
+     * @return void
+     */
+    public function testCreatesArgumentsWithReduceCollectModifier(
+        CollectArguments $collectArguments,
+        ?string $alias,
+        array $expectedResponse
+    ): void {
+        $this->arguments->reduceCollect($collectArguments, $alias);
+
+        $this->assertSame($expectedResponse, $this->arguments->toArray());
+    }
+
+    public function reduceCollectProvider(): array
+    {
+        return [
+            'all fields, no alias' => [
+                (new CollectArguments())->allFields(),
+                null,
+                ['REDUCE', 'COLLECT', 2, 'FIELDS', '*'],
+            ],
+            'all fields with alias' => [
+                (new CollectArguments())->allFields(),
+                'members',
+                ['REDUCE', 'COLLECT', 2, 'FIELDS', '*', 'AS', 'members'],
+            ],
+            'fields, sortby and limit with alias' => [
+                (new CollectArguments())
+                    ->fields('@name', '@sweetness')
+                    ->sortBy(['@sweetness' => CollectArguments::SORT_DESC])
+                    ->limit(0, 2),
+                'fruits',
+                [
+                    'REDUCE', 'COLLECT', 11, 'FIELDS', 2, '@name', '@sweetness',
+                    'SORTBY', 2, '@sweetness', 'DESC', 'LIMIT', 0, 2, 'AS', 'fruits',
+                ],
+            ],
+        ];
+    }
+
+    /**
      * @dataProvider sortByProvider
      * @param  array $arguments
      * @param  array $expectedResponse

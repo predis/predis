@@ -13,6 +13,7 @@
 namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\AggregateArguments;
+use Predis\Command\Argument\Search\CollectArguments;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\SchemaFields\AbstractField;
 use Predis\Command\Argument\Search\SchemaFields\NumericField;
@@ -178,7 +179,134 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRediSearchVersion >= 1.1.0
+     * @requiresRedisVersion >= 8.10.0
+     */
+    public function testAggregatesWithCollectReducer(): void
+    {
+        $redis = $this->getClient();
+        $this->enableUnstableSearchFeatures($redis);
+
+        $this->createFruitsIndex($redis);
+
+        $ftAggregateArguments = (new AggregateArguments())
+            ->groupBy('@color')
+            ->reduceCollect(
+                (new CollectArguments())
+                    ->fields('@name', '@sweetness')
+                    ->sortBy(['@sweetness' => CollectArguments::SORT_DESC])
+                    ->limit(0, 2),
+                'fruits'
+            );
+
+        $response = $redis->ftaggregate('idx', '*', $ftAggregateArguments);
+
+        // Top-level group order is not guaranteed; key the collected columns by
+        // color. Within a group SORTBY makes the entry order deterministic.
+        $collectedByColor = $this->indexResp2CollectByColor($response);
+
+        $this->assertEquals(
+            [
+                ['name', 'apple', 'sweetness', '4'],
+                ['name', 'strawberry', 'sweetness', '3'],
+            ],
+            $collectedByColor['red']
+        );
+        $this->assertEquals(
+            [
+                ['name', 'banana', 'sweetness', '4'],
+                ['name', 'lemon', 'sweetness', '2'],
+            ],
+            $collectedByColor['yellow']
+        );
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 8.10.0
+     */
+    public function testAggregatesWithCollectReducerResp3(): void
+    {
+        $redis = $this->getResp3Client();
+        $this->enableUnstableSearchFeatures($redis);
+
+        $this->createFruitsIndex($redis);
+
+        $ftAggregateArguments = (new AggregateArguments())
+            ->groupBy('@color')
+            ->reduceCollect(
+                (new CollectArguments())
+                    ->fields('@name', '@sweetness')
+                    ->sortBy(['@sweetness' => CollectArguments::SORT_DESC])
+                    ->limit(0, 2),
+                'fruits'
+            );
+
+        $response = $redis->ftaggregate('idx', '*', $ftAggregateArguments);
+
+        // In RESP3 each entry is a map; key the collected columns by color.
+        $collectedByColor = [];
+        foreach ($response['results'] as $result) {
+            $attributes = $result['extra_attributes'];
+            $collectedByColor[$attributes['color']] = $attributes['fruits'];
+        }
+
+        $this->assertEquals(
+            [
+                ['name' => 'apple', 'sweetness' => '4'],
+                ['name' => 'strawberry', 'sweetness' => '3'],
+            ],
+            $collectedByColor['red']
+        );
+        $this->assertEquals(
+            [
+                ['name' => 'banana', 'sweetness' => '4'],
+                ['name' => 'lemon', 'sweetness' => '2'],
+            ],
+            $collectedByColor['yellow']
+        );
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisVersion >= 8.10.0
+     */
+    public function testCollectReducerProjectsAllFields(): void
+    {
+        $redis = $this->getClient();
+        $this->enableUnstableSearchFeatures($redis);
+
+        $this->createFruitsIndex($redis);
+
+        // FIELDS * projects the fields materialized in the pipeline at this stage.
+        $ftAggregateArguments = (new AggregateArguments())
+            ->load('@name', '@color', '@sweetness')
+            ->groupBy('@color')
+            ->reduceCollect(
+                (new CollectArguments())->allFields()->sortBy(['@sweetness' => CollectArguments::SORT_DESC]),
+                'entries'
+            );
+
+        $response = $redis->ftaggregate('idx', '*', $ftAggregateArguments);
+        $collectedByColor = $this->indexResp2CollectByColor($response, 'entries');
+
+        $this->assertCount(2, $collectedByColor['red']);
+        $this->assertCount(2, $collectedByColor['yellow']);
+
+        // Each entry carries the projected fields as a flat key/value array.
+        foreach ($collectedByColor['red'] as $entry) {
+            $this->assertContains('name', $entry);
+            $this->assertContains('sweetness', $entry);
+        }
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisVersion >= 1.1.0
      */
     public function testThrowsExceptionOnNonExistingIndex(): void
     {
@@ -187,6 +315,104 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
 
         $redis->ftaggregate('index', 'query');
+    }
+
+    /**
+     * @var \Predis\ClientInterface|null Client used to toggle the unstable-features gate, kept for teardown restoration.
+     */
+    private $unstableFeaturesClient;
+
+    /**
+     * @var string|null Original value of the unstable-features gate, restored on teardown.
+     */
+    private $originalUnstableFeatures;
+
+    /**
+     * Restores any global server state mutated by the connected tests.
+     */
+    protected function tearDown(): void
+    {
+        if ($this->unstableFeaturesClient !== null && $this->originalUnstableFeatures !== null) {
+            $this->unstableFeaturesClient->config(
+                'set',
+                'search-enable-unstable-features',
+                $this->originalUnstableFeatures
+            );
+
+            $this->unstableFeaturesClient = null;
+            $this->originalUnstableFeatures = null;
+        }
+
+        parent::tearDown();
+    }
+
+    /**
+     * Enables the unstable-features gate that COLLECT is currently behind.
+     *
+     * The previous value is captured and restored on teardown so the connected
+     * tests do not leave the gate flipped on the shared server.
+     */
+    private function enableUnstableSearchFeatures($redis): void
+    {
+        $config = $redis->config('get', 'search-enable-unstable-features');
+        $this->originalUnstableFeatures = $config['search-enable-unstable-features'] ?? array_pop($config);
+        $this->unstableFeaturesClient = $redis;
+
+        $redis->config('set', 'search-enable-unstable-features', 'yes');
+    }
+
+    /**
+     * Creates a fruits HASH index with name, color and a sortable sweetness field.
+     */
+    private function createFruitsIndex($redis): void
+    {
+        $schema = [
+            new TextField('name'),
+            new TextField('color'),
+            new NumericField('sweetness', '', AbstractField::SORTABLE),
+        ];
+
+        $this->assertEquals(
+            'OK',
+            $redis->ftcreate('idx', $schema, (new CreateArguments())->prefix(['fruit:']))
+        );
+
+        $this->assertSame(3, $redis->hset('fruit:1', 'name', 'apple', 'color', 'red', 'sweetness', 4));
+        $this->assertSame(3, $redis->hset('fruit:2', 'name', 'strawberry', 'color', 'red', 'sweetness', 3));
+        $this->assertSame(3, $redis->hset('fruit:3', 'name', 'banana', 'color', 'yellow', 'sweetness', 4));
+        $this->assertSame(3, $redis->hset('fruit:4', 'name', 'lemon', 'color', 'yellow', 'sweetness', 2));
+
+        // Give the index a moment to catch up with the written documents.
+        usleep(20000);
+    }
+
+    /**
+     * Reduces a RESP2 FT.AGGREGATE reply to a map of group value => collected column.
+     *
+     * The reply is [count, row, row, ...] where each row is a flat key/value
+     * array holding the GROUPBY key ("color") and the collect alias column.
+     */
+    private function indexResp2CollectByColor(array $response, string $alias = 'fruits'): array
+    {
+        $collectedByColor = [];
+
+        for ($i = 1, $max = count($response); $i < $max; $i++) {
+            $row = $response[$i];
+            $color = null;
+            $collected = null;
+
+            for ($j = 0, $rowMax = count($row); $j < $rowMax; $j += 2) {
+                if ($row[$j] === 'color') {
+                    $color = $row[$j + 1];
+                } elseif ($row[$j] === $alias) {
+                    $collected = $row[$j + 1];
+                }
+            }
+
+            $collectedByColor[$color] = $collected;
+        }
+
+        return $collectedByColor;
     }
 
     public function argumentsProvider(): array
@@ -223,6 +449,24 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
             'with SORTBY modifier' => [
                 ['index', 'query', (new AggregateArguments())->sortBy(2, 'property1', 'ASC', 'property2', 'DESC')],
                 ['index', 'query', 'SORTBY', 4, 'property1', 'ASC', 'property2', 'DESC', 'MAX', 2, 'DIALECT', 2],
+            ],
+            'with REDUCE COLLECT modifier' => [
+                [
+                    'index', 'query',
+                    (new AggregateArguments())
+                        ->groupBy('@color')
+                        ->reduceCollect(
+                            (new CollectArguments())
+                                ->fields('@name', '@sweetness')
+                                ->sortBy(['@sweetness' => CollectArguments::SORT_DESC])
+                                ->limit(0, 2),
+                            'fruits'
+                        ),
+                ],
+                [
+                    'index', 'query', 'GROUPBY', 1, '@color', 'REDUCE', 'COLLECT', 11, 'FIELDS', 2, '@name',
+                    '@sweetness', 'SORTBY', 2, '@sweetness', 'DESC', 'LIMIT', 0, 2, 'AS', 'fruits', 'DIALECT', 2,
+                ],
             ],
             'with APPLY modifier' => [
                 ['index', 'query', (new AggregateArguments())->apply('expression', 'name')],
