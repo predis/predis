@@ -605,14 +605,22 @@ class FTHYBRID_Test extends PredisCommandTestCase
                 'vector' => VectorUtility::toBlob([1, 2, 2, 3]),
             ]);
 
-        $expected_results = [
-            ['__key' => 'item:12', '__score' => '0.016393442623'],
-            ['__key' => 'item:22', '__score' => '0.0161290322581'],
-            ['__key' => 'item:27', '__score' => '0.015873015873'],
-        ];
-
         $response = $redis->fthybrid('idx', $query);
-        $this->assertEquals($expected_results, $response['results']);
+
+        // The dataset duplicates each vector, so HNSW may return any instance
+        // of the nearest item depending on the server version. Assert scores
+        // and that every returned key holds the expected nearest item instead.
+        $this->assertSame(
+            ['0.016393442623', '0.0161290322581', '0.015873015873'],
+            array_column($response['results'], '__score')
+        );
+
+        $keys = array_column($response['results'], '__key');
+        $this->assertCount(3, array_unique($keys));
+
+        foreach ($keys as $key) {
+            $this->assertSame('red dress', $redis->hget($key, 'description'));
+        }
     }
 
     /**
@@ -666,14 +674,22 @@ class FTHYBRID_Test extends PredisCommandTestCase
                 'vector' => VectorUtility::toBlob([1, 2, 7, 6]),
             ]);
 
-        $expected_results = [
-            ['__key' => 'item:27', '__score' => '0.016393442623'],
-            ['__key' => 'item:12', '__score' => '0.0161290322581'],
-            ['__key' => 'item:22', '__score' => '0.015873015873'],
-        ];
-
         $response = $redis->fthybrid('idx', $query);
-        $this->assertEquals($expected_results, $response['results']);
+
+        // The dataset duplicates each vector, so HNSW may return any instance
+        // of the item within the radius depending on the server version.
+        // Assert scores and that every returned key holds the expected item.
+        $this->assertSame(
+            ['0.016393442623', '0.0161290322581', '0.015873015873'],
+            array_column($response['results'], '__score')
+        );
+
+        $keys = array_column($response['results'], '__key');
+        $this->assertCount(3, array_unique($keys));
+
+        foreach ($keys as $key) {
+            $this->assertSame('red dress', $redis->hget($key, 'description'));
+        }
     }
 
     /**
@@ -1071,7 +1087,11 @@ class FTHYBRID_Test extends PredisCommandTestCase
         ];
 
         $response = $redis->fthybrid('idx', $query);
-        $this->assertEquals($expected_results, $response['results']);
+
+        // SORTBY guarantees ordering only by price; the relative order of
+        // groups with equal price is unspecified and varies across versions.
+        $this->assertEqualsCanonicalizing($expected_results, $response['results']);
+        $this->assertSame(['15', '15', '16', '16'], array_column($response['results'], 'price'));
     }
 
     /**
