@@ -5,6 +5,7 @@
 - Make ZMSCORE command Prefixable and add to a ClusterStrategy (#1692)
 - Added support for new TS commands + Indonesian language support integration test (#1695)
 - Added support for new COLLECT reducer for FT.AGGREGATE (#1699)
+- Added support for `SDIFFCARD` and `SUNIONCARD` command
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)
