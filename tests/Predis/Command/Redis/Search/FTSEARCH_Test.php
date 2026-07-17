@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis\Search;
 
+use Predis\ClientContextInterface;
+use Predis\ClientInterface;
 use Predis\Command\Argument\Search\CreateArguments;
 use Predis\Command\Argument\Search\SchemaFields\AbstractField;
 use Predis\Command\Argument\Search\SchemaFields\GeoShapeField;
@@ -22,6 +24,7 @@ use Predis\Command\Argument\Search\SchemaFields\VectorField;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
+use Predis\Command\Redis\Utils\VectorUtility;
 use Predis\Response\ServerException;
 
 /**
@@ -30,6 +33,9 @@ use Predis\Response\ServerException;
  */
 class FTSEARCH_Test extends PredisCommandTestCase
 {
+    private const SEARCH_TIMEOUT_DIM = 8192;
+    private const SEARCH_TIMEOUT_DOCS = 1500;
+
     /**
      * {@inheritDoc}
      */
@@ -643,6 +649,163 @@ class FTSEARCH_Test extends PredisCommandTestCase
                 'geo:doc_point2',
             ], $actualResponse
         );
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testSearchQueryWithTimeoutReturnPolicyReturnsPartialResults(): void
+    {
+        $redis = $this->getClient();
+
+        $this->createSearchTimeoutIndex($redis);
+        $this->addDataForSearchTimeout($redis);
+
+        $response = $redis->ftsearch(
+            'idx',
+            sprintf('*=>[KNN %d @embedding $vec]', self::SEARCH_TIMEOUT_DOCS),
+            $this->getSearchTimeoutArguments()
+        );
+
+        // A timed-out search under the default "return" policy still returns
+        // a well-formed (partial) reply. The RESP2 wire does not carry the
+        // server timeout warning.
+        $this->assertIsInt($response[0]);
+        $this->assertGreaterThanOrEqual(0, $response[0]);
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testSearchQueryWithTimeoutReturnPolicyCarriesWarningResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->createSearchTimeoutIndex($redis);
+        $this->addDataForSearchTimeout($redis);
+
+        $response = $redis->ftsearch(
+            'idx',
+            sprintf('*=>[KNN %d @embedding $vec]', self::SEARCH_TIMEOUT_DOCS),
+            $this->getSearchTimeoutArguments()
+        );
+
+        // Only the RESP3 wire carries the server timeout warning.
+        $this->assertIsInt($response['total_results']);
+        $this->assertGreaterThanOrEqual(0, $response['total_results']);
+        $this->assertContains('Timeout limit was reached', $response['warning']);
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testSearchQueryWithTimeoutFailPolicyThrowsException(): void
+    {
+        $redis = $this->getClient();
+
+        $this->createSearchTimeoutIndex($redis);
+        $this->addDataForSearchTimeout($redis);
+
+        // "search-on-timeout" controls whether a timed-out query returns the
+        // partial results collected so far ("return", the default) or fails
+        // the command ("fail"). Capture the original value so it is always
+        // restored, even when the search below throws as expected.
+        $originalPolicy = $redis->config('GET', 'search-on-timeout')['search-on-timeout'];
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('Timeout limit was reached');
+
+        try {
+            $this->assertEquals('OK', $redis->config('SET', 'search-on-timeout', 'fail'));
+
+            $redis->ftsearch(
+                'idx',
+                sprintf('*=>[KNN %d @embedding $vec]', self::SEARCH_TIMEOUT_DOCS),
+                $this->getSearchTimeoutArguments()
+            );
+        } finally {
+            $redis->config('SET', 'search-on-timeout', $originalPolicy);
+        }
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testSearchQueryWithTimeoutReturnStrictPolicyReturnsPartialResults(): void
+    {
+        $redis = $this->getClient();
+
+        $this->createSearchTimeoutIndex($redis);
+        $this->addDataForSearchTimeout($redis);
+
+        $originalPolicy = $redis->config('GET', 'search-on-timeout')['search-on-timeout'];
+
+        try {
+            $this->assertEquals('OK', $redis->config('SET', 'search-on-timeout', 'return-strict'));
+
+            $response = $redis->ftsearch(
+                'idx',
+                sprintf('*=>[KNN %d @embedding $vec]', self::SEARCH_TIMEOUT_DOCS),
+                $this->getSearchTimeoutArguments()
+            );
+
+            // Like "return", the "return-strict" policy responds with a
+            // well-formed (partial) reply instead of failing the command.
+            $this->assertIsInt($response[0]);
+            $this->assertGreaterThanOrEqual(0, $response[0]);
+        } finally {
+            $redis->config('SET', 'search-on-timeout', $originalPolicy);
+        }
+    }
+
+    private function createSearchTimeoutIndex(ClientInterface $redis): void
+    {
+        $schema = [
+            new TextField('description'),
+            new VectorField('embedding', 'FLAT', [
+                'TYPE', 'FLOAT32', 'DIM', self::SEARCH_TIMEOUT_DIM, 'DISTANCE_METRIC', 'L2',
+            ]),
+        ];
+
+        $arguments = new CreateArguments();
+        $arguments->prefix(['search-timeout-item:']);
+
+        $this->assertEquals('OK', $redis->ftcreate('idx', $schema, $arguments));
+        $this->sleep(0.1);
+    }
+
+    private function addDataForSearchTimeout(ClientInterface $redis): void
+    {
+        $vectors = [];
+        foreach ([0.1, 0.2, 0.3, 0.4, 0.5] as $value) {
+            $vectors[] = VectorUtility::toBlob(array_fill(0, self::SEARCH_TIMEOUT_DIM, $value));
+        }
+
+        for ($batch = 0; $batch < self::SEARCH_TIMEOUT_DOCS; $batch += 250) {
+            $redis->pipeline(static function (ClientContextInterface $pipe) use ($vectors, $batch) {
+                for ($i = $batch; $i < $batch + 250; $i++) {
+                    $pipe->hmset("search-timeout-item:{$i}", [
+                        'description' => 'red shoes',
+                        'embedding' => $vectors[$i % count($vectors)],
+                    ]);
+                }
+            });
+        }
+    }
+
+    private function getSearchTimeoutArguments(): SearchArguments
+    {
+        return (new SearchArguments())
+            ->params(['vec', VectorUtility::toBlob(array_fill(0, self::SEARCH_TIMEOUT_DIM, 0.25))])
+            ->timeout(1);
     }
 
     public function argumentsProvider(): array
