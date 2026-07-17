@@ -654,6 +654,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.9.0
      */
     public function testSearchQueryWithTimeoutReturnPolicyReturnsPartialResults(): void
@@ -679,6 +680,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.9.0
      */
     public function testSearchQueryWithTimeoutReturnPolicyCarriesWarningResp3(): void
@@ -703,6 +705,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.9.0
      */
     public function testSearchQueryWithTimeoutFailPolicyThrowsException(): void
@@ -737,6 +740,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
+     * @group relay-resp3
      * @requiresRedisVersion >= 8.9.0
      */
     public function testSearchQueryWithTimeoutReturnStrictPolicyReturnsPartialResults(): void
