@@ -758,9 +758,15 @@ class FTSEARCH_Test extends PredisCommandTestCase
             );
 
             // Like "return", the "return-strict" policy responds with a
-            // well-formed (partial) reply instead of failing the command.
-            $this->assertIsInt($response[0]);
-            $this->assertGreaterThanOrEqual(0, $response[0]);
+            // well-formed reply instead of failing the command. Depending on
+            // when the timeout fires, the reply is either empty or carries
+            // a leading result total.
+            $this->assertIsArray($response);
+
+            if ([] !== $response) {
+                $this->assertIsInt($response[0]);
+                $this->assertGreaterThanOrEqual(0, $response[0]);
+            }
         } finally {
             $redis->config('SET', 'search-on-timeout', $originalPolicy);
         }
