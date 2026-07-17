@@ -6,6 +6,7 @@
 - Added support for new TS commands + Indonesian language support integration test (#1695)
 - Added support for new COLLECT reducer for FT.AGGREGATE (#1699)
 - Added support for `SDIFFCARD` and `SUNIONCARD` command
+- Added support for `TS.READ` command
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)
