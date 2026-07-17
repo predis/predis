@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\TimeSeries;
 
+use Predis\Command\Argument\ArrayableArgument;
 use Predis\Command\PrefixableCommand as RedisCommand;
 
 /**
@@ -30,11 +31,12 @@ class TSREAD extends RedisCommand
 
     public function setArguments(array $arguments)
     {
-        [$key, $timestamp] = $arguments;
-        $commandArguments = (!empty($arguments[2])) ? $arguments[2]->toArray() : [];
+        $commandArguments = ($arguments[2] ?? null) instanceof ArrayableArgument
+            ? $arguments[2]->toArray()
+            : [];
 
         parent::setArguments(array_merge(
-            [$key, $timestamp],
+            array_slice($arguments, 0, 2),
             $commandArguments
         ));
     }
