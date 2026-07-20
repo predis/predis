@@ -533,6 +533,9 @@ class RedisStrategyTest extends PredisTestCase
             'XDEL' => 'keys-first',
             'XRANGE' => 'keys-first',
 
+            /* commands operating on time series */
+            'TS.READ' => 'keys-first',
+
             /* commands operating on HyperLogLog */
             'PFADD' => 'keys-first',
             'PFCOUNT' => 'keys-all',

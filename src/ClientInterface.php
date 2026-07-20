@@ -39,6 +39,7 @@ use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\NRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
+use Predis\Command\Argument\TimeSeries\ReadArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\ACL;
 use Predis\Command\Container\CLIENT;
@@ -327,6 +328,7 @@ use Predis\Response\Status;
  * @method array             tsnrevrange(array $keys, $fromTimestamp, $toTimestamp, ?NRangeArguments $arguments = null)
  * @method array             tsqueryindex(string ...$filterExpression)
  * @method array             tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
+ * @method array             tsread(string $key, $timestamp, ?ReadArguments $arguments = null)
  * @method array             tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method int               xack(string $key, string $group, string ...$id)
  * @method array             xackdel(string $key, string $group, string $mode, array $ids)
