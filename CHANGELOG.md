@@ -8,6 +8,7 @@
 - Added support for `SDIFFCARD` and `SUNIONCARD` command
 - Added support for `TS.READ` command
 - Added explicit testing for FT.SEARCH timeout policies
+- Added support for `FT.ALIASLIST` command
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)
