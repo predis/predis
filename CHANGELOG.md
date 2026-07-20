@@ -7,6 +7,7 @@
 - Added support for new COLLECT reducer for FT.AGGREGATE (#1699)
 - Added support for `SDIFFCARD` and `SUNIONCARD` command
 - Added support for `TS.READ` command
+- Added support for `EXCLUDEEMPTY` argument for `TS.MRANGE` and `TS.MREVRANGE` commands
 - Added explicit testing for FT.SEARCH timeout policies
 
 ### Fixed
