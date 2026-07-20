@@ -25,4 +25,32 @@ class VectorFieldTest extends TestCase
             ['field_name', 'AS', 'field', 'VECTOR', 'FLAT', 2, 'attribute_name', 'attribute_value'],
             (new VectorField('field_name', 'FLAT', ['attribute_name', 'attribute_value'], 'field'))->toArray());
     }
+
+    /**
+     * RERANK is a boolean key-value attribute for HNSW vector fields on
+     * disk-backed (Flex / Auto-Tiering) deployments, where it is mandatory.
+     * It flows through the generic attributes list as the string
+     * "TRUE"/"FALSE", and the attribute-count token accounts for the extra pair.
+     *
+     * @dataProvider rerankProvider
+     * @return void
+     */
+    public function testReturnsCorrectFieldArgumentsArrayWithRerankAttribute(string $rerank): void
+    {
+        $this->assertSame(
+            ['field_name', 'VECTOR', 'HNSW', 8, 'TYPE', 'FLOAT32', 'DIM', 128, 'DISTANCE_METRIC', 'L2', 'RERANK', $rerank],
+            (new VectorField(
+                'field_name',
+                'HNSW',
+                ['TYPE', 'FLOAT32', 'DIM', 128, 'DISTANCE_METRIC', 'L2', 'RERANK', $rerank]
+            ))->toArray());
+    }
+
+    public function rerankProvider(): array
+    {
+        return [
+            'with RERANK enabled' => ['TRUE'],
+            'with RERANK disabled' => ['FALSE'],
+        ];
+    }
 }

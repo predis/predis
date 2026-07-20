@@ -13,6 +13,9 @@
 - Fixed Sentinel does not wipe servers on exception caused (#1694)
 - Fixed `@method cmsincrby()` annotation
 
+### Maintenance
+- Added testing for HNSW vector type with RERANK argument
+
 ## v3.5.1 (2026-06-11)
 ### Added
 - Expose `pipeline()` API via `ClientInterface` (#1686)
