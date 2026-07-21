@@ -12,6 +12,7 @@
 
 namespace Predis\Command\Redis\TimeSeries;
 
+use Predis\ClientInterface;
 use Predis\Command\Argument\TimeSeries\CommonArguments;
 use Predis\Command\Argument\TimeSeries\CreateArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
@@ -300,6 +301,99 @@ class TSMREVRANGE_Test extends PredisCommandTestCase
         $this->assertSame(1000, $samples[0][0]);
     }
 
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisVersion >= 8.10.0
+     */
+    public function testQueryRangeExcludesEmptySeriesWithExcludeEmptyModifier(): void
+    {
+        $redis = $this->getClient();
+
+        $this->createExcludeEmptyFixture($redis);
+
+        // The matching series "u" is omitted because it has no samples within
+        // the requested range; samples are reported in reverse timestamp order.
+        $expectedResponse = [
+            [
+                's',
+                [],
+                [[400, '400'], [200, '200'], [100, '100']],
+            ],
+            [
+                't',
+                [],
+                [[400, '400'], [300, '300'], [100, '100']],
+            ],
+        ];
+
+        $mrangeArguments = (new MRangeArguments())->excludeEmpty()->filter('sensor=1');
+
+        $this->assertEquals($expectedResponse, $redis->tsmrevrange('-', 500, $mrangeArguments));
+
+        // Without EXCLUDEEMPTY the empty series "u" is still reported.
+        $mrangeArguments = (new MRangeArguments())->filter('sensor=1');
+        $this->assertCount(3, $redis->tsmrevrange('-', 500, $mrangeArguments));
+
+        // When every matching series is empty the reply is an empty array.
+        $mrangeArguments = (new MRangeArguments())->excludeEmpty()->filter('sensor=1');
+        $this->assertSame([], $redis->tsmrevrange(1, 50, $mrangeArguments));
+    }
+
+    /**
+     * @group connected
+     * @return void
+     * @requiresRedisVersion >= 8.10.0
+     */
+    public function testQueryRangeExcludesEmptySeriesWithExcludeEmptyModifierResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->createExcludeEmptyFixture($redis);
+
+        $expectedResponse = [
+            's' => [
+                ['sensor' => '1', 'type' => 'demo'],
+                ['aggregators' => []],
+                [[400, 400], [200, 200], [100, 100]],
+            ],
+            't' => [
+                ['sensor' => '1', 'type' => 'demo'],
+                ['aggregators' => []],
+                [[400, 400], [300, 300], [100, 100]],
+            ],
+        ];
+
+        $mrangeArguments = (new MRangeArguments())
+            ->withLabels()
+            ->excludeEmpty()
+            ->filter('sensor=1');
+
+        $this->assertEquals($expectedResponse, $redis->tsmrevrange('-', 500, $mrangeArguments));
+    }
+
+    private function createExcludeEmptyFixture(ClientInterface $redis): void
+    {
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('s', (new CreateArguments())->labels('sensor', 1, 'type', 'demo'))
+        );
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('t', (new CreateArguments())->labels('sensor', 1, 'type', 'demo'))
+        );
+        $this->assertEquals(
+            'OK',
+            $redis->tscreate('u', (new CreateArguments())->labels('sensor', 1, 'type', 'demo'))
+        );
+
+        $this->assertSame(
+            [100, 100, 200, 300, 400, 400, 2000],
+            $redis->tsmadd('s', 100, 100, 't', 100, 100, 's', 200, 200, 't', 300, 300, 's', 400, 400, 't', 400, 400, 'u', 2000, 2000)
+        );
+    }
+
     public function argumentsProvider(): array
     {
         return [
@@ -322,6 +416,10 @@ class TSMREVRANGE_Test extends PredisCommandTestCase
             'with WITHLABELS modifier' => [
                 [1000, 1001, (new MRangeArguments())->withLabels()->filter('filterExpression1', 'filterExpression2')],
                 [1000, 1001, 'WITHLABELS', 'FILTER', 'filterExpression1', 'filterExpression2'],
+            ],
+            'with EXCLUDEEMPTY modifier' => [
+                [1000, 1001, (new MRangeArguments())->excludeEmpty()->filter('filterExpression1', 'filterExpression2')],
+                [1000, 1001, 'EXCLUDEEMPTY', 'FILTER', 'filterExpression1', 'filterExpression2'],
             ],
             'with SELECTED_LABELS modifier' => [
                 [1000, 1001, (new MRangeArguments())->selectedLabels('label1', 'label2')->filter('filterExpression1', 'filterExpression2')],

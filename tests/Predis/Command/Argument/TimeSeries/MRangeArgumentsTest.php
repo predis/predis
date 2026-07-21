@@ -100,4 +100,67 @@ class MRangeArgumentsTest extends TestCase
             $this->arguments->toArray()
         );
     }
+
+    /**
+     * @return void
+     */
+    public function testCreatesArgumentsWithExcludeEmptyModifier(): void
+    {
+        $this->arguments->excludeEmpty();
+
+        $this->assertSame(['EXCLUDEEMPTY'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testExcludeEmptyIsEmittedAtMostOnce(): void
+    {
+        $this->arguments->excludeEmpty()->excludeEmpty();
+
+        $this->assertSame(['EXCLUDEEMPTY'], $this->arguments->toArray());
+    }
+
+    /**
+     * @return void
+     */
+    public function testExcludeEmptyComposesWithOtherRangeOptions(): void
+    {
+        $this->arguments
+            ->withLabels()
+            ->aggregation(RangeArguments::AGG_MIN, 100)
+            ->excludeEmpty()
+            ->filter('sensor=1');
+
+        $this->assertSame(
+            ['WITHLABELS', 'AGGREGATION', RangeArguments::AGG_MIN, 100, 'EXCLUDEEMPTY', 'FILTER', 'sensor=1'],
+            $this->arguments->toArray()
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function testThrowsOnExcludeEmptyWhenGroupByAlreadySet(): void
+    {
+        $this->arguments->groupBy('label', 'reducer');
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('EXCLUDEEMPTY cannot be combined with GROUPBY.');
+
+        $this->arguments->excludeEmpty();
+    }
+
+    /**
+     * @return void
+     */
+    public function testThrowsOnGroupByWhenExcludeEmptyAlreadySet(): void
+    {
+        $this->arguments->excludeEmpty();
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('GROUPBY cannot be combined with EXCLUDEEMPTY.');
+
+        $this->arguments->groupBy('label', 'reducer');
+    }
 }
