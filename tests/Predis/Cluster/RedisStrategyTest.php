@@ -285,6 +285,19 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForStreamReadCommandsWithReservedNames(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        // A group or a consumer may be named after the token that separates the keys.
+        $command = $commands->create('XREADGROUP', ['streams', 'streams', null, null, false, 'key', '0']);
+        $this->assertSame($strategy->getSlotByKey('key'), $strategy->getSlot($command));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testReturnsNullOnStreamReadCommandsWithDifferentSlots(): void
     {
         $strategy = $this->getClusterStrategy();

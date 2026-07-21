@@ -510,10 +510,12 @@ abstract class ClusterStrategy implements StrategyInterface
     protected function getKeyFromStreamReadCommands(CommandInterface $command)
     {
         $arguments = $command->getArguments();
+
+        $offset = $command->getId() === 'XREADGROUP' ? 3 : 0;
         $position = null;
 
-        foreach ($arguments as $index => $argument) {
-            if (is_string($argument) && strtoupper($argument) === 'STREAMS') {
+        for ($index = $offset, $argc = count($arguments); $index < $argc; ++$index) {
+            if (is_string($arguments[$index]) && strtoupper($arguments[$index]) === 'STREAMS') {
                 $position = $index;
                 break;
             }
