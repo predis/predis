@@ -7,8 +7,10 @@
 - Added support for new COLLECT reducer for FT.AGGREGATE (#1699)
 - Added support for `SDIFFCARD` and `SUNIONCARD` command
 - Added support for `TS.READ` command
+- Added support for `EXCLUDEEMPTY` argument for `TS.MRANGE` and `TS.MREVRANGE` commands
 - Added explicit testing for FT.SEARCH timeout policies
 - Added support for `TS.QUERYLABELS` command
+- Added support for `FT.ALIASLIST` command
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)

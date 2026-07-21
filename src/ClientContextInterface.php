@@ -144,6 +144,7 @@ use Predis\Command\Redis\VADD;
  * @method $this ftaggregate(string $index, string $query, ?AggregateArguments $arguments = null)
  * @method $this ftaliasadd(string $alias, string $index)
  * @method $this ftaliasdel(string $alias)
+ * @method $this ftaliaslist(string $index)
  * @method $this ftaliasupdate(string $alias, string $index)
  * @method $this ftalter(string $index, FieldInterface[] $schema, ?AlterArguments $arguments = null)
  * @method $this ftcreate(string $index, FieldInterface[] $schema, ?CreateArguments $arguments = null)

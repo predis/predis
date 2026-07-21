@@ -51,7 +51,8 @@ class MRangeArguments extends RangeArguments
      * Splits time series into groups, each group contains time series that share the same
      * value for the provided label name, then aggregates results in each group.
      *
-     * GROUPBY cannot be combined with multiple aggregators set via aggregation().
+     * GROUPBY cannot be combined with multiple aggregators set via aggregation()
+     * or with excludeEmpty().
      *
      * @param  string $label
      * @param  string $reducer
@@ -69,7 +70,32 @@ class MRangeArguments extends RangeArguments
             throw new UnexpectedValueException('GROUPBY cannot be combined with multiple aggregators.');
         }
 
+        if (in_array('EXCLUDEEMPTY', $this->arguments, true)) {
+            throw new UnexpectedValueException('GROUPBY cannot be combined with EXCLUDEEMPTY.');
+        }
+
         array_push($this->arguments, 'GROUPBY', $label, 'REDUCE', $reducer);
+
+        return $this;
+    }
+
+    /**
+     * Omits matching time series whose reported samples array is empty
+     * from the command reply.
+     *
+     * EXCLUDEEMPTY cannot be combined with groupBy().
+     *
+     * @return $this
+     */
+    public function excludeEmpty(): self
+    {
+        if (in_array('GROUPBY', $this->arguments, true)) {
+            throw new UnexpectedValueException('EXCLUDEEMPTY cannot be combined with GROUPBY.');
+        }
+
+        if (!in_array('EXCLUDEEMPTY', $this->arguments, true)) {
+            $this->arguments[] = 'EXCLUDEEMPTY';
+        }
 
         return $this;
     }
