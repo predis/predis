@@ -316,6 +316,7 @@ use Predis\Command\Redis\VADD;
  * @method $this tsnrange(array $keys, $fromTimestamp, $toTimestamp, ?NRangeArguments $arguments = null)
  * @method $this tsnrevrange(array $keys, $fromTimestamp, $toTimestamp, ?NRangeArguments $arguments = null)
  * @method $this tsqueryindex(string ...$filterExpression)
+ * @method $this tsquerylabels(?string $label = null, string ...$filterExpression)
  * @method $this tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method $this tsread(string $key, $timestamp, ?ReadArguments $arguments = null)
  * @method $this tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
