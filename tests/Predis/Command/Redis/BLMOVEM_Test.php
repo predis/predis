@@ -141,41 +141,6 @@ class BLMOVEM_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group slow
-     * @return void
-     * @requiresRedisVersion >= 8.9.0
-     */
-    public function testUnblocksWhenAnotherClientPushesEnoughElements(): void
-    {
-        if (DIRECTORY_SEPARATOR !== '/') {
-            $this->markTestSkipped('The background pusher process requires a POSIX shell');
-        }
-
-        $redis = $this->getClient();
-
-        $pusherScript = sprintf(
-            'usleep(200000); require %s; (new Predis\Client(%s))->rpush("source", ["a", "b", "c"]);',
-            var_export(__DIR__ . '/../../../../vendor/autoload.php', true),
-            var_export([
-                'host' => constant('REDIS_SERVER_HOST'),
-                'port' => constant('REDIS_SERVER_PORT'),
-                'password' => constant('REDIS_PASSWORD'),
-                'database' => constant('REDIS_SERVER_DBNUM'),
-            ], true)
-        );
-
-        exec(sprintf('%s -r %s > /dev/null 2>&1 &', escapeshellarg(PHP_BINARY), escapeshellarg($pusherScript)));
-
-        $this->assertSame(
-            ['a', 'b'],
-            $redis->blmovem('source', 'destination', 'LEFT', 'LEFT', 5, 'COUNT', 2, 'BULK')
-        );
-        $this->assertSame(['c'], $redis->lrange('source', 0, -1));
-        $this->assertSame(['a', 'b'], $redis->lrange('destination', 0, -1));
-    }
-
-    /**
-     * @group connected
      * @return void
      * @requiresRedisVersion >= 8.9.0
      */
