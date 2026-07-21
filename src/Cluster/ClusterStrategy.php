@@ -86,9 +86,11 @@ abstract class ClusterStrategy implements StrategyInterface
             'LINSERT' => $getKeyFromFirstArgument,
             'LINDEX' => $getKeyFromFirstArgument,
             'LLEN' => $getKeyFromFirstArgument,
+            'LMOVEM' => [$this, 'getKeyFromFirstTwoKeys'],
             'LPOP' => $getKeyFromFirstArgument,
             'RPOP' => $getKeyFromFirstArgument,
             'RPOPLPUSH' => $getKeyFromAllArguments,
+            'BLMOVEM' => [$this, 'getKeyFromFirstTwoKeys'],
             'BLPOP' => [$this, 'getKeyFromBlockingListCommands'],
             'BRPOP' => [$this, 'getKeyFromBlockingListCommands'],
             'BRPOPLPUSH' => [$this, 'getKeyFromBlockingListCommands'],
@@ -358,6 +360,29 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         return $firstKey;
+    }
+
+    /**
+     * Extracts the key from commands where the first two arguments are keys,
+     * followed by non-key arguments (e.g. LMOVEM).
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return string|null
+     */
+    protected function getKeyFromFirstTwoKeys(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+
+        if (!isset($arguments[1])) {
+            return $arguments[0] ?? null;
+        }
+
+        if (!$this->checkSameSlotForKeys(array_slice($arguments, 0, 2))) {
+            return null;
+        }
+
+        return $arguments[0];
     }
 
     /**

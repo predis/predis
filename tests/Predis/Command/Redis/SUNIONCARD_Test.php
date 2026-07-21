@@ -66,7 +66,7 @@ class SUNIONCARD_Test extends PredisCommandTestCase
      * @param  int   $limit
      * @param  int   $expectedCardinality
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsCorrectCardinalityOfGivenSetUnion(
         array $sets,
@@ -87,7 +87,7 @@ class SUNIONCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testApproxReturnsSameResultAsExactMatchingOnSmallSets(): void
     {
@@ -105,7 +105,7 @@ class SUNIONCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsCorrectCardinalityOfGivenSetUnionResp3(): void
     {
@@ -123,7 +123,7 @@ class SUNIONCARD_Test extends PredisCommandTestCase
      * @param  array  $arguments
      * @param  string $expectedExceptionMessage
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testThrowsExceptionOnUnexpectedValuesGiven(
         array $arguments,
@@ -140,7 +140,7 @@ class SUNIONCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {

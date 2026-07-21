@@ -179,7 +179,7 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testAggregatesWithCollectReducer(): void
     {
@@ -223,7 +223,7 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testAggregatesWithCollectReducerResp3(): void
     {
@@ -271,7 +271,7 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testCollectReducerProjectsAllFields(): void
     {

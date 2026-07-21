@@ -165,6 +165,36 @@ class PredisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForFirstTwoKeysCommands(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = ['{key}:source', '{key}:destination', 'LEFT', 'RIGHT'];
+
+        foreach ($this->getExpectedCommands('keys-first-two') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReturnsNullOnFirstTwoKeysCommandsWithDifferentSlots(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = ['key:source', 'key:destination', 'LEFT', 'RIGHT'];
+
+        foreach ($this->getExpectedCommands('keys-first-two') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForZsetAggregationCommands(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -413,9 +443,11 @@ class PredisStrategyTest extends PredisTestCase
             'LINSERT' => 'keys-first',
             'LINDEX' => 'keys-first',
             'LLEN' => 'keys-first',
+            'LMOVEM' => 'keys-first-two',
             'LPOP' => 'keys-first',
             'RPOP' => 'keys-first',
             'RPOPLPUSH' => 'keys-all',
+            'BLMOVEM' => 'keys-first-two',
             'BLPOP' => 'keys-blockinglist',
             'BRPOP' => 'keys-blockinglist',
             'BRPOPLPUSH' => 'keys-blockinglist',
