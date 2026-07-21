@@ -9,6 +9,7 @@
 - Added support for `TS.READ` command
 - Added support for `EXCLUDEEMPTY` argument for `TS.MRANGE` and `TS.MREVRANGE` commands
 - Added explicit testing for FT.SEARCH timeout policies
+- Added support for `FT.ALIASLIST` command
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)

@@ -155,6 +155,7 @@ use Predis\Response\Status;
  * @method array             ftaggregate(string $index, string $query, ?AggregateArguments $arguments = null)
  * @method Status            ftaliasadd(string $alias, string $index)
  * @method Status            ftaliasdel(string $alias)
+ * @method array             ftaliaslist(string $index)
  * @method Status            ftaliasupdate(string $alias, string $index)
  * @method Status            ftalter(string $index, FieldInterface[] $schema, ?AlterArguments $arguments = null)
  * @method Status            ftcreate(string $index, FieldInterface[] $schema, ?CreateArguments $arguments = null)
