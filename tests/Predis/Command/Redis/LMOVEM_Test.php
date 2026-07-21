@@ -149,7 +149,7 @@ class LMOVEM_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->expectException(ServerException::class);
-        $this->expectExceptionMessage('WRONGTYPE Operation against a key holding the wrong kind of value');
+        $this->expectExceptionMessage('Operation against a key holding the wrong kind of value');
 
         $redis->set('source', 'foo');
         $redis->lmovem('source', 'destination', 'LEFT', 'RIGHT');
