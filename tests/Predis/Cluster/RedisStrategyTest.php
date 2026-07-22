@@ -322,6 +322,13 @@ class RedisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-stream-read') as $commandID) {
             $command = $commands->create($commandID, $arguments[$commandID]);
+            $this->assertNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testReturnsNullOnFirstTwoKeysCommandsWithDifferentSlots(): void
     {
         $strategy = $this->getClusterStrategy();
