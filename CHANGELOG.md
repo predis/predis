@@ -12,6 +12,7 @@
 - Added support for `TS.QUERYLABELS` command
 - Added support for `LMOVEM` and `BLMOVEM` commands
 - Added support for `FT.ALIASLIST` command
+- Added stream commands to ClusterStrategy
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)
