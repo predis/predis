@@ -334,6 +334,25 @@ class PredisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForVectorSetCommands(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        $arguments = [
+            'VADD' => ['key', [1.0, 2.0], 'element'],
+            'VSIM' => ['key', [1.0, 2.0]],
+        ];
+
+        foreach ($this->getExpectedCommands('keys-vector') as $commandID) {
+            $command = $commands->create($commandID, $arguments[$commandID]);
+            $this->assertSame($strategy->getSlotByKey('key'), $strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForGeoradiusCommand(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -666,6 +685,20 @@ class PredisStrategyTest extends PredisTestCase
             'XREVRANGE' => 'keys-first',
             'XSETID' => 'keys-first',
             'XTRIM' => 'keys-first',
+
+            /* commands operating on vector sets */
+            'VADD' => 'keys-vector',
+            'VCARD' => 'keys-first',
+            'VDIM' => 'keys-first',
+            'VEMB' => 'keys-first',
+            'VGETATTR' => 'keys-first',
+            'VINFO' => 'keys-first',
+            'VLINKS' => 'keys-first',
+            'VRANDMEMBER' => 'keys-first',
+            'VRANGE' => 'keys-first',
+            'VREM' => 'keys-first',
+            'VSETATTR' => 'keys-first',
+            'VSIM' => 'keys-vector',
 
             /* commands operating on time series */
             'TS.READ' => 'keys-first',
