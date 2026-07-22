@@ -65,7 +65,7 @@ class SDIFFCARD_Test extends PredisCommandTestCase
      * @param  int   $limit
      * @param  int   $expectedCardinality
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsCorrectCardinalityOfGivenSetDifference(
         array $sets,
@@ -85,7 +85,7 @@ class SDIFFCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsCorrectCardinalityOfGivenSetDifferenceResp3(): void
     {
@@ -103,7 +103,7 @@ class SDIFFCARD_Test extends PredisCommandTestCase
      * @param  array  $arguments
      * @param  string $expectedExceptionMessage
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testThrowsExceptionOnUnexpectedValuesGiven(
         array $arguments,
@@ -120,7 +120,7 @@ class SDIFFCARD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testThrowsExceptionOnWrongType(): void
     {

@@ -63,7 +63,7 @@ class TSREAD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReadsAllSamplesAtOnce(): void
     {
@@ -83,7 +83,7 @@ class TSREAD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReadsSamplesUsingCursorPagination(): void
     {
@@ -113,7 +113,7 @@ class TSREAD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReadsSamplesUsingSpecialTimestampCursors(): void
     {
@@ -137,7 +137,7 @@ class TSREAD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReadsMissingKeyReturnsEmptyListWithoutError(): void
     {
@@ -149,7 +149,7 @@ class TSREAD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testBlocksForGivenTimeoutWhenNotEnoughSamplesAvailable(): void
     {
@@ -172,7 +172,7 @@ class TSREAD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsImmediatelyWhenMinCountSamplesAlreadyAvailable(): void
     {
@@ -192,7 +192,7 @@ class TSREAD_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReadsAllSamplesAtOnceResp3(): void
     {
@@ -214,7 +214,7 @@ class TSREAD_Test extends PredisCommandTestCase
      * @param  ReadArguments $arguments
      * @param  string        $expectedExceptionMessage
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testThrowsExceptionOnCountConstraintViolations(
         ReadArguments $arguments,

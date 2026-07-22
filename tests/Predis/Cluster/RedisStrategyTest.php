@@ -278,6 +278,14 @@ class RedisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-stream-read') as $commandID) {
             $command = $commands->create($commandID, $arguments[$commandID]);
+    public function testKeysForFirstTwoKeysCommands(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = ['{key}:source', '{key}:destination', 'LEFT', 'RIGHT'];
+
+        foreach ($this->getExpectedCommands('keys-first-two') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
             $this->assertNotNull($strategy->getSlot($command), $commandID);
         }
     }
@@ -310,6 +318,14 @@ class RedisStrategyTest extends PredisTestCase
 
         foreach ($this->getExpectedCommands('keys-stream-read') as $commandID) {
             $command = $commands->create($commandID, $arguments[$commandID]);
+    public function testReturnsNullOnFirstTwoKeysCommandsWithDifferentSlots(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = ['key:source', 'key:destination', 'LEFT', 'RIGHT'];
+
+        foreach ($this->getExpectedCommands('keys-first-two') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
             $this->assertNull($strategy->getSlot($command), $commandID);
         }
     }
@@ -545,9 +561,11 @@ class RedisStrategyTest extends PredisTestCase
             'LINSERT' => 'keys-first',
             'LINDEX' => 'keys-first',
             'LLEN' => 'keys-first',
+            'LMOVEM' => 'keys-first-two',
             'LPOP' => 'keys-first',
             'RPOP' => 'keys-first',
             'RPOPLPUSH' => 'keys-all',
+            'BLMOVEM' => 'keys-first-two',
             'BLPOP' => 'keys-blockinglist',
             'BRPOP' => 'keys-blockinglist',
             'BRPOPLPUSH' => 'keys-blockinglist',
