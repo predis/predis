@@ -66,7 +66,7 @@ class FTALIASLIST_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsAliasesAssociatedWithGivenIndex(): void
     {
@@ -83,7 +83,7 @@ class FTALIASLIST_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsEmptyListForIndexWithoutAliases(): void
     {
@@ -97,7 +97,7 @@ class FTALIASLIST_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testReturnsAliasesAssociatedWithGivenIndexResp3(): void
     {
@@ -114,7 +114,7 @@ class FTALIASLIST_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisVersion >= 8.10.0
+     * @requiresRedisVersion >= 8.9.0
      */
     public function testThrowsExceptionOnNonExistingIndex(): void
     {
