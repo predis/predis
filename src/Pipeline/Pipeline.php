@@ -73,7 +73,7 @@ class Pipeline implements ClientContextInterface
     /**
      * Reads entries from one or multiple streams.
      *
-     * @deprecated Use xread_new() instead. Public API will be changed in the next major version.
+     * @deprecated Use xread_v4() instead. Public API will be changed in the next major version.
      *
      * @param  int|null   $count   Maximum number of entries per stream
      * @param  int|null   $block   Milliseconds to block waiting for new entries

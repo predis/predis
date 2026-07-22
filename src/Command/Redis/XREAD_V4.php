@@ -17,7 +17,7 @@ use Predis\Command\PrefixableCommand as RedisCommand;
 /**
  * This is a transitional command. In the next major version this command will replace XREAD.
  */
-class XREAD_NEW extends RedisCommand
+class XREAD_V4 extends RedisCommand
 {
     public function getId()
     {
