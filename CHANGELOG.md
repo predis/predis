@@ -7,10 +7,18 @@
 - Added support for new COLLECT reducer for FT.AGGREGATE (#1699)
 - Added support for `SDIFFCARD` and `SUNIONCARD` command
 - Added support for `MAXCOUNT` and `MAXSIZE` arguments for `XREAD` and `XREADGROUP`
+- Added support for `TS.READ` command
+- Added support for `EXCLUDEEMPTY` argument for `TS.MRANGE` and `TS.MREVRANGE` commands
+- Added explicit testing for FT.SEARCH timeout policies
+- Added support for `TS.QUERYLABELS` command
+- Added support for `FT.ALIASLIST` command
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)
 - Fixed `@method cmsincrby()` annotation
+
+### Maintenance
+- Added testing for HNSW vector type with RERANK argument
 
 ## v3.5.1 (2026-06-11)
 ### Added

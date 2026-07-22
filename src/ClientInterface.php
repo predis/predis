@@ -39,6 +39,7 @@ use Predis\Command\Argument\TimeSeries\MGetArguments;
 use Predis\Command\Argument\TimeSeries\MRangeArguments;
 use Predis\Command\Argument\TimeSeries\NRangeArguments;
 use Predis\Command\Argument\TimeSeries\RangeArguments;
+use Predis\Command\Argument\TimeSeries\ReadArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\ACL;
 use Predis\Command\Container\CLIENT;
@@ -154,6 +155,7 @@ use Predis\Response\Status;
  * @method array             ftaggregate(string $index, string $query, ?AggregateArguments $arguments = null)
  * @method Status            ftaliasadd(string $alias, string $index)
  * @method Status            ftaliasdel(string $alias)
+ * @method array             ftaliaslist(string $index)
  * @method Status            ftaliasupdate(string $alias, string $index)
  * @method Status            ftalter(string $index, FieldInterface[] $schema, ?AlterArguments $arguments = null)
  * @method Status            ftcreate(string $index, FieldInterface[] $schema, ?CreateArguments $arguments = null)
@@ -326,7 +328,9 @@ use Predis\Response\Status;
  * @method array             tsnrange(array $keys, $fromTimestamp, $toTimestamp, ?NRangeArguments $arguments = null)
  * @method array             tsnrevrange(array $keys, $fromTimestamp, $toTimestamp, ?NRangeArguments $arguments = null)
  * @method array             tsqueryindex(string ...$filterExpression)
+ * @method array             tsquerylabels(?string $label = null, string ...$filterExpression)
  * @method array             tsrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
+ * @method array             tsread(string $key, $timestamp, ?ReadArguments $arguments = null)
  * @method array             tsrevrange(string $key, $fromTimestamp, $toTimestamp, ?RangeArguments $arguments = null)
  * @method int               xack(string $key, string $group, string ...$id)
  * @method array             xackdel(string $key, string $group, string $mode, array $ids)

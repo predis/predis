@@ -183,6 +183,9 @@ abstract class ClusterStrategy implements StrategyInterface
             'XDEL' => $getKeyFromFirstArgument,
             'XRANGE' => $getKeyFromFirstArgument,
 
+            /* commands operating on time series */
+            'TS.READ' => $getKeyFromFirstArgument,
+
             /* commands operating on HyperLogLog */
             'PFADD' => $getKeyFromFirstArgument,
             'PFCOUNT' => $getKeyFromAllArguments,
