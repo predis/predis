@@ -201,6 +201,20 @@ abstract class ClusterStrategy implements StrategyInterface
             'XSETID' => $getKeyFromFirstArgument,
             'XTRIM' => $getKeyFromFirstArgument,
 
+            /* commands operating on vector sets */
+            'VADD' => $getKeyFromFirstArgument,
+            'VCARD' => $getKeyFromFirstArgument,
+            'VDIM' => $getKeyFromFirstArgument,
+            'VEMB' => $getKeyFromFirstArgument,
+            'VGETATTR' => $getKeyFromFirstArgument,
+            'VINFO' => $getKeyFromFirstArgument,
+            'VLINKS' => $getKeyFromFirstArgument,
+            'VRANDMEMBER' => $getKeyFromFirstArgument,
+            'VRANGE' => $getKeyFromFirstArgument,
+            'VREM' => $getKeyFromFirstArgument,
+            'VSETATTR' => $getKeyFromFirstArgument,
+            'VSIM' => $getKeyFromFirstArgument,
+
             /* commands operating on time series */
             'TS.READ' => $getKeyFromFirstArgument,
 

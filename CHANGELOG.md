@@ -13,6 +13,7 @@
 - Added support for `LMOVEM` and `BLMOVEM` commands
 - Added support for `FT.ALIASLIST` command
 - Added stream commands to ClusterStrategy
+- Added vector sets commands to ClusterStrategy
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)
