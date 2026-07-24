@@ -86,9 +86,11 @@ abstract class ClusterStrategy implements StrategyInterface
             'LINSERT' => $getKeyFromFirstArgument,
             'LINDEX' => $getKeyFromFirstArgument,
             'LLEN' => $getKeyFromFirstArgument,
+            'LMOVEM' => [$this, 'getKeyFromFirstTwoKeys'],
             'LPOP' => $getKeyFromFirstArgument,
             'RPOP' => $getKeyFromFirstArgument,
             'RPOPLPUSH' => $getKeyFromAllArguments,
+            'BLMOVEM' => [$this, 'getKeyFromFirstTwoKeys'],
             'BLPOP' => [$this, 'getKeyFromBlockingListCommands'],
             'BRPOP' => [$this, 'getKeyFromBlockingListCommands'],
             'BRPOPLPUSH' => [$this, 'getKeyFromBlockingListCommands'],
@@ -179,9 +181,39 @@ abstract class ClusterStrategy implements StrategyInterface
             'HSTRLEN' => $getKeyFromFirstArgument,
 
             /* commands operating on streams */
+            'XACK' => $getKeyFromFirstArgument,
+            'XACKDEL' => $getKeyFromFirstArgument,
             'XADD' => $getKeyFromFirstArgument,
+            'XAUTOCLAIM' => $getKeyFromFirstArgument,
+            'XCFGSET' => $getKeyFromFirstArgument,
+            'XCLAIM' => $getKeyFromFirstArgument,
             'XDEL' => $getKeyFromFirstArgument,
+            'XDELEX' => $getKeyFromFirstArgument,
+            'XGROUP' => [$this, 'getKeyFromStreamGroupCommands'],
+            'XINFO' => [$this, 'getKeyFromStreamGroupCommands'],
+            'XLEN' => $getKeyFromFirstArgument,
+            'XNACK' => $getKeyFromFirstArgument,
+            'XPENDING' => $getKeyFromFirstArgument,
             'XRANGE' => $getKeyFromFirstArgument,
+            'XREAD' => [$this, 'getKeyFromStreamReadCommands'],
+            'XREADGROUP' => [$this, 'getKeyFromStreamReadCommands'],
+            'XREVRANGE' => $getKeyFromFirstArgument,
+            'XSETID' => $getKeyFromFirstArgument,
+            'XTRIM' => $getKeyFromFirstArgument,
+
+            /* commands operating on vector sets */
+            'VADD' => $getKeyFromFirstArgument,
+            'VCARD' => $getKeyFromFirstArgument,
+            'VDIM' => $getKeyFromFirstArgument,
+            'VEMB' => $getKeyFromFirstArgument,
+            'VGETATTR' => $getKeyFromFirstArgument,
+            'VINFO' => $getKeyFromFirstArgument,
+            'VLINKS' => $getKeyFromFirstArgument,
+            'VRANDMEMBER' => $getKeyFromFirstArgument,
+            'VRANGE' => $getKeyFromFirstArgument,
+            'VREM' => $getKeyFromFirstArgument,
+            'VSETATTR' => $getKeyFromFirstArgument,
+            'VSIM' => $getKeyFromFirstArgument,
 
             /* commands operating on time series */
             'TS.READ' => $getKeyFromFirstArgument,
@@ -361,6 +393,29 @@ abstract class ClusterStrategy implements StrategyInterface
     }
 
     /**
+     * Extracts the key from commands where the first two arguments are keys,
+     * followed by non-key arguments (e.g. LMOVEM).
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return string|null
+     */
+    protected function getKeyFromFirstTwoKeys(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+
+        if (!isset($arguments[1])) {
+            return $arguments[0] ?? null;
+        }
+
+        if (!$this->checkSameSlotForKeys(array_slice($arguments, 0, 2))) {
+            return null;
+        }
+
+        return $arguments[0];
+    }
+
+    /**
      * Extracts the key from BLPOP and BRPOP commands.
      *
      * @param CommandInterface $command Command instance.
@@ -462,6 +517,67 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         return $this->getKeyFromAllArguments($command);
+    }
+
+    /**
+     * Extracts the key from XGROUP and XINFO commands, where it follows the subcommand.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return string|null
+     */
+    protected function getKeyFromStreamGroupCommands(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+
+        // Subcommands such as XINFO HELP and XGROUP HELP take no key at all.
+        if (!isset($arguments[1])) {
+            return null;
+        }
+
+        return $arguments[1];
+    }
+
+    /**
+     * Extracts the key from XREAD and XREADGROUP commands, where the STREAMS token is followed by
+     * the same number of keys and IDs.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return string|null
+     */
+    protected function getKeyFromStreamReadCommands(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+
+        $offset = $command->getId() === 'XREADGROUP' ? 3 : 0;
+        $position = null;
+
+        for ($index = $offset, $argc = count($arguments); $index < $argc; ++$index) {
+            if (is_string($arguments[$index]) && strtoupper($arguments[$index]) === 'STREAMS') {
+                $position = $index;
+                break;
+            }
+        }
+
+        if ($position === null) {
+            return null;
+        }
+
+        $keysAndIds = array_slice($arguments, $position + 1);
+        $count = count($keysAndIds);
+
+        if ($count === 0 || $count % 2 !== 0) {
+            return null;
+        }
+
+        $keys = array_slice($keysAndIds, 0, intdiv($count, 2));
+
+        if (!$this->checkSameSlotForKeys($keys)) {
+            return null;
+        }
+
+        return $keys[0];
     }
 
     /**

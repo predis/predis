@@ -11,7 +11,10 @@
 - Added support for `EXCLUDEEMPTY` argument for `TS.MRANGE` and `TS.MREVRANGE` commands
 - Added explicit testing for FT.SEARCH timeout policies
 - Added support for `TS.QUERYLABELS` command
+- Added support for `LMOVEM` and `BLMOVEM` commands
 - Added support for `FT.ALIASLIST` command
+- Added stream commands to ClusterStrategy
+- Added vector sets commands to ClusterStrategy
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)

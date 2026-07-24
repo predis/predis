@@ -165,6 +165,36 @@ class PredisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForFirstTwoKeysCommands(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = ['{key}:source', '{key}:destination', 'LEFT', 'RIGHT'];
+
+        foreach ($this->getExpectedCommands('keys-first-two') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReturnsNullOnFirstTwoKeysCommandsWithDifferentSlots(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+        $arguments = ['key:source', 'key:destination', 'LEFT', 'RIGHT'];
+
+        foreach ($this->getExpectedCommands('keys-first-two') as $commandID) {
+            $command = $commands->create($commandID, $arguments);
+            $this->assertNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForZsetAggregationCommands(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -189,6 +219,134 @@ class PredisStrategyTest extends PredisTestCase
         foreach ($this->getExpectedCommands('keys-bitop') as $commandID) {
             $command = $commands->create($commandID, $arguments);
             $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testKeysForStreamCommands(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        // These commands drop or reshape their arguments unless all of them are given.
+        $arguments = [
+            'XACKDEL' => ['key', 'group', 'KEEPREF', ['1-1']],
+            'XCLAIM' => ['key', 'group', 'consumer', 0, ['1-1']],
+            'XDELEX' => ['key', 'KEEPREF', ['1-1']],
+            'XNACK' => ['key', 'group', 'silent', ['1-1']],
+            'XPENDING' => ['key', 'group'],
+        ];
+
+        foreach ($this->getExpectedCommands('keys-stream') as $commandID) {
+            $command = $commands->create($commandID, $arguments[$commandID]);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testKeysForStreamSubcommands(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        // The key of these commands follows the subcommand.
+        $arguments = [
+            'XGROUP' => ['CREATE', 'key', 'group', '$'],
+            'XINFO' => ['GROUPS', 'key'],
+        ];
+
+        foreach ($this->getExpectedCommands('keys-stream-subcommand') as $commandID) {
+            $command = $commands->create($commandID, $arguments[$commandID]);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReturnsNullOnStreamSubcommandsWithoutKey(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        foreach ($this->getExpectedCommands('keys-stream-subcommand') as $commandID) {
+            $command = $commands->create($commandID, ['HELP']);
+            $this->assertNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testKeysForStreamReadCommands(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        // The keys follow the STREAMS token and are trailed by the same number of IDs.
+        $arguments = [
+            'XREAD' => [null, null, ['{key}:1', '{key}:2'], '0', '0'],
+            'XREADGROUP' => ['group', 'consumer', null, null, false, '{key}:1', '{key}:2', '0', '0'],
+        ];
+
+        foreach ($this->getExpectedCommands('keys-stream-read') as $commandID) {
+            $command = $commands->create($commandID, $arguments[$commandID]);
+            $this->assertNotNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testKeysForStreamReadCommandsWithReservedNames(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        // A group or a consumer may be named after the token that separates the keys.
+        $command = $commands->create('XREADGROUP', ['streams', 'streams', null, null, false, 'key', '0']);
+        $this->assertSame($strategy->getSlotByKey('key'), $strategy->getSlot($command));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReturnsNullOnStreamReadCommandsWithDifferentSlots(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        $arguments = [
+            'XREAD' => [null, null, ['key:1', 'key:2'], '0', '0'],
+            'XREADGROUP' => ['group', 'consumer', null, null, false, 'key:1', 'key:2', '0', '0'],
+        ];
+
+        foreach ($this->getExpectedCommands('keys-stream-read') as $commandID) {
+            $command = $commands->create($commandID, $arguments[$commandID]);
+            $this->assertNull($strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testKeysForVectorSetCommands(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        $arguments = [
+            'VADD' => ['key', [1.0, 2.0], 'element'],
+            'VSIM' => ['key', [1.0, 2.0]],
+        ];
+
+        foreach ($this->getExpectedCommands('keys-vector') as $commandID) {
+            $command = $commands->create($commandID, $arguments[$commandID]);
+            $this->assertSame($strategy->getSlotByKey('key'), $strategy->getSlot($command), $commandID);
         }
     }
 
@@ -413,9 +571,11 @@ class PredisStrategyTest extends PredisTestCase
             'LINSERT' => 'keys-first',
             'LINDEX' => 'keys-first',
             'LLEN' => 'keys-first',
+            'LMOVEM' => 'keys-first-two',
             'LPOP' => 'keys-first',
             'RPOP' => 'keys-first',
             'RPOPLPUSH' => 'keys-all',
+            'BLMOVEM' => 'keys-first-two',
             'BLPOP' => 'keys-blockinglist',
             'BRPOP' => 'keys-blockinglist',
             'BRPOPLPUSH' => 'keys-blockinglist',
@@ -506,9 +666,39 @@ class PredisStrategyTest extends PredisTestCase
             'HSTRLEN' => 'keys-first',
 
             /* commands operating on streams */
+            'XACK' => 'keys-first',
+            'XACKDEL' => 'keys-stream',
             'XADD' => 'keys-first',
+            'XAUTOCLAIM' => 'keys-first',
+            'XCFGSET' => 'keys-first',
+            'XCLAIM' => 'keys-stream',
             'XDEL' => 'keys-first',
+            'XDELEX' => 'keys-stream',
+            'XGROUP' => 'keys-stream-subcommand',
+            'XINFO' => 'keys-stream-subcommand',
+            'XLEN' => 'keys-first',
+            'XNACK' => 'keys-stream',
+            'XPENDING' => 'keys-stream',
             'XRANGE' => 'keys-first',
+            'XREAD' => 'keys-stream-read',
+            'XREADGROUP' => 'keys-stream-read',
+            'XREVRANGE' => 'keys-first',
+            'XSETID' => 'keys-first',
+            'XTRIM' => 'keys-first',
+
+            /* commands operating on vector sets */
+            'VADD' => 'keys-vector',
+            'VCARD' => 'keys-first',
+            'VDIM' => 'keys-first',
+            'VEMB' => 'keys-first',
+            'VGETATTR' => 'keys-first',
+            'VINFO' => 'keys-first',
+            'VLINKS' => 'keys-first',
+            'VRANDMEMBER' => 'keys-first',
+            'VRANGE' => 'keys-first',
+            'VREM' => 'keys-first',
+            'VSETATTR' => 'keys-first',
+            'VSIM' => 'keys-vector',
 
             /* commands operating on time series */
             'TS.READ' => 'keys-first',
