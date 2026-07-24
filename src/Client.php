@@ -339,6 +339,40 @@ class Client implements ClientInterface, IteratorAggregate
     }
 
     /**
+     * Reads entries from one or multiple streams.
+     *
+     * @deprecated Use xread_v4() instead. Public API will be changed in the next major version.
+     *
+     * @param  int|null   $count   Maximum number of entries per stream
+     * @param  int|null   $block   Milliseconds to block waiting for new entries
+     * @param  array|null $streams Stream keys to read from
+     * @param  string     ...$id   Last-seen ID per stream
+     * @return array|null
+     */
+    public function xread($count = null, $block = null, ?array $streams = null, ...$id)
+    {
+        return $this->__call('xread', func_get_args());
+    }
+
+    /**
+     * Reads entries from one or multiple streams as part of a consumer group.
+     *
+     * @deprecated Use xreadgroup_claim() instead. Public API will be changed in the next major version.
+     *
+     * @param  string   $group      Consumer-group name
+     * @param  string   $consumer   Consumer name
+     * @param  int|null $count      Maximum number of entries per stream
+     * @param  int|null $blockMs    Milliseconds to block waiting for new entries
+     * @param  bool     $noAck      Do not add entries to the pending entries list
+     * @param  string   ...$keyOrId Stream keys followed by one ID per stream
+     * @return array
+     */
+    public function xreadgroup($group, $consumer, $count = null, $blockMs = null, $noAck = false, ...$keyOrId)
+    {
+        return $this->__call('xreadgroup', func_get_args());
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function createCommand($commandID, $arguments = [])
