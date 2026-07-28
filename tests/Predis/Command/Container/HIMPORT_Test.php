@@ -19,9 +19,11 @@ use PHPUnit\Framework\TestCase;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\Configuration\Options;
+use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
+use Predis\NotSupportedException;
 use Predis\Response\Error;
 use Predis\Response\ServerException;
 use Predis\Response\Status;
@@ -330,6 +332,48 @@ class HIMPORT_Test extends TestCase
         }
 
         $this->assertTrue($this->options->himport->getRegistry()->has('shared'));
+    }
+
+    /**
+     * A ClusterInterface that cannot be iterated must fail fast rather than look
+     * like a successful fan-out over zero nodes.
+     *
+     * @group disconnected
+     */
+    public function testPrepareFailsFastWhenClusterIsNotIterable(): void
+    {
+        // A bare ClusterInterface mock does not implement IteratorAggregate.
+        $cluster = $this->getMockBuilder(ClusterInterface::class)->getMock();
+        $this->client->method('getConnection')->willReturn($cluster);
+
+        try {
+            $this->createContainer()->prepare('shared', ['name']);
+            $this->fail('Expected a NotSupportedException was not thrown');
+        } catch (NotSupportedException $exception) {
+            $this->assertStringContainsString('iterable', $exception->getMessage());
+        }
+
+        // Nothing was executed, so nothing must have been recorded.
+        $this->assertFalse($this->options->himport->getRegistry()->has('shared'));
+    }
+
+    /**
+     * An iterable cluster that yields no master shards must also fail fast.
+     *
+     * @group disconnected
+     */
+    public function testPrepareFailsFastWhenClusterHasNoMasters(): void
+    {
+        $cluster = $this->getMockBuilder(RedisCluster::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getIterator'])
+            ->getMock();
+        $cluster->method('getIterator')->willReturn(new ArrayIterator([]));
+        $this->client->method('getConnection')->willReturn($cluster);
+
+        $this->expectException(NotSupportedException::class);
+
+        $this->createContainer()->prepare('shared', ['name']);
     }
 
     /**

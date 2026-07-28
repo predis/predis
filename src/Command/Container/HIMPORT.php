@@ -20,6 +20,7 @@ use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Himport\FieldsetNotPreparedException;
 use Predis\Himport\HimportOptions;
+use Predis\NotSupportedException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface;
 use Predis\Response\ServerException;
@@ -362,18 +363,34 @@ class HIMPORT extends AbstractContainer
     /**
      * Executes a command on every master shard of a cluster connection.
      *
+     * Fails fast rather than silently no-op'ing: a cluster that cannot be
+     * enumerated, or that yields no master shards, must never look like a
+     * successful fan-out to the callers that mutate the registry and pins.
+     *
      * @param  ClusterInterface                                        $cluster
      * @param  CommandInterface                                        $command
      * @return array<int, array{0: NodeConnectionInterface, 1: mixed}>
+     * @throws NotSupportedException
      */
     private function fanOut(ClusterInterface $cluster, CommandInterface $command): array
     {
+        if (!$cluster instanceof IteratorAggregate) {
+            throw new NotSupportedException(sprintf(
+                "HIMPORT requires an iterable cluster connection to fan out to master shards; '%s' is not iterable.",
+                get_class($cluster)
+            ));
+        }
+
         $results = [];
 
-        if ($cluster instanceof IteratorAggregate) {
-            foreach ($cluster->getIterator() as $node) {
-                $results[] = [$node, $node->executeCommand($command)];
-            }
+        foreach ($cluster->getIterator() as $node) {
+            $results[] = [$node, $node->executeCommand($command)];
+        }
+
+        if (empty($results)) {
+            throw new NotSupportedException(
+                'HIMPORT could not fan out: the cluster connection reported no master shards.'
+            );
         }
 
         return $results;
