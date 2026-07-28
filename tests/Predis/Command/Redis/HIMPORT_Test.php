@@ -529,7 +529,7 @@ class HIMPORT_Test extends PredisCommandTestCase
             'himport' => ['fieldsets' => ['users' => ['name', 'age']]],
         ]);
 
-        // No prepare() call — the fieldset is known from configuration.
+        // No prepare() call - the fieldset is known from configuration.
         $this->assertEquals('OK', $redis->himport->set('users:1', 'users', ['alice', '25']));
         $this->assertEquals('OK', $redis->himport->set('users:2', 'users', ['bob', '30']));
 
@@ -719,7 +719,7 @@ class HIMPORT_Test extends PredisCommandTestCase
     /**
      * With auto-prepare ON, a SET routed to a master that is missing the fieldset
      * (e.g. a node recycled or reached via redirection) transparently re-prepares
-     * on that master and succeeds — no error surfaces where we do not want one.
+     * on that master and succeeds - no error surfaces where we do not want one.
      *
      * @group connected
      * @group cluster
@@ -775,7 +775,7 @@ class HIMPORT_Test extends PredisCommandTestCase
 
     /**
      * A fieldset declared through the `himport` option is prepared on demand on
-     * whichever master owns each key — SETs across shards succeed with no
+     * whichever master owns each key - SETs across shards succeed with no
      * explicit prepare() and no manual fan-out.
      *
      * @group connected
