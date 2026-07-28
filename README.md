@@ -437,6 +437,9 @@ $response = $redis->transaction(function (MultiExec $tx) {
 
 ### Hinted Hash Templates (HIMPORT) ###
 
+> **Experimental:** this feature is experimental and its API (the `himport` container and option) may
+> change in a future release.
+
 `HIMPORT` (Redis >= 8.10) speeds up loading many hashes that share the same field names. The field
 names are sent once with `HIMPORT PREPARE`, registering them under a fieldset name, and hashes are
 then created with `HIMPORT SET` by sending only the values. The server stores such hashes in a

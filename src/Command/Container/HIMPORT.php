@@ -49,6 +49,8 @@ use Throwable;
  * pipelines and transactions stay fully explicit: they never recover and
  * propagate server errors as-is.
  *
+ * @experimental This API is experimental and may change in a future release.
+ *
  * @method Status prepare(string $fieldset, array $fields)
  * @method Status set(string $key, string $fieldset, array $values)
  * @method int    discard(string $fieldset)

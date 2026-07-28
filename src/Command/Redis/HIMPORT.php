@@ -19,6 +19,8 @@ use Predis\Command\PrefixableCommand as RedisCommand;
  *
  * Container command corresponds to any HIMPORT *.
  * Represents any HIMPORT command with subcommand as first argument.
+ *
+ * @experimental This command is experimental and its API may change in a future release.
  */
 class HIMPORT extends RedisCommand
 {

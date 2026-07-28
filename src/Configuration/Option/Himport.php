@@ -30,6 +30,8 @@ use Predis\Himport\HimportOptions;
  *   - `auto_prepare`: optional bool (default true) toggling whether the himport
  *                     container prepares/re-prepares fieldsets on demand and
  *                     recovers from "no such fieldset".
+ *
+ * @experimental This option is experimental and its shape may change in a future release.
  */
 class Himport implements OptionInterface
 {

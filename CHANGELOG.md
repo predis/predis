@@ -15,7 +15,7 @@
 - Added support for `FT.ALIASLIST` command
 - Added stream commands to ClusterStrategy
 - Added vector sets commands to ClusterStrategy
-- Added support for `HIMPORT` bulk hash import feature
+- Added experimental support for `HIMPORT` bulk hash import feature (API may change in a future release)
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)
