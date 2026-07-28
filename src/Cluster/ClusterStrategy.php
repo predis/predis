@@ -179,6 +179,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'HVALS' => $getKeyFromFirstArgument,
             'HSCAN' => $getKeyFromFirstArgument,
             'HSTRLEN' => $getKeyFromFirstArgument,
+            'HIMPORT' => [$this, 'getKeyFromHimportCommands'],
 
             /* commands operating on streams */
             'XACK' => $getKeyFromFirstArgument,
@@ -449,6 +450,31 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         return $arguments[1];
+    }
+
+    /**
+     * Extracts the key from HIMPORT commands.
+     *
+     * Only HIMPORT SET operates on a key (at position 1, after the subcommand)
+     * and is routed by its hash slot. HIMPORT PREPARE/DISCARD/DISCARDALL are
+     * connection-session commands that the server advertises as all-shards
+     * commands; they have no key, so this returns null and the cluster
+     * connection rejects them. The dedicated container command is the sanctioned
+     * path for fanning those out across the master shards.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return string|null
+     */
+    protected function getKeyFromHimportCommands(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+
+        if (isset($arguments[0], $arguments[1]) && strtoupper($arguments[0]) === 'SET') {
+            return $arguments[1];
+        }
+
+        return null;
     }
 
     /**

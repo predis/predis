@@ -33,6 +33,7 @@ class Options implements OptionsInterface
         'prefix' => Option\Prefix::class,
         'crc16' => Option\CRC16::class,
         'upstream_driver' => Option\UpstreamDriver::class,
+        'himport' => Option\Himport::class,
     ];
 
     /** @var array */

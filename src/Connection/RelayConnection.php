@@ -369,15 +369,30 @@ class RelayConnection extends AbstractConnection
      */
     public function connect()
     {
-        if (parent::connect() && $this->initCommands) {
-            foreach ($this->initCommands as $command) {
-                $response = $this->executeCommand($command);
+        if (!parent::connect()) {
+            return;
+        }
 
-                if ($response instanceof ErrorResponseInterface && ($command->getId() === 'CLIENT')) {
-                    // Do nothing on CLIENT SETINFO command failure
-                } elseif ($response instanceof ErrorResponseInterface) {
-                    $this->onConnectionError("`{$command->getId()}` failed: {$response->getMessage()}", 0);
-                }
+        foreach ($this->initCommands as $command) {
+            $response = $this->executeCommand($command);
+
+            if ($response instanceof ErrorResponseInterface && ($command->getId() === 'CLIENT')) {
+                // Do nothing on CLIENT SETINFO command failure
+            } elseif ($response instanceof ErrorResponseInterface) {
+                $this->onConnectionError("`{$command->getId()}` failed: {$response->getMessage()}", 0);
+            }
+        }
+
+        // Best-effort replay of session state (e.g. HIMPORT fieldsets): a failed
+        // command drops only its own entry and never tears down the connection.
+        // Note the "relay" extension reconnects internally without re-entering
+        // this method, so this replay does not cover relay-driven reconnects;
+        // those are healed reactively when the next dependent command runs.
+        foreach ($this->sessionCommands as $key => $command) {
+            $response = $this->executeCommand($command);
+
+            if ($response instanceof ErrorResponseInterface) {
+                unset($this->sessionCommands[$key]);
             }
         }
     }

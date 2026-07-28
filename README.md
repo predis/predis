@@ -22,6 +22,7 @@ More details about this project can be found on the [frequently asked questions]
 - Command pipelining on both single nodes and clusters (client-side sharding only).
 - Abstraction for Redis transactions (Redis >= 2.0) and CAS operations (Redis >= 2.2).
 - Abstraction for Lua scripting (Redis >= 2.6) and automatic switching between `EVALSHA` or `EVAL`.
+- Abstraction for Hinted Hash Templates (`HIMPORT`, Redis >= 8.10) with automatic per-connection fieldset replay.
 - Abstraction for `SCAN`, `SSCAN`, `ZSCAN` and `HSCAN` (Redis >= 2.8) based on PHP iterators.
 - Connections are established lazily by the client upon the first command and can be persisted.
 - Connections can be established via TCP/IP (also TLS/SSL-encrypted) or UNIX domain sockets.
@@ -432,6 +433,56 @@ $response = $redis->transaction(function (MultiExec $tx) {
 
 // ['OK', 'OK', 'OK']
 ```
+
+
+### Hinted Hash Templates (HIMPORT) ###
+
+`HIMPORT` (Redis >= 8.10) speeds up loading many hashes that share the same field names. The field
+names are sent once with `HIMPORT PREPARE`, registering them under a fieldset name, and hashes are
+then created with `HIMPORT SET` by sending only the values. The server stores such hashes in a
+memory-efficient encoding where the field names are kept only once; the resulting keys are ordinary
+hashes that work with every regular hash command.
+
+Predis exposes the command family through the `himport` container:
+
+```php
+$client->himport->prepare('users', ['name', 'email', 'age']);
+
+$client->himport->set('user:1', 'users', ['alice', 'alice@example.com', '25']);
+$client->himport->set('user:2', 'users', ['bob', 'bob@example.com', '30']);
+
+$client->himport->discard('users');   // 1
+$client->himport->discardAll();        // number of fieldsets removed
+```
+
+Values are paired by position with the fields supplied to `prepare()`, in the caller's order — Predis
+never reorders them. Hash enumeration order (e.g. `HGETALL`) is not guaranteed to match the `PREPARE`
+order, only the value-to-field pairing is.
+
+A fieldset is **server-side session state that lives on a single physical connection** and is lost when
+that connection is dropped (reconnect, `RESET`, cluster failover). To keep this transparent, Predis
+tracks the fieldsets prepared through the container and:
+
+- replays each `PREPARE` automatically when a connection is re-established (at most once per physical
+  connection);
+- if a `HIMPORT SET` still reports `no such fieldset` (for example on a connection created after a
+  cluster redirection), re-prepares the fieldset on the executing connection and retries the write once.
+
+This recovery is enabled by default and can be turned off with the `himport` client option, in which
+case server errors are propagated unchanged:
+
+```php
+$client = new Predis\Client($parameters, ['himport' => ['auto_prepare' => false]]);
+```
+
+On a cluster, `prepare()`, `discard()` and `discardAll()` fan out to every master shard, while `set()`
+is routed by the hash slot of its key like any other write. This ensures a `HIMPORT SET` succeeds on
+whichever shard owns its key.
+
+The raw command form (`$client->himport('PREPARE', 'users', 'name', 'email')`) is also available and is
+the one to use inside pipelines and transactions; it performs no client-side tracking or recovery, so
+`PREPARE` and the dependent `SET` commands must run on the same connection (which pipelines and
+transactions guarantee).
 
 
 ### Adding new commands ###

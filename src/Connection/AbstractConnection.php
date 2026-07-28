@@ -48,6 +48,17 @@ abstract class AbstractConnection implements NodeConnectionInterface
     protected $initCommands = [];
 
     /**
+     * Commands that restore server-side session state (e.g. HIMPORT fieldsets)
+     * on the physical connection. Unlike init commands, these are keyed so they
+     * can be replaced and removed, are replayed best-effort after init commands
+     * on every (re)connect, and are intentionally excluded from serialization: a
+     * deserialized or freshly created connection is a new server session.
+     *
+     * @var array<string, CommandInterface>
+     */
+    protected $sessionCommands = [];
+
+    /**
      * @param ParametersInterface $parameters Initialization parameters for the connection.
      */
     public function __construct(ParametersInterface $parameters)
@@ -125,6 +136,50 @@ abstract class AbstractConnection implements NodeConnectionInterface
     public function getInitCommands(): array
     {
         return $this->initCommands;
+    }
+
+    /**
+     * Registers (or replaces) a session command under the given key so it is
+     * replayed on the next (re)connect. Keying makes replacement idempotent.
+     *
+     * @param string           $key     Identifier for the session command.
+     * @param CommandInterface $command Command replayed to restore session state.
+     */
+    public function addSessionCommand(string $key, CommandInterface $command): void
+    {
+        $this->sessionCommands[$key] = $command;
+    }
+
+    /**
+     * Removes a single session command previously registered under the key.
+     *
+     * @param string $key Identifier for the session command.
+     */
+    public function removeSessionCommand(string $key): void
+    {
+        unset($this->sessionCommands[$key]);
+    }
+
+    /**
+     * Removes every session command whose key starts with the given prefix.
+     *
+     * @param string $prefix Key prefix (e.g. "himport:") to match.
+     */
+    public function removeSessionCommandsByPrefix(string $prefix): void
+    {
+        foreach (array_keys($this->sessionCommands) as $key) {
+            if (strpos($key, $prefix) === 0) {
+                unset($this->sessionCommands[$key]);
+            }
+        }
+    }
+
+    /**
+     * @return array<string, CommandInterface>
+     */
+    public function getSessionCommands(): array
+    {
+        return $this->sessionCommands;
     }
 
     /**
