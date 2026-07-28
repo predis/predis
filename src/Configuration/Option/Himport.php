@@ -19,12 +19,17 @@ use Predis\Himport\FieldsetRegistry;
 use Predis\Himport\HimportOptions;
 
 /**
- * Configures HIMPORT support for a client: the shared fieldset registry and
- * whether the himport container auto-recovers from "no such fieldset" by
- * re-preparing and retrying.
+ * Configures HIMPORT support for a client.
  *
- * Accepts a Predis\Himport\HimportOptions instance, or an array with an optional
- * `auto_prepare` boolean (default true).
+ * Accepts a Predis\Himport\HimportOptions instance, or an array with:
+ *   - `fieldsets`:    optional map of fieldset name => ordered, non-empty field
+ *                     list. Pre-declared fieldsets are prepared on demand the
+ *                     first time a `HIMPORT SET` references them on a connection,
+ *                     so the application does not need to call `prepare()` for
+ *                     them (this uses the same auto-prepare mechanism below).
+ *   - `auto_prepare`: optional bool (default true) toggling whether the himport
+ *                     container prepares/re-prepares fieldsets on demand and
+ *                     recovers from "no such fieldset".
  */
 class Himport implements OptionInterface
 {
@@ -37,17 +42,23 @@ class Himport implements OptionInterface
             return $value;
         }
 
-        if (is_array($value)) {
-            $autoPrepare = array_key_exists('auto_prepare', $value)
-                ? (bool) $value['auto_prepare']
-                : true;
-
-            return new HimportOptions(new FieldsetRegistry(), $autoPrepare);
+        if (!is_array($value)) {
+            throw new InvalidArgumentException(
+                'Invalid value for the himport option: expected an array or a Predis\Himport\HimportOptions instance.'
+            );
         }
 
-        throw new InvalidArgumentException(
-            'Invalid value for the himport option: expected an array or a Predis\Himport\HimportOptions instance.'
-        );
+        $autoPrepare = array_key_exists('auto_prepare', $value)
+            ? (bool) $value['auto_prepare']
+            : true;
+
+        $registry = null;
+
+        if (array_key_exists('fieldsets', $value)) {
+            $registry = $this->buildRegistry($value['fieldsets']);
+        }
+
+        return new HimportOptions($registry, $autoPrepare);
     }
 
     /**
@@ -55,6 +66,35 @@ class Himport implements OptionInterface
      */
     public function getDefault(OptionsInterface $options)
     {
-        return new HimportOptions(new FieldsetRegistry(), true);
+        return new HimportOptions(null, true);
+    }
+
+    /**
+     * Builds a fieldset registry pre-seeded from the `fieldsets` option.
+     *
+     * @param  mixed            $fieldsets
+     * @return FieldsetRegistry
+     */
+    private function buildRegistry($fieldsets): FieldsetRegistry
+    {
+        if (!is_array($fieldsets)) {
+            throw new InvalidArgumentException(
+                'The "fieldsets" himport option must be a map of fieldset name => list of field names.'
+            );
+        }
+
+        $registry = new FieldsetRegistry();
+
+        foreach ($fieldsets as $name => $fields) {
+            if (!is_array($fields) || empty($fields)) {
+                throw new InvalidArgumentException(
+                    sprintf('Fieldset "%s" must be a non-empty list of field names.', $name)
+                );
+            }
+
+            $registry->set((string) $name, array_values($fields));
+        }
+
+        return $registry;
     }
 }

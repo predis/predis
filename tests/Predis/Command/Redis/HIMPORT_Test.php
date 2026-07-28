@@ -185,6 +185,33 @@ class HIMPORT_Test extends PredisCommandTestCase
     }
 
     /**
+     * A PREPARE the server rejects must not leave a registry entry: a later SET
+     * reports the fieldset as unknown rather than re-raising the prepare error.
+     *
+     * @group connected
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testRejectedPrepareDoesNotPoisonRegistry(): void
+    {
+        $redis = $this->getClient();
+
+        try {
+            $redis->himport->prepare('bad', ['name', 'name']);
+            $this->fail('Expected a "duplicate field name" error');
+        } catch (ServerException $exception) {
+            $this->assertStringContainsString('duplicate field name', $exception->getMessage());
+        }
+
+        try {
+            $redis->himport->set('bad:1', 'bad', ['alice']);
+            $this->fail('Expected a "no such fieldset" error');
+        } catch (ServerException $exception) {
+            $this->assertStringContainsString('no such fieldset', $exception->getMessage());
+            $this->assertStringNotContainsString('duplicate field name', $exception->getMessage());
+        }
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 8.9.0
      */
@@ -437,6 +464,95 @@ class HIMPORT_Test extends PredisCommandTestCase
     }
 
     /**
+     * A fieldset already present on the connection but never declared through the
+     * container (prepared out of band with the raw command, or inherited on a
+     * persistent connection) is usable by the container's set(): the write only
+     * needs the fieldset on the executing connection, not a registry entry.
+     *
+     * @group connected
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testContainerSetUsesFieldsetPreparedOutOfBand(): void
+    {
+        $redis = $this->getClient();
+
+        // Prepared with the raw form: the server-side fieldset exists on the
+        // connection, but the client-side registry is left untouched.
+        $this->assertEquals('OK', $redis->himport('PREPARE', 'shared', 'name', 'age'));
+        $this->assertFalse($redis->getOptions()->himport->getRegistry()->has('shared'));
+
+        $this->assertEquals('OK', $redis->himport->set('shared:1', 'shared', ['alice', '25']));
+        $this->assertSame('alice', $redis->hget('shared:1', 'name'));
+
+        // Still not tracked: the container used the pre-loaded state as-is.
+        $this->assertFalse($redis->getOptions()->himport->getRegistry()->has('shared'));
+    }
+
+    /**
+     * Recovery is scoped to fieldsets declared through the container. A pre-loaded
+     * fieldset the registry does not know about is NOT re-prepared after its
+     * connection is lost, so the server error surfaces unchanged.
+     *
+     * @group connected
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testPreloadedFieldsetIsNotRecoveredAfterReconnect(): void
+    {
+        $redis = $this->getClient();
+
+        $redis->himport('PREPARE', 'shared', 'name', 'age');
+        $this->assertEquals('OK', $redis->himport->set('shared:1', 'shared', ['alice', '25']));
+
+        // The raw PREPARE pinned nothing for replay and recorded nothing in the
+        // registry, so after a reconnect the fieldset is simply gone.
+        $redis->getConnection()->disconnect();
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('no such fieldset');
+        $redis->himport->set('shared:2', 'shared', ['bob', '30']);
+    }
+
+    /**
+     * A fieldset declared through the `himport` client option is prepared on
+     * demand: a SET referencing it succeeds without an explicit prepare() call.
+     *
+     * @group connected
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testConfiguredFieldsetIsPreparedOnDemandWithoutExplicitPrepare(): void
+    {
+        $redis = $this->createClient(null, [
+            'himport' => ['fieldsets' => ['users' => ['name', 'age']]],
+        ]);
+
+        // No prepare() call — the fieldset is known from configuration.
+        $this->assertEquals('OK', $redis->himport->set('users:1', 'users', ['alice', '25']));
+        $this->assertEquals('OK', $redis->himport->set('users:2', 'users', ['bob', '30']));
+
+        $this->assertSame('alice', $redis->hget('users:1', 'name'));
+        $this->assertSame('bob', $redis->hget('users:2', 'name'));
+    }
+
+    /**
+     * On-demand preparation of configured fieldsets uses the auto-prepare
+     * mechanism; with it disabled and no explicit prepare(), the server error
+     * is propagated.
+     *
+     * @group connected
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testConfiguredFieldsetWithAutoPrepareDisabledIsNotPrepared(): void
+    {
+        $redis = $this->createClient(null, [
+            'himport' => ['fieldsets' => ['users' => ['name', 'age']], 'auto_prepare' => false],
+        ]);
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('no such fieldset');
+        $redis->himport->set('users:1', 'users', ['alice', '25']);
+    }
+
+    /**
      * @group connected
      * @group cluster
      * @requiresRedisVersion >= 8.9.0
@@ -622,6 +738,57 @@ class HIMPORT_Test extends PredisCommandTestCase
         // The SET hits "no such fieldset", re-prepares on that node, retries once.
         $this->assertEquals('OK', $redis->himport->set($key, 'shared', ['carol']));
         $this->assertSame('carol', $redis->hget($key, 'name'));
+    }
+
+    /**
+     * On a cluster, a fieldset pre-loaded directly on the master that owns a key
+     * (out of band, without the container fan-out or a registry entry) is usable
+     * by the container's set() for that key.
+     *
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testClusterContainerSetUsesFieldsetPreloadedOnOwningNode(): void
+    {
+        $redis = $this->getClient();
+        $cluster = $redis->getConnection();
+
+        $key = 'shared:{a}';
+        $node = $cluster->getConnectionByCommand(
+            $redis->createCommand('himport', ['SET', $key, 'shared', 'placeholder'])
+        );
+
+        // Load the fieldset only on the node that owns this key's slot; the
+        // registry stays empty and no fan-out happens.
+        $node->executeCommand(RawCommand::create('HIMPORT', 'PREPARE', 'shared', 'name', 'age'));
+        $this->assertFalse($redis->getOptions()->himport->getRegistry()->has('shared'));
+
+        $this->assertEquals('OK', $redis->himport->set($key, 'shared', ['dave', '44']));
+        $this->assertSame('dave', $redis->hget($key, 'name'));
+    }
+
+    /**
+     * A fieldset declared through the `himport` option is prepared on demand on
+     * whichever master owns each key — SETs across shards succeed with no
+     * explicit prepare() and no manual fan-out.
+     *
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 8.9.0
+     */
+    public function testClusterConfiguredFieldsetPreparedOnDemandAcrossShards(): void
+    {
+        $redis = $this->createClient(null, [
+            'himport' => ['fieldsets' => ['users' => ['name', 'age']]],
+        ]);
+
+        foreach (['users:{a}', 'users:{b}', 'users:{c}', 'users:{d}'] as $i => $key) {
+            $this->assertEquals('OK', $redis->himport->set($key, 'users', ['user' . $i, (string) (20 + $i)]));
+        }
+        foreach (['users:{a}', 'users:{b}', 'users:{c}', 'users:{d}'] as $i => $key) {
+            $this->assertSame('user' . $i, $redis->hget($key, 'name'));
+        }
     }
 
     /**

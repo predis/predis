@@ -475,6 +475,24 @@ case server errors are propagated unchanged:
 $client = new Predis\Client($parameters, ['himport' => ['auto_prepare' => false]]);
 ```
 
+Fieldsets can also be declared up front through the same option. Fieldsets declared this way are
+prepared on demand the first time a `HIMPORT SET` references them on a connection, so the application
+never has to call `prepare()` for them (this uses the on-demand mechanism above, so keep `auto_prepare`
+enabled):
+
+```php
+$client = new Predis\Client($parameters, [
+    'himport' => [
+        'fieldsets' => [
+            'users' => ['name', 'email', 'age'],
+        ],
+    ],
+]);
+
+// No prepare() call needed — "users" is known from configuration:
+$client->himport->set('user:1', 'users', ['alice', 'alice@example.com', '25']);
+```
+
 On a cluster, `prepare()`, `discard()` and `discardAll()` fan out to every master shard, while `set()`
 is routed by the hash slot of its key like any other write. This ensures a `HIMPORT SET` succeeds on
 whichever shard owns its key.

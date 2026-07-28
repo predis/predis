@@ -240,7 +240,7 @@ class HIMPORT_Test extends TestCase
     /**
      * @group disconnected
      */
-    public function testPrepareFanOutSurfacesFirstErrorAndKeepsRegistry(): void
+    public function testPrepareFanOutSurfacesFirstErrorAndDoesNotRecord(): void
     {
         [$node1, $node2] = $this->twoNodes();
         $node1->method('executeCommand')->willReturn(Status::get('OK'));
@@ -255,7 +255,53 @@ class HIMPORT_Test extends TestCase
             $this->assertStringContainsString('duplicate field name', $exception->getMessage());
         }
 
-        // Registry keeps the entry so lagging nodes self-heal on their first SET.
+        // A rejected PREPARE must not leave a poison registry entry that later
+        // SETs would keep trying (and failing) to re-prepare.
+        $this->assertFalse($this->options->himport->getRegistry()->has('shared'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPrepareDoesNotRecordWhenStandaloneServerRejectsIt(): void
+    {
+        $node = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $this->client->method('getConnection')->willReturn($node);
+        $this->client
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->willThrowException(new ServerException('ERR duplicate field name in fieldset'));
+
+        try {
+            $this->createContainer()->prepare('shared', ['name', 'name']);
+            $this->fail('Expected ServerException was not thrown');
+        } catch (ServerException $exception) {
+            $this->assertStringContainsString('duplicate field name', $exception->getMessage());
+        }
+
+        $this->assertFalse($this->options->himport->getRegistry()->has('shared'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDiscardKeepsRegistryWhenServerRejectsIt(): void
+    {
+        $this->options->himport->getRegistry()->set('shared', ['name']);
+
+        $node = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $this->client->method('getConnection')->willReturn($node);
+        $this->client
+            ->method('executeCommand')
+            ->willThrowException(new ServerException('ERR something went wrong'));
+
+        try {
+            $this->createContainer()->discard('shared');
+            $this->fail('Expected ServerException was not thrown');
+        } catch (ServerException $exception) {
+            // A failed discard leaves the fieldset consistently known and retryable.
+        }
+
         $this->assertTrue($this->options->himport->getRegistry()->has('shared'));
     }
 

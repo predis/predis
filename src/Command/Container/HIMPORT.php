@@ -76,11 +76,6 @@ class HIMPORT extends AbstractContainer
             throw new InvalidArgumentException('HIMPORT PREPARE requires a non-empty list of fields.');
         }
 
-        // Record intent before executing: if a fan-out partially fails, lagging
-        // nodes will report "no such fieldset" on their first SET and the
-        // recovery path re-prepares them from this registry.
-        $this->getRegistry()->set($fieldset, $fields);
-
         $command = $this->client->createCommand('HIMPORT', [self::SUBCOMMAND_PREPARE, $fieldset, $fields]);
         $connection = $this->client->getConnection();
 
@@ -88,8 +83,13 @@ class HIMPORT extends AbstractContainer
             $results = $this->fanOut($connection, $command);
 
             if (null !== $error = $this->firstError($results)) {
+                // Do not record a fieldset the server rejected: a poison entry
+                // would make every later SET retry a PREPARE that cannot succeed.
                 return $this->surfaceError($error);
             }
+
+            // Record and pin only after every master confirmed the PREPARE.
+            $this->getRegistry()->set($fieldset, $fields);
 
             foreach ($results as $result) {
                 $this->pinSessionCommand($result[0], $this->sessionKey($fieldset), $command);
@@ -100,9 +100,12 @@ class HIMPORT extends AbstractContainer
 
         $response = $this->client->executeCommand($command);
 
-        if (!$response instanceof ErrorInterface) {
-            $this->pinSessionCommand($this->resolveNode($command), $this->sessionKey($fieldset), $command);
+        if ($response instanceof ErrorInterface) {
+            return $response;
         }
+
+        $this->getRegistry()->set($fieldset, $fields);
+        $this->pinSessionCommand($this->resolveNode($command), $this->sessionKey($fieldset), $command);
 
         return $response;
     }
@@ -152,8 +155,6 @@ class HIMPORT extends AbstractContainer
      */
     public function discard(string $fieldset)
     {
-        $this->getRegistry()->remove($fieldset);
-
         $command = $this->client->createCommand('HIMPORT', [self::SUBCOMMAND_DISCARD, $fieldset]);
         $connection = $this->client->getConnection();
 
@@ -161,9 +162,14 @@ class HIMPORT extends AbstractContainer
             $results = $this->fanOut($connection, $command);
 
             if (null !== $error = $this->firstError($results)) {
+                // Leave the registry and pins untouched so the fieldset stays
+                // consistently known and the discard can be retried.
                 return $this->surfaceError($error);
             }
 
+            // Drop registry entry and pins together, only after every master
+            // confirmed the discard, so the two never disagree.
+            $this->getRegistry()->remove($fieldset);
             $removed = 0;
 
             foreach ($results as $result) {
@@ -176,9 +182,12 @@ class HIMPORT extends AbstractContainer
 
         $response = $this->client->executeCommand($command);
 
-        if (!$response instanceof ErrorInterface) {
-            $this->unpinSessionCommand($this->resolveNode($command), $this->sessionKey($fieldset));
+        if ($response instanceof ErrorInterface) {
+            return $response;
         }
+
+        $this->getRegistry()->remove($fieldset);
+        $this->unpinSessionCommand($this->resolveNode($command), $this->sessionKey($fieldset));
 
         return $response;
     }
@@ -192,8 +201,6 @@ class HIMPORT extends AbstractContainer
      */
     public function discardAll()
     {
-        $this->getRegistry()->clear();
-
         $command = $this->client->createCommand('HIMPORT', [self::SUBCOMMAND_DISCARDALL]);
         $connection = $this->client->getConnection();
 
@@ -201,9 +208,12 @@ class HIMPORT extends AbstractContainer
             $results = $this->fanOut($connection, $command);
 
             if (null !== $error = $this->firstError($results)) {
+                // Leave client-side state intact so it stays consistent and the
+                // discard can be retried.
                 return $this->surfaceError($error);
             }
 
+            $this->getRegistry()->clear();
             $removed = 0;
 
             foreach ($results as $result) {
@@ -216,9 +226,12 @@ class HIMPORT extends AbstractContainer
 
         $response = $this->client->executeCommand($command);
 
-        if (!$response instanceof ErrorInterface) {
-            $this->unpinSessionCommandsByPrefix($this->resolveNode($command), self::SESSION_KEY_PREFIX);
+        if ($response instanceof ErrorInterface) {
+            return $response;
         }
+
+        $this->getRegistry()->clear();
+        $this->unpinSessionCommandsByPrefix($this->resolveNode($command), self::SESSION_KEY_PREFIX);
 
         return $response;
     }
