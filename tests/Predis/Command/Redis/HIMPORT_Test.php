@@ -12,7 +12,9 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\ClientInterface;
 use Predis\Command\RawCommand;
+use Predis\Connection\ConnectionException;
 use Predis\Response\ServerException;
 use Predis\Response\Status;
 use Predis\Retry\Retry;
@@ -311,11 +313,10 @@ class HIMPORT_Test extends PredisCommandTestCase
         $redis->himport->prepare('shared', ['name', 'age']);
 
         // Simulate a dropped connection mid-ingestion. The pinned PREPARE is
-        // replayed automatically when the next command reconnects, so the SET
-        // succeeds with no error round trip.
+        // replayed when the connection is re-established, so the SET succeeds.
         $redis->getConnection()->disconnect();
 
-        $this->assertEquals('OK', $redis->himport->set('shared:1', 'shared', ['erin', '28']));
+        $this->assertEquals('OK', $this->setAfterReconnect($redis, 'shared:1', 'shared', ['erin', '28']));
         $this->assertSame('erin', $redis->hget('shared:1', 'name'));
         $this->assertSame('28', $redis->hget('shared:1', 'age'));
     }
@@ -338,7 +339,7 @@ class HIMPORT_Test extends PredisCommandTestCase
 
         // The first SET hits "no such fieldset"; the container re-prepares from
         // the registry on the executing connection and retries exactly once.
-        $this->assertEquals('OK', $redis->himport->set('shared:1', 'shared', ['frank', '33']));
+        $this->assertEquals('OK', $this->setAfterReconnect($redis, 'shared:1', 'shared', ['frank', '33']));
         $this->assertSame('frank', $redis->hget('shared:1', 'name'));
         $this->assertSame('33', $redis->hget('shared:1', 'age'));
 
@@ -361,7 +362,7 @@ class HIMPORT_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('no such fieldset');
 
-        $redis->himport->set('shared:1', 'shared', ['grace', '41']);
+        $this->setAfterReconnect($redis, 'shared:1', 'shared', ['grace', '41']);
     }
 
     /**
@@ -512,7 +513,7 @@ class HIMPORT_Test extends PredisCommandTestCase
 
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('no such fieldset');
-        $redis->himport->set('shared:2', 'shared', ['bob', '30']);
+        $this->setAfterReconnect($redis, 'shared:2', 'shared', ['bob', '30']);
     }
 
     /**
@@ -795,6 +796,27 @@ class HIMPORT_Test extends PredisCommandTestCase
         }
         foreach (['users:{a}', 'users:{b}', 'users:{c}', 'users:{d}'] as $i => $key) {
             $this->assertSame('user' . $i, $redis->hget($key, 'name'));
+        }
+    }
+
+    /**
+     * Executes an HIMPORT SET, reconnecting first when the backend does not
+     * reconnect on its own after an explicit disconnect(). The stream backend
+     * reconnects lazily on the next command, but ext-relay raises
+     * `RELAY_ERR_IO ("Not connected")` instead, so these tests catch that and
+     * reconnect to stay backend-agnostic.
+     *
+     * @param  array $values
+     * @return mixed
+     */
+    private function setAfterReconnect(ClientInterface $redis, string $key, string $fieldset, array $values)
+    {
+        try {
+            return $redis->himport->set($key, $fieldset, $values);
+        } catch (ConnectionException $exception) {
+            $redis->connect();
+
+            return $redis->himport->set($key, $fieldset, $values);
         }
     }
 
