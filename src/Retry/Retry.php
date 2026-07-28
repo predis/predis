@@ -72,12 +72,20 @@ class Retry
     /**
      * Extend catchable exceptions list.
      *
+     * Already-registered classes are ignored, so callers may safely re-register
+     * on every command without the list (and the per-failure lookup) growing
+     * without bound.
+     *
      * @param  array $catchableExceptions
      * @return void
      */
     public function updateCatchableExceptions(array $catchableExceptions): void
     {
-        $this->catchableExceptions = array_merge($this->catchableExceptions, $catchableExceptions);
+        foreach ($catchableExceptions as $catchableException) {
+            if (!in_array($catchableException, $this->catchableExceptions, true)) {
+                $this->catchableExceptions[] = $catchableException;
+            }
+        }
     }
 
     /**

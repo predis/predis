@@ -20,11 +20,32 @@ use Predis\Retry\Strategy\EqualBackoff;
 use Predis\Retry\Strategy\ExponentialBackoff;
 use Predis\Retry\Strategy\NoBackoff;
 use Predis\Retry\Strategy\RetryStrategyInterface;
+use ReflectionObject;
 use RuntimeException;
 use Throwable;
 
 class RetryTest extends TestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testUpdateCatchableExceptionsDoesNotAppendDuplicates(): void
+    {
+        $retry = new Retry(new NoBackoff(), 0, [ConnectionException::class]);
+
+        // Repeated registration of the same class (as aggregate connections and
+        // the himport container do, once per command) must not grow the list.
+        $retry->updateCatchableExceptions([StreamInitException::class]);
+        $retry->updateCatchableExceptions([StreamInitException::class]);
+        $retry->updateCatchableExceptions([StreamInitException::class, ConnectionException::class]);
+
+        $property = (new ReflectionObject($retry))->getProperty('catchableExceptions');
+        $property->setAccessible(true);
+        $catchable = $property->getValue($retry);
+
+        $this->assertSame([ConnectionException::class, StreamInitException::class], $catchable);
+    }
+
     /**
      * @group disconnected
      * @dataProvider strategyProvider
