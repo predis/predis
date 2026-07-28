@@ -18,10 +18,14 @@ use Predis\Command\CommandInterface;
 use Predis\Connection\AggregateConnectionInterface;
 use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Himport\FieldsetNotPreparedException;
 use Predis\Himport\HimportOptions;
+use Predis\Response\Error;
 use Predis\Response\ErrorInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Status;
+use Predis\Retry\Retry;
+use Throwable;
 
 /**
  * Container for the HIMPORT command family (Hinted Hash Templates).
@@ -33,13 +37,17 @@ use Predis\Response\Status;
  *
  *  - fan PREPARE/DISCARD/DISCARDALL out to every master shard on a cluster
  *    (HIMPORT SET is routed normally by the hash slot of its key);
- *  - transparently recover from "no such fieldset" on SET by re-preparing the
- *    fieldset on the executing connection and retrying exactly once (enabled by
- *    default; disable with the `himport` client option `['auto_prepare' => false]`).
+ *  - recover from "no such fieldset" on SET by re-preparing the fieldset on the
+ *    executing connection and retrying. This reuses the client-configured Retry
+ *    policy, so it happens only when retries are enabled and never more than the
+ *    configured number of attempts; with retries disabled the error propagates.
+ *    Recovery can additionally be turned off with the `himport` client option
+ *    `['auto_prepare' => false]`.
  *
- * The recovery layer only ever acts on fieldsets declared through this container.
- * The raw command form ($client->himport('SET', ...)), pipelines and transactions
- * stay fully explicit: they never auto-recover and propagate server errors as-is.
+ * The recovery layer only ever acts on fieldsets declared through this container
+ * (or the `himport` option). The raw command form ($client->himport('SET', ...)),
+ * pipelines and transactions stay fully explicit: they never recover and
+ * propagate server errors as-is.
  *
  * @method Status prepare(string $fieldset, array $fields)
  * @method Status set(string $key, string $fieldset, array $values)
@@ -114,6 +122,12 @@ class HIMPORT extends AbstractContainer
      * Creates or overwrites a hash at $key using the field list previously
      * prepared under $fieldset on the executing connection.
      *
+     * If the fieldset is missing on the executing connection but known to the
+     * client, the write is re-prepared and retried through the connection's Retry
+     * policy: this happens only when retries are configured, and never more than
+     * the configured number of attempts. With retries disabled the "no such
+     * fieldset" error propagates unchanged.
+     *
      * @param  string                $key
      * @param  string                $fieldset
      * @param  array                 $values   Ordered, non-empty values paired positionally with the prepared fields.
@@ -127,22 +141,44 @@ class HIMPORT extends AbstractContainer
         }
 
         $command = $this->client->createCommand('HIMPORT', [self::SUBCOMMAND_SET, $key, $fieldset, $values]);
+        $retry = $this->getConfiguredRetry();
 
         try {
-            $response = $this->client->executeCommand($command);
-        } catch (ServerException $exception) {
-            if ($this->canRecover($exception->getMessage(), $fieldset)) {
-                return $this->recoverAndRetry($command, $fieldset);
+            if (null === $retry) {
+                // No retry policy available: run once, no recovery.
+                return $this->executeSet($command, $fieldset);
+            }
+
+            // Reuse the client-configured Retry (its enabled/disabled state, count
+            // and backoff). Register our retryable condition on it, the same way
+            // the cluster and sentinel connections register theirs.
+            $retry->updateCatchableExceptions([FieldsetNotPreparedException::class]);
+
+            return $retry->callWithRetry(
+                function () use ($command, $fieldset) {
+                    return $this->executeSet($command, $fieldset);
+                },
+                function (Throwable $exception) use ($command, $fieldset) {
+                    // Only HIMPORT's own "no such fieldset" is recovered and
+                    // retried here; anything else the shared policy might catch
+                    // (connection errors, other server errors) is left to its
+                    // owner and propagated immediately.
+                    if (!$exception instanceof FieldsetNotPreparedException) {
+                        throw $exception;
+                    }
+
+                    $this->reprepare($command, $fieldset);
+                }
+            );
+        } catch (FieldsetNotPreparedException $exception) {
+            // Retries were disabled or exhausted. Preserve the client's error
+            // semantics: return the error response when exceptions are off.
+            if (!$this->client->getOptions()->exceptions) {
+                return new Error($exception->getMessage());
             }
 
             throw $exception;
         }
-
-        if ($response instanceof ErrorInterface && $this->canRecover($response->getMessage(), $fieldset)) {
-            return $this->recoverAndRetry($command, $fieldset);
-        }
-
-        return $response;
     }
 
     /**
@@ -237,16 +273,44 @@ class HIMPORT extends AbstractContainer
     }
 
     /**
-     * Re-prepares $fieldset on the connection that executed the failed SET, then
-     * retries the SET exactly once. A failure of the re-prepare itself is
-     * surfaced as the root cause and the SET is not retried.
+     * Executes the SET, translating a recoverable "no such fieldset" into a
+     * retryable exception so the Retry policy can drive re-prepare + retry.
+     * Non-recoverable errors are returned/propagated unchanged.
      *
-     * @param  CommandInterface      $setCommand
-     * @param  string                $fieldset
+     * @param  CommandInterface             $command
+     * @param  string                       $fieldset
      * @return Status|ErrorInterface
+     * @throws FieldsetNotPreparedException
      * @throws ServerException
      */
-    private function recoverAndRetry(CommandInterface $setCommand, string $fieldset)
+    private function executeSet(CommandInterface $command, string $fieldset)
+    {
+        try {
+            $response = $this->client->executeCommand($command);
+        } catch (ServerException $exception) {
+            if ($this->canRecover($exception->getMessage(), $fieldset)) {
+                throw new FieldsetNotPreparedException($exception->getMessage());
+            }
+
+            throw $exception;
+        }
+
+        if ($response instanceof ErrorInterface && $this->canRecover($response->getMessage(), $fieldset)) {
+            throw new FieldsetNotPreparedException($response->getMessage());
+        }
+
+        return $response;
+    }
+
+    /**
+     * Re-prepares $fieldset on the connection the (next) SET attempt targets.
+     * A failed re-prepare aborts recovery and is surfaced as the root cause.
+     *
+     * @param  CommandInterface $setCommand
+     * @param  string           $fieldset
+     * @throws ServerException
+     */
+    private function reprepare(CommandInterface $setCommand, string $fieldset): void
     {
         $fields = $this->getRegistry()->get($fieldset);
         $prepare = $this->client->createCommand('HIMPORT', [self::SUBCOMMAND_PREPARE, $fieldset, $fields]);
@@ -254,15 +318,32 @@ class HIMPORT extends AbstractContainer
         // Resolve after the SET failed so that, following a MOVED/ASK redirection,
         // we re-prepare on the node the retry will actually target.
         $node = $this->resolveNode($setCommand);
-        $prepareResponse = $node->executeCommand($prepare);
+        $response = $node->executeCommand($prepare);
 
-        if ($prepareResponse instanceof ErrorInterface) {
-            return $this->surfaceError($prepareResponse);
+        if ($response instanceof ErrorInterface) {
+            throw new ServerException($response->getMessage());
         }
 
         $this->pinSessionCommand($node, $this->sessionKey($fieldset), $prepare);
+    }
 
-        return $this->client->executeCommand($setCommand);
+    /**
+     * Returns the Retry policy configured on the executing connection, or null
+     * when none is available. HIMPORT does not define its own retry behaviour:
+     * it reuses whatever the client is configured with, so retries happen only
+     * when (and as many times as) the user enabled them.
+     *
+     * @return Retry|null
+     */
+    private function getConfiguredRetry(): ?Retry
+    {
+        $parameters = $this->client->getConnection()->getParameters();
+
+        if (null !== $parameters && $parameters->retry instanceof Retry) {
+            return $parameters->retry;
+        }
+
+        return null;
     }
 
     /**

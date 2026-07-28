@@ -21,9 +21,12 @@ use Predis\Command\CommandInterface;
 use Predis\Configuration\Options;
 use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Parameters;
 use Predis\Response\Error;
 use Predis\Response\ServerException;
 use Predis\Response\Status;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\NoBackoff;
 
 class HIMPORT_Test extends TestCase
 {
@@ -100,7 +103,7 @@ class HIMPORT_Test extends TestCase
     {
         $this->options->himport->getRegistry()->set('shared', ['name', 'email']);
 
-        $node = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $node = $this->nodeWithRetries(1);
         $node->expects($this->once())->method('executeCommand')->willReturn(Status::get('OK'));
         $this->client->method('getConnection')->willReturn($node);
 
@@ -124,14 +127,38 @@ class HIMPORT_Test extends TestCase
     /**
      * @group disconnected
      */
-    public function testSetRecoveryIsBoundedToASingleRetry(): void
+    public function testSetDoesNotRetryWhenRetriesAreDisabled(): void
     {
         $this->options->himport->getRegistry()->set('shared', ['name']);
 
-        $node = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        // Retries disabled (the default): no re-prepare, no retry.
+        $node = $this->nodeWithRetries(0);
+        $node->expects($this->never())->method('executeCommand');
+        $this->client->method('getConnection')->willReturn($node);
+
+        $this->client
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->willThrowException(new ServerException('ERR no such fieldset'));
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('no such fieldset');
+
+        $this->createContainer()->set('shared:1', 'shared', ['alice']);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSetRecoveryIsBoundedByTheConfiguredRetryCount(): void
+    {
+        $this->options->himport->getRegistry()->set('shared', ['name']);
+
+        $node = $this->nodeWithRetries(1);
         $node->method('executeCommand')->willReturn(Status::get('OK'));
         $this->client->method('getConnection')->willReturn($node);
 
+        // One configured retry => the SET is attempted exactly twice.
         $this->client
             ->expects($this->exactly(2))
             ->method('executeCommand')
@@ -203,7 +230,7 @@ class HIMPORT_Test extends TestCase
             });
         $this->options->himport->getRegistry()->set('shared', ['name']);
 
-        $node = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $node = $this->nodeWithRetries(1);
         $node->method('executeCommand')->willReturn(Status::get('OK'));
         $this->client->method('getConnection')->willReturn($node);
 
@@ -343,6 +370,23 @@ class HIMPORT_Test extends TestCase
     private function createContainer(): HIMPORT
     {
         return new HIMPORT($this->client);
+    }
+
+    /**
+     * A node connection whose parameters carry a Retry configured with the given
+     * number of retries (0 = disabled), so the container reuses it as-is.
+     *
+     * @param  int                                $retries
+     * @return MockObject&NodeConnectionInterface
+     */
+    private function nodeWithRetries(int $retries)
+    {
+        $node = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $node
+            ->method('getParameters')
+            ->willReturn(new Parameters(['retry' => new Retry(new NoBackoff(), $retries)]));
+
+        return $node;
     }
 
     /**

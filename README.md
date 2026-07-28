@@ -464,24 +464,30 @@ that connection is dropped (reconnect, `RESET`, cluster failover). To keep this 
 tracks the fieldsets prepared through the container and:
 
 - replays each `PREPARE` automatically when a connection is re-established (at most once per physical
-  connection);
+  connection); this always happens and does not depend on retries;
 - if a `HIMPORT SET` still reports `no such fieldset` (for example on a connection created after a
-  cluster redirection), re-prepares the fieldset on the executing connection and retries the write once.
+  cluster redirection), re-prepares the fieldset on the executing connection and retries the write.
 
-This recovery is enabled by default and can be turned off with the `himport` client option, in which
-case server errors are propagated unchanged:
+The re-prepare-and-retry step **reuses the client's configured retry policy** — it is not a separate
+mechanism. It therefore only happens when retries are enabled (via the `retry` connection parameter),
+and never more than the configured number of attempts; with retries disabled the `no such fieldset`
+error propagates unchanged. It can additionally be turned off, even when retries are enabled, with the
+`himport` option:
 
 ```php
-$client = new Predis\Client($parameters, ['himport' => ['auto_prepare' => false]]);
+$client = new Predis\Client(
+    $parameters + ['retry' => new Predis\Retry\Retry(new Predis\Retry\Strategy\ExponentialBackoff(), 3)],
+    ['himport' => ['auto_prepare' => false]] // opt out of HIMPORT re-prepare specifically
+);
 ```
 
-Fieldsets can also be declared up front through the same option. Fieldsets declared this way are
+Fieldsets can also be declared up front through the `himport` option. Fieldsets declared this way are
 prepared on demand the first time a `HIMPORT SET` references them on a connection, so the application
-never has to call `prepare()` for them (this uses the on-demand mechanism above, so keep `auto_prepare`
-enabled):
+never has to call `prepare()` for them (this uses the re-prepare-and-retry path above, so it requires
+retries to be enabled):
 
 ```php
-$client = new Predis\Client($parameters, [
+$client = new Predis\Client($parameters + ['retry' => new Predis\Retry\Retry(new Predis\Retry\Strategy\ExponentialBackoff(), 3)], [
     'himport' => [
         'fieldsets' => [
             'users' => ['name', 'email', 'age'],

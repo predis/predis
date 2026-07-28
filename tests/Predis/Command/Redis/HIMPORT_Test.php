@@ -15,6 +15,8 @@ namespace Predis\Command\Redis;
 use Predis\Command\RawCommand;
 use Predis\Response\ServerException;
 use Predis\Response\Status;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\NoBackoff;
 
 /**
  * @group commands
@@ -324,7 +326,8 @@ class HIMPORT_Test extends PredisCommandTestCase
      */
     public function testReactiveRecoveryRePreparesWhenReplayIsUnavailable(): void
     {
-        $redis = $this->getClient();
+        // Recovery reuses the connection's Retry policy, so it must be enabled.
+        $redis = $this->createClient(['retry' => new Retry(new NoBackoff(), 1)]);
 
         $redis->himport->prepare('shared', ['name', 'age']);
 
@@ -521,7 +524,8 @@ class HIMPORT_Test extends PredisCommandTestCase
      */
     public function testConfiguredFieldsetIsPreparedOnDemandWithoutExplicitPrepare(): void
     {
-        $redis = $this->createClient(null, [
+        // On-demand preparation reuses the connection's Retry policy.
+        $redis = $this->createClient(['retry' => new Retry(new NoBackoff(), 1)], [
             'himport' => ['fieldsets' => ['users' => ['name', 'age']]],
         ]);
 
@@ -723,7 +727,8 @@ class HIMPORT_Test extends PredisCommandTestCase
      */
     public function testClusterAutoPrepareRecoversOnNodeMissingFieldset(): void
     {
-        $redis = $this->getClient();
+        // Recovery reuses the connection's Retry policy, so enable it.
+        $redis = $this->createClient(null, ['parameters' => ['retry' => new Retry(new NoBackoff(), 1)]]);
         $redis->himport->prepare('shared', ['name']);
 
         $cluster = $redis->getConnection();
@@ -779,8 +784,10 @@ class HIMPORT_Test extends PredisCommandTestCase
      */
     public function testClusterConfiguredFieldsetPreparedOnDemandAcrossShards(): void
     {
+        // On-demand preparation reuses the connection's Retry policy.
         $redis = $this->createClient(null, [
             'himport' => ['fieldsets' => ['users' => ['name', 'age']]],
+            'parameters' => ['retry' => new Retry(new NoBackoff(), 1)],
         ]);
 
         foreach (['users:{a}', 'users:{b}', 'users:{c}', 'users:{d}'] as $i => $key) {
