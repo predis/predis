@@ -1566,7 +1566,7 @@ class SentinelReplicationTest extends PredisTestCase
 
     /**
      * When every retry also fails with a StreamInitException, the original
-     * transport error must be surfaced unchanged — not masked by a TypeError in
+     * transport error must be surfaced unchanged - not masked by a TypeError in
      * the retry fail callback (regression test for issue #1713).
      *
      * @group disconnected
