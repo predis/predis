@@ -383,11 +383,6 @@ class RelayConnection extends AbstractConnection
             }
         }
 
-        // Best-effort replay of session state (e.g. HIMPORT fieldsets): a failed
-        // command drops only its own entry and never tears down the connection.
-        // Note the "relay" extension reconnects internally without re-entering
-        // this method, so this replay does not cover relay-driven reconnects;
-        // those are healed reactively when the next dependent command runs.
         foreach ($this->sessionCommands as $key => $command) {
             $response = $this->executeCommand($command);
 
