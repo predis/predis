@@ -250,6 +250,66 @@ class HIMPORT_Test extends TestCase
     }
 
     /**
+     * A re-prepare that the server rejects must honour the exceptions option:
+     * with exceptions off it returns the Error response (root cause), not throws.
+     *
+     * @group disconnected
+     */
+    public function testSetReturnsErrorWhenReprepareFailsAndExceptionsDisabled(): void
+    {
+        $this->options = new Options(['exceptions' => false]);
+        $this->client = $this->getMockBuilder(ClientInterface::class)->getMock();
+        $this->client->method('getOptions')->willReturn($this->options);
+        $this->client
+            ->method('createCommand')
+            ->willReturnCallback(function ($commandID, $arguments = []) {
+                return $this->createCommandStub($arguments);
+            });
+        $this->options->himport->getRegistry()->set('shared', ['name']);
+
+        // The re-PREPARE (executed directly on the node) is rejected by the server.
+        $node = $this->nodeWithRetries(1);
+        $node->method('executeCommand')->willReturn(new Error('ERR duplicate field name in fieldset'));
+        $this->client->method('getConnection')->willReturn($node);
+
+        // The SET itself reports "no such fieldset", triggering recovery.
+        $this->client
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->willReturn(new Error('ERR no such fieldset'));
+
+        $response = $this->createContainer()->set('shared:1', 'shared', ['alice']);
+
+        $this->assertInstanceOf(Error::class, $response);
+        $this->assertStringContainsString('duplicate field name', $response->getMessage());
+    }
+
+    /**
+     * The mirror case: with exceptions on, a rejected re-prepare surfaces the
+     * root cause as a thrown ServerException.
+     *
+     * @group disconnected
+     */
+    public function testSetThrowsWhenReprepareFailsAndExceptionsEnabled(): void
+    {
+        $this->options->himport->getRegistry()->set('shared', ['name']);
+
+        $node = $this->nodeWithRetries(1);
+        $node->method('executeCommand')->willReturn(new Error('ERR duplicate field name in fieldset'));
+        $this->client->method('getConnection')->willReturn($node);
+
+        $this->client
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->willThrowException(new ServerException('ERR no such fieldset'));
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('duplicate field name');
+
+        $this->createContainer()->set('shared:1', 'shared', ['alice']);
+    }
+
+    /**
      * @group disconnected
      */
     public function testPrepareFansOutToAllMasters(): void

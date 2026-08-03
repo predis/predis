@@ -307,11 +307,13 @@ class HIMPORT extends AbstractContainer
 
     /**
      * Re-prepares $fieldset on the connection the (next) SET attempt targets.
-     * A failed re-prepare aborts recovery and is surfaced as the root cause.
+     * A failed re-prepare aborts recovery and is surfaced as the root cause,
+     * through the same "no such fieldset" path so it honours the client's
+     * exceptions option (thrown when on, returned as an Error when off).
      *
-     * @param  CommandInterface $setCommand
-     * @param  string           $fieldset
-     * @throws ServerException
+     * @param  CommandInterface             $setCommand
+     * @param  string                       $fieldset
+     * @throws FieldsetNotPreparedException
      */
     private function reprepare(CommandInterface $setCommand, string $fieldset): void
     {
@@ -324,7 +326,9 @@ class HIMPORT extends AbstractContainer
         $response = $node->executeCommand($prepare);
 
         if ($response instanceof ErrorInterface) {
-            throw new ServerException($response->getMessage());
+            // Surface the PREPARE error as the root cause via set()'s catch, which
+            // applies the exceptions option (throw vs. return an Error response).
+            throw new FieldsetNotPreparedException($response->getMessage());
         }
 
         $this->pinSessionCommand($node, $this->sessionKey($fieldset), $prepare);
