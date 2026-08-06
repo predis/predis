@@ -355,6 +355,9 @@ class PredisStrategyTest extends PredisTestCase
      */
     public function testKeysForHimportCommand(): void
     {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
         // HIMPORT SET is routed by the hash slot of its key (at position 1).
         $command = $commands->create('HIMPORT', ['SET', '{key}:1', 'fieldset', 'v1', 'v2']);
         $this->assertNotNull($strategy->getSlot($command));
@@ -367,8 +370,9 @@ class PredisStrategyTest extends PredisTestCase
         $this->assertNull($strategy->getSlot($command));
 
         $command = $commands->create('HIMPORT', ['DISCARDALL']);
+        $this->assertNull($strategy->getSlot($command));
     }
-    
+
     /**
      * @group disconnected
      */
