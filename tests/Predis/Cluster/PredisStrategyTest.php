@@ -355,9 +355,6 @@ class PredisStrategyTest extends PredisTestCase
      */
     public function testKeysForHimportCommand(): void
     {
-        $strategy = $this->getClusterStrategy();
-        $commands = $this->getCommandFactory();
-
         // HIMPORT SET is routed by the hash slot of its key (at position 1).
         $command = $commands->create('HIMPORT', ['SET', '{key}:1', 'fieldset', 'v1', 'v2']);
         $this->assertNotNull($strategy->getSlot($command));
@@ -370,6 +367,56 @@ class PredisStrategyTest extends PredisTestCase
         $this->assertNull($strategy->getSlot($command));
 
         $command = $commands->create('HIMPORT', ['DISCARDALL']);
+    }
+    
+    /**
+     * @group disconnected
+     */
+    public function testKeysForHashFieldCommands(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        $arguments = [
+            'HEXPIRE' => ['key', 60, ['field']],
+            'HEXPIREAT' => ['key', 1893456000, ['field']],
+            'HPERSIST' => ['key', ['field']],
+            'HPEXPIRE' => ['key', 60000, ['field']],
+            'HPEXPIREAT' => ['key', 1893456000000, ['field']],
+            'HTTL' => ['key', ['field']],
+            'HPTTL' => ['key', ['field']],
+            'HEXPIRETIME' => ['key', ['field']],
+            'HPEXPIRETIME' => ['key', ['field']],
+            'HGETEX' => ['key', ['field']],
+            'HGETDEL' => ['key', ['field']],
+        ];
+
+        foreach ($this->getExpectedCommands('keys-hash-field') as $commandID) {
+            $command = $commands->create($commandID, $arguments[$commandID]);
+            $this->assertSame($strategy->getSlotByKey('key'), $strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testKeysForObjectSubcommand(): void
+    {
+        $strategy = $this->getClusterStrategy();
+
+        $command = $this->getCommandFactory()->create('OBJECT', ['ENCODING', 'key']);
+
+        $this->assertSame($strategy->getSlotByKey('key'), $strategy->getSlot($command));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReturnsNullOnObjectSubcommandWithoutKey(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $command = $this->getCommandFactory()->create('OBJECT', ['HELP']);
+
         $this->assertNull($strategy->getSlot($command));
     }
 
@@ -562,6 +609,7 @@ class PredisStrategyTest extends PredisTestCase
             'SORT' => 'variable',
             'DUMP' => 'keys-first',
             'RESTORE' => 'keys-first',
+            'OBJECT' => 'keys-object-subcommand',
             'FLUSHDB' => 'keys-fake',
 
             /* commands operating on string values */
@@ -688,6 +736,17 @@ class PredisStrategyTest extends PredisTestCase
             'HSCAN' => 'keys-first',
             'HSTRLEN' => 'keys-first',
             'HIMPORT' => 'keys-himport',
+            'HEXPIRE' => 'keys-hash-field',
+            'HEXPIREAT' => 'keys-hash-field',
+            'HPERSIST' => 'keys-hash-field',
+            'HPEXPIRE' => 'keys-hash-field',
+            'HPEXPIREAT' => 'keys-hash-field',
+            'HTTL' => 'keys-hash-field',
+            'HPTTL' => 'keys-hash-field',
+            'HEXPIRETIME' => 'keys-hash-field',
+            'HPEXPIRETIME' => 'keys-hash-field',
+            'HGETEX' => 'keys-hash-field',
+            'HGETDEL' => 'keys-hash-field',
 
             /* commands operating on streams */
             'XACK' => 'keys-first',

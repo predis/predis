@@ -54,6 +54,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'SORT' => [$this, 'getKeyFromSortCommand'],
             'DUMP' => $getKeyFromFirstArgument,
             'RESTORE' => $getKeyFromFirstArgument,
+            'OBJECT' => [$this, 'getKeyFromObjectCommand'],
             'FLUSHDB' => [$this, 'getFakeKey'],
 
             /* commands operating on string values */
@@ -180,6 +181,17 @@ abstract class ClusterStrategy implements StrategyInterface
             'HSCAN' => $getKeyFromFirstArgument,
             'HSTRLEN' => $getKeyFromFirstArgument,
             'HIMPORT' => [$this, 'getKeyFromHimportCommands'],
+            'HEXPIRE' => $getKeyFromFirstArgument,
+            'HEXPIREAT' => $getKeyFromFirstArgument,
+            'HPERSIST' => $getKeyFromFirstArgument,
+            'HPEXPIRE' => $getKeyFromFirstArgument,
+            'HPEXPIREAT' => $getKeyFromFirstArgument,
+            'HTTL' => $getKeyFromFirstArgument,
+            'HPTTL' => $getKeyFromFirstArgument,
+            'HEXPIRETIME' => $getKeyFromFirstArgument,
+            'HPEXPIRETIME' => $getKeyFromFirstArgument,
+            'HGETEX' => $getKeyFromFirstArgument,
+            'HGETDEL' => $getKeyFromFirstArgument,
 
             /* commands operating on streams */
             'XACK' => $getKeyFromFirstArgument,
@@ -391,6 +403,24 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         return $firstKey;
+    }
+
+    /**
+     * Extracts the key from the OBJECT command, where it follows the subcommand.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return string|null
+     */
+    protected function getKeyFromObjectCommand(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+
+        if (!isset($arguments[1])) {
+            return null;
+        }
+
+        return $arguments[1];
     }
 
     /**
