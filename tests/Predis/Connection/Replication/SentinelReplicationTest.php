@@ -1565,6 +1565,77 @@ class SentinelReplicationTest extends PredisTestCase
     }
 
     /**
+     * When every retry also fails with a StreamInitException, the original
+     * transport error must be surfaced unchanged - not masked by a TypeError in
+     * the retry fail callback (regression test for issue #1713).
+     *
+     * @group disconnected
+     */
+    public function testMethodExecuteCommandSurfacesStreamInitExceptionWhenAllRetriesFail(): void
+    {
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $sentinel1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', ['get-master-addr-by-name', 'svc']
+            ))
+            ->willReturn(
+                ['127.0.0.1', '6391']
+            );
+
+        $masterOld = $this->getMockConnection('tcp://127.0.0.1:6381?role=master');
+        $masterOld
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+        $masterOld
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('DEL', ['key']))
+            ->willThrowException(
+                new StreamInitException('Connection refused [tcp://127.0.0.1:6381]')
+            );
+
+        $masterNew = $this->getMockConnection('tcp://127.0.0.1:6391?role=master');
+        $masterNew
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+        $masterNew
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('DEL', ['key']))
+            ->willThrowException(
+                new StreamInitException('Connection refused [tcp://127.0.0.1:6391]')
+            );
+
+        /** @var Connection\FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with([
+                'host' => '127.0.0.1',
+                'port' => '6391',
+                'role' => 'master',
+            ])
+            ->willReturn($masterNew);
+
+        $replication = $this->getReplicationConnection('svc', [$sentinel1], $factory);
+        $replication->add($masterOld);
+        $replication->setRetryLimit(1);
+
+        // The fail callback is invoked with the StreamInitException on the first
+        // attempt (it must not TypeError), then the second attempt exhausts the
+        // retry budget and the original StreamInitException is re-thrown.
+        $this->expectException(StreamInitException::class);
+        $this->expectExceptionMessage('Connection refused [tcp://127.0.0.1:6391]');
+
+        $replication->executeCommand(Command\RawCommand::create('del', 'key'));
+    }
+
+    /**
      * @group disconnected
      */
     public function testMethodExecuteCommandThrowsExceptionOnUnknownServiceName(): void

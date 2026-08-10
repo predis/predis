@@ -353,6 +353,29 @@ class PredisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForHimportCommand(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        // HIMPORT SET is routed by the hash slot of its key (at position 1).
+        $command = $commands->create('HIMPORT', ['SET', '{key}:1', 'fieldset', 'v1', 'v2']);
+        $this->assertNotNull($strategy->getSlot($command));
+
+        // PREPARE/DISCARD/DISCARDALL have no key and are not slot-routable.
+        $command = $commands->create('HIMPORT', ['PREPARE', 'fieldset', 'f1', 'f2']);
+        $this->assertNull($strategy->getSlot($command));
+
+        $command = $commands->create('HIMPORT', ['DISCARD', 'fieldset']);
+        $this->assertNull($strategy->getSlot($command));
+
+        $command = $commands->create('HIMPORT', ['DISCARDALL']);
+        $this->assertNull($strategy->getSlot($command));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForHashFieldCommands(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -716,6 +739,7 @@ class PredisStrategyTest extends PredisTestCase
             'HVALS' => 'keys-first',
             'HSCAN' => 'keys-first',
             'HSTRLEN' => 'keys-first',
+            'HIMPORT' => 'keys-himport',
             'HEXPIRE' => 'keys-hash-field',
             'HEXPIREAT' => 'keys-hash-field',
             'HPERSIST' => 'keys-hash-field',

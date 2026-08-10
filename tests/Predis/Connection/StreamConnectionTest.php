@@ -21,6 +21,7 @@ use Predis\Connection\Resource\StreamFactoryInterface;
 use Predis\Consumer\Push\PushResponse;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error as ErrorResponse;
+use Predis\Response\Status;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
@@ -153,6 +154,110 @@ class StreamConnectionTest extends PredisConnectionTestCase
         $connection->addConnectCommand($command3);
 
         $connection->connect();
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSessionCommandsAreRegisteredReplacedAndRemovable(): void
+    {
+        $connection = new StreamConnection(new Parameters(), $this->mockStreamFactory);
+        $prepare1 = new RawCommand('HIMPORT', ['PREPARE', 'fs1', 'a']);
+        $prepare1Replaced = new RawCommand('HIMPORT', ['PREPARE', 'fs1', 'a', 'b']);
+        $prepare2 = new RawCommand('HIMPORT', ['PREPARE', 'fs2', 'c']);
+
+        $connection->addSessionCommand('himport:fs1', $prepare1);
+        $connection->addSessionCommand('himport:fs2', $prepare2);
+        $this->assertSame(
+            ['himport:fs1' => $prepare1, 'himport:fs2' => $prepare2],
+            $connection->getSessionCommands()
+        );
+
+        // Last registration under a key wins (mirrors server silent-replace).
+        $connection->addSessionCommand('himport:fs1', $prepare1Replaced);
+        $this->assertSame($prepare1Replaced, $connection->getSessionCommands()['himport:fs1']);
+
+        $connection->removeSessionCommand('himport:fs1');
+        $this->assertSame(['himport:fs2' => $prepare2], $connection->getSessionCommands());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRemoveSessionCommandsByPrefix(): void
+    {
+        $connection = new StreamConnection(new Parameters(), $this->mockStreamFactory);
+        $connection->addSessionCommand('himport:fs1', new RawCommand('HIMPORT', ['PREPARE', 'fs1', 'a']));
+        $connection->addSessionCommand('himport:fs2', new RawCommand('HIMPORT', ['PREPARE', 'fs2', 'b']));
+        $connection->addSessionCommand('other:key', new RawCommand('PING'));
+
+        $connection->removeSessionCommandsByPrefix('himport:');
+
+        $this->assertSame(['other:key'], array_keys($connection->getSessionCommands()));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testSessionCommandsAreNotSerialized(): void
+    {
+        $connection = new StreamConnection(new Parameters(), $this->mockStreamFactory);
+        $connection->addSessionCommand('himport:fs1', new RawCommand('HIMPORT', ['PREPARE', 'fs1', 'a']));
+
+        $this->assertNotContains('sessionCommands', $connection->__sleep());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReplaysSessionCommandsOnConnect(): void
+    {
+        $prepare = new RawCommand('HIMPORT', ['PREPARE', 'fs1', 'a', 'b']);
+
+        $connection = $this->getMockBuilder(StreamConnection::class)
+            ->onlyMethods(['createResource', 'write', 'read'])
+            ->setConstructorArgs([new Parameters()])
+            ->getMock();
+        $connection->method('createResource')->willReturn($this->mockStream);
+        $connection
+            ->expects($this->once())
+            ->method('write')
+            ->with($prepare->serializeCommand());
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn(Status::get('OK'));
+
+        $connection->addSessionCommand('himport:fs1', $prepare);
+        $connection->connect();
+
+        // Kept for future reconnects after a successful replay.
+        $this->assertArrayHasKey('himport:fs1', $connection->getSessionCommands());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDropsSessionCommandOnErrorReplyWithoutTearingDownConnection(): void
+    {
+        $prepare = new RawCommand('HIMPORT', ['PREPARE', 'fs1', 'a']);
+
+        $connection = $this->getMockBuilder(StreamConnection::class)
+            ->onlyMethods(['createResource', 'write', 'read'])
+            ->setConstructorArgs([new Parameters()])
+            ->getMock();
+        $connection->method('createResource')->willReturn($this->mockStream);
+        $connection->method('write');
+        $connection
+            ->method('read')
+            ->willReturn(new ErrorResponse('ERR no such fieldset'));
+
+        $connection->addSessionCommand('himport:fs1', $prepare);
+        $connection->connect();
+
+        // The failed session command is dropped, but the connection stays usable.
+        $this->assertTrue($connection->isConnected());
+        $this->assertArrayNotHasKey('himport:fs1', $connection->getSessionCommands());
     }
 
     /**

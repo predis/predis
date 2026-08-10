@@ -15,6 +15,7 @@ namespace Predis\Configuration;
 use Predis\Command\Processor\ProcessorInterface;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\ParametersInterface;
+use Predis\Himport\HimportOptions;
 
 /**
  * @property callable                  $aggregate       Custom aggregate connection initializer
@@ -27,6 +28,7 @@ use Predis\Connection\ParametersInterface;
  * @property callable                  $replication     Aggregate connection initializer for replication
  * @property int                       $readTimeout     Timeout in milliseconds between read operations on reading from multiple connections.
  * @property string|string[]           $upstream_driver Upstream driver info for CLIENT SETINFO.
+ * @property HimportOptions            $himport         HIMPORT fieldset registry and auto-recovery configuration.
  */
 interface OptionsInterface
 {
