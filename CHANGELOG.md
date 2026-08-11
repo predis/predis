@@ -24,6 +24,7 @@
 
 ### Maintenance
 - Added testing for HNSW vector type with RERANK argument
+- Added testing with Redis 8.10 GA
 
 ## v3.5.1 (2026-06-11)
 ### Added
