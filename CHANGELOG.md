@@ -1,8 +1,7 @@
 ## Changelog
-## Unreleased
 
+## v3.6.0 (2026-08-14)
 ### Added
-- Make ZMSCORE command Prefixable and add to a ClusterStrategy (#1692)
 - Added support for new TS commands + Indonesian language support integration test (#1695)
 - Added support for new COLLECT reducer for FT.AGGREGATE (#1699)
 - Added support for `SDIFFCARD` and `SUNIONCARD` command
@@ -16,15 +15,14 @@
 - Added stream commands to ClusterStrategy
 - Added vector sets commands to ClusterStrategy
 - Added experimental support for `HIMPORT` bulk hash import feature (API may change in a future release)
-- Added `OBJECT` and hash field expiration commands to ClusterStrategy
+
+### Changed
+- Added `OBJECT` and hash field expiration commands to `ClusterStrategy`
+- Make `ZMSCORE` command prefixable and add to `ClusterStrategy` (#1692)
 
 ### Fixed
 - Fixed Sentinel does not wipe servers on exception caused (#1694)
 - Fixed `@method cmsincrby()` annotation
-
-### Maintenance
-- Added testing for HNSW vector type with RERANK argument
-- Added testing with Redis 8.10 GA
 
 ## v3.5.1 (2026-06-11)
 ### Added
