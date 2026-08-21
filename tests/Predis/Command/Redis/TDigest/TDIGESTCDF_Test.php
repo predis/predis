@@ -118,7 +118,11 @@ class TDIGESTCDF_Test extends PredisCommandTestCase
         $actualResponse = $redis->tdigestcdf('key', 0, 1, 2, 3, 4);
 
         $this->assertSameWithPrecision($expectedResponse, $actualResponse, 5);
-        $this->assertSame([0.0, 0.0], $redis->tdigestcdf('empty_key', 0, 1));
+        $emptyResponse = $redis->tdigestcdf('empty_key', 0, 1);
+        $this->assertCount(2, $emptyResponse);
+        foreach ($emptyResponse as $value) {
+            $this->assertNan($value);
+        }
     }
 
     /**

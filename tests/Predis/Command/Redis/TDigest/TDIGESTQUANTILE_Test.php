@@ -118,7 +118,11 @@ class TDIGESTQUANTILE_Test extends PredisCommandTestCase
         $this->assertEquals([1.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0, 5.0, 5.0, 5.0, 5.0], $quantileResponse);
 
         $redis->tdigestcreate('empty_key');
-        $this->assertEquals([null, null], $redis->tdigestquantile('empty_key', 0.0, 0.1));
+        $emptyResponse = $redis->tdigestquantile('empty_key', 0.0, 0.1);
+        $this->assertCount(2, $emptyResponse);
+        foreach ($emptyResponse as $value) {
+            $this->assertNan($value);
+        }
     }
 
     /**
