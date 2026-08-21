@@ -118,7 +118,11 @@ class TDIGESTBYREVRANK_Test extends PredisCommandTestCase
         $actualResponse = $redis->tdigestbyrevrank('key', 0, 1, 2, 3, 4, 5, 6);
 
         $this->assertEquals($expectedResponse, $actualResponse);
-        $this->assertEquals([null, null], $redis->tdigestbyrevrank('empty_key', 0, 1));
+        $emptyResponse = $redis->tdigestbyrevrank('empty_key', 0, 1);
+        $this->assertCount(2, $emptyResponse);
+        foreach ($emptyResponse as $value) {
+            $this->assertNan($value);
+        }
     }
 
     /**

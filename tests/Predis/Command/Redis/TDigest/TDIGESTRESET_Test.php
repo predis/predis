@@ -129,10 +129,11 @@ class TDIGESTRESET_Test extends PredisCommandTestCase
 
         $this->assertEquals('OK', $actualResponse);
         $this->assertSame(500, $info['Compression']);
-        $this->assertEquals(
-            [null, null, null, null, null, null],
-            $redis->tdigestbyrank('key', 0, 1, 2, 3, 4, 5)
-        );
+        $resetResponse = $redis->tdigestbyrank('key', 0, 1, 2, 3, 4, 5);
+        $this->assertCount(6, $resetResponse);
+        foreach ($resetResponse as $value) {
+            $this->assertNan($value);
+        }
     }
 
     /**

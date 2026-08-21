@@ -4,6 +4,7 @@
 ### Added
 ### Changed
 ### Fixed
+- Fixed RESP3 double parsing returning `INF` for `-inf` and `0.0` for NaN payloads (#1716)
 
 ## v3.6.0 (2026-08-14)
 ### Added
