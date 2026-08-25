@@ -265,10 +265,7 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
      */
     private function queryClusterNodeForSlotMap(NodeConnectionInterface $connection)
     {
-        // Retries on Retry's default catchable exceptions, which cover both
-        // ConnectionException and StreamInitException. A slot map refresh that cannot
-        // open a connection to the node it was redirected to has to be able to fall
-        // back to another node, exactly like one that fails mid-conversation.
+        // Backward-compatible hardcoded retry
         $retry = new Retry(
             new ExponentialBackoff($this->retryInterval * 1000, -1),
             $this->retryLimit
@@ -281,9 +278,6 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
         };
 
         $failCallback = function (Throwable $exception) use (&$connection) {
-            // StreamInitException is raised by the stream factory before a connection
-            // object exists, so it carries none: fall back to evicting the node that
-            // was being queried.
             if ($exception instanceof ConnectionException) {
                 $connection = $exception->getConnection();
             }
@@ -293,9 +287,6 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
             $this->remove($connection);
 
             if (!$connection = $this->getRandomConnection()) {
-                // Nothing left to try: surface the transport error that got us here
-                // instead of masking it behind a pool-exhaustion message. This matches
-                // what Retry already does when the retry limit is reached.
                 throw $exception;
             }
         };
@@ -793,8 +784,6 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
         }
 
         if ($exception instanceof StreamInitException && $this->useClusterSlots) {
-            // There is no connection object to evict, but the topology still needs
-            // rediscovering: the node this command was routed to was unreachable.
             $this->askSlotMap();
         }
 

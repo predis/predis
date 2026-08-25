@@ -954,6 +954,9 @@ class RedisClusterTest extends PredisTestCase
      */
     public function testAskSlotMapSurfacesOriginalExceptionWhenPoolIsExhausted(): void
     {
+        // The fail callback evicts the node being queried, since a StreamInitException
+        // carries no connection, then finds the pool empty and re-throws the original
+        // exception rather than a ClientException.
         $this->expectException('Predis\Connection\Resource\Exception\StreamInitException');
         $this->expectExceptionMessage('Error while switching to encrypted communication');
 

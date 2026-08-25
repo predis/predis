@@ -3,10 +3,9 @@
 ## Unlreleads
 ### Added
 ### Changed
+- `RedisCluster` now surfaces the original transport error instead of a `ClientException` when the pool is exhausted during `CLUSTER SLOTS` discovery (#1717)
 ### Fixed
-- Fixed Redis Cluster not retrying slot map discovery on `StreamInitException`, so a
-  `CLUSTER SLOTS` refresh that could not connect to a redirected-to node neither retried
-  nor evicted the unreachable node (#1717)
+- Fixed Redis Cluster not retrying slot map discovery on `StreamInitException` (#1717)
 
 ## v3.6.0 (2026-08-14)
 ### Added
