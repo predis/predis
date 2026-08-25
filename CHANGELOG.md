@@ -4,6 +4,9 @@
 ### Added
 ### Changed
 ### Fixed
+- Fixed Redis Cluster not retrying slot map discovery on `StreamInitException`, so a
+  `CLUSTER SLOTS` refresh that could not connect to a redirected-to node neither retried
+  nor evicted the unreachable node (#1717)
 
 ## v3.6.0 (2026-08-14)
 ### Added

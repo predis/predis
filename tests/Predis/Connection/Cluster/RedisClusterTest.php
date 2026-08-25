@@ -952,6 +952,45 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testAskSlotMapSurfacesOriginalExceptionWhenPoolIsExhausted(): void
+    {
+        $this->expectException('Predis\Connection\Resource\Exception\StreamInitException');
+        $this->expectExceptionMessage('Error while switching to encrypted communication');
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=0-5460');
+        $connection1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'CLUSTER', ['SLOTS']
+            ))
+            ->willThrowException(
+                new Connection\Resource\Exception\StreamInitException('Error while switching to encrypted communication')
+            );
+
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->never())
+            ->method('create');
+
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+            ->onlyMethods(['getRandomConnection'])
+            ->setConstructorArgs([$factory, new Parameters()])
+            ->getMock();
+        $cluster
+            ->expects($this->exactly(2))
+            ->method('getRandomConnection')
+            ->willReturnOnConsecutiveCalls($connection1, null);
+
+        $cluster->add($connection1);
+
+        $cluster->askSlotMap();
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testAskSlotMapHonorsRetryLimitOnMultipleConnectionFailures(): void
     {
         $this->expectException('Predis\Connection\ConnectionException');

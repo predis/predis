@@ -293,7 +293,10 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
             $this->remove($connection);
 
             if (!$connection = $this->getRandomConnection()) {
-                throw new ClientException('No connections left in the pool for `CLUSTER SLOTS`');
+                // Nothing left to try: surface the transport error that got us here
+                // instead of masking it behind a pool-exhaustion message. This matches
+                // what Retry already does when the retry limit is reached.
+                throw $exception;
             }
         };
 
