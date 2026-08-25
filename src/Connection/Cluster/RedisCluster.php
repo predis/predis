@@ -29,6 +29,7 @@ use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\RelayFactory;
+use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -264,11 +265,13 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
      */
     private function queryClusterNodeForSlotMap(NodeConnectionInterface $connection)
     {
-        // Backward-compatible hardcoded retry
+        // Retries on Retry's default catchable exceptions, which cover both
+        // ConnectionException and StreamInitException. A slot map refresh that cannot
+        // open a connection to the node it was redirected to has to be able to fall
+        // back to another node, exactly like one that fails mid-conversation.
         $retry = new Retry(
             new ExponentialBackoff($this->retryInterval * 1000, -1),
-            $this->retryLimit,
-            [ConnectionException::class]
+            $this->retryLimit
         );
 
         $command = RawCommand::create('CLUSTER', 'SLOTS');
@@ -277,8 +280,14 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
             return $connection->executeCommand($command);
         };
 
-        $failCallback = function (ConnectionException $exception) use (&$connection) {
-            $connection = $exception->getConnection();
+        $failCallback = function (Throwable $exception) use (&$connection) {
+            // StreamInitException is raised by the stream factory before a connection
+            // object exists, so it carries none: fall back to evicting the node that
+            // was being queried.
+            if ($exception instanceof ConnectionException) {
+                $connection = $exception->getConnection();
+            }
+
             $connection->disconnect();
 
             $this->remove($connection);
@@ -778,6 +787,12 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
             if ($this->useClusterSlots) {
                 $this->askSlotMap();
             }
+        }
+
+        if ($exception instanceof StreamInitException && $this->useClusterSlots) {
+            // There is no connection object to evict, but the topology still needs
+            // rediscovering: the node this command was routed to was unreachable.
+            $this->askSlotMap();
         }
 
         if ($exception instanceof TimeoutException) {
