@@ -153,6 +153,12 @@ final class RawCommand implements CommandInterface
         return $buffer;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated Not binary-safe; see CommandInterface::deserializeCommand().
+     *             Scheduled for removal in the next major.
+     */
     public static function deserializeCommand(string $serializedCommand): CommandInterface
     {
         if ($serializedCommand[0] !== '*') {
