@@ -12,8 +12,8 @@
 
 namespace Predis\Connection;
 
-use Predis\Command\Command;
 use Predis\Command\CommandInterface;
+use Predis\NotSupportedException;
 
 abstract class AbstractAggregateConnection implements AggregateConnectionInterface
 {
@@ -77,19 +77,12 @@ abstract class AbstractAggregateConnection implements AggregateConnectionInterfa
      */
     public function write(string $buffer): void
     {
-        $rawCommands = [];
-        $explodedBuffer = explode("\r\n", trim($buffer));
-
-        while (!empty($explodedBuffer)) {
-            $argsLen = (int) explode('*', $explodedBuffer[0])[1];
-            $cmdLen = ($argsLen * 2) + 1;
-            $rawCommands[] = array_splice($explodedBuffer, 0, $cmdLen);
-        }
-
-        foreach ($rawCommands as $command) {
-            $command = implode("\r\n", $command) . "\r\n";
-            $commandObj = Command::deserializeCommand($command);
-            $this->getConnectionByCommand($commandObj)->write($command);
-        }
+        // Refuse raw buffers: re-splitting them on "\r\n" ignored RESP length
+        // prefixes and let CRLF-smuggled commands be routed to a node
+        // (CVE GHSA-w6f5-v2h6-g786). Pipelines write each command individually.
+        throw new NotSupportedException(
+            'Aggregate connections cannot write a raw command buffer; '
+            . 'route each command through writeRequest() instead.'
+        );
     }
 }

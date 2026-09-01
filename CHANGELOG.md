@@ -1,9 +1,10 @@
 ## Changelog
 
-## Unlreleads
+## Unreleased
 ### Added
 ### Changed
 ### Fixed
+- Fixed CRLF command injection / smuggling in `AbstractAggregateConnection::write()` (CVE GHSA-w6f5-v2h6-g786, CWE-93)
 - Fixed RESP3 double parsing returning positive `INF` for `-inf` payloads (#1716)
 
 ## v3.6.0 (2026-08-14)
