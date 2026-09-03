@@ -5,7 +5,7 @@
 ### Changed
 ### Fixed
 - Fixed RESP3 double parsing returning positive `INF` for `-inf` payloads (#1716)
-- Fixed `client_info` connection parameter being ignored when adding `CLIENT SETINFO` commands (#1721)
+- Fixed `client_info` connection parameter being ignored (#1722)
 
 ## v3.6.0 (2026-08-14)
 ### Added
