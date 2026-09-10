@@ -14,6 +14,7 @@ namespace Predis\Connection\Cluster;
 
 use Predis\Command\CommandInterface;
 use Predis\Command\Redis\GET;
+use Predis\Command\Redis\SET;
 use Predis\Connection\Parameters;
 use PredisTestCase;
 
@@ -515,5 +516,29 @@ class PredisClusterTest extends PredisTestCase
         $cluster->add($connection3);
 
         $cluster->write($command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testWriteDoesNotSplitOnCRLFEmbeddedInABulkStringValue(): void
+    {
+        // A single SET whose value legitimately contains "\r\n*1\r\n$7\r\nFLUSHDB"
+        // (e.g. cached free-text or a multi-line field) must reach the node as
+        // one command, not be re-parsed into a SET plus a smuggled FLUSHDB.
+        // See GHSA-w6f5-v2h6-g786 / CVE-2026-84372.
+        $command = new SET();
+        $command->setArguments(['victim-key', "PAD\r\n*1\r\n\$7\r\nFLUSHDB"]);
+
+        $connection = $this->getMockConnection('tcp://127.0.0.1:7001');
+        $connection
+            ->expects($this->once())
+            ->method('write')
+            ->with($command->serializeCommand());
+
+        $cluster = new PredisCluster(new Parameters());
+        $cluster->add($connection);
+
+        $cluster->write($command->serializeCommand());
     }
 }
