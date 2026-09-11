@@ -587,6 +587,24 @@ class FactoryTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @return void
+     */
+    public function testDoesNotSetClientNameAndVersionOnConnectionWithClientInfoDisabled(): void
+    {
+        $parameters = ['client_info' => false];
+
+        $factory = new Factory();
+        $connection = $factory->create($parameters);
+        $initCommands = $connection->getInitCommands();
+
+        $this->assertCount(1, $initCommands);
+        $this->assertInstanceOf(RawCommand::class, $initCommands[0]);
+        $this->assertSame('HELLO', $initCommands[0]->getId());
+        $this->assertSame([2, 'SETNAME', 'predis'], $initCommands[0]->getArguments());
+    }
+
+    /**
+     * @group disconnected
      */
     public function testSettingUpstreamDriver(): void
     {

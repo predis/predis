@@ -68,6 +68,19 @@ class Resp3StrategyTest extends PredisTestCase
     }
 
     /**
+     * @dataProvider nanProvider
+     * @group disconnected
+     * @param  string $data
+     * @return void
+     */
+    public function testParseDataReturnsFloatNanOnNanValue(string $data): void
+    {
+        $actualResponse = $this->strategy->parseData($data);
+
+        $this->assertNan($actualResponse);
+    }
+
+    /**
      * @dataProvider booleanProvider
      * @group disconnected
      * @param  string $data
@@ -168,6 +181,16 @@ class Resp3StrategyTest extends PredisTestCase
         return [
             'positive infinity' => [",inf\r\n", INF],
             'negative infinity' => [",-inf\r\n", -INF],
+        ];
+    }
+
+    public function nanProvider(): array
+    {
+        return [
+            'canonical nan' => [",nan\r\n"],
+            'negative nan' => [",-nan\r\n"],
+            'uppercase nan' => [",NAN\r\n"],
+            'nan with payload' => [",nan(ind)\r\n"],
         ];
     }
 

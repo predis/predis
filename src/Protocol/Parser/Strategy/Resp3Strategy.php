@@ -71,6 +71,10 @@ class Resp3Strategy extends Resp2Strategy
             return -INF;
         }
 
+        if (preg_match('/^-?nan(\(.*\))?$/i', $string) === 1) {
+            return NAN;
+        }
+
         return (float) $string;
     }
 
