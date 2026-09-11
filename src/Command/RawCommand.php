@@ -12,9 +12,6 @@
 
 namespace Predis\Command;
 
-use Predis\ClientConfiguration;
-use UnexpectedValueException;
-
 /**
  * Class representing a generic Redis command.
  *
@@ -151,50 +148,5 @@ final class RawCommand implements CommandInterface
         }
 
         return $buffer;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @deprecated Not binary-safe; see CommandInterface::deserializeCommand().
-     *             Scheduled for removal in the next major.
-     */
-    public static function deserializeCommand(string $serializedCommand): CommandInterface
-    {
-        if ($serializedCommand[0] !== '*') {
-            throw new UnexpectedValueException('Invalid serializing format');
-        }
-
-        $commandArray = explode("\r\n", $serializedCommand);
-        $commandId = $commandArray[2];
-        $classPath = __NAMESPACE__ . '\Redis\\';
-
-        // Check if given command is a module command.
-        if (count($commandIdArray = explode('.', $commandId)) > 1) {
-            // Fetch module configuration to resolve namespace.
-            $moduleConfiguration = array_filter(
-                ClientConfiguration::getModules(),
-                static function ($module) use ($commandIdArray) {
-                    return $module['commandPrefix'] === $commandIdArray[0];
-                }
-            );
-
-            $commandClass = strtoupper($commandIdArray[0] . $commandIdArray[1]);
-            $classPath .= array_shift($moduleConfiguration)['name'] . '\\' . $commandClass;
-        } else {
-            $classPath .= $commandIdArray[0];
-        }
-
-        $command = new $classPath();
-        $arguments = [];
-
-        for ($i = 4, $iMax = count($commandArray); $i < $iMax; $i++) {
-            $arguments[] = $commandArray[$i];
-            ++$i;
-        }
-
-        $command->setArguments($arguments);
-
-        return $command;
     }
 }

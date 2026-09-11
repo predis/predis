@@ -92,18 +92,4 @@ interface CommandInterface
      * @return string
      */
     public function serializeCommand(): string;
-
-    /**
-     * Creates command object from given serialized representation.
-     *
-     * @param  string $serializedCommand
-     * @return static
-     *
-     * @deprecated Not binary-safe: it re-parses on "\r\n" and ignores RESP bulk-length
-     *             prefixes, so any argument containing "\r\n" is corrupted, and it
-     *             instantiates a command class from the parsed input. Never call it on
-     *             untrusted or serialized data (see CVE GHSA-w6f5-v2h6-g786). Scheduled
-     *             for removal in the next major.
-     */
-    public static function deserializeCommand(string $serializedCommand): CommandInterface;
 }
