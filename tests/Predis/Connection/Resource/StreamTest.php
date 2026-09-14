@@ -461,7 +461,11 @@ class StreamTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Unable to read from stream');
 
-        $stream->read(4);
+        // Use the fgets() path (length = -1): PHP 7.2's fread() coerces a
+        // user stream wrapper's `false` return into an empty string instead
+        // of preserving it, which would make this assertion PHP-version
+        // dependent; fgets() doesn't have that quirk.
+        $stream->read(-1);
     }
 
     /**
