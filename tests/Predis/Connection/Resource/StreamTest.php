@@ -12,6 +12,7 @@
 
 namespace Predis\Connection\Resource;
 
+use ErrorException;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -431,6 +432,95 @@ class StreamTest extends TestCase
         $stream->write('');
     }
 
+    /**
+     * @return void
+     */
+    public function testWriteSuppressesEngineWarningUnderThrowingErrorHandler(): void
+    {
+        $this->registerEngineWarningWrapper();
+        $this->installThrowingErrorHandler();
+
+        $stream = new Stream(fopen('predis-test-engine-warning://x', 'r+'));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unable to write to stream');
+
+        $stream->write('data');
+    }
+
+    /**
+     * @return void
+     */
+    public function testReadSuppressesEngineWarningUnderThrowingErrorHandler(): void
+    {
+        $this->registerEngineWarningWrapper();
+        $this->installThrowingErrorHandler();
+
+        $stream = new Stream(fopen('predis-test-engine-warning://x', 'r+'));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unable to read from stream');
+
+        $stream->read(4);
+    }
+
+    /**
+     * Mimics error handlers installed by Laravel, Symfony and Laminas, which
+     * convert engine notices/warnings into thrown exceptions unless the call
+     * site suppressed them with `@` (see GH-1725). The runner's own ambient
+     * error_reporting() level is irrelevant to what we want to assert here,
+     * so it's pinned to a known, fully-enabled value for the duration of the
+     * test rather than trusted as-is.
+     *
+     * @return void
+     */
+    private function installThrowingErrorHandler(): void
+    {
+        $this->originalErrorReporting = error_reporting(E_ALL);
+
+        set_error_handler(static function ($level, $message, $file = '', $line = 0) {
+            if (error_reporting() & $level) {
+                throw new ErrorException($message, 0, $level, $file, $line);
+            }
+
+            return false;
+        });
+
+        $this->registeredErrorHandler = true;
+    }
+
+    /**
+     * @var bool
+     */
+    private $registeredErrorHandler = false;
+
+    /**
+     * @var int|null
+     */
+    private $originalErrorReporting;
+
+    /**
+     * @return void
+     */
+    protected function tearDown(): void
+    {
+        if ($this->registeredErrorHandler) {
+            restore_error_handler();
+            error_reporting($this->originalErrorReporting);
+            $this->registeredErrorHandler = false;
+        }
+    }
+
+    /**
+     * @return void
+     */
+    private function registerEngineWarningWrapper(): void
+    {
+        if (!in_array('predis-test-engine-warning', stream_get_wrappers(), true)) {
+            stream_wrapper_register('predis-test-engine-warning', EngineWarningStreamWrapperFixture::class);
+        }
+    }
+
     public function writableModeProvider(): array
     {
         return [
@@ -476,5 +566,58 @@ class StreamTest extends TestCase
             ['a+'],
             ['rb+'],
         ];
+    }
+}
+
+/**
+ * Stream wrapper fixture that raises an engine-style warning from
+ * stream_write()/stream_read(), used to verify that Stream::write()/read()
+ * suppress it instead of letting a host-installed error handler turn it
+ * into an uncaught exception (see GH-1725).
+ */
+class EngineWarningStreamWrapperFixture
+{
+    /**
+     * @var resource
+     */
+    public $context;
+
+    public function stream_open($path, $mode, $options, &$openedPath): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return int|bool
+     */
+    public function stream_write(string $data)
+    {
+        trigger_error('fwrite(): synthetic broken pipe', E_USER_WARNING);
+
+        return false;
+    }
+
+    /**
+     * @return string|bool
+     */
+    public function stream_read(int $count)
+    {
+        trigger_error('fread(): synthetic broken pipe', E_USER_WARNING);
+
+        return false;
+    }
+
+    public function stream_eof(): bool
+    {
+        return false;
+    }
+
+    public function stream_stat()
+    {
+        return [];
+    }
+
+    public function stream_close(): void
+    {
     }
 }
