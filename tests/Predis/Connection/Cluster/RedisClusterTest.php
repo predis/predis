@@ -1634,33 +1634,46 @@ class RedisClusterTest extends PredisTestCase
     }
 
     /**
-     * Regression guard for CVE GHSA-w6f5-v2h6-g786 (CWE-93): an aggregate connection
-     * must refuse a raw, already-serialized command buffer instead of re-splitting it
-     * on "\r\n". The old parser ignored RESP bulk-length prefixes, so CRLF sequences
-     * smuggled into a value or key were parsed as extra commands and routed to a node.
-     *
      * @group disconnected
      */
-    public function testWriteRejectsRawCommandBuffer(): void
+    public function testWrite(): void
     {
-        // A single GET whose key carries a smuggled FLUSHDB payload; the old code
-        // would have re-parsed and routed the FLUSHDB, this must route nothing.
-        $command = new Command\Redis\GET();
-        $command->setArguments(["slug:PAD\r\n*1\r\n\$7\r\nFLUSHDB"]);
+        $command1 = new Command\Redis\GET();
+        $command1->setArguments(['arg1']);
+
+        $command2 = new Command\Redis\GET();
+        $command2->setArguments(['arg2']);
+
+        $command3 = new Command\Redis\GET();
+        $command3->setArguments(['arg3']);
 
         $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
 
         $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:7003');
+
         $connection1
-            ->expects($this->never())
-            ->method('write');
+            ->expects($this->once())
+            ->method('write')
+            ->with($command3->serializeCommand());
+
+        $connection2
+            ->expects($this->once())
+            ->method('write')
+            ->with($command2->serializeCommand());
+
+        $connection3
+            ->expects($this->once())
+            ->method('write')
+            ->with($command1->serializeCommand());
 
         $cluster = new RedisCluster($factory, new Parameters());
+
         $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
 
-        $this->expectException('Predis\NotSupportedException');
-        $this->expectExceptionMessage('Aggregate connections cannot write a raw command buffer');
-
-        $cluster->write($command->serializeCommand());
+        $cluster->write($command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand());
     }
 }

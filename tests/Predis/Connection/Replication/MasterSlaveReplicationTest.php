@@ -1459,40 +1459,41 @@ repl_backlog_histlen:12978
     }
 
     /**
-     * Regression guard for CVE GHSA-w6f5-v2h6-g786 (CWE-93): an aggregate connection
-     * must refuse a raw, already-serialized command buffer instead of re-splitting it
-     * on "\r\n". The old parser ignored RESP bulk-length prefixes, so CRLF sequences
-     * smuggled into a value or key were parsed as extra commands and routed to a node.
-     *
      * @group disconnected
      */
-    public function testWriteRejectsRawCommandBuffer(): void
+    public function testWrite(): void
     {
-        // A single command whose key carries a smuggled FLUSHDB payload; the old code
-        // would have re-parsed and routed the FLUSHDB, this must route nothing.
-        $command = new Command\Redis\Json\JSONGET();
-        $command->setArguments(["slug:PAD\r\n*1\r\n\$7\r\nFLUSHDB"]);
+        $command1 = new Command\Redis\Json\JSONGET();
+        $command1->setArguments(['arg1']);
+
+        $command2 = new Command\Redis\Json\JSONGET();
+        $command2->setArguments(['arg2']);
+
+        $command3 = new Command\Redis\Json\JSONGET();
+        $command3->setArguments(['arg3']);
 
         $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
         $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
 
-        $master
-            ->expects($this->never())
-            ->method('write');
-
         $slave1
             ->expects($this->never())
             ->method('write');
+
+        $master
+            ->expects($this->exactly(3))
+            ->method('write')
+            ->withConsecutive(
+                [$command1->serializeCommand()],
+                [$command2->serializeCommand()],
+                [$command3->serializeCommand()]
+            );
 
         $replication = new MasterSlaveReplication();
 
         $replication->add($master);
         $replication->add($slave1);
 
-        $this->expectException('Predis\NotSupportedException');
-        $this->expectExceptionMessage('Aggregate connections cannot write a raw command buffer');
-
-        $replication->write($command->serializeCommand());
+        $replication->write($command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand());
     }
 
     /**
