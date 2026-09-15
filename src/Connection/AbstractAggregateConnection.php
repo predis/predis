@@ -77,17 +77,25 @@ abstract class AbstractAggregateConnection implements AggregateConnectionInterfa
      */
     public function write(string $buffer): void
     {
-        $rawCommands = [];
-        $explodedBuffer = explode("\r\n", trim($buffer));
+        $offset = 0;
+        $length = strlen($buffer);
 
-        while (!empty($explodedBuffer)) {
-            $argsLen = (int) explode('*', $explodedBuffer[0])[1];
-            $cmdLen = ($argsLen * 2) + 1;
-            $rawCommands[] = array_splice($explodedBuffer, 0, $cmdLen);
-        }
+        while ($offset < $length) {
+            $start = $offset;
+            $lineEnd = strpos($buffer, "\r\n", $offset);
+            $argsCount = (int) substr($buffer, $offset + 1, $lineEnd - $offset - 1);
+            $offset = $lineEnd + 2;
 
-        foreach ($rawCommands as $command) {
-            $command = implode("\r\n", $command) . "\r\n";
+            // Advance by each bulk string's own declared byte length rather than
+            // splitting on literal "\r\n", which a bulk string's value may legitimately
+            // contain (see GHSA-w6f5-v2h6-g786).
+            for ($i = 0; $i < $argsCount; ++$i) {
+                $lineEnd = strpos($buffer, "\r\n", $offset);
+                $bulkLen = (int) substr($buffer, $offset + 1, $lineEnd - $offset - 1);
+                $offset = $lineEnd + 2 + $bulkLen + 2;
+            }
+
+            $command = substr($buffer, $start, $offset - $start);
             $commandObj = Command::deserializeCommand($command);
             $this->getConnectionByCommand($commandObj)->write($command);
         }
