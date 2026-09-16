@@ -14,6 +14,7 @@ namespace Predis\Connection\Cluster;
 
 use Predis\Command\CommandInterface;
 use Predis\Command\Redis\GET;
+use Predis\Command\Redis\SET;
 use Predis\Connection\Parameters;
 use PredisTestCase;
 
@@ -515,5 +516,74 @@ class PredisClusterTest extends PredisTestCase
         $cluster->add($connection3);
 
         $cluster->write($command1->serializeCommand() . $command2->serializeCommand() . $command3->serializeCommand());
+    }
+
+    /**
+     * Regression guard for GHSA-w6f5-v2h6-g786 (CWE-93): a CRLF embedded in a
+     * bulk string's own value must not be mistaken for a command boundary
+     * (splitting one command into a smuggled extra command), and must not
+     * corrupt the argument list used to pick the target node.
+     *
+     * @group disconnected
+     */
+    public function testWriteHandlesCRLFEmbeddedInBulkStringValue(): void
+    {
+        $command = new SET();
+        $command->setArguments(['victim-key', "PAD\r\n*1\r\n\$7\r\nFLUSHDB"]);
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
+
+        $cluster = new PredisCluster(new Parameters());
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+
+        $expectedConnection = $cluster->getConnectionByCommand($command);
+        $otherConnection = $expectedConnection === $connection1 ? $connection2 : $connection1;
+
+        $expectedConnection
+            ->expects($this->once())
+            ->method('write')
+            ->with($command->serializeCommand());
+
+        $otherConnection
+            ->expects($this->never())
+            ->method('write');
+
+        $cluster->write($command->serializeCommand());
+    }
+
+    /**
+     * Regression guard for GHSA-w6f5-v2h6-g786 (CWE-93): a CRLF embedded in a
+     * bulk string KEY must not corrupt the argument list used to pick the
+     * target node, which would silently route the command to the wrong node.
+     *
+     * @group disconnected
+     */
+    public function testWriteHandlesCRLFEmbeddedInBulkStringKey(): void
+    {
+        $command = new SET();
+        $command->setArguments(["victim\r\n*1\r\n\$4\r\nEVIL", 'somevalue']);
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:7001');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:7002');
+
+        $cluster = new PredisCluster(new Parameters());
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+
+        $expectedConnection = $cluster->getConnectionByCommand($command);
+        $otherConnection = $expectedConnection === $connection1 ? $connection2 : $connection1;
+
+        $expectedConnection
+            ->expects($this->once())
+            ->method('write')
+            ->with($command->serializeCommand());
+
+        $otherConnection
+            ->expects($this->never())
+            ->method('write');
+
+        $cluster->write($command->serializeCommand());
     }
 }

@@ -1497,6 +1497,69 @@ repl_backlog_histlen:12978
     }
 
     /**
+     * Regression guard for GHSA-w6f5-v2h6-g786 (CWE-93): a CRLF embedded in a
+     * bulk string's own value must not be mistaken for a command boundary
+     * (splitting one command into a smuggled extra command).
+     *
+     * @group disconnected
+     */
+    public function testWriteHandlesCRLFEmbeddedInBulkStringValue(): void
+    {
+        $command = new Command\Redis\SET();
+        $command->setArguments(['victim-key', "PAD\r\n*1\r\n\$7\r\nFLUSHDB"]);
+
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
+
+        $slave1
+            ->expects($this->never())
+            ->method('write');
+
+        $master
+            ->expects($this->once())
+            ->method('write')
+            ->with($command->serializeCommand());
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $replication->write($command->serializeCommand());
+    }
+
+    /**
+     * Regression guard for GHSA-w6f5-v2h6-g786 (CWE-93): a CRLF embedded in a
+     * bulk string KEY must not corrupt the argument list used to pick the
+     * target connection, which would silently route the command to the
+     * wrong node.
+     *
+     * @group disconnected
+     */
+    public function testWriteHandlesCRLFEmbeddedInBulkStringKey(): void
+    {
+        $command = new Command\Redis\SET();
+        $command->setArguments(["victim\r\n*1\r\n\$4\r\nEVIL", 'somevalue']);
+
+        $master = $this->getMockConnection('tcp://127.0.0.1:6379?role=master');
+        $slave1 = $this->getMockConnection('tcp://127.0.0.1:6380?role=slave');
+
+        $slave1
+            ->expects($this->never())
+            ->method('write');
+
+        $master
+            ->expects($this->once())
+            ->method('write')
+            ->with($command->serializeCommand());
+
+        $replication = new MasterSlaveReplication();
+        $replication->add($master);
+        $replication->add($slave1);
+
+        $replication->write($command->serializeCommand());
+    }
+
+    /**
      * @medium
      * @group disconnected
      * @group slow
