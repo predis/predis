@@ -1,11 +1,16 @@
 ## Changelog
 
-## Unlreleads
+## Unreleased
 ### Added
 ### Changed
+- Deprecated `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
 - `RedisCluster` now surfaces the original transport error instead of a `ClientException` when the pool is exhausted during `CLUSTER SLOTS` discovery (#1717)
 ### Fixed
 - Fixed Redis Cluster not retrying slot map discovery on `StreamInitException` (#1717)
+- Fixed RESP3 double parsing returning positive `INF` for `-inf` payloads (#1716)
+- Fixed `client_info` connection parameter being ignored (#1722)
+- Fixed `Stream::write()`/`read()` leaving a dead connection when a host error handler throws exception (#1725)
+- Fixed CRLF command smuggling and node misrouting in `AbstractAggregateConnection::write()` and `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
 
 ## v3.6.0 (2026-08-14)
 ### Added

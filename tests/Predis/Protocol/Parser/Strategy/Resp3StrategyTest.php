@@ -60,11 +60,11 @@ class Resp3StrategyTest extends PredisTestCase
      * @param  string $data
      * @return void
      */
-    public function testParseDataReturnsFloatInfinityOnInfinityOrNegativeInfinity(string $data): void
+    public function testParseDataReturnsFloatInfinityOnInfinityOrNegativeInfinity(string $data, float $expectedValue): void
     {
         $actualResponse = $this->strategy->parseData($data);
 
-        $this->assertInfinite($actualResponse);
+        $this->assertSame($expectedValue, $actualResponse);
     }
 
     /**
@@ -166,8 +166,8 @@ class Resp3StrategyTest extends PredisTestCase
     public function infinityProvider(): array
     {
         return [
-            'positive infinity' => [",inf\r\n"],
-            'negative infinity' => [",-inf\r\n"],
+            'positive infinity' => [",inf\r\n", INF],
+            'negative infinity' => [",-inf\r\n", -INF],
         ];
     }
 

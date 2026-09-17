@@ -281,6 +281,17 @@ class CommandTest extends PredisTestCase
                 TOPKQUERY::class,
                 ['key'],
             ],
+            // Regression cases for GHSA-w6f5-v2h6-g786 (CWE-93): a "\r\n" embedded
+            // in a bulk string's own byte payload must not be mistaken for a RESP
+            // line boundary.
+            'GET with CRLF embedded in the value' => [
+                GET::class,
+                ["value\r\n*1\r\n\$4\r\nEVIL"],
+            ],
+            'ZADD with CRLF embedded in the key' => [
+                ZADD::class,
+                ["key\r\n*1\r\n\$4\r\nEVIL", 'value', 'key1', 'value1'],
+            ],
         ];
     }
 }

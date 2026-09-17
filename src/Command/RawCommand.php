@@ -153,14 +153,16 @@ final class RawCommand implements CommandInterface
         return $buffer;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated Not binary-safe; see CommandInterface::deserializeCommand().
+     *             Scheduled for removal in the next major.
+     */
     public static function deserializeCommand(string $serializedCommand): CommandInterface
     {
-        if ($serializedCommand[0] !== '*') {
-            throw new UnexpectedValueException('Invalid serializing format');
-        }
-
-        $commandArray = explode("\r\n", $serializedCommand);
-        $commandId = $commandArray[2];
+        $items = self::parseMultibulk($serializedCommand);
+        $commandId = $items[0];
         $classPath = __NAMESPACE__ . '\Redis\\';
 
         // Check if given command is a module command.
@@ -180,15 +182,53 @@ final class RawCommand implements CommandInterface
         }
 
         $command = new $classPath();
-        $arguments = [];
-
-        for ($i = 4, $iMax = count($commandArray); $i < $iMax; $i++) {
-            $arguments[] = $commandArray[$i];
-            ++$i;
-        }
-
-        $command->setArguments($arguments);
+        $command->setArguments(array_slice($items, 1));
 
         return $command;
+    }
+
+    /**
+     * Parses a RESP multibulk buffer into its individual bulk-string values
+     * (command ID followed by its arguments), walking each string by its own
+     * declared byte length instead of splitting the buffer on "\r\n" -- which
+     * a bulk string's payload may legitimately contain (see GHSA-w6f5-v2h6-g786).
+     *
+     * @param  string   $buffer
+     * @return string[]
+     */
+    private static function parseMultibulk(string $buffer): array
+    {
+        if ($buffer[0] !== '*') {
+            throw new UnexpectedValueException('Invalid serializing format');
+        }
+
+        $lineEnd = strpos($buffer, "\r\n");
+
+        if ($lineEnd === false) {
+            throw new UnexpectedValueException('Invalid serializing format');
+        }
+
+        $count = (int) substr($buffer, 1, $lineEnd - 1);
+        $offset = $lineEnd + 2;
+        $items = [];
+
+        for ($i = 0; $i < $count; ++$i) {
+            if (($buffer[$offset] ?? '') !== '$') {
+                throw new UnexpectedValueException('Invalid serializing format');
+            }
+
+            $lineEnd = strpos($buffer, "\r\n", $offset);
+
+            if ($lineEnd === false) {
+                throw new UnexpectedValueException('Invalid serializing format');
+            }
+
+            $bulkLen = (int) substr($buffer, $offset + 1, $lineEnd - $offset - 1);
+            $dataStart = $lineEnd + 2;
+            $items[] = substr($buffer, $dataStart, $bulkLen);
+            $offset = $dataStart + $bulkLen + 2;
+        }
+
+        return $items;
     }
 }
