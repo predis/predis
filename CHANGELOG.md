@@ -1,13 +1,18 @@
 ## Changelog
 
-## v3.6.1 (2026-09-17)
+## Unreleased
+### Added
 ### Changed
-- Deprecated `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
+### Fixed
 
+## v3.6.1 (2026-09-17)
 ### Fixed
 - Fixed RESP3 double parsing returning positive `INF` for `-inf` payloads (#1716)
 - Fixed `client_info` connection parameter being ignored (#1722)
 - Fixed `Stream::write()` and `read()` leaving a dead connection when a host error handler throws exception (#1725)
+
+### Security
+- Deprecated `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
 - Fixed CRLF command smuggling and node misrouting in `AbstractAggregateConnection::write()` and `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
 
 ## v3.6.0 (2026-08-14)
