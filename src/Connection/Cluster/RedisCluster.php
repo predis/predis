@@ -29,6 +29,7 @@ use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\ParametersInterface;
 use Predis\Connection\RelayFactory;
+use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -267,8 +268,7 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
         // Backward-compatible hardcoded retry
         $retry = new Retry(
             new ExponentialBackoff($this->retryInterval * 1000, -1),
-            $this->retryLimit,
-            [ConnectionException::class]
+            $this->retryLimit
         );
 
         $command = RawCommand::create('CLUSTER', 'SLOTS');
@@ -277,14 +277,17 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
             return $connection->executeCommand($command);
         };
 
-        $failCallback = function (ConnectionException $exception) use (&$connection) {
-            $connection = $exception->getConnection();
+        $failCallback = function (Throwable $exception) use (&$connection) {
+            if ($exception instanceof ConnectionException) {
+                $connection = $exception->getConnection();
+            }
+
             $connection->disconnect();
 
             $this->remove($connection);
 
             if (!$connection = $this->getRandomConnection()) {
-                throw new ClientException('No connections left in the pool for `CLUSTER SLOTS`');
+                throw $exception;
             }
         };
 
@@ -778,6 +781,10 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
             if ($this->useClusterSlots) {
                 $this->askSlotMap();
             }
+        }
+
+        if ($exception instanceof StreamInitException && $this->useClusterSlots) {
+            $this->askSlotMap();
         }
 
         if ($exception instanceof TimeoutException) {

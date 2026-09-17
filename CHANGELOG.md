@@ -4,6 +4,7 @@
 ### Added
 ### Changed
 - Deprecated `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
+- Retry cluster slot map discovery on `StreamInitException` (#1717)
 ### Fixed
 - Fixed RESP3 double parsing returning positive `INF` for `-inf` payloads (#1716)
 - Fixed `client_info` connection parameter being ignored (#1722)
