@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- Added optional `CELL_SIZE` argument for `CMS.INITBYDIM` and `CMS.INITBYPROB`
 ### Changed
 ### Fixed
 
