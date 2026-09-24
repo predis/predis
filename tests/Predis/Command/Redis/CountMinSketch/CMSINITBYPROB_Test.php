@@ -145,7 +145,7 @@ class CMSINITBYPROB_Test extends PredisCommandTestCase
      * @group connected
      * @group relay-resp3
      * @return void
-     * @requiresRedisBfVersion >= 8.11.0
+     * @requiresRedisVersion >= 8.12.0
      */
     public function testInitializeCountMinSketchWithGivenCellSize(): void
     {
@@ -163,7 +163,7 @@ class CMSINITBYPROB_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-resp3
-     * @requiresRedisBfVersion >= 8.11.0
+     * @requiresRedisVersion >= 8.12.0
      */
     public function testThrowsExceptionOnInvalidCellSize(): void
     {
