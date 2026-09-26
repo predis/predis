@@ -4,6 +4,7 @@
 ### Added
 ### Changed
 ### Fixed
+- Fixed client iteration with master/slave replication (#923)
 
 ## v3.6.1 (2026-09-17)
 ### Fixed
