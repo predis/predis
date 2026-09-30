@@ -55,6 +55,34 @@ class CMSINITBYPROB_Test extends PredisCommandTestCase
     /**
      * @group disconnected
      */
+    public function testFilterArgumentsWithCellSize(): void
+    {
+        $actualArguments = ['key', 0.001, 0.01, 8];
+        $expectedArguments = ['key', 0.001, 0.01, 'CELL_SIZE', 8];
+
+        $command = $this->getCommand();
+        $command->setArguments($actualArguments);
+
+        $this->assertSameValues($expectedArguments, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testFilterArgumentsWithNullCellSizeOmitsIt(): void
+    {
+        $actualArguments = ['key', 0.001, 0.01, null];
+        $expectedArguments = ['key', 0.001, 0.01];
+
+        $command = $this->getCommand();
+        $command->setArguments($actualArguments);
+
+        $this->assertSameValues($expectedArguments, $command->getArguments());
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testParseResponse(): void
     {
         $this->assertSame(1, $this->getCommand()->parseResponse(1));
@@ -111,6 +139,40 @@ class CMSINITBYPROB_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $actualResponse);
         $this->assertSame(2000, $info['width']);
         $this->assertSame(7, $info['depth']);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @return void
+     * @requiresRedisVersion >= 8.12.0
+     */
+    public function testInitializeCountMinSketchWithGivenCellSize(): void
+    {
+        $redis = $this->getClient();
+
+        $actualResponse = $redis->cmsinitbyprob('key', 0.001, 0.01, 8);
+        $info = $redis->cmsinfo('key');
+
+        $this->assertEquals('OK', $actualResponse);
+        $this->assertSame(2000, $info['width']);
+        $this->assertSame(7, $info['depth']);
+        $this->assertSame(8, $info['cell_size']);
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @requiresRedisVersion >= 8.12.0
+     */
+    public function testThrowsExceptionOnInvalidCellSize(): void
+    {
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('CMS: CELL_SIZE must be 1, 2, 4 or 8');
+
+        $redis = $this->getClient();
+
+        $redis->cmsinitbyprob('cmsinitbyprob_invalid_cellsize', 0.001, 0.01, 3);
     }
 
     /**

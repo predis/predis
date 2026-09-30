@@ -26,6 +26,26 @@ class CMSINITBYDIM extends RedisCommand
         return 'CMS.INITBYDIM';
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Arguments: [key, width, depth, ?cellSize]
+     */
+    public function setArguments(array $arguments)
+    {
+        if (array_key_exists(3, $arguments)) {
+            $cellSize = $arguments[3];
+            $arguments = array_slice($arguments, 0, 3);
+
+            if ($cellSize !== null) {
+                $arguments[] = 'CELL_SIZE';
+                $arguments[] = $cellSize;
+            }
+        }
+
+        parent::setArguments($arguments);
+    }
+
     public function prefixKeys($prefix)
     {
         $this->applyPrefixForFirstArgument($prefix);

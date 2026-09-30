@@ -70,7 +70,12 @@ class HOTKEYS_Test extends PredisCommandTestCase
 
         // Starts hotkeys tracking (CPU only)
         $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU]));
-        $this->assertEquals('OK', $redis->set('key', 'value'));
+
+        // A single SET's CPU time can round down to 0 and be excluded from tracking.
+        for ($i = 0; $i < 5; $i++) {
+            $redis->set('key', 'value');
+        }
+
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
         $hotkeysInfo = $redis->hotkeys->get()[0];
@@ -78,8 +83,12 @@ class HOTKEYS_Test extends PredisCommandTestCase
 
         // Starts hotkeys tracking (CPU and NET)
         $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU, Container::NET]));
-        $this->assertEquals('OK', $redis->set('key', 'value'));
-        $this->assertEquals('OK', $redis->set('key1', 'value1'));
+
+        for ($i = 0; $i < 5; $i++) {
+            $redis->set('key', 'value');
+            $redis->set('key1', 'value1');
+        }
+
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
         $hotkeysInfo = $redis->hotkeys->get()[0];
@@ -137,7 +146,12 @@ class HOTKEYS_Test extends PredisCommandTestCase
 
         // Starts hotkeys tracking (CPU only)
         $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU]));
-        $this->assertEquals('OK', $redis->set('key', 'value'));
+
+        // A single SET's CPU time can round down to 0 and be excluded from tracking.
+        for ($i = 0; $i < 5; $i++) {
+            $redis->set('key', 'value');
+        }
+
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
         $hotkeysInfo = $redis->hotkeys->get()[0];
@@ -145,8 +159,12 @@ class HOTKEYS_Test extends PredisCommandTestCase
 
         // Starts hotkeys tracking (CPU and NET)
         $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU, Container::NET]));
-        $this->assertEquals('OK', $redis->set('key', 'value'));
-        $this->assertEquals('OK', $redis->set('key1', 'value1'));
+
+        for ($i = 0; $i < 5; $i++) {
+            $redis->set('key', 'value');
+            $redis->set('key1', 'value1');
+        }
+
         $this->assertEquals('OK', $redis->hotkeys->stop());
 
         $hotkeysInfo = $redis->hotkeys->get()[0];

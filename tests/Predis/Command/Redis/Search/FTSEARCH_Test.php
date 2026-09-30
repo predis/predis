@@ -23,6 +23,7 @@ use Predis\Command\Argument\Search\SchemaFields\TextField;
 use Predis\Command\Argument\Search\SchemaFields\VectorField;
 use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\PrefixableCommand;
+use Predis\Command\RawCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Command\Redis\Utils\VectorUtility;
 use Predis\Response\ServerException;
@@ -690,11 +691,17 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->createSearchTimeoutIndex($redis);
         $this->addDataForSearchTimeout($redis);
 
-        $response = $redis->ftsearch(
-            'idx',
-            sprintf('*=>[KNN %d @embedding $vec]', self::SEARCH_TIMEOUT_DOCS),
-            $this->getSearchTimeoutArguments()
-        );
+        $this->enableVecsimMockTimeout($redis);
+
+        try {
+            $response = $redis->ftsearch(
+                'idx',
+                sprintf('*=>[KNN %d @embedding $vec]', self::SEARCH_TIMEOUT_DOCS),
+                $this->getSearchTimeoutArguments()
+            );
+        } finally {
+            $this->disableVecsimMockTimeout($redis);
+        }
 
         // Only the RESP3 wire carries the server timeout warning.
         $this->assertIsInt($response['total_results']);
@@ -724,6 +731,8 @@ class FTSEARCH_Test extends PredisCommandTestCase
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('Timeout limit was reached');
 
+        $this->enableVecsimMockTimeout($redis);
+
         try {
             $this->assertEquals('OK', $redis->config('SET', 'search-on-timeout', 'fail'));
 
@@ -734,6 +743,7 @@ class FTSEARCH_Test extends PredisCommandTestCase
             );
         } finally {
             $redis->config('SET', 'search-on-timeout', $originalPolicy);
+            $this->disableVecsimMockTimeout($redis);
         }
     }
 
@@ -774,6 +784,17 @@ class FTSEARCH_Test extends PredisCommandTestCase
         } finally {
             $redis->config('SET', 'search-on-timeout', $originalPolicy);
         }
+    }
+
+    // Forces a deterministic timeout instead of racing a real KNN scan against a 1ms budget.
+    private function enableVecsimMockTimeout(ClientInterface $redis): void
+    {
+        $redis->executeCommand(RawCommand::create('_FT.DEBUG', 'VECSIM_MOCK_TIMEOUT', 'enable'));
+    }
+
+    private function disableVecsimMockTimeout(ClientInterface $redis): void
+    {
+        $redis->executeCommand(RawCommand::create('_FT.DEBUG', 'VECSIM_MOCK_TIMEOUT', 'disable'));
     }
 
     private function createSearchTimeoutIndex(ClientInterface $redis): void

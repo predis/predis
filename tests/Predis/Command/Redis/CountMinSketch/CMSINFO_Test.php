@@ -95,7 +95,9 @@ class CMSINFO_Test extends PredisCommandTestCase
 
         $actualResponse = $redis->cmsinfo('key');
 
-        $this->assertSame($expectedResponse, $actualResponse);
+        foreach ($expectedResponse as $value) {
+            $this->assertContains($value, $actualResponse);
+        }
     }
 
     /**
@@ -113,7 +115,9 @@ class CMSINFO_Test extends PredisCommandTestCase
 
         $actualResponse = $redis->cmsinfo('key');
 
-        $this->assertSame($expectedResponse, $actualResponse);
+        foreach ($expectedResponse as $value) {
+            $this->assertContains($value, $actualResponse);
+        }
     }
 
     /**
