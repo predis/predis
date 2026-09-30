@@ -78,7 +78,7 @@ class CompositeStreamConnection extends StreamConnection implements CompositeCon
                 $chunk = $stream->read($length);
 
                 if ($chunk === '' && $stream->eof()) {
-                    throw new RuntimeException('', 1);
+                    throw new RuntimeException('Connection closed by peer during read', 1);
                 }
             } catch (RuntimeException $e) {
                 $this->onStreamError($e, 'Error while reading bytes from the server.');
