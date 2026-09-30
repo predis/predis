@@ -589,6 +589,14 @@ class MasterSlaveReplication extends AbstractAggregateConnection implements Repl
     }
 
     /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return implode(',', array_keys($this->pool));
+    }
+
+    /**
      * Handle connection exception.
      *
      * @param  ConnectionException                 $exception

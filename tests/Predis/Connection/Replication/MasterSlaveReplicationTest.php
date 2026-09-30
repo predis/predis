@@ -13,6 +13,7 @@
 namespace Predis\Connection\Replication;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Client;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Connection\Parameters;
@@ -28,6 +29,25 @@ use RuntimeException;
 
 class MasterSlaveReplicationTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testClientIterationKeepsReplicationConnection(): void
+    {
+        $client = new Client([
+            'tcp://127.0.0.1:6379?role=master',
+            'tcp://127.0.0.1:6380?role=slave',
+        ], ['replication' => 'predis']);
+
+        $iterator = $client->getIterator();
+
+        $this->assertCount(1, $iterator);
+        $this->assertSame('127.0.0.1:6379,127.0.0.1:6380', $iterator->key());
+        $this->assertSame($client->getConnection(), $iterator->current()->getConnection());
+        $this->assertSame($client->getOptions(), $iterator->current()->getOptions());
+        $this->assertFalse($client->isConnected());
+    }
+
     /**
      * @group disconnected
      */

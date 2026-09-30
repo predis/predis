@@ -5,6 +5,7 @@
 - Added optional `CELL_SIZE` argument for `CMS.INITBYDIM` and `CMS.INITBYPROB`
 ### Changed
 ### Fixed
+- Fixed client iteration with master/slave and Sentinel replication (#923)
 
 ## v3.6.1 (2026-09-17)
 ### Fixed
