@@ -6,6 +6,7 @@
 ### Changed
 ### Fixed
 - Fixed client iteration with master/slave and Sentinel replication (#923)
+- Fixed `StreamConnection` and `CompositeStreamConnection` looping forever when the connection closes in the middle of a bulk reply
 
 ## v3.6.1 (2026-09-17)
 ### Fixed

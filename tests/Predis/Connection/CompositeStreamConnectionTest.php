@@ -15,6 +15,7 @@ namespace Predis\Connection;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\RawCommand;
 use Predis\Response\Error as ErrorResponse;
+use Psr\Http\Message\StreamInterface;
 
 class CompositeStreamConnectionTest extends PredisConnectionTestCase
 {
@@ -55,6 +56,35 @@ class CompositeStreamConnectionTest extends PredisConnectionTestCase
 
         $connection->addConnectCommand($cmdSelect);
         $connection->connect();
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReadBufferThrowsExceptionOnEOF(): void
+    {
+        $this->expectException('Predis\Connection\ConnectionException');
+        $this->expectExceptionMessage('Error while reading bytes from the server. [tcp://127.0.0.1:6379]');
+
+        $stream = $this->getMockBuilder(StreamInterface::class)->getMock();
+        $stream
+            ->expects($this->exactly(2))
+            ->method('eof')
+            ->willReturnOnConsecutiveCalls(false, true);
+        $stream
+            ->expects($this->exactly(2))
+            ->method('read')
+            ->willReturnOnConsecutiveCalls('abc', '');
+
+        /** @var CompositeStreamConnection|MockObject */
+        $connection = $this
+            ->getMockBuilder($this->getConnectionClass())
+            ->onlyMethods(['createResource'])
+            ->setConstructorArgs([new Parameters()])
+            ->getMock();
+        $connection->method('createResource')->willReturn($stream);
+
+        $connection->readBuffer(10);
     }
 
     // ******************************************************************** //
