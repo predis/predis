@@ -19,6 +19,7 @@ use Predis\Command\Redis\MULTI;
 use Predis\Command\Redis\UNWATCH;
 use Predis\Command\Redis\WATCH;
 use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface;
@@ -143,7 +144,7 @@ class ClusterConnectionStrategy implements StrategyInterface
 
         // Begin transaction
         if (('OK' != $multiResp) && !$multiResp instanceof Relay) {
-            $this->releaseNode(new DISCARD());
+            $this->abort(new DISCARD(), $multiResp);
 
             return null;
         }
@@ -155,7 +156,7 @@ class ClusterConnectionStrategy implements StrategyInterface
             $commandResp = $this->setSlotAndExecute($command);
 
             if (('QUEUED' != $commandResp) && !$commandResp instanceof Relay) {
-                $this->releaseNode(new DISCARD());
+                $this->abort(new DISCARD(), $commandResp);
 
                 return null;
             }
@@ -165,7 +166,7 @@ class ClusterConnectionStrategy implements StrategyInterface
         $exec = $this->setSlotAndExecute($exec);
 
         if ($exec instanceof ErrorInterface) {
-            $this->releaseNode(new DISCARD());
+            $this->abort(new DISCARD(), $exec);
 
             return null;
         }
@@ -235,12 +236,35 @@ class ClusterConnectionStrategy implements StrategyInterface
         $response = $this->setSlotAndExecute($command);
 
         if ($response instanceof ErrorInterface) {
-            $this->unwatch();
+            $this->abort(new UNWATCH(), $response);
 
             throw new ServerException($response->getMessage());
         }
 
         return $response;
+    }
+
+    /**
+     * Releases the node after a response that aborts the transaction. A -MOVED
+     * response also updates the slots map, so the next attempt is sent to the
+     * node the slot was moved to.
+     *
+     * @param CommandInterface $cleanup
+     * @param mixed            $response
+     */
+    private function abort(CommandInterface $cleanup, $response): void
+    {
+        $this->releaseNode($cleanup);
+
+        if (!$response instanceof ErrorInterface || !$this->connection instanceof RedisCluster) {
+            return;
+        }
+
+        $details = explode(' ', $response->getMessage(), 2);
+
+        if ('MOVED' === $details[0] && isset($details[1])) {
+            $this->connection->applyMovedResponse($details[1]);
+        }
     }
 
     /**

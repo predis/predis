@@ -20,7 +20,9 @@ use Predis\Cluster\RedisStrategy;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\ConnectionException;
+use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\StreamConnection;
@@ -863,6 +865,67 @@ class MultiExecTest extends PredisTestCase
         $this->assertSame(0, $attempts);
         $this->assertSame(['WATCH'], self::commandsToIDs($casCommands));
         $this->assertSame(['MULTI', 'GET', 'EXEC'], self::commandsToIDs($txCommands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterRetryReachesTheNodeTheSlotWasMovedTo(): void
+    {
+        $seedCommands = $targetCommands = [];
+        $slot = (new RedisStrategy())->getSlotByKey('foo');
+
+        $seed = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $seed
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$seedCommands, $slot) {
+                $seedCommands[] = $id = $command->getId();
+
+                return $id === 'GET'
+                    ? new Response\Error("MOVED $slot 127.0.0.1:6380")
+                    : new Response\Status('OK');
+            });
+
+        $target = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $target
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$targetCommands) {
+                $targetCommands[] = $id = $command->getId();
+
+                switch ($id) {
+                    case 'CLUSTER':
+                        return [[0, 16383, ['127.0.0.1', 6380]]];
+
+                    case 'MULTI':
+                        return new Response\Status('OK');
+
+                    case 'EXEC':
+                        return ['bar'];
+
+                    default:
+                        return new Response\Status('QUEUED');
+                }
+            });
+
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with(['host' => '127.0.0.1', 'port' => '6380'])
+            ->willReturn($target);
+
+        $cluster = new RedisCluster($factory, new Parameters(['protocol' => 2]));
+        $cluster->add($seed);
+
+        $tx = new MultiExec(new Client($cluster), ['retry' => 1]);
+
+        $responses = $tx->execute(static function (MultiExec $tx) {
+            $tx->get('foo');
+        });
+
+        $this->assertSame(['bar'], $responses);
+        $this->assertSame(['MULTI', 'GET', 'DISCARD'], $seedCommands);
+        $this->assertSame(['CLUSTER', 'MULTI', 'GET', 'EXEC'], $targetCommands);
     }
 
     /**

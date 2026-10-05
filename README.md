@@ -423,7 +423,8 @@ hash slot, due to this limitation it's recommended to use `{}` syntax to make su
 slot. Apart from it no additional configuration needed on a client side.
 
 Transaction commands stay on the same physical node connection. Redirection errors and connection failures abort
-the transaction. After an abort, pending commands are discarded or the connection is closed if cleanup fails.
+the transaction. After an abort, pending commands are discarded or the connection is closed if cleanup fails. A `MOVED`
+redirection also updates the slots map, so retrying the transaction reaches the node the slot was moved to.
 
 ```php
 $redis = $this->getClient();

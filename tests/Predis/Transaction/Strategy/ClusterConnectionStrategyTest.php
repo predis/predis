@@ -12,6 +12,7 @@
 
 namespace Predis\Transaction\Strategy;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Predis\Command\CommandInterface;
 use Predis\Command\Redis\DISCARD;
@@ -22,6 +23,7 @@ use Predis\Command\Redis\SET;
 use Predis\Command\Redis\UNWATCH;
 use Predis\Command\Redis\WATCH;
 use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface;
@@ -650,5 +652,109 @@ class ClusterConnectionStrategyTest extends TestCase
         $strategy->initializeTransaction();
         $strategy->executeCommand(new GET());
         $this->assertSame(['value'], $strategy->executeTransaction());
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider movedStages
+     */
+    public function testMovedResponseUpdatesSlotMapAfterReleasingTheNode(string $stage, array $expected): void
+    {
+        $events = [];
+        $cluster = $this->getMockRedisCluster();
+        $cluster->expects($this->once())->method('applyMovedResponse')->with('123 127.0.0.1:6380')
+            ->willReturnCallback(static function () use (&$events) {
+                $events[] = 'applyMovedResponse';
+            });
+        $this->mockNodeConnection->method('executeCommand')->willReturnCallback(
+            static function ($command) use ($stage, &$events) {
+                $events[] = $id = $command->getId();
+
+                if ($id === $stage) {
+                    return new Error('MOVED 123 127.0.0.1:6380');
+                }
+
+                return $id === 'SET' ? 'QUEUED' : 'OK';
+            }
+        );
+
+        $strategy = new ClusterConnectionStrategy($cluster, new MultiExecState());
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+
+        $this->assertNull($strategy->executeTransaction());
+        $this->assertSame($expected, $events);
+    }
+
+    public function movedStages(): array
+    {
+        return [
+            'queueing' => ['SET', ['MULTI', 'SET', 'DISCARD', 'applyMovedResponse']],
+            'execution' => ['EXEC', ['MULTI', 'SET', 'EXEC', 'DISCARD', 'applyMovedResponse']],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testMovedResponseToWatchUpdatesSlotMapAndThrows(): void
+    {
+        $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
+        $cluster = $this->getMockRedisCluster();
+        $cluster->expects($this->once())->method('applyMovedResponse')->with('123 127.0.0.1:6380');
+        $this->mockNodeConnection->expects($this->exactly(2))->method('executeCommand')
+            ->withConsecutive([$this->isInstanceOf(WATCH::class)], [new UNWATCH()])
+            ->willReturnOnConsecutiveCalls(new Error('MOVED 123 127.0.0.1:6380'), 'OK');
+
+        $strategy = new ClusterConnectionStrategy($cluster, new MultiExecState());
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('MOVED 123 127.0.0.1:6380');
+
+        $strategy->watch(['key1']);
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider errorsWithoutSlotOwnership
+     */
+    public function testOtherErrorsLeaveTheSlotMapUntouched(string $error): void
+    {
+        $cluster = $this->getMockRedisCluster();
+        $cluster->expects($this->never())->method('applyMovedResponse');
+        $this->mockNodeConnection->expects($this->exactly(3))->method('executeCommand')
+            ->withConsecutive([new MULTI()], [new SET()], [new DISCARD()])
+            ->willReturnOnConsecutiveCalls('OK', new Error($error), 'OK');
+
+        $strategy = new ClusterConnectionStrategy($cluster, new MultiExecState());
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+
+        $this->assertNull($strategy->executeTransaction());
+    }
+
+    public function errorsWithoutSlotOwnership(): array
+    {
+        return [
+            ['OOM command not allowed'],
+            ['ASK 123 127.0.0.1:6380'],
+            ['READONLY You cannot write against a read only replica'],
+            ['MOVED'],
+        ];
+    }
+
+    /**
+     * Returns a mocked Redis cluster routing every command to the mocked node.
+     *
+     * @return RedisCluster|MockObject
+     */
+    private function getMockRedisCluster()
+    {
+        $cluster = $this->getMockBuilder(RedisCluster::class)->disableOriginalConstructor()->getMock();
+        $cluster->method('getClusterStrategy')->willReturn($this->mockStrategy);
+        $cluster->method('getConnectionByCommand')->willReturn($this->mockNodeConnection);
+        $cluster->expects($this->never())->method('executeCommand');
+
+        return $cluster;
     }
 }

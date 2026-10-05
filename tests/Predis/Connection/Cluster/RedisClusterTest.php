@@ -1305,6 +1305,91 @@ class RedisClusterTest extends PredisTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testApplyMovedResponseAssociatesSlotWithoutExecutingCommands(): void
+    {
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection1
+            ->expects($this->never())
+            ->method('executeCommand');
+
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $connection2
+            ->expects($this->never())
+            ->method('executeCommand');
+
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with([
+                'host' => '127.0.0.1',
+                'port' => '6380',
+            ])
+            ->willReturn($connection2);
+
+        $cluster = new RedisCluster($factory, new Parameters());
+        $cluster->useClusterSlots(false);
+
+        $cluster->add($connection1);
+
+        $this->assertSame($connection1, $cluster->getConnectionBySlot(1970));
+
+        $cluster->applyMovedResponse('1970 127.0.0.1:6380');
+
+        $this->assertSame($connection2, $cluster->getConnectionBySlot(1970));
+        $this->assertCount(2, $cluster);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testApplyMovedResponseAsksSlotMapToTargetNodeByDefault(): void
+    {
+        $rspSlotsArray = [
+            [0,  8191, ['127.0.0.1', 6379]],
+            [8192, 16383, ['127.0.0.1', 6380]],
+        ];
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection1
+            ->expects($this->never())
+            ->method('executeCommand');
+
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $connection2
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('CLUSTER', ['SLOTS']))
+            ->willReturn($rspSlotsArray);
+
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with([
+                'host' => '127.0.0.1',
+                'port' => '6380',
+            ])
+            ->willReturn($connection2);
+
+        $cluster = new RedisCluster($factory, new Parameters());
+
+        $cluster->add($connection1);
+
+        $this->assertSame($connection1, $cluster->getConnectionBySlot(8192));
+
+        $cluster->applyMovedResponse('8192 127.0.0.1:6380 (relay exception details)');
+
+        $this->assertSame($connection2, $cluster->getConnectionBySlot(8192));
+        $this->assertSame($connection2, $cluster->getConnectionBySlot(16383));
+        $this->assertSame($connection1, $cluster->getConnectionBySlot(0));
+    }
+
+    /**
      * @return Iterator<string, array{movedErrorMessage: string}>
      */
     public function onMovedResponsesDataProvider(): Iterator

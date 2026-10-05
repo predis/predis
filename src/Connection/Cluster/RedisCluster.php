@@ -514,6 +514,19 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
      */
     protected function onMovedResponse(CommandInterface $command, $details)
     {
+        $this->applyMovedResponse($details);
+
+        return $this->executeCommand($command);
+    }
+
+    /**
+     * Associates a slot to the node indicated by a -MOVED response, without
+     * executing again the command that generated it.
+     *
+     * @param string $details Parameters of the -MOVED response.
+     */
+    public function applyMovedResponse(string $details): void
+    {
         [$slot, $connectionID] = explode(' ', $details, 2);
 
         // Handle connection ID in the form of "IP:port (details about exception)"
@@ -533,8 +546,6 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
         }
 
         $this->move($connection, $slot);
-
-        return $this->executeCommand($command);
     }
 
     /**
