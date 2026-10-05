@@ -26,6 +26,7 @@ use Predis\TimeoutException;
 use Predis\Transaction\Exception\TransactionException;
 use PredisTestCase;
 use RuntimeException;
+use TypeError;
 
 /**
  * @group realm-transaction
@@ -381,6 +382,43 @@ class MultiExecTest extends PredisTestCase
         $this->assertSame($responses, $expected);
         $this->assertSame(['WATCH', 'WATCH', 'GET', 'GET'], self::commandsToIDs($casCommands));
         $this->assertSame(['MULTI', 'GET', 'GET', 'EXEC'], self::commandsToIDs($txCommands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testEmptyExplicitTransactionIsDiscarded(): void
+    {
+        $commands = [];
+        $tx = $this->getMockedTransaction($this->getExecuteCallback([], $commands));
+
+        $tx->execute(static function ($tx) {
+            $tx->multi();
+        });
+
+        $this->assertSame(['MULTI', 'DISCARD'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCallbackPhpErrorDiscardsTransaction(): void
+    {
+        $commands = [];
+        $tx = $this->getMockedTransaction($this->getExecuteCallback([], $commands));
+
+        try {
+            $tx->execute(static function ($tx) {
+                $tx->set('foo', 'bar');
+
+                throw new TypeError('Invalid callback argument');
+            });
+            $this->fail('Expected the callback error to be rethrown.');
+        } catch (TypeError $exception) {
+            $this->assertSame('Invalid callback argument', $exception->getMessage());
+        }
+
+        $this->assertSame(['MULTI', 'SET', 'DISCARD'], self::commandsToIDs($commands));
     }
 
     /**

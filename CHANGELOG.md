@@ -6,6 +6,7 @@
 ### Changed
 ### Fixed
 - Fixed client iteration with master/slave and Sentinel replication (#923)
+- Fixed cleanup of empty transactions and transaction callbacks that throw PHP errors
 
 ## v3.6.1 (2026-09-17)
 ### Fixed
