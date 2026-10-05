@@ -8,6 +8,9 @@
 - Fixed client iteration with master/slave and Sentinel replication (#923)
 - Fixed cleanup of empty transactions and transaction callbacks that throw PHP errors
 
+### Security
+- Fixed aborted cluster transactions leaving node connections in `MULTI`
+
 ## v3.6.1 (2026-09-17)
 ### Fixed
 - Fixed RESP3 double parsing returning positive `INF` for `-inf` payloads (#1716)

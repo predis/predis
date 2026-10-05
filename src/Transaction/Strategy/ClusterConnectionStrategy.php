@@ -19,12 +19,15 @@ use Predis\Command\Redis\MULTI;
 use Predis\Command\Redis\UNWATCH;
 use Predis\Command\Redis\WATCH;
 use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\Error;
+use Predis\Response\ErrorInterface;
 use Predis\Response\Status;
 use Predis\Transaction\Exception\TransactionException;
 use Predis\Transaction\MultiExecState;
 use Relay\Relay;
 use SplQueue;
+use Throwable;
 
 class ClusterConnectionStrategy implements StrategyInterface
 {
@@ -54,6 +57,18 @@ class ClusterConnectionStrategy implements StrategyInterface
      * @var bool
      */
     private $isInitialized = false;
+
+    /**
+     * Physical connection holding the transaction and its WATCH state.
+     *
+     * @var NodeConnectionInterface|null
+     */
+    private $nodeConnection;
+
+    /**
+     * @var bool
+     */
+    private $multiStarted = false;
 
     /**
      * @var \Predis\Cluster\StrategyInterface
@@ -131,11 +146,12 @@ class ClusterConnectionStrategy implements StrategyInterface
 
         /** @var MULTI $multi */
         $multi = $this->commandsQueue->dequeue();
+        $this->multiStarted = true;
         $multiResp = $this->setSlotAndExecute($multi);
 
         // Begin transaction
         if (('OK' != $multiResp) && !$multiResp instanceof Relay) {
-            $this->slot = null;
+            $this->discard();
 
             return null;
         }
@@ -147,7 +163,7 @@ class ClusterConnectionStrategy implements StrategyInterface
             $commandResp = $this->setSlotAndExecute($command);
 
             if (('QUEUED' != $commandResp) && !$commandResp instanceof Relay) {
-                $this->slot = null;
+                $this->discard();
 
                 return null;
             }
@@ -155,7 +171,14 @@ class ClusterConnectionStrategy implements StrategyInterface
 
         // Execute transaction
         $exec = $this->setSlotAndExecute($exec);
-        $this->slot = null;
+
+        if ($exec instanceof ErrorInterface) {
+            $this->discard();
+
+            return null;
+        }
+
+        $this->reset();
 
         return $exec;
     }
@@ -165,10 +188,13 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function multi()
     {
+        $this->multiStarted = true;
         $response = $this->setSlotAndExecute(new MULTI());
 
-        if ('OK' == $response) {
+        if ('OK' == $response || $response instanceof Relay) {
             $this->isInitialized = true;
+        } else {
+            $this->discard();
         }
 
         return $response;
@@ -202,7 +228,21 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function discard()
     {
-        return $this->setSlotAndExecute(new DISCARD());
+        try {
+            if (!$this->nodeConnection) {
+                return new Status('OK');
+            }
+
+            $response = $this->setSlotAndExecute($this->multiStarted ? new DISCARD() : new UNWATCH());
+
+            if ('OK' != $response && !$response instanceof Relay) {
+                $this->nodeConnection->disconnect();
+            }
+
+            return $response;
+        } finally {
+            $this->reset();
+        }
     }
 
     /**
@@ -210,7 +250,7 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function unwatch()
     {
-        return $this->setSlotAndExecute(new UNWATCH());
+        return $this->discard();
     }
 
     /**
@@ -221,10 +261,32 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     private function setSlotAndExecute(CommandInterface $command)
     {
-        if (null !== $this->slot) {
-            $command->setSlot($this->slot);
-        }
+        try {
+            if (null !== $this->slot) {
+                $command->setSlot($this->slot);
+            }
 
-        return $this->connection->executeCommand($command);
+            if (!$this->nodeConnection) {
+                $this->nodeConnection = $this->connection->getConnectionByCommand($command);
+            }
+
+            return $this->nodeConnection->executeCommand($command);
+        } catch (Throwable $exception) {
+            if ($this->nodeConnection) {
+                $this->nodeConnection->disconnect();
+            }
+            $this->reset();
+
+            throw $exception;
+        }
+    }
+
+    private function reset(): void
+    {
+        $this->slot = null;
+        $this->nodeConnection = null;
+        $this->commandsQueue = new SplQueue();
+        $this->isInitialized = false;
+        $this->multiStarted = false;
     }
 }

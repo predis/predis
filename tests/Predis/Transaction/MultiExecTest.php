@@ -17,8 +17,10 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
+use Predis\Connection\StreamConnection;
 use Predis\Response;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
@@ -763,6 +765,91 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertEquals(['OK', 'OK', 'OK'], $responses);
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @dataProvider clusterTransactionPersistence
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterQueueErrorLeavesConnectionUsable(bool $persistent): void
+    {
+        $options = ['parameters' => ['persistent' => $persistent]];
+        $redis = $this->createClient(null, $options);
+        $key = '{abort}value';
+        $missing = '{abort}missing';
+        $redis->set($key, 'original');
+        $redis->del($missing);
+
+        try {
+            $redis->transaction(static function (MultiExec $tx) use ($key) {
+                $tx->set($key, 'queued');
+                $tx->executeCommand(new RawCommand('SET', [$key]));
+            });
+            $this->fail('Expected the transaction to abort.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertSame('original', $redis->get($key));
+        }
+
+        $this->assertNull($redis->get($missing));
+        $this->assertEquals('OK', $redis->set($key, 'after-abort'));
+
+        $nextClient = $this->createClient(null, $options, false);
+        $this->assertSame('after-abort', $nextClient->get($key));
+        $this->assertNull($nextClient->get($missing));
+        $redis->disconnect();
+    }
+
+    public function clusterTransactionPersistence(): array
+    {
+        return [[false], [true]];
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @dataProvider clusterTransactionPersistence
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterFailedDiscardClosesThePhysicalSocket(bool $persistent): void
+    {
+        $connection = new class(new Parameters()) extends StreamConnection {
+            public function executeCommand(CommandInterface $command)
+            {
+                if ($command->getId() === 'DISCARD') {
+                    return new Response\Error('NOPERM simulated DISCARD failure');
+                }
+
+                return parent::executeCommand($command);
+            }
+        };
+        $redis = $this->createClient(null, [
+            'connections' => ['tcp' => get_class($connection)],
+            'parameters' => ['persistent' => $persistent],
+        ]);
+        $key = '{failed-discard}value';
+        $redis->set($key, 'original');
+        $command = $redis->createCommand('GET', [$key]);
+        $node = $redis->getConnection()->getConnectionByCommand($command);
+        $originalClientId = $node->executeCommand(new RawCommand('CLIENT', ['ID']));
+
+        try {
+            $redis->transaction(static function (MultiExec $tx) use ($key) {
+                $tx->set($key, 'queued');
+                $tx->executeCommand(new RawCommand('SET', [$key]));
+            });
+            $this->fail('Expected the transaction to abort.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertFalse($node->isConnected());
+        }
+
+        $this->assertSame('original', $redis->get($key));
+        $this->assertNotSame($originalClientId, $node->executeCommand(new RawCommand('CLIENT', ['ID'])));
+        $this->assertNull($redis->get('{failed-discard}missing'));
+        $this->assertEquals('OK', $redis->set($key, 'after-abort'));
+        $this->assertSame('after-abort', $redis->get($key));
+        $redis->disconnect();
     }
 
     // ******************************************************************** //
