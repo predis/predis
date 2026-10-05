@@ -19,10 +19,13 @@ use Predis\Command\Redis\EXEC;
 use Predis\Command\Redis\GET;
 use Predis\Command\Redis\MULTI;
 use Predis\Command\Redis\SET;
+use Predis\Command\Redis\UNWATCH;
+use Predis\Command\Redis\WATCH;
 use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface;
+use Predis\Response\ServerException;
 use Predis\Response\Status;
 use Predis\Transaction\Exception\TransactionException;
 use Predis\Transaction\MultiExecState;
@@ -258,13 +261,9 @@ class ClusterConnectionStrategyTest extends TestCase
      * @return void
      * @throws TransactionException
      */
-    public function testMulti(): void
+    public function testMultiInitializesTransactionWithoutSendingMulti(): void
     {
-        $this->mockNodeConnection
-            ->expects($this->once())
-            ->method('executeCommand')
-            ->with(new MULTI())
-            ->willReturn('OK');
+        $this->mockNodeConnection->expects($this->never())->method('executeCommand');
 
         $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
         $this->assertEquals('OK', $strategy->multi());
@@ -510,5 +509,146 @@ class ClusterConnectionStrategyTest extends TestCase
         $this->assertEquals('OK', $strategy->multi());
         $strategy->executeCommand(new SET());
         $this->assertEquals([new Status('OK')], $strategy->executeTransaction());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecuteTransactionThrowsExceptionOnNonInitializedTransactionContext(): void
+    {
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
+
+        $this->expectException(TransactionException::class);
+        $this->expectExceptionMessage('Transaction context should be initialized first');
+
+        $strategy->executeTransaction();
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecuteTransactionReturnsNullOnExecError(): void
+    {
+        $this->mockNodeConnection->expects($this->exactly(4))->method('executeCommand')
+            ->withConsecutive([new MULTI()], [new SET()], [new EXEC()], [new DISCARD()])
+            ->willReturnOnConsecutiveCalls(
+                'OK',
+                'QUEUED',
+                new Error('EXECABORT Transaction discarded because of previous errors.'),
+                new Error('ERR DISCARD without MULTI')
+            );
+        $this->mockNodeConnection->expects($this->once())->method('disconnect');
+
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+
+        $this->assertNull($strategy->executeTransaction());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testWatchErrorUnwatchesTheNodeAndThrows(): void
+    {
+        $watch = new WATCH();
+        $watch->setArguments(['key1', 'key2']);
+
+        $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
+        $this->mockNodeConnection->expects($this->exactly(2))->method('executeCommand')
+            ->withConsecutive([$watch], [new UNWATCH()])
+            ->willReturnOnConsecutiveCalls(new Error('NOPERM this user has no permissions'), 'OK');
+        $this->mockNodeConnection->expects($this->never())->method('disconnect');
+
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('NOPERM this user has no permissions');
+
+        $strategy->watch(['key1', 'key2']);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCasReadErrorUnwatchesTheNodeAndThrows(): void
+    {
+        $this->mockNodeConnection->expects($this->exactly(2))->method('executeCommand')
+            ->withConsecutive([new GET()], [new UNWATCH()])
+            ->willReturnOnConsecutiveCalls(new Error('WRONGTYPE Operation against a key'), 'OK');
+        $this->mockNodeConnection->expects($this->never())->method('disconnect');
+
+        $state = new MultiExecState();
+        $state->flag(MultiExecState::CAS);
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, $state);
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('WRONGTYPE Operation against a key');
+
+        $strategy->executeCommand(new GET());
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider cleanupMethods
+     */
+    public function testCleanupUnwatchesTheNodeThatReceivedWatch(string $method): void
+    {
+        $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
+        $this->mockStrategy->method('getSlotByKey')->willReturn(123);
+        $this->mockConnection->expects($this->once())->method('getConnectionByCommand');
+        $this->mockNodeConnection->expects($this->exactly(2))->method('executeCommand')
+            ->withConsecutive([$this->isInstanceOf(WATCH::class)], [$this->callback(static function ($command) {
+                return $command instanceof UNWATCH && $command->getSlot() === 123;
+            })])
+            ->willReturn('OK');
+        $this->mockNodeConnection->expects($this->never())->method('disconnect');
+
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
+        $strategy->watch(['key1']);
+
+        $this->assertEquals('OK', $strategy->$method());
+        $this->assertEquals('OK', $strategy->$method());
+    }
+
+    public function cleanupMethods(): array
+    {
+        return [['discard'], ['unwatch']];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testFailedUnwatchDisconnectsTheNode(): void
+    {
+        $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
+        $this->mockNodeConnection->expects($this->exactly(2))->method('executeCommand')
+            ->withConsecutive([$this->isInstanceOf(WATCH::class)], [new UNWATCH()])
+            ->willReturnOnConsecutiveCalls('OK', new Error('NOPERM'));
+        $this->mockNodeConnection->expects($this->once())->method('disconnect');
+
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
+        $strategy->watch(['key1']);
+
+        $this->assertInstanceOf(ErrorInterface::class, $strategy->discard());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDiscardClearsQueuedCommandsWithoutContactingTheNode(): void
+    {
+        $this->mockNodeConnection->expects($this->exactly(3))->method('executeCommand')
+            ->withConsecutive([new MULTI()], [new GET()], [new EXEC()])
+            ->willReturnOnConsecutiveCalls('OK', 'QUEUED', ['value']);
+
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+        $this->assertEquals('OK', $strategy->discard());
+
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new GET());
+        $this->assertSame(['value'], $strategy->executeTransaction());
     }
 }

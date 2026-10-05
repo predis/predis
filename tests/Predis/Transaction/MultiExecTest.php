@@ -16,8 +16,11 @@ use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Predis\ClientInterface;
+use Predis\Cluster\RedisStrategy;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\StreamConnection;
@@ -28,6 +31,7 @@ use Predis\TimeoutException;
 use Predis\Transaction\Exception\TransactionException;
 use PredisTestCase;
 use RuntimeException;
+use Throwable;
 use TypeError;
 
 /**
@@ -768,6 +772,100 @@ class MultiExecTest extends PredisTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testClusterCheckAndSetSendsMultiOnceAfterReads(): void
+    {
+        $txCommands = $casCommands = [];
+        $expected = ['bar', 'piyo'];
+        $options = ['cas' => true, 'watch' => ['{cas}foo', '{cas}hoge']];
+
+        $callback = $this->getExecuteCallback($expected, $txCommands, $casCommands);
+        $tx = $this->getMockedClusterTransaction($callback, $options);
+
+        $test = $this;
+        $responses = $tx->execute(static function ($tx) use ($test) {
+            $test->assertSame('DUMMY_RESPONSE', $tx->get('{cas}foo'));
+
+            $tx->multi();
+
+            $tx->get('{cas}foo');
+            $tx->get('{cas}hoge');
+        });
+
+        $this->assertSame($responses, $expected);
+        $this->assertSame(['WATCH', 'GET'], self::commandsToIDs($casCommands));
+        $this->assertSame(['MULTI', 'GET', 'GET', 'EXEC'], self::commandsToIDs($txCommands));
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider blockExceptions
+     */
+    public function testClusterCheckAndSetNeverLeavesMultiOpenWhenBlockThrows(Throwable $exception): void
+    {
+        $txCommands = $casCommands = [];
+        $options = ['cas' => true, 'watch' => '{cas}foo'];
+
+        $callback = $this->getExecuteCallback([], $txCommands, $casCommands);
+        $tx = $this->getMockedClusterTransaction($callback, $options);
+        $caught = null;
+
+        try {
+            $tx->execute(static function ($tx) use ($exception) {
+                $tx->get('{cas}foo');
+                $tx->multi();
+                $tx->set('{cas}foo', 'bar');
+
+                throw $exception;
+            });
+        } catch (Throwable $caught) {
+            // NOOP
+        }
+
+        $this->assertSame($exception, $caught);
+        $this->assertSame(['WATCH', 'GET'], array_slice(self::commandsToIDs($casCommands), 0, 2));
+        $this->assertSame([], self::commandsToIDs($txCommands));
+    }
+
+    public function blockExceptions(): array
+    {
+        return [
+            'PHP error' => [new TypeError('Invalid callback argument')],
+            'server error' => [new Response\ServerException('ERR simulated failure')],
+            'connection error' => [new ConnectionException(new StreamConnection(new Parameters()), 'Connection lost')],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterAutomaticRetryOnServerSideTransactionAbort(): void
+    {
+        $casCommands = $txCommands = [];
+        $expected = ['bar'];
+        $options = ['watch' => ['{cas}foo', '{cas}bar'], 'retry' => ($attempts = 2) + 1];
+
+        $callback = $this->getExecuteCallback($expected, $txCommands, $casCommands);
+        $tx = $this->getMockedClusterTransaction($callback, $options);
+
+        $responses = $tx->execute(static function (MultiExec $tx) use (&$attempts) {
+            $tx->get('{cas}foo');
+
+            if ($attempts > 0) {
+                $attempts--;
+
+                $tx->echo('!!ABORT!!');
+            }
+        });
+
+        $this->assertSame($responses, $expected);
+        $this->assertSame(0, $attempts);
+        $this->assertSame(['WATCH'], self::commandsToIDs($casCommands));
+        $this->assertSame(['MULTI', 'GET', 'EXEC'], self::commandsToIDs($txCommands));
+    }
+
+    /**
      * @group connected
      * @group cluster
      * @dataProvider clusterTransactionPersistence
@@ -878,26 +976,28 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group connected
      * @group cluster
+     * @dataProvider blockExceptions
      * @requiresRedisVersion >= 3.0.0
      */
-    public function testClusterCasCallbackErrorDiscardsOpenMulti(): void
+    public function testClusterCasBlockExceptionLeavesConnectionUsable(Throwable $exception): void
     {
         $redis = $this->getClient();
         $key = '{cas}counter';
         $redis->set($key, '7');
+        $caught = null;
 
         try {
-            $redis->transaction(['cas' => true, 'watch' => $key], static function (MultiExec $tx) use ($key) {
+            $redis->transaction(['cas' => true, 'watch' => $key], static function (MultiExec $tx) use ($key, $exception) {
                 $tx->multi();
                 $tx->set($key, 'queued');
 
-                throw new TypeError('Invalid callback argument');
+                throw $exception;
             });
-            $this->fail('Expected the callback error to be rethrown.');
-        } catch (TypeError $exception) {
-            $this->assertSame('Invalid callback argument', $exception->getMessage());
+        } catch (Throwable $caught) {
+            // NOOP
         }
 
+        $this->assertSame($exception, $caught);
         $this->assertSame('7', $redis->get($key));
         $this->assertNull($redis->get('{cas}missing'));
         $this->assertEquals('OK', $redis->set($key, 'after-error'));
@@ -1287,6 +1387,35 @@ class MultiExecTest extends PredisTestCase
         $transaction = new MultiExec($client, $txOpts ?: []);
 
         return $transaction;
+    }
+
+    /**
+     * Returns an instance of Predis\Transaction\MultiExec running against a
+     * mocked cluster, using the specified callback to return values from the
+     * executeCommand method of the node connection holding the transaction.
+     *
+     * @param callable $executeCallback
+     * @param array    $txOpts
+     *
+     * @return MultiExec
+     */
+    protected function getMockedClusterTransaction($executeCallback, $txOpts = null): MultiExec
+    {
+        $cluster = $this->getMockBuilder(ClusterInterface::class)->getMock();
+        $cluster
+            ->method('getClusterStrategy')
+            ->willReturn(new RedisStrategy());
+        $cluster
+            ->method('getConnectionByCommand')
+            ->willReturn($this->getMockedConnection($executeCallback));
+        $cluster
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+        $cluster
+            ->expects($this->never())
+            ->method('executeCommand');
+
+        return new MultiExec(new Client($cluster), $txOpts ?: []);
     }
 
     /**

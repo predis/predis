@@ -68,11 +68,6 @@ class ClusterConnectionStrategy implements StrategyInterface
     private $nodeConnection;
 
     /**
-     * @var bool
-     */
-    private $multiStarted = false;
-
-    /**
      * @var \Predis\Cluster\StrategyInterface
      */
     private $clusterStrategy;
@@ -116,15 +111,7 @@ class ClusterConnectionStrategy implements StrategyInterface
         }
 
         if ($this->state->isCAS()) {
-            $response = $this->setSlotAndExecute($command);
-
-            if ($response instanceof ErrorInterface) {
-                $this->unwatch();
-
-                throw new ServerException($response->getMessage());
-            }
-
-            return new BypassTransactionResponse($response);
+            return new BypassTransactionResponse($this->executeBeforeMulti($command));
         }
 
         $this->commandsQueue->enqueue($command);
@@ -152,14 +139,13 @@ class ClusterConnectionStrategy implements StrategyInterface
         }
 
         $exec = new EXEC();
+        $multiResp = $this->setSlotAndExecute(new MULTI());
 
         // Begin transaction
-        if (!$this->multiStarted) {
-            $this->multi();
+        if (('OK' != $multiResp) && !$multiResp instanceof Relay) {
+            $this->releaseNode(new DISCARD());
 
-            if (!$this->isInitialized) {
-                return null;
-            }
+            return null;
         }
 
         // Transaction body
@@ -169,7 +155,7 @@ class ClusterConnectionStrategy implements StrategyInterface
             $commandResp = $this->setSlotAndExecute($command);
 
             if (('QUEUED' != $commandResp) && !$commandResp instanceof Relay) {
-                $this->discard();
+                $this->releaseNode(new DISCARD());
 
                 return null;
             }
@@ -179,7 +165,7 @@ class ClusterConnectionStrategy implements StrategyInterface
         $exec = $this->setSlotAndExecute($exec);
 
         if ($exec instanceof ErrorInterface) {
-            $this->discard();
+            $this->releaseNode(new DISCARD());
 
             return null;
         }
@@ -190,20 +176,16 @@ class ClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
+     * Commands are queued client-side until the transaction is executed, so
+     * MULTI is sent by executeTransaction() and never stays open in between.
+     *
      * {@inheritDoc}
      */
     public function multi()
     {
-        $this->multiStarted = true;
-        $response = $this->setSlotAndExecute(new MULTI());
+        $this->isInitialized = true;
 
-        if ('OK' == $response || $response instanceof Relay) {
-            $this->isInitialized = true;
-        } else {
-            $this->discard();
-        }
-
-        return $response;
+        return new Status('OK');
     }
 
     /**
@@ -220,15 +202,7 @@ class ClusterConnectionStrategy implements StrategyInterface
         $watch = new WATCH();
         $watch->setArguments($keys);
 
-        $response = $this->setSlotAndExecute($watch);
-
-        if ($response instanceof ErrorInterface) {
-            $this->unwatch();
-
-            throw new ServerException($response->getMessage());
-        }
-
-        return 'OK' == $response;
+        return 'OK' == $this->executeBeforeMulti($watch);
     }
 
     /**
@@ -236,12 +210,54 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function discard()
     {
+        // MULTI is only open while executeTransaction() is running,
+        // so WATCH is all that can be pending on the node here.
+        return $this->unwatch();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function unwatch()
+    {
+        return $this->releaseNode(new UNWATCH());
+    }
+
+    /**
+     * Executes a command ahead of MULTI, releasing the node on error responses.
+     *
+     * @param  CommandInterface $command
+     * @return mixed
+     * @throws ServerException
+     */
+    private function executeBeforeMulti(CommandInterface $command)
+    {
+        $response = $this->setSlotAndExecute($command);
+
+        if ($response instanceof ErrorInterface) {
+            $this->unwatch();
+
+            throw new ServerException($response->getMessage());
+        }
+
+        return $response;
+    }
+
+    /**
+     * Cleans up the node holding the transaction and resets the strategy,
+     * closing the connection when the node rejects the cleanup command.
+     *
+     * @param  CommandInterface $command
+     * @return mixed
+     */
+    private function releaseNode(CommandInterface $command)
+    {
         try {
             if (!$this->nodeConnection) {
                 return new Status('OK');
             }
 
-            $response = $this->setSlotAndExecute($this->multiStarted ? new DISCARD() : new UNWATCH());
+            $response = $this->setSlotAndExecute($command);
 
             if ('OK' != $response && !$response instanceof Relay) {
                 $this->nodeConnection->disconnect();
@@ -251,14 +267,6 @@ class ClusterConnectionStrategy implements StrategyInterface
         } finally {
             $this->reset();
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function unwatch()
-    {
-        return $this->discard();
     }
 
     /**
@@ -295,6 +303,5 @@ class ClusterConnectionStrategy implements StrategyInterface
         $this->nodeConnection = null;
         $this->commandsQueue = new SplQueue();
         $this->isInitialized = false;
-        $this->multiStarted = false;
     }
 }
