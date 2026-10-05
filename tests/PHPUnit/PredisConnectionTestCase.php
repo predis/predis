@@ -396,6 +396,20 @@ abstract class PredisConnectionTestCase extends PredisTestCase
     /**
      * @group connected
      */
+    public function testReadsSimpleStringsOtherThanStatusesAsStrings(): void
+    {
+        $commands = $this->getCommandFactory();
+        $connection = $this->createConnection(true);
+
+        $connection->executeCommand($commands->create('set', ['foo', 'bar']));
+
+        $connection->writeRequest($commands->create('type', ['foo']));
+        $this->assertSame('string', $connection->read());
+    }
+
+    /**
+     * @group connected
+     */
     public function testReadsBulkResponses(): void
     {
         $commands = $this->getCommandFactory();

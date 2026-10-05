@@ -24,11 +24,22 @@ use Predis\Response\Status;
  */
 class StatusResponse implements ResponseHandlerInterface
 {
+    protected $statusResponse = [
+        'OK',
+        'QUEUED',
+        'NOKEY',
+        'PONG',
+    ];
+
     /**
      * {@inheritdoc}
      */
     public function handle(CompositeConnectionInterface $connection, $payload)
     {
-        return Status::get($payload);
+        if (in_array($payload, $this->statusResponse)) {
+            return Status::get($payload);
+        }
+
+        return $payload;
     }
 }

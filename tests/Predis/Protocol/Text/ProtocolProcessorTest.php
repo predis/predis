@@ -75,6 +75,26 @@ class ProtocolProcessorTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testReadsOnlyKnownStatusesAsStatusResponses(): void
+    {
+        $protocol = new ProtocolProcessor();
+
+        $connection = $this->getMockConnectionOfType('Predis\Connection\CompositeConnectionInterface');
+        $connection
+            ->expects($this->exactly(2))
+            ->method('readLine')
+            ->willReturnOnConsecutiveCalls(
+                '+OK',
+                '+string'
+            );
+
+        $this->assertInstanceOf('Predis\Response\Status', $protocol->read($connection));
+        $this->assertSame('string', $protocol->read($connection));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testIterableMultibulkSupport(): void
     {
         $protocol = new ProtocolProcessor();
