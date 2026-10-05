@@ -6,6 +6,7 @@
 ### Changed
 ### Fixed
 - Fixed client iteration with master/slave and Sentinel replication (#923)
+- Fixed cluster CAS transactions returning transaction objects for reads and sending `MULTI` twice
 - Fixed cleanup of empty transactions and transaction callbacks that throw PHP errors
 
 ### Security

@@ -279,11 +279,11 @@ class MultiExec implements ClientContextInterface
      */
     public function multi()
     {
-        if ($this->state->check(MultiExecState::INITIALIZED | MultiExecState::CAS)) {
+        $this->initialize();
+
+        if ($this->state->isCAS()) {
             $this->state->unflag(MultiExecState::CAS);
             $this->connectionStrategy->multi();
-        } else {
-            $this->initialize();
         }
 
         return $this;

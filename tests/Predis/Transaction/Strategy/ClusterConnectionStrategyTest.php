@@ -26,6 +26,7 @@ use Predis\Response\ErrorInterface;
 use Predis\Response\Status;
 use Predis\Transaction\Exception\TransactionException;
 use Predis\Transaction\MultiExecState;
+use Predis\Transaction\Response\BypassTransactionResponse;
 use RuntimeException;
 
 class ClusterConnectionStrategyTest extends TestCase
@@ -325,7 +326,7 @@ class ClusterConnectionStrategyTest extends TestCase
      * @return void
      * @throws TransactionException
      */
-    public function testWatchAdditionallyInitializeTransactionContextOnCASTransaction(): void
+    public function testWatchAllowsImmediateReadsInCASTransaction(): void
     {
         $this->mockStrategy
             ->expects($this->once())
@@ -340,17 +341,18 @@ class ClusterConnectionStrategyTest extends TestCase
             ->willReturn(10);
 
         $this->mockNodeConnection
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->withAnyParameters()
-            ->willReturn(new Status('OK'));
+            ->willReturnOnConsecutiveCalls(new Status('OK'), 'value');
 
         $state = new MultiExecState();
         $state->set(MultiExecState::CAS);
 
         $strategy = new ClusterConnectionStrategy($this->mockConnection, $state);
         $this->assertTrue($strategy->watch(['key1', 'key2', 'key3']));
-        $this->assertEquals('QUEUED', $strategy->executeCommand(new SET()));
+        $response = $strategy->executeCommand(new GET());
+        $this->assertInstanceOf(BypassTransactionResponse::class, $response);
+        $this->assertSame('value', $response->getResponse());
     }
 
     /**
@@ -489,5 +491,24 @@ class ClusterConnectionStrategyTest extends TestCase
         $strategy->initializeTransaction();
         $strategy->executeCommand(new GET());
         $this->assertSame(['value'], $strategy->executeTransaction());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCasWithoutWatchReadsImmediatelyAndSendsMultiOnlyOnce(): void
+    {
+        $this->mockNodeConnection->expects($this->exactly(4))->method('executeCommand')
+            ->withConsecutive([new GET()], [new MULTI()], [new SET()], [new EXEC()])
+            ->willReturnOnConsecutiveCalls('7', 'OK', 'QUEUED', [new Status('OK')]);
+        $state = new MultiExecState();
+        $state->flag(MultiExecState::CAS);
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, $state);
+
+        $this->assertSame('7', $strategy->executeCommand(new GET())->getResponse());
+        $state->unflag(MultiExecState::CAS);
+        $this->assertEquals('OK', $strategy->multi());
+        $strategy->executeCommand(new SET());
+        $this->assertEquals([new Status('OK')], $strategy->executeTransaction());
     }
 }

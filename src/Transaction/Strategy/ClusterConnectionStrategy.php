@@ -22,9 +22,11 @@ use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface;
+use Predis\Response\ServerException;
 use Predis\Response\Status;
 use Predis\Transaction\Exception\TransactionException;
 use Predis\Transaction\MultiExecState;
+use Predis\Transaction\Response\BypassTransactionResponse;
 use Relay\Relay;
 use SplQueue;
 use Throwable;
@@ -93,7 +95,7 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function executeCommand(CommandInterface $command)
     {
-        if (!$this->isInitialized) {
+        if (!$this->isInitialized && !$this->state->isCAS()) {
             throw new TransactionException('Transaction context should be initialized first');
         }
 
@@ -113,6 +115,18 @@ class ClusterConnectionStrategy implements StrategyInterface
             );
         }
 
+        if ($this->state->isCAS()) {
+            $response = $this->setSlotAndExecute($command);
+
+            if ($response instanceof ErrorInterface) {
+                $this->unwatch();
+
+                throw new ServerException($response->getMessage());
+            }
+
+            return new BypassTransactionResponse($response);
+        }
+
         $this->commandsQueue->enqueue($command);
 
         return new Status('QUEUED');
@@ -123,11 +137,6 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function initializeTransaction(): bool
     {
-        if ($this->isInitialized) {
-            return true;
-        }
-
-        $this->commandsQueue->enqueue(new MULTI());
         $this->isInitialized = true;
 
         return true;
@@ -144,16 +153,13 @@ class ClusterConnectionStrategy implements StrategyInterface
 
         $exec = new EXEC();
 
-        /** @var MULTI $multi */
-        $multi = $this->commandsQueue->dequeue();
-        $this->multiStarted = true;
-        $multiResp = $this->setSlotAndExecute($multi);
-
         // Begin transaction
-        if (('OK' != $multiResp) && !$multiResp instanceof Relay) {
-            $this->discard();
+        if (!$this->multiStarted) {
+            $this->multi();
 
-            return null;
+            if (!$this->isInitialized) {
+                return null;
+            }
         }
 
         // Transaction body
@@ -214,13 +220,15 @@ class ClusterConnectionStrategy implements StrategyInterface
         $watch = new WATCH();
         $watch->setArguments($keys);
 
-        $response = 'OK' == $this->setSlotAndExecute($watch);
+        $response = $this->setSlotAndExecute($watch);
 
-        if ($this->state->check(MultiExecState::CAS)) {
-            $this->initializeTransaction();
+        if ($response instanceof ErrorInterface) {
+            $this->unwatch();
+
+            throw new ServerException($response->getMessage());
         }
 
-        return $response;
+        return 'OK' == $response;
     }
 
     /**

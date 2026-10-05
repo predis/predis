@@ -439,7 +439,7 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertSame([], self::commandsToIDs($casCommands));
-        $this->assertSame([], self::commandsToIDs($txCommands));
+        $this->assertSame(['MULTI', 'DISCARD'], self::commandsToIDs($txCommands));
     }
 
     /**
@@ -850,6 +850,58 @@ class MultiExecTest extends PredisTestCase
         $this->assertEquals('OK', $redis->set($key, 'after-abort'));
         $this->assertSame('after-abort', $redis->get($key));
         $redis->disconnect();
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterCasReadsValueBeforeMulti(): void
+    {
+        $redis = $this->getClient();
+        $key = '{cas}counter';
+        $redis->set($key, '7');
+
+        $response = $redis->transaction(['cas' => true, 'watch' => $key], function (MultiExec $tx) use ($key) {
+            $current = $tx->get($key);
+            $this->assertSame('7', $current);
+            $tx->multi();
+            $tx->set($key, (string) ((int) $current + 1));
+        });
+
+        $this->assertEquals(['OK'], $response);
+        $this->assertSame('8', $redis->get($key));
+        $this->assertNull($redis->get('{cas}missing'));
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterCasCallbackErrorDiscardsOpenMulti(): void
+    {
+        $redis = $this->getClient();
+        $key = '{cas}counter';
+        $redis->set($key, '7');
+
+        try {
+            $redis->transaction(['cas' => true, 'watch' => $key], static function (MultiExec $tx) use ($key) {
+                $tx->multi();
+                $tx->set($key, 'queued');
+
+                throw new TypeError('Invalid callback argument');
+            });
+            $this->fail('Expected the callback error to be rethrown.');
+        } catch (TypeError $exception) {
+            $this->assertSame('Invalid callback argument', $exception->getMessage());
+        }
+
+        $this->assertSame('7', $redis->get($key));
+        $this->assertNull($redis->get('{cas}missing'));
+        $this->assertEquals('OK', $redis->set($key, 'after-error'));
+        $this->assertSame('after-error', $redis->get($key));
     }
 
     // ******************************************************************** //
