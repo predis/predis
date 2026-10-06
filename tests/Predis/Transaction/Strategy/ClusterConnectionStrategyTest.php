@@ -24,6 +24,7 @@ use Predis\Command\Redis\UNWATCH;
 use Predis\Command\Redis\WATCH;
 use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\Cluster\RedisCluster;
+use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface;
@@ -57,6 +58,13 @@ class ClusterConnectionStrategyTest extends TestCase
     private $mockCommand;
 
     /**
+     * IDs of the commands executed through the cluster instead of the node.
+     *
+     * @var string[]
+     */
+    private $clusterCommands = [];
+
+    /**
      * @return void
      */
     protected function setUp(): void
@@ -65,7 +73,7 @@ class ClusterConnectionStrategyTest extends TestCase
         $this->mockStrategy = $this->getMockBuilder(\Predis\Cluster\StrategyInterface::class)->getMock();
         $this->mockNodeConnection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
         $this->mockConnection->method('getConnectionByCommand')->willReturn($this->mockNodeConnection);
-        $this->mockConnection->expects($this->never())->method('executeCommand');
+        $this->mockConnection->method('executeCommand')->willReturnCallback($this->routeToMockNode());
         $this->mockCommand = $this->getMockBuilder(CommandInterface::class)->getMock();
 
         $this->mockConnection
@@ -467,11 +475,87 @@ class ClusterConnectionStrategyTest extends TestCase
         } catch (RuntimeException $caught) {
             $this->assertSame($exception, $caught);
         }
+
+        $this->assertSame(['MULTI'], $this->clusterCommands);
     }
 
     public function transactionFailureStages(): array
     {
-        return [['MULTI'], ['SET'], ['EXEC'], ['DISCARD']];
+        return [['SET'], ['EXEC'], ['DISCARD']];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testFirstCommandIsLeftToTheClusterAndLaterOnesStayOnTheNode(): void
+    {
+        $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
+        $this->mockNodeConnection->method('executeCommand')->willReturnCallback(
+            static function ($command) {
+                switch ($command->getId()) {
+                    case 'GET':
+                        return 'value';
+
+                    case 'SET':
+                        return 'QUEUED';
+
+                    case 'EXEC':
+                        return ['OK'];
+
+                    default:
+                        return 'OK';
+                }
+            }
+        );
+
+        $state = new MultiExecState();
+        $state->flag(MultiExecState::CAS);
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, $state);
+
+        $strategy->watch(['key1']);
+        $strategy->executeCommand(new GET());
+        $state->unflag(MultiExecState::CAS);
+        $strategy->multi();
+        $strategy->executeCommand(new SET());
+
+        $this->assertSame(['OK'], $strategy->executeTransaction());
+        $this->assertSame(['WATCH'], $this->clusterCommands);
+
+        // The next transaction starts over, without a node holding any state.
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+
+        $this->assertSame(['OK'], $strategy->executeTransaction());
+        $this->assertSame(['WATCH', 'MULTI'], $this->clusterCommands);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testFailureOfTheFirstCommandIsRethrownWithoutTouchingAnyNode(): void
+    {
+        $exception = new ConnectionException($this->mockNodeConnection, 'Connection refused');
+        $cluster = $this->getMockBuilder(RedisCluster::class)->disableOriginalConstructor()->getMock();
+        $cluster->method('getClusterStrategy')->willReturn($this->mockStrategy);
+        $cluster->expects($this->once())->method('executeCommand')->with(new MULTI())->willThrowException($exception);
+        $cluster->expects($this->never())->method('getConnectionByCommand');
+        $this->mockNodeConnection->expects($this->never())->method('executeCommand');
+        $this->mockNodeConnection->expects($this->never())->method('disconnect');
+
+        $strategy = new ClusterConnectionStrategy($cluster, new MultiExecState());
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+
+        try {
+            $strategy->executeTransaction();
+            $this->fail('Expected the connection failure to be rethrown.');
+        } catch (ConnectionException $caught) {
+            $this->assertSame($exception, $caught);
+        }
+
+        $this->expectException(TransactionException::class);
+
+        $strategy->executeTransaction();
     }
 
     /**
@@ -697,21 +781,52 @@ class ClusterConnectionStrategyTest extends TestCase
     /**
      * @group disconnected
      */
-    public function testMovedResponseToWatchUpdatesSlotMapAndThrows(): void
+    public function testMovedResponseToCasReadUpdatesSlotMapAndThrows(): void
     {
         $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
         $cluster = $this->getMockRedisCluster();
         $cluster->expects($this->once())->method('applyMovedResponse')->with('123 127.0.0.1:6380');
-        $this->mockNodeConnection->expects($this->exactly(2))->method('executeCommand')
-            ->withConsecutive([$this->isInstanceOf(WATCH::class)], [new UNWATCH()])
-            ->willReturnOnConsecutiveCalls(new Error('MOVED 123 127.0.0.1:6380'), 'OK');
+        $this->mockNodeConnection->expects($this->exactly(3))->method('executeCommand')
+            ->withConsecutive([$this->isInstanceOf(WATCH::class)], [new GET()], [new UNWATCH()])
+            ->willReturnOnConsecutiveCalls('OK', new Error('MOVED 123 127.0.0.1:6380'), 'OK');
 
-        $strategy = new ClusterConnectionStrategy($cluster, new MultiExecState());
+        $state = new MultiExecState();
+        $state->flag(MultiExecState::CAS);
+        $strategy = new ClusterConnectionStrategy($cluster, $state);
+        $strategy->watch(['key1']);
 
         $this->expectException(ServerException::class);
         $this->expectExceptionMessage('MOVED 123 127.0.0.1:6380');
 
-        $strategy->watch(['key1']);
+        $strategy->executeCommand(new GET());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testReadOnlyResponseRefreshesTheTopologyAfterReleasingTheNode(): void
+    {
+        $events = [];
+        $cluster = $this->getMockRedisCluster();
+        $cluster->expects($this->never())->method('applyMovedResponse');
+        $cluster->expects($this->once())->method('applyReadOnlyResponse')->with($this->mockNodeConnection)
+            ->willReturnCallback(static function () use (&$events) {
+                $events[] = 'applyReadOnlyResponse';
+            });
+        $this->mockNodeConnection->method('executeCommand')->willReturnCallback(
+            static function ($command) use (&$events) {
+                $events[] = $id = $command->getId();
+
+                return $id === 'SET' ? new Error('READONLY You cannot write against a read only replica') : 'OK';
+            }
+        );
+
+        $strategy = new ClusterConnectionStrategy($cluster, new MultiExecState());
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+
+        $this->assertNull($strategy->executeTransaction());
+        $this->assertSame(['MULTI', 'SET', 'DISCARD', 'applyReadOnlyResponse'], $events);
     }
 
     /**
@@ -722,6 +837,7 @@ class ClusterConnectionStrategyTest extends TestCase
     {
         $cluster = $this->getMockRedisCluster();
         $cluster->expects($this->never())->method('applyMovedResponse');
+        $cluster->expects($this->never())->method('applyReadOnlyResponse');
         $this->mockNodeConnection->expects($this->exactly(3))->method('executeCommand')
             ->withConsecutive([new MULTI()], [new SET()], [new DISCARD()])
             ->willReturnOnConsecutiveCalls('OK', new Error($error), 'OK');
@@ -738,7 +854,6 @@ class ClusterConnectionStrategyTest extends TestCase
         return [
             ['OOM command not allowed'],
             ['ASK 123 127.0.0.1:6380'],
-            ['READONLY You cannot write against a read only replica'],
             ['MOVED'],
         ];
     }
@@ -753,8 +868,23 @@ class ClusterConnectionStrategyTest extends TestCase
         $cluster = $this->getMockBuilder(RedisCluster::class)->disableOriginalConstructor()->getMock();
         $cluster->method('getClusterStrategy')->willReturn($this->mockStrategy);
         $cluster->method('getConnectionByCommand')->willReturn($this->mockNodeConnection);
-        $cluster->expects($this->never())->method('executeCommand');
+        $cluster->method('executeCommand')->willReturnCallback($this->routeToMockNode());
 
         return $cluster;
+    }
+
+    /**
+     * Returns a callback emulating the cluster routing a command to the mocked
+     * node, keeping track of the commands that went through the cluster.
+     *
+     * @return callable
+     */
+    private function routeToMockNode(): callable
+    {
+        return function (CommandInterface $command) {
+            $this->clusterCommands[] = $command->getId();
+
+            return $this->mockNodeConnection->executeCommand($command);
+        };
     }
 }

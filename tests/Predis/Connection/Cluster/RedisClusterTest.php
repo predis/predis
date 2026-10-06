@@ -1390,6 +1390,80 @@ class RedisClusterTest extends PredisTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testApplyReadOnlyResponseDisconnectsTheNodeAndFetchesNewSlotsMap(): void
+    {
+        $slotsmap = [
+            [0, 8191, ['127.0.0.1', 6382], []],
+            [8192, 16383, ['127.0.0.1', 6381], []],
+        ];
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=0-8191');
+        $connection1
+            ->expects($this->once())
+            ->method('disconnect');
+        $connection1
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('CLUSTER', ['SLOTS']))
+            ->willReturn($slotsmap);
+
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382?slots=8192-16383');
+        $connection2
+            ->expects($this->never())
+            ->method('disconnect');
+        $connection2
+            ->expects($this->any())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand('CLUSTER', ['SLOTS']))
+            ->willReturn($slotsmap);
+
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->never())
+            ->method('create');
+
+        $cluster = new RedisCluster($factory, new Parameters());
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+
+        $cluster->applyReadOnlyResponse($connection1);
+
+        $this->assertCount(2, $cluster);
+        $this->assertSame($connection2, $cluster->getConnectionBySlot(1000));
+        $this->assertSame($connection1, $cluster->getConnectionBySlot(9000));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testApplyReadOnlyResponseDoesNothingWhenSlotMapIsNotAsked(): void
+    {
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=0-16383');
+        $connection1
+            ->expects($this->never())
+            ->method('disconnect');
+        $connection1
+            ->expects($this->never())
+            ->method('executeCommand');
+
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+
+        $cluster = new RedisCluster($factory, new Parameters());
+        $cluster->useClusterSlots(false);
+
+        $cluster->add($connection1);
+
+        $cluster->applyReadOnlyResponse($connection1);
+
+        $this->assertSame($connection1, $cluster->getConnectionBySlot(1000));
+    }
+
+    /**
      * @return Iterator<string, array{movedErrorMessage: string}>
      */
     public function onMovedResponsesDataProvider(): Iterator

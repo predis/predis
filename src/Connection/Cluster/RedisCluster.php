@@ -495,12 +495,24 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
     protected function onReadOnlyResponse(CommandInterface $command)
     {
         if ($this->useClusterSlots) {
-            $connection = $this->getConnectionByCommand($command);
-            $connection->disconnect();
-            $this->askSlotMap();
+            $this->applyReadOnlyResponse($this->getConnectionByCommand($command));
         }
 
         return $this->executeCommand($command);
+    }
+
+    /**
+     * Disconnects a node that answered with -READONLY and refreshes the slots
+     * map, without executing again the command that generated the response.
+     *
+     * @param NodeConnectionInterface $connection Connection to the node.
+     */
+    public function applyReadOnlyResponse(NodeConnectionInterface $connection): void
+    {
+        if ($this->useClusterSlots) {
+            $connection->disconnect();
+            $this->askSlotMap();
+        }
     }
 
     /**

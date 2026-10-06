@@ -254,6 +254,7 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     private function abort(CommandInterface $cleanup, $response): void
     {
+        $node = $this->nodeConnection;
         $this->releaseNode($cleanup);
 
         if (!$response instanceof ErrorInterface || !$this->connection instanceof RedisCluster) {
@@ -264,6 +265,8 @@ class ClusterConnectionStrategy implements StrategyInterface
 
         if ('MOVED' === $details[0] && isset($details[1])) {
             $this->connection->applyMovedResponse($details[1]);
+        } elseif ('READONLY' === $details[0] && $node) {
+            $this->connection->applyReadOnlyResponse($node);
         }
     }
 
@@ -307,7 +310,10 @@ class ClusterConnectionStrategy implements StrategyInterface
             }
 
             if (!$this->nodeConnection) {
+                $response = $this->connection->executeCommand($command);
                 $this->nodeConnection = $this->connection->getConnectionByCommand($command);
+
+                return $response;
             }
 
             return $this->nodeConnection->executeCommand($command);
