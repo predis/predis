@@ -55,9 +55,12 @@ class BLESS extends RedisCommand
      */
     private function setScanArguments(array $arguments): void
     {
-        if (count($arguments) === 4 && is_array($arguments[3])) {
-            $options = $this->prepareScanOptions(array_pop($arguments));
-            $arguments = array_merge($arguments, $options);
+        if (count($arguments) === 4) {
+            $options = array_pop($arguments);
+            if (is_array($options)) {
+                $options = $this->prepareScanOptions($options);
+                $arguments = array_merge($arguments, $options);
+            }
         }
 
         parent::setArguments($arguments);

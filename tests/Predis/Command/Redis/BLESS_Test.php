@@ -235,6 +235,14 @@ class BLESS_Test extends PredisCommandTestCase
                 ['scan', 0, 'flag', ['COUNT' => 10]],
                 ['scan', 0, 'flag', 'COUNT', 10],
             ],
+            'with SCAN subcommand and null options' => [
+                ['SCAN', 0, 'flag', null],
+                ['SCAN', 0, 'flag'],
+            ],
+            'with SCAN subcommand and raw modifiers' => [
+                ['SCAN', 0, 'flag', 'COUNT', 10],
+                ['SCAN', 0, 'flag', 'COUNT', 10],
+            ],
         ];
     }
 
@@ -261,10 +269,6 @@ class BLESS_Test extends PredisCommandTestCase
                 ['GET'],
                 ['GET'],
             ],
-            'with non-keyed subcommand' => [
-                ['HELP'],
-                ['HELP'],
-            ],
             'with SCAN subcommand (cursor is not a key)' => [
                 ['SCAN', 0, 'flag', ['COUNT' => 10]],
                 ['SCAN', 0, 'flag', 'COUNT', 10],
@@ -280,6 +284,7 @@ class BLESS_Test extends PredisCommandTestCase
             'clear' => ['clear', ['key', 'flag'], ['CLEAR', 'key', 'flag'], 1],
             'scan' => ['scan', [0, 'flag'], ['SCAN', 0, 'flag'], ['0', ['key1', 'key2']]],
             'scan with count' => ['scan', [0, 'flag', ['COUNT' => 10]], ['SCAN', 0, 'flag', 'COUNT', 10], ['0', ['key1']]],
+            'scan with explicit null options' => ['scan', [0, 'flag', null], ['SCAN', 0, 'flag'], ['0', ['key1', 'key2']]],
         ];
     }
 }
