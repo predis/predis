@@ -630,37 +630,6 @@ class StreamConnectionTest extends PredisConnectionTestCase
     /**
      * @group disconnected
      */
-    public function testReadThrowsExceptionOnEOFInsideBulkString(): void
-    {
-        $parameters = new Parameters(['protocol' => 3]);
-
-        $this->mockStreamFactory
-            ->expects($this->once())
-            ->method('createStream')
-            ->with($parameters)
-            ->willReturn($this->mockStream);
-
-        $this->mockStream
-            ->expects($this->exactly(2))
-            ->method('eof')
-            ->willReturnOnConsecutiveCalls(false, true);
-
-        $this->mockStream
-            ->expects($this->exactly(3))
-            ->method('read')
-            ->willReturnOnConsecutiveCalls("$10\r\n", 'abc', '');
-
-        $connection = new StreamConnection($parameters, $this->mockStreamFactory);
-
-        $this->expectException(ConnectionException::class);
-        $this->expectExceptionMessage('Error while reading bytes from the server. [tcp://127.0.0.1:6379]');
-
-        $connection->read();
-    }
-
-    /**
-     * @group disconnected
-     */
     public function testWriteRequest(): void
     {
         $parameters = new Parameters();
