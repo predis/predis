@@ -2,10 +2,10 @@
 
 ## Unreleased
 ### Changed
-- Changed RESP3 double parsing to return `NAN` for NaN payloads instead of `0.0`
+- Changed RESP3 double parsing to return `NAN` for NaN payloads instead of `0.0` (#1718)
+
 ### Fixed
-- Fixed CRLF command injection / smuggling in `AbstractAggregateConnection::write()` (CVE GHSA-w6f5-v2h6-g786, CWE-93)
-- Fixed RESP3 double parsing returning positive `INF` for `-inf` payloads (#1716)
+- Fixed CRLF command injection in `AbstractAggregateConnection::write()` (#1719, CVE GHSA-w6f5-v2h6-g786, CWE-93)
 
 ## v3.6.0 (2026-08-14)
 ### Added
