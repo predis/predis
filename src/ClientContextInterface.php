@@ -42,6 +42,7 @@ use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\Argument\TimeSeries\ReadArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\ACL;
+use Predis\Command\Container\BLESS;
 use Predis\Command\Container\CLIENT;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\HIMPORT;
@@ -431,6 +432,7 @@ use Predis\Command\Redis\VADD;
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
+ * @property BLESS     $bless
  * @property CLIENT    $client
  * @property HIMPORT   $himport
  * @property HOTKEYS   $hotkeys

@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - Added optional `CELL_SIZE` argument for `CMS.INITBYDIM` and `CMS.INITBYPROB`
+- Added `BLESS GET`, `BLESS SET`, `BLESS CLEAR` and `BLESS SCAN` commands (`$client->bless->get($key)`, `->set($key, $flag)`, `->clear($key, $flag)`, `->scan($cursor, $flag, ['COUNT' => $count])`)
 ### Changed
 ### Fixed
 - Fixed client iteration with master/slave and Sentinel replication (#923)
