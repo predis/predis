@@ -3,10 +3,10 @@
 ## Unreleased
 ### Added
 - Added optional `CELL_SIZE` argument for `CMS.INITBYDIM` and `CMS.INITBYPROB`
-### Changed
+
 ### Fixed
 - Fixed client iteration with master/slave and Sentinel replication (#923)
-- Fixed `StreamConnection` and `CompositeStreamConnection` looping forever when the connection closes in the middle of a bulk reply
+- Fixed `*StreamConnection` looping forever when closed in the middle of a bulk reply (#1731)
 
 ## v3.6.1 (2026-09-17)
 ### Fixed
