@@ -144,7 +144,7 @@ class ClusterConnectionStrategy implements StrategyInterface
 
         // Begin transaction
         if (('OK' != $multiResp) && !$multiResp instanceof Relay) {
-            $this->abort(new DISCARD(), $multiResp);
+            $this->abort(new UNWATCH(), $multiResp);
 
             return null;
         }
@@ -166,7 +166,7 @@ class ClusterConnectionStrategy implements StrategyInterface
         $exec = $this->setSlotAndExecute($exec);
 
         if ($exec instanceof ErrorInterface) {
-            $this->abort(new DISCARD(), $exec);
+            $this->abort(new UNWATCH(), $exec);
 
             return null;
         }

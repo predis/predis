@@ -190,8 +190,28 @@ class ClusterConnectionStrategyTest extends TestCase
         $this->mockNodeConnection
             ->expects($this->exactly(2))
             ->method('executeCommand')
-            ->withConsecutive([new MULTI()], [new DISCARD()])
+            ->withConsecutive([new MULTI()], [new UNWATCH()])
             ->willReturnOnConsecutiveCalls('ERR', 'OK');
+        $this->mockNodeConnection->expects($this->never())->method('disconnect');
+
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+
+        $this->assertNull($strategy->executeTransaction());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRejectedNestedMultiDisconnectsTheNode(): void
+    {
+        $this->mockNodeConnection
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->withConsecutive([new MULTI()], [new UNWATCH()])
+            ->willReturnOnConsecutiveCalls(new Error('ERR MULTI calls can not be nested'), new Status('QUEUED'));
+        $this->mockNodeConnection->expects($this->once())->method('disconnect');
 
         $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
         $strategy->initializeTransaction();
@@ -616,14 +636,14 @@ class ClusterConnectionStrategyTest extends TestCase
     public function testExecuteTransactionReturnsNullOnExecError(): void
     {
         $this->mockNodeConnection->expects($this->exactly(4))->method('executeCommand')
-            ->withConsecutive([new MULTI()], [new SET()], [new EXEC()], [new DISCARD()])
+            ->withConsecutive([new MULTI()], [new SET()], [new EXEC()], [new UNWATCH()])
             ->willReturnOnConsecutiveCalls(
                 'OK',
                 'QUEUED',
                 new Error('EXECABORT Transaction discarded because of previous errors.'),
-                new Error('ERR DISCARD without MULTI')
+                'OK'
             );
-        $this->mockNodeConnection->expects($this->once())->method('disconnect');
+        $this->mockNodeConnection->expects($this->never())->method('disconnect');
 
         $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
         $strategy->initializeTransaction();
@@ -774,7 +794,7 @@ class ClusterConnectionStrategyTest extends TestCase
     {
         return [
             'queueing' => ['SET', ['MULTI', 'SET', 'DISCARD', 'applyMovedResponse']],
-            'execution' => ['EXEC', ['MULTI', 'SET', 'EXEC', 'DISCARD', 'applyMovedResponse']],
+            'execution' => ['EXEC', ['MULTI', 'SET', 'EXEC', 'UNWATCH', 'applyMovedResponse']],
         ];
     }
 
