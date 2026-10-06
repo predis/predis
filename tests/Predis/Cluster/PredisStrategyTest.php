@@ -257,6 +257,7 @@ class PredisStrategyTest extends PredisTestCase
         $arguments = [
             'XGROUP' => ['CREATE', 'key', 'group', '$'],
             'XINFO' => ['GROUPS', 'key'],
+            'BLESS' => ['GET', 'key'],
         ];
 
         foreach ($this->getExpectedCommands('keys-stream-subcommand') as $commandID) {
@@ -772,6 +773,9 @@ class PredisStrategyTest extends PredisTestCase
             'XREVRANGE' => 'keys-first',
             'XSETID' => 'keys-first',
             'XTRIM' => 'keys-first',
+
+            /* commands operating on blessings */
+            'BLESS' => 'keys-stream-subcommand',
 
             /* commands operating on vector sets */
             'VADD' => 'keys-vector',
