@@ -120,7 +120,7 @@ class StreamTest extends TestCase
     {
         $handle = fopen('php://temp', 'rb+');
         $stream = new Stream($handle);
-        $stream->read(1);
+        $stream->getContents();
 
         $this->assertTrue($stream->eof());
     }
@@ -341,6 +341,24 @@ class StreamTest extends TestCase
         $this->expectExceptionMessage('Length parameter cannot be negative');
 
         $stream->read(-2);
+    }
+
+    /**
+     * @return void
+     */
+    public function testReadThrowsExceptionOnEmptyReadAtEOF(): void
+    {
+        $handle = fopen('php://temp', 'rb+');
+        $stream = new Stream($handle);
+        $stream->write('abc');
+        $stream->rewind();
+
+        $this->assertSame('abc', $stream->read(10));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Connection closed by peer during read');
+
+        $stream->read(7);
     }
 
     /**

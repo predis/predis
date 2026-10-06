@@ -2,11 +2,12 @@
 
 ## Unreleased
 ### Added
-- Added optional `CELL_SIZE` argument for `CMS.INITBYDIM` and `CMS.INITBYPROB`
-- Added `BLESS GET`, `BLESS SET`, `BLESS CLEAR` and `BLESS SCAN` commands (`$client->bless->get($key)`, `->set($key, $flag)`, `->clear($key, $flag)`, `->scan($cursor, $flag, ['COUNT' => $count])`)
-### Changed
+- Added optional `CELL_SIZE` argument for `CMS.INITBY(DIM|PROB)` (#1729)
+- Added `BLESS *` command family (#1733)
+
 ### Fixed
 - Fixed client iteration with master/slave and Sentinel replication (#923)
+- Fixed `*StreamConnection` looping forever when closed in the middle of a bulk reply (#1731)
 
 ## v3.6.1 (2026-09-17)
 ### Fixed
