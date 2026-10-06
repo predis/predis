@@ -14,6 +14,7 @@ namespace Predis\Transaction\Strategy;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Predis\ClientException;
 use Predis\Command\CommandInterface;
 use Predis\Command\Redis\DISCARD;
 use Predis\Command\Redis\EXEC;
@@ -26,14 +27,17 @@ use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Status;
+use Predis\TimeoutException;
 use Predis\Transaction\Exception\TransactionException;
 use Predis\Transaction\MultiExecState;
 use Predis\Transaction\Response\BypassTransactionResponse;
 use RuntimeException;
+use Throwable;
 
 class ClusterConnectionStrategyTest extends TestCase
 {
@@ -559,6 +563,7 @@ class ClusterConnectionStrategyTest extends TestCase
         $cluster->method('getClusterStrategy')->willReturn($this->mockStrategy);
         $cluster->expects($this->once())->method('executeCommand')->with(new MULTI())->willThrowException($exception);
         $cluster->expects($this->never())->method('getConnectionByCommand');
+        $cluster->expects($this->never())->method('applyNodeFailure');
         $this->mockNodeConnection->expects($this->never())->method('executeCommand');
         $this->mockNodeConnection->expects($this->never())->method('disconnect');
 
@@ -576,6 +581,137 @@ class ClusterConnectionStrategyTest extends TestCase
         $this->expectException(TransactionException::class);
 
         $strategy->executeTransaction();
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider nodeFailures
+     */
+    public function testUnreachableNodeIsReportedToTheClusterWithoutReplayingCommands(string $stage, callable $failure): void
+    {
+        $exception = $failure($this->mockNodeConnection);
+        $events = [];
+        $cluster = $this->getMockRedisCluster();
+        $cluster->expects($this->once())->method('applyNodeFailure')->with($this->mockNodeConnection)
+            ->willReturnCallback(static function () use (&$events) {
+                $events[] = 'applyNodeFailure';
+            });
+        $this->mockNodeConnection->method('executeCommand')->willReturnCallback(
+            static function ($command) use ($stage, $exception, &$events) {
+                $events[] = $id = $command->getId();
+
+                if ($id === $stage) {
+                    throw $exception;
+                }
+
+                return $id === 'MULTI' ? 'OK' : 'QUEUED';
+            }
+        );
+        $this->mockNodeConnection->expects($this->once())->method('disconnect');
+
+        $strategy = new ClusterConnectionStrategy($cluster, new MultiExecState());
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+
+        try {
+            $strategy->executeTransaction();
+            $this->fail('Expected the connection failure to be rethrown.');
+        } catch (Throwable $caught) {
+            $this->assertSame($exception, $caught);
+        }
+
+        $this->assertSame(array_merge($stage === 'SET' ? ['MULTI', 'SET'] : ['MULTI', 'SET', 'EXEC'], ['applyNodeFailure']), $events);
+    }
+
+    public function nodeFailures(): array
+    {
+        $connectionLost = static function ($connection) {
+            return new ConnectionException($connection, 'Connection lost');
+        };
+        $connectionRefused = static function () {
+            return new StreamInitException('Connection refused [tcp://127.0.0.1:6379]');
+        };
+
+        return [
+            'connection lost while queueing' => ['SET', $connectionLost],
+            'connection lost on EXEC' => ['EXEC', $connectionLost],
+            'connection refused while queueing' => ['SET', $connectionRefused],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider failuresKeepingTheTopology
+     */
+    public function testOtherFailuresLeaveTheTopologyUntouched(callable $failure): void
+    {
+        $exception = $failure($this->mockNodeConnection);
+        $cluster = $this->getMockRedisCluster();
+        $cluster->expects($this->never())->method('applyNodeFailure');
+        $this->mockNodeConnection->method('executeCommand')->willReturnCallback(
+            static function ($command) use ($exception) {
+                if ($command->getId() === 'SET') {
+                    throw $exception;
+                }
+
+                return 'OK';
+            }
+        );
+        $this->mockNodeConnection->expects($this->once())->method('disconnect');
+
+        $strategy = new ClusterConnectionStrategy($cluster, new MultiExecState());
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+
+        try {
+            $strategy->executeTransaction();
+            $this->fail('Expected the failure to be rethrown.');
+        } catch (Throwable $caught) {
+            $this->assertSame($exception, $caught);
+        }
+    }
+
+    public function failuresKeepingTheTopology(): array
+    {
+        return [
+            'timeout' => [static function ($connection) {
+                return new TimeoutException($connection);
+            }],
+            'PHP error' => [static function () {
+                return new RuntimeException('Unexpected failure');
+            }],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testFailureToRefreshTheTopologyDoesNotHideTheOriginalException(): void
+    {
+        $exception = new ConnectionException($this->mockNodeConnection, 'Connection lost');
+        $cluster = $this->getMockRedisCluster();
+        $cluster->expects($this->once())->method('applyNodeFailure')
+            ->willThrowException(new ClientException('No connections left in the pool for `CLUSTER SLOTS`'));
+        $this->mockNodeConnection->method('executeCommand')->willReturnCallback(
+            static function ($command) use ($exception) {
+                if ($command->getId() === 'SET') {
+                    throw $exception;
+                }
+
+                return 'OK';
+            }
+        );
+
+        $strategy = new ClusterConnectionStrategy($cluster, new MultiExecState());
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+
+        try {
+            $strategy->executeTransaction();
+            $this->fail('Expected the connection failure to be rethrown.');
+        } catch (ConnectionException $caught) {
+            $this->assertSame($exception, $caught);
+        }
     }
 
     /**
@@ -858,6 +994,7 @@ class ClusterConnectionStrategyTest extends TestCase
         $cluster = $this->getMockRedisCluster();
         $cluster->expects($this->never())->method('applyMovedResponse');
         $cluster->expects($this->never())->method('applyReadOnlyResponse');
+        $cluster->expects($this->never())->method('applyNodeFailure');
         $this->mockNodeConnection->expects($this->exactly(3))->method('executeCommand')
             ->withConsecutive([new MULTI()], [new SET()], [new DISCARD()])
             ->willReturnOnConsecutiveCalls('OK', new Error($error), 'OK');

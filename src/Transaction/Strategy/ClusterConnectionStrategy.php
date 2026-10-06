@@ -20,7 +20,9 @@ use Predis\Command\Redis\UNWATCH;
 use Predis\Command\Redis\WATCH;
 use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\Cluster\RedisCluster;
+use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface;
 use Predis\Response\ServerException;
@@ -318,12 +320,39 @@ class ClusterConnectionStrategy implements StrategyInterface
 
             return $this->nodeConnection->executeCommand($command);
         } catch (Throwable $exception) {
-            if ($this->nodeConnection) {
-                $this->nodeConnection->disconnect();
-            }
+            $node = $this->nodeConnection;
             $this->reset();
 
+            if ($node) {
+                $node->disconnect();
+                $this->reportNodeFailure($node, $exception);
+            }
+
             throw $exception;
+        }
+    }
+
+    /**
+     * Lets the cluster evict an unreachable node and refresh its slots map, so
+     * the next transaction is not sent to the same node again.
+     *
+     * @param NodeConnectionInterface $node
+     * @param Throwable               $exception
+     */
+    private function reportNodeFailure(NodeConnectionInterface $node, Throwable $exception): void
+    {
+        if (!$this->connection instanceof RedisCluster) {
+            return;
+        }
+
+        if (!$exception instanceof ConnectionException && !$exception instanceof StreamInitException) {
+            return;
+        }
+
+        try {
+            $this->connection->applyNodeFailure($node);
+        } catch (Throwable $ignored) {
+            // The failure that aborted the transaction is the one worth reporting.
         }
     }
 

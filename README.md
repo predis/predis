@@ -425,7 +425,8 @@ slot. Apart from it no additional configuration needed on a client side.
 Transaction commands stay on the same physical node connection. The first command of a transaction is still retried and
 redirected like any other command, as no node holds any state for the transaction yet. After that, redirection errors and
 connection failures abort the transaction: pending commands are discarded or the connection is closed if cleanup fails.
-A `MOVED` redirection also updates the slots map, so retrying the transaction reaches the node the slot was moved to.
+An abort also updates the slots map when the node moved the slot or became unreachable, so retrying the transaction
+reaches the node that serves the slot.
 
 ```php
 $redis = $this->getClient();

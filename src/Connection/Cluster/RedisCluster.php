@@ -516,6 +516,22 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
     }
 
     /**
+     * Evicts a node that could not be reached and refreshes the slots map,
+     * without executing again the command that failed.
+     *
+     * @param NodeConnectionInterface $connection Connection to the node.
+     */
+    public function applyNodeFailure(NodeConnectionInterface $connection): void
+    {
+        $connection->disconnect();
+        $this->remove($connection);
+
+        if ($this->useClusterSlots) {
+            $this->askSlotMap();
+        }
+    }
+
+    /**
      * Handles -MOVED responses by executing again the command against the node
      * indicated by the Redis response.
      *

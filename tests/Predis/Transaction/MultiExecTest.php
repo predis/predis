@@ -1011,6 +1011,59 @@ class MultiExecTest extends PredisTestCase
     }
 
     /**
+     * @group disconnected
+     */
+    public function testClusterTransactionReachesAnotherNodeAfterTheFirstOneDied(): void
+    {
+        $deadCommands = $aliveCommands = [];
+
+        $dead = $this->getMockConnection('tcp://127.0.0.1:6379?slots=0-16383');
+        $dead
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$deadCommands, &$dead) {
+                $deadCommands[] = $id = $command->getId();
+
+                if ($id === 'GET') {
+                    throw new ConnectionException($dead, 'Connection lost');
+                }
+
+                return new Response\Status('OK');
+            });
+
+        $alive = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $alive
+            ->method('executeCommand')
+            ->willReturnCallback($this->getClusterNodeCallback($aliveCommands));
+
+        $cluster = new RedisCluster(
+            $this->getMockBuilder(FactoryInterface::class)->getMock(),
+            new Parameters(['protocol' => 2])
+        );
+        $cluster->add($dead);
+        $cluster->add($alive);
+
+        $client = new Client($cluster);
+        $block = static function (MultiExec $tx) {
+            $tx->get('foo');
+        };
+
+        try {
+            (new MultiExec($client))->execute($block);
+            $this->fail('Expected the connection failure to abort the transaction.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('Connection lost', $exception->getMessage());
+        }
+
+        // The commands of the aborted transaction are not sent anywhere else.
+        $this->assertSame(['MULTI', 'GET'], $deadCommands);
+        $this->assertSame(['CLUSTER'], $aliveCommands);
+
+        $this->assertSame(['bar'], (new MultiExec($client))->execute($block));
+        $this->assertSame(['MULTI', 'GET'], $deadCommands);
+        $this->assertSame(['CLUSTER', 'MULTI', 'GET', 'EXEC'], $aliveCommands);
+    }
+
+    /**
      * Returns a callback emulating the only node of a cluster that is able to
      * complete a transaction, keeping track of the commands it receives.
      *
