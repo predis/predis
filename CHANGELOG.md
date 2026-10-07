@@ -4,6 +4,7 @@
 ### Added
 - Added optional `CELL_SIZE` argument for `CMS.INITBY(DIM|PROB)` (#1729)
 - Added `BLESS *` command family (#1733)
+- Added testing with a new HNSW compression (#1737)
 
 ### Fixed
 - Fixed client iteration with master/slave and Sentinel replication (#923)
