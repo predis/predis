@@ -13,6 +13,7 @@
 - Fixed `MultiExec::multi()` being ignored as the first call of a CAS transaction
 - Fixed cleanup of empty transactions and transaction callbacks that throw PHP errors
 - Fixed `spl_object_hash()` deprecation on PHP 8.6 in `ConnectionErrorProof` pipeline
+- Fixed `ConnectionErrorProof` pipeline returning too few responses or throwing `ValueError` on read errors with a single connection
 
 ### Security
 - Fixed aborted cluster transactions leaving node connections in `MULTI`
