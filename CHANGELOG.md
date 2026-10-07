@@ -8,6 +8,12 @@
 ### Fixed
 - Fixed client iteration with master/slave and Sentinel replication (#923)
 - Fixed `*StreamConnection` looping forever when closed in the middle of a bulk reply (#1731)
+- Fixed cluster CAS transactions returning transaction objects for reads and sending `MULTI` twice
+- Fixed `MultiExec::multi()` being ignored as the first call of a CAS transaction
+- Fixed cleanup of empty transactions and transaction callbacks that throw PHP errors
+
+### Security
+- Fixed aborted cluster transactions leaving node connections in `MULTI`
 
 ## v3.6.1 (2026-09-17)
 ### Fixed

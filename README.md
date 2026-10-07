@@ -422,6 +422,12 @@ fact that Redis doesn't support distributed transactions. All keys in the transa
 hash slot, due to this limitation it's recommended to use `{}` syntax to make sure that all keys will be mapped to the same hash
 slot. Apart from it no additional configuration needed on a client side.
 
+Transaction commands stay on the same physical node connection. The first command of a transaction is still retried and
+redirected like any other command, as no node holds any state for the transaction yet. After that, redirection errors and
+connection failures abort the transaction: pending commands are discarded or the connection is closed if cleanup fails.
+An abort also updates the slots map when the node moved the slot or became unreachable, so retrying the transaction
+reaches the node that serves the slot.
+
 ```php
 $redis = $this->getClient();
 

@@ -19,12 +19,20 @@ use Predis\Command\Redis\MULTI;
 use Predis\Command\Redis\UNWATCH;
 use Predis\Command\Redis\WATCH;
 use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\Cluster\RedisCluster;
+use Predis\Connection\ConnectionException;
+use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Response\Error;
+use Predis\Response\ErrorInterface;
+use Predis\Response\ServerException;
 use Predis\Response\Status;
 use Predis\Transaction\Exception\TransactionException;
 use Predis\Transaction\MultiExecState;
+use Predis\Transaction\Response\BypassTransactionResponse;
 use Relay\Relay;
 use SplQueue;
+use Throwable;
 
 class ClusterConnectionStrategy implements StrategyInterface
 {
@@ -56,6 +64,13 @@ class ClusterConnectionStrategy implements StrategyInterface
     private $isInitialized = false;
 
     /**
+     * Physical connection holding the transaction and its WATCH state.
+     *
+     * @var NodeConnectionInterface|null
+     */
+    private $nodeConnection;
+
+    /**
      * @var \Predis\Cluster\StrategyInterface
      */
     private $clusterStrategy;
@@ -78,7 +93,7 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function executeCommand(CommandInterface $command)
     {
-        if (!$this->isInitialized) {
+        if (!$this->isInitialized && !$this->state->isCAS()) {
             throw new TransactionException('Transaction context should be initialized first');
         }
 
@@ -98,6 +113,10 @@ class ClusterConnectionStrategy implements StrategyInterface
             );
         }
 
+        if ($this->state->isCAS()) {
+            return new BypassTransactionResponse($this->executeBeforeMulti($command));
+        }
+
         $this->commandsQueue->enqueue($command);
 
         return new Status('QUEUED');
@@ -108,11 +127,6 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function initializeTransaction(): bool
     {
-        if ($this->isInitialized) {
-            return true;
-        }
-
-        $this->commandsQueue->enqueue(new MULTI());
         $this->isInitialized = true;
 
         return true;
@@ -128,14 +142,11 @@ class ClusterConnectionStrategy implements StrategyInterface
         }
 
         $exec = new EXEC();
-
-        /** @var MULTI $multi */
-        $multi = $this->commandsQueue->dequeue();
-        $multiResp = $this->setSlotAndExecute($multi);
+        $multiResp = $this->setSlotAndExecute(new MULTI());
 
         // Begin transaction
         if (('OK' != $multiResp) && !$multiResp instanceof Relay) {
-            $this->slot = null;
+            $this->abort(new UNWATCH(), $multiResp);
 
             return null;
         }
@@ -147,7 +158,7 @@ class ClusterConnectionStrategy implements StrategyInterface
             $commandResp = $this->setSlotAndExecute($command);
 
             if (('QUEUED' != $commandResp) && !$commandResp instanceof Relay) {
-                $this->slot = null;
+                $this->abort(new DISCARD(), $commandResp);
 
                 return null;
             }
@@ -155,23 +166,29 @@ class ClusterConnectionStrategy implements StrategyInterface
 
         // Execute transaction
         $exec = $this->setSlotAndExecute($exec);
-        $this->slot = null;
+
+        if ($exec instanceof ErrorInterface) {
+            $this->abort(new UNWATCH(), $exec);
+
+            return null;
+        }
+
+        $this->reset();
 
         return $exec;
     }
 
     /**
+     * Commands are queued client-side until the transaction is executed, so
+     * MULTI is sent by executeTransaction() and never stays open in between.
+     *
      * {@inheritDoc}
      */
     public function multi()
     {
-        $response = $this->setSlotAndExecute(new MULTI());
+        $this->isInitialized = true;
 
-        if ('OK' == $response) {
-            $this->isInitialized = true;
-        }
-
-        return $response;
+        return new Status('OK');
     }
 
     /**
@@ -188,13 +205,7 @@ class ClusterConnectionStrategy implements StrategyInterface
         $watch = new WATCH();
         $watch->setArguments($keys);
 
-        $response = 'OK' == $this->setSlotAndExecute($watch);
-
-        if ($this->state->check(MultiExecState::CAS)) {
-            $this->initializeTransaction();
-        }
-
-        return $response;
+        return 'OK' == $this->executeBeforeMulti($watch);
     }
 
     /**
@@ -202,7 +213,9 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function discard()
     {
-        return $this->setSlotAndExecute(new DISCARD());
+        // MULTI is only open while executeTransaction() is running,
+        // so WATCH is all that can be pending on the node here.
+        return $this->unwatch();
     }
 
     /**
@@ -210,7 +223,79 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function unwatch()
     {
-        return $this->setSlotAndExecute(new UNWATCH());
+        return $this->releaseNode(new UNWATCH());
+    }
+
+    /**
+     * Executes a command ahead of MULTI, releasing the node on error responses.
+     *
+     * @param  CommandInterface $command
+     * @return mixed
+     * @throws ServerException
+     */
+    private function executeBeforeMulti(CommandInterface $command)
+    {
+        $response = $this->setSlotAndExecute($command);
+
+        if ($response instanceof ErrorInterface) {
+            $this->abort(new UNWATCH(), $response);
+
+            throw new ServerException($response->getMessage());
+        }
+
+        return $response;
+    }
+
+    /**
+     * Releases the node after a response that aborts the transaction. A -MOVED
+     * response also updates the slots map, so the next attempt is sent to the
+     * node the slot was moved to.
+     *
+     * @param CommandInterface $cleanup
+     * @param mixed            $response
+     */
+    private function abort(CommandInterface $cleanup, $response): void
+    {
+        $node = $this->nodeConnection;
+        $this->releaseNode($cleanup);
+
+        if (!$response instanceof ErrorInterface || !$this->connection instanceof RedisCluster) {
+            return;
+        }
+
+        $details = explode(' ', $response->getMessage(), 2);
+
+        if ('MOVED' === $details[0] && isset($details[1])) {
+            $this->connection->applyMovedResponse($details[1]);
+        } elseif ('READONLY' === $details[0] && $node) {
+            $this->connection->applyReadOnlyResponse($node);
+        }
+    }
+
+    /**
+     * Cleans up the node holding the transaction and resets the strategy,
+     * closing the connection when the node rejects the cleanup command.
+     *
+     * @param  CommandInterface $command
+     * @return mixed
+     */
+    private function releaseNode(CommandInterface $command)
+    {
+        try {
+            if (!$this->nodeConnection) {
+                return new Status('OK');
+            }
+
+            $response = $this->setSlotAndExecute($command);
+
+            if ('OK' != $response && !$response instanceof Relay) {
+                $this->nodeConnection->disconnect();
+            }
+
+            return $response;
+        } finally {
+            $this->reset();
+        }
     }
 
     /**
@@ -221,10 +306,61 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     private function setSlotAndExecute(CommandInterface $command)
     {
-        if (null !== $this->slot) {
-            $command->setSlot($this->slot);
+        try {
+            if (null !== $this->slot) {
+                $command->setSlot($this->slot);
+            }
+
+            if (!$this->nodeConnection) {
+                $response = $this->connection->executeCommand($command);
+                $this->nodeConnection = $this->connection->getConnectionByCommand($command);
+
+                return $response;
+            }
+
+            return $this->nodeConnection->executeCommand($command);
+        } catch (Throwable $exception) {
+            $node = $this->nodeConnection;
+            $this->reset();
+
+            if ($node) {
+                $node->disconnect();
+                $this->reportNodeFailure($node, $exception);
+            }
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * Lets the cluster evict an unreachable node and refresh its slots map, so
+     * the next transaction is not sent to the same node again.
+     *
+     * @param NodeConnectionInterface $node
+     * @param Throwable               $exception
+     */
+    private function reportNodeFailure(NodeConnectionInterface $node, Throwable $exception): void
+    {
+        if (!$this->connection instanceof RedisCluster) {
+            return;
         }
 
-        return $this->connection->executeCommand($command);
+        if (!$exception instanceof ConnectionException && !$exception instanceof StreamInitException) {
+            return;
+        }
+
+        try {
+            $this->connection->applyNodeFailure($node);
+        } catch (Throwable $ignored) {
+            // The failure that aborted the transaction is the one worth reporting.
+        }
+    }
+
+    private function reset(): void
+    {
+        $this->slot = null;
+        $this->nodeConnection = null;
+        $this->commandsQueue = new SplQueue();
+        $this->isInitialized = false;
     }
 }

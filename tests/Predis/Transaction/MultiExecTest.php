@@ -16,9 +16,16 @@ use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Predis\ClientInterface;
+use Predis\Cluster\RedisStrategy;
 use Predis\Command\CommandInterface;
+use Predis\Command\RawCommand;
+use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\Cluster\RedisCluster;
+use Predis\Connection\ConnectionException;
+use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
+use Predis\Connection\StreamConnection;
 use Predis\Response;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
@@ -26,6 +33,8 @@ use Predis\TimeoutException;
 use Predis\Transaction\Exception\TransactionException;
 use PredisTestCase;
 use RuntimeException;
+use Throwable;
+use TypeError;
 
 /**
  * @group realm-transaction
@@ -386,6 +395,43 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testEmptyExplicitTransactionIsDiscarded(): void
+    {
+        $commands = [];
+        $tx = $this->getMockedTransaction($this->getExecuteCallback([], $commands));
+
+        $tx->execute(static function ($tx) {
+            $tx->multi();
+        });
+
+        $this->assertSame(['MULTI', 'DISCARD'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCallbackPhpErrorDiscardsTransaction(): void
+    {
+        $commands = [];
+        $tx = $this->getMockedTransaction($this->getExecuteCallback([], $commands));
+
+        try {
+            $tx->execute(static function ($tx) {
+                $tx->set('foo', 'bar');
+
+                throw new TypeError('Invalid callback argument');
+            });
+            $this->fail('Expected the callback error to be rethrown.');
+        } catch (TypeError $exception) {
+            $this->assertSame('Invalid callback argument', $exception->getMessage());
+        }
+
+        $this->assertSame(['MULTI', 'SET', 'DISCARD'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testCheckAndSetWithEmptyBlock(): void
     {
         $txCommands = $casCommands = [];
@@ -399,7 +445,7 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertSame([], self::commandsToIDs($casCommands));
-        $this->assertSame([], self::commandsToIDs($txCommands));
+        $this->assertSame(['MULTI', 'DISCARD'], self::commandsToIDs($txCommands));
     }
 
     /**
@@ -725,6 +771,465 @@ class MultiExecTest extends PredisTestCase
         });
 
         $this->assertEquals(['OK', 'OK', 'OK'], $responses);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterCheckAndSetSendsMultiOnceAfterReads(): void
+    {
+        $txCommands = $casCommands = [];
+        $expected = ['bar', 'piyo'];
+        $options = ['cas' => true, 'watch' => ['{cas}foo', '{cas}hoge']];
+
+        $callback = $this->getExecuteCallback($expected, $txCommands, $casCommands);
+        $tx = $this->getMockedClusterTransaction($callback, $options);
+
+        $test = $this;
+        $responses = $tx->execute(static function ($tx) use ($test) {
+            $test->assertSame('DUMMY_RESPONSE', $tx->get('{cas}foo'));
+
+            $tx->multi();
+
+            $tx->get('{cas}foo');
+            $tx->get('{cas}hoge');
+        });
+
+        $this->assertSame($responses, $expected);
+        $this->assertSame(['WATCH', 'GET'], self::commandsToIDs($casCommands));
+        $this->assertSame(['MULTI', 'GET', 'GET', 'EXEC'], self::commandsToIDs($txCommands));
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider blockExceptions
+     */
+    public function testClusterCheckAndSetNeverLeavesMultiOpenWhenBlockThrows(Throwable $exception): void
+    {
+        $txCommands = $casCommands = [];
+        $options = ['cas' => true, 'watch' => '{cas}foo'];
+
+        $callback = $this->getExecuteCallback([], $txCommands, $casCommands);
+        $tx = $this->getMockedClusterTransaction($callback, $options);
+        $caught = null;
+
+        try {
+            $tx->execute(static function ($tx) use ($exception) {
+                $tx->get('{cas}foo');
+                $tx->multi();
+                $tx->set('{cas}foo', 'bar');
+
+                throw $exception;
+            });
+        } catch (Throwable $caught) {
+            // NOOP
+        }
+
+        $this->assertSame($exception, $caught);
+        $this->assertSame(['WATCH', 'GET'], array_slice(self::commandsToIDs($casCommands), 0, 2));
+        $this->assertSame([], self::commandsToIDs($txCommands));
+    }
+
+    public function blockExceptions(): array
+    {
+        return [
+            'PHP error' => [new TypeError('Invalid callback argument')],
+            'server error' => [new Response\ServerException('ERR simulated failure')],
+            'connection error' => [new ConnectionException(new StreamConnection(new Parameters()), 'Connection lost')],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterAutomaticRetryOnServerSideTransactionAbort(): void
+    {
+        $casCommands = $txCommands = [];
+        $expected = ['bar'];
+        $options = ['watch' => ['{cas}foo', '{cas}bar'], 'retry' => ($attempts = 2) + 1];
+
+        $callback = $this->getExecuteCallback($expected, $txCommands, $casCommands);
+        $tx = $this->getMockedClusterTransaction($callback, $options);
+
+        $responses = $tx->execute(static function (MultiExec $tx) use (&$attempts) {
+            $tx->get('{cas}foo');
+
+            if ($attempts > 0) {
+                $attempts--;
+
+                $tx->echo('!!ABORT!!');
+            }
+        });
+
+        $this->assertSame($responses, $expected);
+        $this->assertSame(0, $attempts);
+        $this->assertSame(['WATCH'], self::commandsToIDs($casCommands));
+        $this->assertSame(['MULTI', 'GET', 'EXEC'], self::commandsToIDs($txCommands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterRetryReachesTheNodeTheSlotWasMovedTo(): void
+    {
+        $seedCommands = $targetCommands = [];
+        $slot = (new RedisStrategy())->getSlotByKey('foo');
+
+        $seed = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $seed
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$seedCommands, $slot) {
+                $seedCommands[] = $id = $command->getId();
+
+                return $id === 'GET'
+                    ? new Response\Error("MOVED $slot 127.0.0.1:6380")
+                    : new Response\Status('OK');
+            });
+
+        $target = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $target
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$targetCommands) {
+                $targetCommands[] = $id = $command->getId();
+
+                switch ($id) {
+                    case 'CLUSTER':
+                        return [[0, 16383, ['127.0.0.1', 6380]]];
+
+                    case 'MULTI':
+                        return new Response\Status('OK');
+
+                    case 'EXEC':
+                        return ['bar'];
+
+                    default:
+                        return new Response\Status('QUEUED');
+                }
+            });
+
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with(['host' => '127.0.0.1', 'port' => '6380'])
+            ->willReturn($target);
+
+        $cluster = new RedisCluster($factory, new Parameters(['protocol' => 2]));
+        $cluster->add($seed);
+
+        $tx = new MultiExec(new Client($cluster), ['retry' => 1]);
+
+        $responses = $tx->execute(static function (MultiExec $tx) {
+            $tx->get('foo');
+        });
+
+        $this->assertSame(['bar'], $responses);
+        $this->assertSame(['MULTI', 'GET', 'DISCARD'], $seedCommands);
+        $this->assertSame(['CLUSTER', 'MULTI', 'GET', 'EXEC'], $targetCommands);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterFollowsRedirectionOfTheFirstCommand(): void
+    {
+        $seedCommands = $targetCommands = [];
+        $slot = (new RedisStrategy())->getSlotByKey('foo');
+
+        $seed = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $seed
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$seedCommands, $slot) {
+                $seedCommands[] = $command->getId();
+
+                return new Response\Error("MOVED $slot 127.0.0.1:6380");
+            });
+
+        $target = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $target
+            ->method('executeCommand')
+            ->willReturnCallback($this->getClusterNodeCallback($targetCommands));
+
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with(['host' => '127.0.0.1', 'port' => '6380'])
+            ->willReturn($target);
+
+        $cluster = new RedisCluster($factory, new Parameters(['protocol' => 2]));
+        $cluster->add($seed);
+
+        $tx = new MultiExec(new Client($cluster), ['watch' => 'foo']);
+
+        $responses = $tx->execute(static function (MultiExec $tx) {
+            $tx->get('foo');
+        });
+
+        $this->assertSame(['bar'], $responses);
+        $this->assertSame(['WATCH'], $seedCommands);
+        $this->assertSame(['CLUSTER', 'WATCH', 'MULTI', 'GET', 'EXEC'], $targetCommands);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterRetriesTheFirstCommandOnConnectionFailure(): void
+    {
+        $deadCommands = $aliveCommands = [];
+
+        $dead = $this->getMockConnection('tcp://127.0.0.1:6379?slots=0-16383');
+        $dead
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$deadCommands, &$dead) {
+                $deadCommands[] = $command->getId();
+
+                throw new ConnectionException($dead, 'Connection lost');
+            });
+
+        $alive = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $alive
+            ->method('executeCommand')
+            ->willReturnCallback($this->getClusterNodeCallback($aliveCommands));
+
+        $cluster = new RedisCluster(
+            $this->getMockBuilder(FactoryInterface::class)->getMock(),
+            new Parameters(['protocol' => 2])
+        );
+        $cluster->add($dead);
+        $cluster->add($alive);
+
+        $tx = new MultiExec(new Client($cluster));
+
+        $responses = $tx->execute(static function (MultiExec $tx) {
+            $tx->get('foo');
+        });
+
+        $this->assertSame(['bar'], $responses);
+        $this->assertSame(['MULTI'], $deadCommands);
+        $this->assertSame(['CLUSTER', 'MULTI', 'GET', 'EXEC'], $aliveCommands);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterTransactionReachesAnotherNodeAfterTheFirstOneDied(): void
+    {
+        $deadCommands = $aliveCommands = [];
+
+        $dead = $this->getMockConnection('tcp://127.0.0.1:6379?slots=0-16383');
+        $dead
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$deadCommands, &$dead) {
+                $deadCommands[] = $id = $command->getId();
+
+                if ($id === 'GET') {
+                    throw new ConnectionException($dead, 'Connection lost');
+                }
+
+                return new Response\Status('OK');
+            });
+
+        $alive = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $alive
+            ->method('executeCommand')
+            ->willReturnCallback($this->getClusterNodeCallback($aliveCommands));
+
+        $cluster = new RedisCluster(
+            $this->getMockBuilder(FactoryInterface::class)->getMock(),
+            new Parameters(['protocol' => 2])
+        );
+        $cluster->add($dead);
+        $cluster->add($alive);
+
+        $client = new Client($cluster);
+        $block = static function (MultiExec $tx) {
+            $tx->get('foo');
+        };
+
+        try {
+            (new MultiExec($client))->execute($block);
+            $this->fail('Expected the connection failure to abort the transaction.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('Connection lost', $exception->getMessage());
+        }
+
+        // The commands of the aborted transaction are not sent anywhere else.
+        $this->assertSame(['MULTI', 'GET'], $deadCommands);
+        $this->assertSame(['CLUSTER'], $aliveCommands);
+
+        $this->assertSame(['bar'], (new MultiExec($client))->execute($block));
+        $this->assertSame(['MULTI', 'GET'], $deadCommands);
+        $this->assertSame(['CLUSTER', 'MULTI', 'GET', 'EXEC'], $aliveCommands);
+    }
+
+    /**
+     * Returns a callback emulating the only node of a cluster that is able to
+     * complete a transaction, keeping track of the commands it receives.
+     *
+     * @param array $commands Reference to an array storing the IDs of the commands
+     *
+     * @return callable
+     */
+    protected function getClusterNodeCallback(array &$commands): callable
+    {
+        return static function (CommandInterface $command) use (&$commands) {
+            $commands[] = $id = $command->getId();
+
+            switch ($id) {
+                case 'CLUSTER':
+                    return [[0, 16383, ['127.0.0.1', 6380]]];
+
+                case 'WATCH':
+                case 'MULTI':
+                    return new Response\Status('OK');
+
+                case 'EXEC':
+                    return ['bar'];
+
+                default:
+                    return new Response\Status('QUEUED');
+            }
+        };
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @dataProvider clusterTransactionPersistence
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterQueueErrorLeavesConnectionUsable(bool $persistent): void
+    {
+        $options = ['parameters' => ['persistent' => $persistent]];
+        $redis = $this->createClient(null, $options);
+        $key = '{abort}value';
+        $missing = '{abort}missing';
+        $redis->set($key, 'original');
+        $redis->del($missing);
+
+        try {
+            $redis->transaction(static function (MultiExec $tx) use ($key) {
+                $tx->set($key, 'queued');
+                $tx->executeCommand(new RawCommand('SET', [$key]));
+            });
+            $this->fail('Expected the transaction to abort.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertSame('original', $redis->get($key));
+        }
+
+        $this->assertNull($redis->get($missing));
+        $this->assertEquals('OK', $redis->set($key, 'after-abort'));
+
+        $nextClient = $this->createClient(null, $options, false);
+        $this->assertSame('after-abort', $nextClient->get($key));
+        $this->assertNull($nextClient->get($missing));
+        $redis->disconnect();
+    }
+
+    public function clusterTransactionPersistence(): array
+    {
+        return [[false], [true]];
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @dataProvider clusterTransactionPersistence
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterFailedDiscardClosesThePhysicalSocket(bool $persistent): void
+    {
+        $connection = new class(new Parameters()) extends StreamConnection {
+            public function executeCommand(CommandInterface $command)
+            {
+                if ($command->getId() === 'DISCARD') {
+                    return new Response\Error('NOPERM simulated DISCARD failure');
+                }
+
+                return parent::executeCommand($command);
+            }
+        };
+        $redis = $this->createClient(null, [
+            'connections' => ['tcp' => get_class($connection)],
+            'parameters' => ['persistent' => $persistent],
+        ]);
+        $key = '{failed-discard}value';
+        $redis->set($key, 'original');
+        $command = $redis->createCommand('GET', [$key]);
+        $node = $redis->getConnection()->getConnectionByCommand($command);
+        $originalClientId = $node->executeCommand(new RawCommand('CLIENT', ['ID']));
+
+        try {
+            $redis->transaction(static function (MultiExec $tx) use ($key) {
+                $tx->set($key, 'queued');
+                $tx->executeCommand(new RawCommand('SET', [$key]));
+            });
+            $this->fail('Expected the transaction to abort.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertFalse($node->isConnected());
+        }
+
+        $this->assertSame('original', $redis->get($key));
+        $this->assertNotSame($originalClientId, $node->executeCommand(new RawCommand('CLIENT', ['ID'])));
+        $this->assertNull($redis->get('{failed-discard}missing'));
+        $this->assertEquals('OK', $redis->set($key, 'after-abort'));
+        $this->assertSame('after-abort', $redis->get($key));
+        $redis->disconnect();
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterCasReadsValueBeforeMulti(): void
+    {
+        $redis = $this->getClient();
+        $key = '{cas}counter';
+        $redis->set($key, '7');
+
+        $response = $redis->transaction(['cas' => true, 'watch' => $key], function (MultiExec $tx) use ($key) {
+            $current = $tx->get($key);
+            $this->assertSame('7', $current);
+            $tx->multi();
+            $tx->set($key, (string) ((int) $current + 1));
+        });
+
+        $this->assertEquals(['OK'], $response);
+        $this->assertSame('8', $redis->get($key));
+        $this->assertNull($redis->get('{cas}missing'));
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @dataProvider blockExceptions
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterCasBlockExceptionLeavesConnectionUsable(Throwable $exception): void
+    {
+        $redis = $this->getClient();
+        $key = '{cas}counter';
+        $redis->set($key, '7');
+        $caught = null;
+
+        try {
+            $redis->transaction(['cas' => true, 'watch' => $key], static function (MultiExec $tx) use ($key, $exception) {
+                $tx->multi();
+                $tx->set($key, 'queued');
+
+                throw $exception;
+            });
+        } catch (Throwable $caught) {
+            // NOOP
+        }
+
+        $this->assertSame($exception, $caught);
+        $this->assertSame('7', $redis->get($key));
+        $this->assertNull($redis->get('{cas}missing'));
+        $this->assertEquals('OK', $redis->set($key, 'after-error'));
+        $this->assertSame('after-error', $redis->get($key));
     }
 
     // ******************************************************************** //
@@ -1110,6 +1615,39 @@ class MultiExecTest extends PredisTestCase
         $transaction = new MultiExec($client, $txOpts ?: []);
 
         return $transaction;
+    }
+
+    /**
+     * Returns an instance of Predis\Transaction\MultiExec running against a
+     * mocked cluster, using the specified callback to return values from the
+     * executeCommand method of the node connection holding the transaction.
+     *
+     * @param callable $executeCallback
+     * @param array    $txOpts
+     *
+     * @return MultiExec
+     */
+    protected function getMockedClusterTransaction($executeCallback, $txOpts = null): MultiExec
+    {
+        $cluster = $this->getMockBuilder(ClusterInterface::class)->getMock();
+        $cluster
+            ->method('getClusterStrategy')
+            ->willReturn(new RedisStrategy());
+        $connection = $this->getMockedConnection($executeCallback);
+
+        $cluster
+            ->method('getConnectionByCommand')
+            ->willReturn($connection);
+        $cluster
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+        $cluster
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use ($connection) {
+                return $connection->executeCommand($command);
+            });
+
+        return new MultiExec(new Client($cluster), $txOpts ?: []);
     }
 
     /**

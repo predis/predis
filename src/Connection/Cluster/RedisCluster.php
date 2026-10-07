@@ -495,12 +495,40 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
     protected function onReadOnlyResponse(CommandInterface $command)
     {
         if ($this->useClusterSlots) {
-            $connection = $this->getConnectionByCommand($command);
-            $connection->disconnect();
-            $this->askSlotMap();
+            $this->applyReadOnlyResponse($this->getConnectionByCommand($command));
         }
 
         return $this->executeCommand($command);
+    }
+
+    /**
+     * Disconnects a node that answered with -READONLY and refreshes the slots
+     * map, without executing again the command that generated the response.
+     *
+     * @param NodeConnectionInterface $connection Connection to the node.
+     */
+    public function applyReadOnlyResponse(NodeConnectionInterface $connection): void
+    {
+        if ($this->useClusterSlots) {
+            $connection->disconnect();
+            $this->askSlotMap();
+        }
+    }
+
+    /**
+     * Evicts a node that could not be reached and refreshes the slots map,
+     * without executing again the command that failed.
+     *
+     * @param NodeConnectionInterface $connection Connection to the node.
+     */
+    public function applyNodeFailure(NodeConnectionInterface $connection): void
+    {
+        $connection->disconnect();
+        $this->remove($connection);
+
+        if ($this->useClusterSlots) {
+            $this->askSlotMap();
+        }
     }
 
     /**
@@ -513,6 +541,19 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
      * @return mixed
      */
     protected function onMovedResponse(CommandInterface $command, $details)
+    {
+        $this->applyMovedResponse($details);
+
+        return $this->executeCommand($command);
+    }
+
+    /**
+     * Associates a slot to the node indicated by a -MOVED response, without
+     * executing again the command that generated it.
+     *
+     * @param string $details Parameters of the -MOVED response.
+     */
+    public function applyMovedResponse(string $details): void
     {
         [$slot, $connectionID] = explode(' ', $details, 2);
 
@@ -533,8 +574,6 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
         }
 
         $this->move($connection, $slot);
-
-        return $this->executeCommand($command);
     }
 
     /**

@@ -12,7 +12,6 @@
 
 namespace Predis\Transaction;
 
-use Exception;
 use InvalidArgumentException;
 use Predis\ClientContextInterface;
 use Predis\ClientException;
@@ -32,6 +31,7 @@ use Predis\Transaction\Strategy\StrategyResolverInterface;
 use Relay\Exception as RelayException;
 use Relay\Relay;
 use SplQueue;
+use Throwable;
 
 /**
  * Client-side abstraction of a Redis transaction based on MULTI / EXEC.
@@ -279,11 +279,11 @@ class MultiExec implements ClientContextInterface
      */
     public function multi()
     {
-        if ($this->state->check(MultiExecState::INITIALIZED | MultiExecState::CAS)) {
+        $this->initialize();
+
+        if ($this->state->isCAS()) {
             $this->state->unflag(MultiExecState::CAS);
             $this->connectionStrategy->multi();
-        } else {
-            $this->initialize();
         }
 
         return $this;
@@ -401,7 +401,7 @@ class MultiExec implements ClientContextInterface
             }
 
             if ($this->commands->isEmpty()) {
-                if ($this->state->isWatching()) {
+                if ($this->state->isWatching() || ($this->state->isInitialized() && !$this->state->isCAS())) {
                     $this->discard();
                 }
 
@@ -482,7 +482,7 @@ class MultiExec implements ClientContextInterface
             // NOOP
         } catch (ServerException $exception) {
             // NOOP
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             $this->discard();
         }
 
