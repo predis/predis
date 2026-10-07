@@ -844,4 +844,12 @@ class SentinelReplication extends AbstractAggregateConnection implements Replica
 
         return null;
     }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return implode(',', array_keys($this->pool));
+    }
 }

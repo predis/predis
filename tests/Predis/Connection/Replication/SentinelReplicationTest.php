@@ -13,6 +13,7 @@
 namespace Predis\Connection\Replication;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Client;
 use Predis\Command;
 use Predis\Connection;
 use Predis\Connection\Parameters;
@@ -31,6 +32,47 @@ use RuntimeException;
 
 class SentinelReplicationTest extends PredisTestCase
 {
+    /**
+     * @group disconnected
+     */
+    public function testClientIterationKeepsReplicationConnectionBeforeDiscovery(): void
+    {
+        $factory = $this->getMockBuilder(Connection\FactoryInterface::class)->getMock();
+        $factory->expects($this->never())->method('create');
+
+        $client = new Client([
+            'tcp://127.0.0.1:26379',
+            'tcp://127.0.0.1:26380',
+        ], ['replication' => 'sentinel', 'service' => 'svc', 'connections' => $factory]);
+
+        $iterator = $client->getIterator();
+
+        $this->assertCount(1, $iterator);
+        $this->assertSame('', $iterator->key());
+        $this->assertSame($client->getConnection(), $iterator->current()->getConnection());
+        $this->assertSame($client->getOptions(), $iterator->current()->getOptions());
+        $this->assertFalse($client->isConnected());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClientIterationKeepsReplicationConnectionWithKnownNodes(): void
+    {
+        $replication = $this->getReplicationConnection('svc', []);
+        $replication->add(new StreamConnection(Parameters::create('tcp://127.0.0.1:6379?role=master')));
+        $replication->add(new StreamConnection(Parameters::create('tcp://127.0.0.1:6380?role=slave')));
+
+        $client = new Client($replication);
+        $iterator = $client->getIterator();
+
+        $this->assertCount(1, $iterator);
+        $this->assertSame('127.0.0.1:6379,127.0.0.1:6380', $iterator->key());
+        $this->assertSame($replication, $iterator->current()->getConnection());
+        $this->assertSame($client->getOptions(), $iterator->current()->getOptions());
+        $this->assertFalse($client->isConnected());
+    }
+
     /**
      * @group disconnected
      */

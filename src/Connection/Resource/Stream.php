@@ -275,7 +275,7 @@ class Stream implements StreamInterface
             $string = @fread($this->stream, $length);
         }
 
-        if (false === $string) {
+        if (false === $string || ('' === $string && $this->eof())) {
             $metadata = $this->getMetadata();
 
             if ($this->eof()) {

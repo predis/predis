@@ -5,10 +5,21 @@
 ### Changed
 - Deprecated `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
 - Retry cluster slot map discovery on `StreamInitException` (#1717)
+- Added optional `CELL_SIZE` argument for `CMS.INITBY(DIM|PROB)` (#1729)
+- Added `BLESS *` command family (#1733)
+
+### Fixed
+- Fixed client iteration with master/slave and Sentinel replication (#923)
+- Fixed `*StreamConnection` looping forever when closed in the middle of a bulk reply (#1731)
+
+## v3.6.1 (2026-09-17)
 ### Fixed
 - Fixed RESP3 double parsing returning positive `INF` for `-inf` payloads (#1716)
 - Fixed `client_info` connection parameter being ignored (#1722)
-- Fixed `Stream::write()`/`read()` leaving a dead connection when a host error handler throws exception (#1725)
+- Fixed `Stream::write()` and `read()` leaving a dead connection when a host error handler throws exception (#1725)
+
+### Security
+- Deprecated `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
 - Fixed CRLF command smuggling and node misrouting in `AbstractAggregateConnection::write()` and `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
 
 ## v3.6.0 (2026-08-14)

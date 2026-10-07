@@ -214,6 +214,9 @@ abstract class ClusterStrategy implements StrategyInterface
             'XSETID' => $getKeyFromFirstArgument,
             'XTRIM' => $getKeyFromFirstArgument,
 
+            /* commands operating on blessings */
+            'BLESS' => [$this, 'getKeyFromBlessCommands'],
+
             /* commands operating on vector sets */
             'VADD' => $getKeyFromFirstArgument,
             'VCARD' => $getKeyFromFirstArgument,
@@ -480,6 +483,28 @@ abstract class ClusterStrategy implements StrategyInterface
         }
 
         return $arguments[1];
+    }
+
+    /**
+     * Extracts the key from BLESS commands.
+     *
+     * BLESS GET/SET/CLEAR operate on a key at position 1, after the subcommand.
+     * BLESS SCAN takes a cursor and a flag instead of a key, so it has no slot
+     * and this returns null.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return string|null
+     */
+    protected function getKeyFromBlessCommands(CommandInterface $command)
+    {
+        $arguments = $command->getArguments();
+
+        if (isset($arguments[0], $arguments[1]) && in_array(strtoupper($arguments[0]), ['GET', 'SET', 'CLEAR'], true)) {
+            return $arguments[1];
+        }
+
+        return null;
     }
 
     /**

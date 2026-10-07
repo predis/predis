@@ -42,6 +42,7 @@ use Predis\Command\Argument\TimeSeries\RangeArguments;
 use Predis\Command\Argument\TimeSeries\ReadArguments;
 use Predis\Command\CommandInterface;
 use Predis\Command\Container\ACL;
+use Predis\Command\Container\BLESS;
 use Predis\Command\Container\CLIENT;
 use Predis\Command\Container\FUNCTIONS;
 use Predis\Command\Container\HIMPORT;
@@ -132,8 +133,8 @@ use Predis\Command\Redis\VADD;
  * @method $this cfscandump(string $key, int $iterator)
  * @method $this cmsincrby(string $key, string|int ...$itemIncrementDictionary)
  * @method $this cmsinfo(string $key)
- * @method $this cmsinitbydim(string $key, int $width, int $depth)
- * @method $this cmsinitbyprob(string $key, float $errorRate, float $probability)
+ * @method $this cmsinitbydim(string $key, int $width, int $depth, ?int $cellSize = null)
+ * @method $this cmsinitbyprob(string $key, float $errorRate, float $probability, ?int $cellSize = null)
  * @method $this cmsmerge(string $destination, array $sources, array $weights = [])
  * @method $this cmsquery(string $key, string ...$item)
  * @method $this decr($key)
@@ -431,6 +432,7 @@ use Predis\Command\Redis\VADD;
  * @method $this geosearchstore(string $destination, string $source, FromInterface $from, ByInterface $by, ?string $sorting = null, int $count = -1, bool $any = false, bool $storeDist = false)
  *
  * Container commands
+ * @property BLESS     $bless
  * @property CLIENT    $client
  * @property HIMPORT   $himport
  * @property HOTKEYS   $hotkeys

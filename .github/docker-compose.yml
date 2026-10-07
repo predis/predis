@@ -71,7 +71,7 @@ services:
       - TLS_CLIENT_CNS=test_user
       - PORT=6372
       - TLS_PORT=27379
-    command: ${REDIS_EXTRA_ARGS:---enable-debug-command yes --enable-module-command yes --tls-auth-clients optional --save "" --requirepass "foobar"}
+    command: ${REDIS_EXTRA_ARGS:---enable-debug-command yes --enable-module-command yes --tls-auth-clients optional --save "" --requirepass "foobar"} ${REDIS_CLUSTER_EXTRA_ARGS:-}
     ports:
       - "6372-6377:6372-6377"
       - "27379-27384:27379-27384"

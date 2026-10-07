@@ -87,10 +87,10 @@ class TSINFO_Test extends PredisCommandTestCase
     public function testReturnsInformationAboutGivenTimeSeries(): void
     {
         $redis = $this->getClient();
-        $expectedResponse = ['totalSamples', 0, 'memoryUsage', 5000, 'firstTimestamp', 0, 'lastTimestamp', 0,
-            'retentionTime', 60000, 'chunkCount', 1, 'chunkSize', 4096, 'chunkType', 'compressed', 'duplicatePolicy',
-            'max', 'labels', [['sensor_id', '2'], ['area_id', '32']], 'sourceKey', null, 'rules', [],
-            'ignoreMaxTimeDiff', 0, 'ignoreMaxValDiff', 0];
+        $expectedResponse = ['totalSamples' => 0, 'memoryUsage' => 5000, 'firstTimestamp' => 0, 'lastTimestamp' => 0,
+            'retentionTime' => 60000, 'chunkCount' => 1, 'chunkSize' => 4096, 'chunkType' => 'compressed',
+            'duplicatePolicy' => 'max', 'labels' => [['sensor_id', '2'], ['area_id', '32']], 'sourceKey' => null,
+            'rules' => [], 'ignoreMaxTimeDiff' => 0, 'ignoreMaxValDiff' => 0];
 
         $arguments = (new CreateArguments())
             ->retentionMsecs(60000)
@@ -102,7 +102,15 @@ class TSINFO_Test extends PredisCommandTestCase
             $redis->tscreate('temperature:2:32', $arguments)
         );
 
-        $this->assertEqualsWithDelta($expectedResponse, $redis->tsinfo('temperature:2:32'), 1000);
+        $actualResponse = self::pairsToMap($redis->tsinfo('temperature:2:32'));
+
+        // memoryUsage drifts across module releases; ignoreMaxValDiff comes
+        // back as a numeric string on RESP2. Normalize both before comparing.
+        $this->assertIsInt($actualResponse['memoryUsage']);
+        $actualResponse['memoryUsage'] = $expectedResponse['memoryUsage'];
+        $actualResponse['ignoreMaxValDiff'] = (int) $actualResponse['ignoreMaxValDiff'];
+
+        $this->assertEquals($expectedResponse, $actualResponse);
     }
 
     /**
@@ -130,7 +138,26 @@ class TSINFO_Test extends PredisCommandTestCase
             $redis->tscreate('temperature:2:32', $arguments)
         );
 
-        $this->assertEqualsWithDelta($expectedResponse, $redis->tsinfo('temperature:2:32'), 1000);
+        $actualResponse = $redis->tsinfo('temperature:2:32');
+
+        // ignoreMaxValDiff comes back as a double (0.0) on RESP3.
+        $this->assertIsInt($actualResponse['memoryUsage']);
+        $actualResponse['memoryUsage'] = $expectedResponse['memoryUsage'];
+        $actualResponse['ignoreMaxValDiff'] = (int) $actualResponse['ignoreMaxValDiff'];
+
+        $this->assertEquals($expectedResponse, $actualResponse);
+    }
+
+    // Converts TS.INFO's flat RESP2 reply into an associative array.
+    private static function pairsToMap(array $pairs): array
+    {
+        $map = [];
+
+        for ($i = 0, $iMax = count($pairs); $i < $iMax; $i += 2) {
+            $map[$pairs[$i]] = $pairs[$i + 1];
+        }
+
+        return $map;
     }
 
     public function argumentsProvider(): array
