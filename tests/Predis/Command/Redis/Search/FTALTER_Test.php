@@ -14,6 +14,7 @@ namespace Predis\Command\Redis\Search;
 
 use Predis\Command\Argument\Search\AlterArguments;
 use Predis\Command\Argument\Search\SchemaFields\TextField;
+use Predis\Command\Argument\Search\SchemaFields\VectorField;
 use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Response\ServerException;
@@ -94,6 +95,26 @@ class FTALTER_Test extends PredisCommandTestCase
         $schema = [new TextField('new_field_name')];
 
         $this->assertEquals('OK', $redis->ftalter('index', $schema));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.12.0
+     * @return void
+     */
+    public function testAddsSq8CompressedHnswVectorToExistingIndex(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->ftcreate('index', [new TextField('field_name')]));
+        $this->assertEquals('OK', $redis->ftalter('index', [
+            new VectorField('v', 'HNSW', ['TYPE', 'FLOAT32', 'DIM', 8, 'DISTANCE_METRIC', 'L2', 'COMPRESSION', 'SQ8', 'TRAINING_THRESHOLD', 4096]),
+        ]));
+
+        $field = $redis->ftinfo('index')['attributes'][1];
+
+        $this->assertSame('SQ8', $field['compression']);
+        $this->assertEquals(4096, $field['training_threshold']);
     }
 
     /**

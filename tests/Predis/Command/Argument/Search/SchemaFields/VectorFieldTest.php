@@ -53,4 +53,35 @@ class VectorFieldTest extends TestCase
             'with RERANK disabled' => ['FALSE'],
         ];
     }
+
+    /**
+     * COMPRESSION SQ8 and TRAINING_THRESHOLD (Redis 8.12+) are plain
+     * name-value HNSW attributes. An explicit zero threshold is meaningful
+     * (it disables mean normalization), so it must reach the server as-is.
+     *
+     * @dataProvider sq8CompressionProvider
+     * @return void
+     */
+    public function testReturnsCorrectFieldArgumentsArrayWithSq8Compression(array $attributes, array $expected): void
+    {
+        $this->assertSame($expected, (new VectorField('field_name', 'HNSW', $attributes))->toArray());
+    }
+
+    public function sq8CompressionProvider(): array
+    {
+        return [
+            'with COMPRESSION and TRAINING_THRESHOLD' => [
+                ['TYPE', 'FLOAT32', 'DIM', 64, 'DISTANCE_METRIC', 'L2', 'COMPRESSION', 'SQ8', 'TRAINING_THRESHOLD', 4096],
+                ['field_name', 'VECTOR', 'HNSW', 10, 'TYPE', 'FLOAT32', 'DIM', 64, 'DISTANCE_METRIC', 'L2', 'COMPRESSION', 'SQ8', 'TRAINING_THRESHOLD', 4096],
+            ],
+            'with COMPRESSION only' => [
+                ['TYPE', 'FLOAT16', 'DIM', 64, 'DISTANCE_METRIC', 'COSINE', 'COMPRESSION', 'SQ8'],
+                ['field_name', 'VECTOR', 'HNSW', 8, 'TYPE', 'FLOAT16', 'DIM', 64, 'DISTANCE_METRIC', 'COSINE', 'COMPRESSION', 'SQ8'],
+            ],
+            'with explicit zero TRAINING_THRESHOLD' => [
+                ['TYPE', 'FLOAT32', 'DIM', 64, 'DISTANCE_METRIC', 'L2', 'COMPRESSION', 'SQ8', 'TRAINING_THRESHOLD', 0],
+                ['field_name', 'VECTOR', 'HNSW', 10, 'TYPE', 'FLOAT32', 'DIM', 64, 'DISTANCE_METRIC', 'L2', 'COMPRESSION', 'SQ8', 'TRAINING_THRESHOLD', 0],
+            ],
+        ];
+    }
 }

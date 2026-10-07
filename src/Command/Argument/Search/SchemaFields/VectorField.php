@@ -20,6 +20,14 @@ class VectorField extends AbstractField
     protected $fieldArguments = [];
 
     /**
+     * Attributes are a flat list of alternating names and values and are sent
+     * to the server as-is, e.g. for an SQ8-compressed HNSW field (Redis 8.12+):
+     *
+     * new VectorField('v', 'HNSW', [
+     *     'TYPE', 'FLOAT32', 'DIM', 64, 'DISTANCE_METRIC', 'L2',
+     *     'COMPRESSION', 'SQ8', 'TRAINING_THRESHOLD', 4096,
+     * ]);
+     *
      * @param string $fieldName
      * @param string $algorithm
      * @param array  $attributeNameValueDictionary
