@@ -31,6 +31,13 @@ class ProtocolProcessor implements ProtocolProcessorInterface
     protected $mbiterable;
     protected $serializer;
 
+    protected $statusResponse = [
+        'OK',
+        'QUEUED',
+        'NOKEY',
+        'PONG',
+    ];
+
     public function __construct()
     {
         $this->mbiterable = false;
@@ -57,7 +64,11 @@ class ProtocolProcessor implements ProtocolProcessorInterface
 
         switch ($prefix) {
             case '+':
-                return new StatusResponse($payload);
+                if (in_array($payload, $this->statusResponse)) {
+                    return new StatusResponse($payload);
+                }
+
+                return $payload;
 
             case '$':
                 $size = (int) $payload;

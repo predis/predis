@@ -2,6 +2,8 @@
 
 ## Unreleased
 ### Changed
+- Changed RESP3 double parsing to return `NAN` for NaN payloads instead of `0.0`
+- Changed `CompositeStreamConnection` to return simple strings other than `OK`, `QUEUED`, `NOKEY` and `PONG` as plain strings instead of `Status` responses, like `StreamConnection` (#1147)
 - Changed RESP3 double parsing to return `NAN` for NaN payloads instead of `0.0` (#1718)
 
 ### Fixed

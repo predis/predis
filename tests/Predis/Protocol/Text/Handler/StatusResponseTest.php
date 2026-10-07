@@ -72,7 +72,6 @@ class StatusResponseTest extends PredisTestCase
         $handler = new Handler\StatusResponse();
         $response = $handler->handle($connection, 'Background saving started');
 
-        $this->assertInstanceOf('Predis\Response\Status', $response);
-        $this->assertEquals('Background saving started', $response);
+        $this->assertSame('Background saving started', $response);
     }
 }
