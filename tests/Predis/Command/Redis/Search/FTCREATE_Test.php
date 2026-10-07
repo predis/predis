@@ -22,6 +22,7 @@ use Predis\Command\Argument\Search\SearchArguments;
 use Predis\Command\PrefixableCommand;
 use Predis\Command\Redis\PredisCommandTestCase;
 use Predis\Command\Redis\Utils\VectorUtility;
+use Predis\Response\ServerException;
 
 /**
  * @group commands
@@ -379,5 +380,140 @@ class FTCREATE_Test extends PredisCommandTestCase
                 ['index', 'ON', 'HASH', 'SCHEMA', 'text_field', 'TEXT', 'numeric_field', 'NUMERIC', 'tag_field', 'AS', 'tf', 'TAG'],
             ],
         ];
+    }
+
+    /**
+     * @group connected
+     * @group relay-resp3
+     * @dataProvider hnswSq8Provider
+     * @requiresRedisVersion >= 8.12.0
+     * @return void
+     */
+    public function testCreatesHnswVectorWithSq8Compression(array $attributes, $expectedCompression, $expectedThreshold): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->ftcreate('index', [new VectorField('v', 'HNSW', $attributes)]));
+
+        $info = $redis->ftinfo('index');
+        $field = $this->pairsToMap($info[array_search('attributes', $info, true) + 1][0]);
+
+        $this->assertSame($expectedCompression, $field['compression'] ?? null);
+        $this->assertEquals($expectedThreshold, $field['training_threshold'] ?? null);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.12.0
+     * @return void
+     */
+    public function testCreatesHnswVectorWithSq8CompressionResp3(): void
+    {
+        $redis = $this->getResp3Client();
+
+        $this->assertEquals('OK', $redis->ftcreate('index', [
+            new VectorField('v', 'HNSW', ['TYPE', 'FLOAT32', 'DIM', 8, 'DISTANCE_METRIC', 'L2', 'COMPRESSION', 'SQ8', 'TRAINING_THRESHOLD', 4096]),
+        ]));
+
+        $field = $redis->ftinfo('index')['attributes'][0];
+
+        $this->assertSame('SQ8', $field['compression']);
+        $this->assertEquals(4096, $field['training_threshold']);
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.12.0
+     * @return void
+     */
+    public function testSq8CompressedHnswVectorIsSearchable(): void
+    {
+        $redis = $this->getClient();
+
+        $this->assertEquals('OK', $redis->ftcreate('index', [
+            new VectorField('v', 'HNSW', ['TYPE', 'FLOAT32', 'DIM', 8, 'DISTANCE_METRIC', 'L2', 'COMPRESSION', 'SQ8', 'TRAINING_THRESHOLD', 0]),
+        ]));
+
+        $vectors = [
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
+            [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0],
+        ];
+
+        foreach ($vectors as $i => $vector) {
+            $redis->hset("doc{$i}", 'v', VectorUtility::toBlob($vector));
+        }
+
+        $this->sleep(0.1);
+
+        $query = new SearchArguments();
+        $query->params(['vec', VectorUtility::toBlob($vectors[0])]);
+        $query->noContent();
+
+        $result = $redis->ftsearch('index', '*=>[KNN 2 @v $vec as score]', $query);
+
+        $this->assertSame(2, $result[0]);
+        $this->assertSame('doc0', $result[1]);
+    }
+
+    /**
+     * @group connected
+     * @dataProvider invalidHnswSq8Provider
+     * @requiresRedisVersion >= 8.12.0
+     * @return void
+     */
+    public function testRejectsInvalidHnswSq8Attributes(array $attributes, string $expectedMessage): void
+    {
+        $redis = $this->getClient();
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        $redis->ftcreate('index', [new VectorField('v', 'HNSW', $attributes)]);
+    }
+
+    public function hnswSq8Provider(): array
+    {
+        $base = ['TYPE', 'FLOAT32', 'DIM', 8, 'DISTANCE_METRIC', 'L2'];
+
+        return [
+            'explicit threshold' => [array_merge($base, ['COMPRESSION', 'SQ8', 'TRAINING_THRESHOLD', 4096]), 'SQ8', 4096],
+            'explicit zero threshold is kept' => [array_merge($base, ['COMPRESSION', 'SQ8', 'TRAINING_THRESHOLD', 0]), 'SQ8', 0],
+            'default threshold' => [array_merge($base, ['COMPRESSION', 'SQ8']), 'SQ8', 10240],
+            'FLOAT16 vector type' => [['TYPE', 'FLOAT16', 'DIM', 8, 'DISTANCE_METRIC', 'L2', 'COMPRESSION', 'SQ8'], 'SQ8', 10240],
+            'no compression: keys absent' => [$base, null, null],
+        ];
+    }
+
+    public function invalidHnswSq8Provider(): array
+    {
+        return [
+            'unsupported vector type' => [
+                ['TYPE', 'BFLOAT16', 'DIM', 8, 'DISTANCE_METRIC', 'L2', 'COMPRESSION', 'SQ8'],
+                'COMPRESSION is only supported for FLOAT32 and FLOAT16',
+            ],
+            'threshold without compression' => [
+                ['TYPE', 'FLOAT32', 'DIM', 8, 'DISTANCE_METRIC', 'L2', 'TRAINING_THRESHOLD', 4096],
+                'TRAINING_THRESHOLD is irrelevant when compression was not requested',
+            ],
+            'threshold above maximum' => [
+                ['TYPE', 'FLOAT32', 'DIM', 8, 'DISTANCE_METRIC', 'L2', 'COMPRESSION', 'SQ8', 'TRAINING_THRESHOLD', 102401],
+                'TRAINING_THRESHOLD cannot exceed 102400',
+            ],
+        ];
+    }
+
+    /**
+     * Converts a flat RESP2 [key, value, key, value, ...] list into a map.
+     */
+    private function pairsToMap(array $pairs): array
+    {
+        $map = [];
+
+        for ($i = 0, $count = count($pairs); $i + 1 < $count; $i += 2) {
+            $map[$pairs[$i]] = $pairs[$i + 1];
+        }
+
+        return $map;
     }
 }
