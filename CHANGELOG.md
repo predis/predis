@@ -4,6 +4,7 @@
 ### Added
 ### Changed
 ### Fixed
+- Fixed Relay reconnecting after an explicit disconnect (#1292)
 - Fixed Relay ACL authentication accepting username and password (#1292)
 
 ## v3.7.0 (2026-10-08)

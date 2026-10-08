@@ -114,6 +114,8 @@ class RelayConnection extends AbstractConnection
         if ($this->client->isConnected()) {
             $this->client->close();
         }
+
+        parent::disconnect();
     }
 
     /**

@@ -459,12 +459,14 @@ class RelayConnectionTest extends PredisTestCase
     /**
      * @group connected
      */
-    public function testRawAclAuthentication(): void
+    public function testRawAclAuthenticationAndReconnect(): void
     {
         $client = new Client($this->getParameters(['username' => 'default']), ['connections' => 'relay']);
 
         $this->assertSame('PONG', $client->ping());
         $this->assertTrue($client->executeRaw(['AUTH', 'default', constant('REDIS_PASSWORD')]));
+        $client->disconnect();
+        $this->assertSame('PONG', $client->ping());
     }
 
     /**
@@ -472,7 +474,7 @@ class RelayConnectionTest extends PredisTestCase
      */
     public function testGetResourceForcesConnection(): void
     {
-        $connection = new RelayConnection(new Parameters(), new Relay());
+        $connection = new RelayConnection($this->getParameters(), new Relay());
 
         $this->assertFalse($connection->isConnected());
         $connection->getResource();
