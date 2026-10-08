@@ -77,6 +77,11 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
     private $retryInterval = 10;
 
     /**
+     * @var int|string|null
+     */
+    private $database;
+
+    /**
      * @var int
      */
     private $readTimeout = 1000;
@@ -99,6 +104,7 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
     ) {
         $this->connections = $connections;
         $this->connectionParameters = $parameters;
+        $this->database = $parameters->database;
         $this->strategy = $strategy ?: new RedisClusterStrategy();
         $this->slotmap = new SlotMap();
 
@@ -180,6 +186,10 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
      */
     public function add(NodeConnectionInterface $connection)
     {
+        if (!$this->pool) {
+            $this->database = $connection->getParameters()->database ?? $this->database;
+        }
+
         $this->pool[(string) $connection] = $connection;
         $this->slotmap->reset();
     }
@@ -365,10 +375,16 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
     {
         $separator = strrpos($connectionID, ':');
 
-        return $this->connections->create([
+        $parameters = [
             'host' => substr($connectionID, 0, $separator),
             'port' => substr($connectionID, $separator + 1),
-        ]);
+        ];
+
+        if (isset($this->database)) {
+            $parameters['database'] = $this->database;
+        }
+
+        return $this->connections->create($parameters);
     }
 
     /**

@@ -22,6 +22,44 @@ class FactoryTest extends PredisTestCase
 {
     /**
      * @group disconnected
+     * @dataProvider databaseAliasProvider
+     */
+    public function testDatabaseAliasSelectsDatabaseAndOverridesDefaults($parameters, $database): void
+    {
+        $factory = new Factory();
+        $factory->setDefaultParameters(['database' => 9]);
+
+        $connection = $factory->create($parameters);
+
+        $this->assertSame($database, $connection->getParameters()->database);
+        $selects = array_values(array_filter($connection->getInitCommands(), static function ($command) {
+            return $command->getId() === 'SELECT';
+        }));
+
+        if ($database === null) {
+            $this->assertCount(0, $selects);
+        } else {
+            $this->assertCount(1, $selects);
+            $this->assertSame([$database], $selects[0]->getArguments());
+        }
+    }
+
+    public function databaseAliasProvider(): array
+    {
+        return [
+            'array alias' => [['db' => 3], 3],
+            'URI alias' => ['tcp://127.0.0.1?db=3', '3'],
+            'zero alias' => [['db' => 0], 0],
+            'canonical parameter wins' => [['database' => 0, 'db' => 3], 0],
+            'canonical null disables selection' => [['database' => null, 'db' => 3], null],
+            'canonical empty disables selection' => [['database' => '', 'db' => 3], null],
+            'parameters instance' => [new Parameters(['db' => 3]), 3],
+            'URI database path wins' => ['redis://127.0.0.1/2?db=3', '2'],
+        ];
+    }
+
+    /**
+     * @group disconnected
      */
     public function testImplementsCorrectInterface(): void
     {

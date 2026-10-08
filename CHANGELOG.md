@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- Added `db` as an alias for the `database` connection parameter and preserved database selection on discovered cluster nodes (Valkey 9+, #1696)
 ### Changed
 ### Fixed
 
