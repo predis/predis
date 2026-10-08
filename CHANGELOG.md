@@ -2,13 +2,11 @@
 
 ## Unreleased
 ### Added
-### Changed
-- Deprecated `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
-- Retry cluster slot map discovery on `StreamInitException` (#1717)
 - Added optional `CELL_SIZE` argument for `CMS.INITBY(DIM|PROB)` (#1729)
 - Added `BLESS *` command family (#1733)
 
 ### Fixed
+- Fixed Redis Cluster not retrying slot map discovery on `StreamInitException` (#1717)
 - Fixed client iteration with master/slave and Sentinel replication (#923)
 - Fixed `*StreamConnection` looping forever when closed in the middle of a bulk reply (#1731)
 
