@@ -224,7 +224,6 @@ EOT;
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */

@@ -85,7 +85,6 @@ class FTCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 1.0.0
      */
@@ -136,7 +135,6 @@ class FTCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 2.09.00
      */
@@ -162,7 +160,6 @@ class FTCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRediSearchVersion >= 2.09.00
      */

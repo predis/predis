@@ -121,7 +121,6 @@ class JSONSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -150,7 +149,6 @@ class JSONSET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @dataProvider fphaProvider
      * @param  string $fpha
      * @return void

@@ -15,6 +15,11 @@ possible to run only selected groups of tests. The main groups are:
   - __commands__: tests for the implementation of Redis commands.
   - __slow__: tests that might slow down the execution of the test suite (either __connected__ or
     __disconnected__).
+  - __ext-relay__: tests that require the Relay extension or assert Relay-specific behavior.
+  - __relay-incompatible__: tests requiring connection operations or response abstractions that
+    the Relay backend does not provide.
+  - __relay-resp3__: tests whose expected reply types or shapes differ from Relay's RESP3 replies.
+    This group covers specific assertions, rather than every test of a command or Redis module.
 
 A list of all the available groups in the suite can be obtained by running:
 

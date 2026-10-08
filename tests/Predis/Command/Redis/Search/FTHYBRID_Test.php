@@ -124,7 +124,6 @@ class FTHYBRID_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.224
      * @return void
      */
@@ -186,7 +185,6 @@ class FTHYBRID_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @requiresRedisVersion >= 8.3.224
      * @return void
      */

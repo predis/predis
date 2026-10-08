@@ -15,6 +15,7 @@ namespace Predis\Connection;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Predis\ClientException;
+use Predis\Command\Argument\Stream\XInfoStreamOptions;
 use Predis\Command\RawCommand;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
@@ -529,6 +530,38 @@ class RelayConnectionTest extends PredisTestCase
         $this->assertTrue($client->executeRaw(['AUTH', 'default', constant('REDIS_PASSWORD')]));
         $client->disconnect();
         $this->assertSame('PONG', $client->ping());
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testXinfoMatchesStreamConnectionReplies(): void
+    {
+        $relay = $this->createClient(null, ['connections' => 'relay']);
+        $stream = new Client($this->getParameters());
+
+        $relay->xadd('stream', ['field' => 'value'], '1-0');
+        $relay->xgroup->create('stream', 'group', '0');
+        $relay->xreadgroup('group', 'consumer', 1, null, false, 'stream', '>');
+
+        $this->assertSame($stream->xinfo->groups('stream'), $relay->xinfo->groups('stream'));
+        $this->assertSame(
+            $stream->xinfo->stream('stream', (new XInfoStreamOptions())->full(5)),
+            $relay->xinfo->stream('stream', (new XInfoStreamOptions())->full(5))
+        );
+
+        $expected = $stream->xinfo->consumers('stream', 'group');
+        $actual = $relay->xinfo->consumers('stream', 'group');
+        $withoutTiming = static function (array $consumers) {
+            return array_map(static function (array $consumer) {
+                unset($consumer['idle'], $consumer['inactive']);
+
+                return $consumer;
+            }, $consumers);
+        };
+
+        $this->assertSame($withoutTiming($expected), $withoutTiming($actual));
     }
 
     /**

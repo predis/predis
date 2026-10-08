@@ -79,7 +79,6 @@ class TDIGESTTRIMMED_MEAN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @dataProvider sketchesProvider
      * @param  array  $addArguments
      * @param  string $key
@@ -123,7 +122,6 @@ class TDIGESTTRIMMED_MEAN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */
@@ -139,7 +137,6 @@ class TDIGESTTRIMMED_MEAN_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.4.0
      */

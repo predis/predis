@@ -256,7 +256,6 @@ class FireAndForgetTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testReplicationExecutesPipelineWithCRLFValues(): void
     {

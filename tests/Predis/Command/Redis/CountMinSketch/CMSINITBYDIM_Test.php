@@ -125,7 +125,6 @@ class CMSINITBYDIM_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.6.0
      */
@@ -177,7 +176,6 @@ class CMSINITBYDIM_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @requiresRedisBfVersion >= 2.0.0
      */
     public function testThrowsExceptionOnAlreadyExistingKey(): void

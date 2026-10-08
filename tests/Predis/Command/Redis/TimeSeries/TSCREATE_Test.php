@@ -94,7 +94,6 @@ class TSCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */
@@ -115,7 +114,6 @@ class TSCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.12.01
      */
@@ -172,7 +170,6 @@ class TSCREATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisTimeSeriesVersion >= 1.0.0
      */

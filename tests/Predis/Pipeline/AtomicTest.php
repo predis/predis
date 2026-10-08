@@ -348,7 +348,6 @@ class AtomicTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testReplicationExecutesPipelineWithCRLFValues(): void
     {

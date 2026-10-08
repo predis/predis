@@ -4,6 +4,7 @@
 ### Added
 - Added a Relay Pub/Sub dispatcher example (#1292)
 ### Changed
+- Enabled compatible tests for Relay v0.50.2 and narrowed remaining exclusions (#1292, #1565)
 - Documented and tested explicit Relay serialization and compression (#1292)
 ### Fixed
 - Fixed Relay Pub/Sub subscriptions rejecting message callbacks (#1292)
