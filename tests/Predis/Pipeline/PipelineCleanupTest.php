@@ -95,17 +95,20 @@ class PipelineCleanupTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @dataProvider provideCallbackFailures
      */
-    public function testResetsRunningStateAfterErrorInCallback(): void
+    public function testDiscardsQueuedCommandsAndResetsRunningStateAfterCallbackFailure(Throwable $failure): void
     {
-        $failure = new TypeError('Callback failed');
         $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $connection->method('getParameters')->willReturn(new Parameters());
         $connection->expects($this->never())->method('disconnect');
         $connection->expects($this->never())->method('write');
+        $connection->expects($this->never())->method('readResponse');
         $pipeline = new Pipeline(new Client($connection));
 
         try {
-            $pipeline->execute(static function () use ($failure) {
+            $pipeline->execute(static function (Pipeline $pipe) use ($failure) {
+                $pipe->set('aborted-write', 'value');
                 throw $failure;
             });
             $this->fail('Expected callback to fail.');
@@ -114,6 +117,14 @@ class PipelineCleanupTest extends PredisTestCase
         }
 
         $this->assertSame([], $pipeline->execute());
+    }
+
+    public function provideCallbackFailures(): array
+    {
+        return [
+            'PHP error' => [new TypeError('Callback failed')],
+            'exception' => [new RuntimeException('Callback failed')],
+        ];
     }
 
     /**

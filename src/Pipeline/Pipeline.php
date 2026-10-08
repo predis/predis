@@ -370,6 +370,10 @@ class Pipeline implements ClientContextInterface
             }
 
             $this->flushPipeline();
+        } catch (Throwable $exception) {
+            $this->pipeline = new SplQueue();
+
+            throw $exception;
         } finally {
             $this->setRunning(false);
         }
