@@ -1,5 +1,10 @@
 ## Changelog
 
+## Unreleased
+### Added
+### Changed
+### Fixed
+
 ## v3.7.0 (2026-10-08)
 ### Added
 - Added `BLESS *` command family (#1733)
