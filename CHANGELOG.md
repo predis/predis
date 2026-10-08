@@ -4,6 +4,7 @@
 ### Added
 - Added a Relay Pub/Sub dispatcher example (#1292)
 ### Changed
+- Documented and tested explicit Relay serialization and compression (#1292)
 ### Fixed
 - Fixed Relay Pub/Sub subscriptions rejecting message callbacks (#1292)
 - Fixed Relay returning server errors as error responses and raw error messages without stack traces (#1292)

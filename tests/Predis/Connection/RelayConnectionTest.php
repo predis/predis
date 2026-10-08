@@ -460,6 +460,51 @@ class RelayConnectionTest extends PredisTestCase
 
     /**
      * @group connected
+     * @dataProvider packingProvider
+     */
+    public function testExplicitPackingWorksForCommandsAndRawCalls(array $options, $value): void
+    {
+        $client = $this->createClient($options, ['connections' => 'relay', 'prefix' => 'packed:']);
+        $packed = $client->pack($value);
+
+        $this->assertSame('OK', $client->set('normal', $packed));
+        $this->assertSame($packed, $client->get('normal'));
+        $this->assertSame($value, $client->unpack($client->get('normal')));
+
+        $this->assertSame('OK', $client->executeRaw(['SET', 'raw', $packed]));
+        $this->assertSame($packed, $client->executeRaw(['GET', 'raw']));
+        $this->assertSame($value, $client->unpack($client->executeRaw(['GET', 'raw'])));
+        $this->assertNull($client->executeRaw(['GET', 'packed:raw']));
+
+        $responses = $client->pipeline(static function ($pipe) use ($packed) {
+            $pipe->set('pipeline', $packed);
+            $pipe->get('pipeline');
+        });
+        $this->assertSame($packed, $responses[1]);
+        $this->assertSame($value, $client->unpack($responses[1]));
+
+        $responses = $client->transaction(static function ($tx) use ($packed) {
+            $tx->set('transaction', $packed);
+            $tx->get('transaction');
+        });
+        $this->assertSame($packed, $responses[1]);
+        $this->assertSame($value, $client->unpack($responses[1]));
+    }
+
+    public function packingProvider(): array
+    {
+        return [
+            'serialization' => [['serializer' => 'php'], ['author' => 'Picard']],
+            'compression' => [['compression' => 'lzf'], str_repeat('Make it so. ', 100)],
+            'serialization and compression' => [
+                ['serializer' => 'php', 'compression' => 'lzf'],
+                ['author' => 'Picard', 'quote' => str_repeat('Make it so. ', 100)],
+            ],
+        ];
+    }
+
+    /**
+     * @group connected
      */
     public function testRawServerErrorReturnsMessageWithoutThrowing(): void
     {

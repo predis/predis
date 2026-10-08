@@ -204,9 +204,8 @@ class RelayConnection extends AbstractConnection
                 $arguments = [$arguments];
             }
 
-            // When using compression or a serializer, we'll need a dedicated
-            // handler for `Predis\Command\RawCommand` calls, currently both
-            // parameters are unsupported until a future Relay release
+            // Raw dispatch leaves values untouched. Serialization and compression
+            // are applied explicitly with pack() and unpack().
             return in_array($name, $this->atypicalCommands)
                 ? $this->client->{$name}(...$arguments)
                 : $this->client->rawCommand($name, ...$arguments);
