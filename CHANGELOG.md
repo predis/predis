@@ -1,18 +1,17 @@
 ## Changelog
 
-## Unreleased
+## v3.7.0 (2026-10-08)
 ### Added
-- Added optional `CELL_SIZE` argument for `CMS.INITBY(DIM|PROB)` (#1729)
 - Added `BLESS *` command family (#1733)
-- Added testing with a new HNSW compression (#1737)
+- Added optional `CELL_SIZE` argument for `CMS.INITBY(DIM|PROB)` (#1729)
 
 ### Fixed
 - Fixed Redis Cluster not retrying slot map discovery on `StreamInitException` (#1717)
-- Fixed client iteration with master/slave and Sentinel replication (#923)
+- Fixed client iteration when using replication (#1730)
 - Fixed `*StreamConnection` looping forever when closed in the middle of a bulk reply (#1731)
 - Fixed cluster CAS transactions returning transaction objects for reads and sending `MULTI` twice (#1735)
-- Fixed `MultiExec::multi()` being ignored as the first call of a CAS transaction (#1735)
 - Fixed cleanup of empty transactions and transaction callbacks that throw PHP errors (#1735)
+- Fixed `MultiExec::multi()` being ignored as the first call of a CAS transaction (#1735)
 - Fixed `spl_object_hash()` deprecation on PHP 8.6 in `ConnectionErrorProof` pipeline (#1738)
 - Fixed `ConnectionErrorProof` pipeline returning too few responses or throwing `ValueError` (#1739)
 
