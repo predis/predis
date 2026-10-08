@@ -9,13 +9,14 @@
 ### Fixed
 - Fixed client iteration with master/slave and Sentinel replication (#923)
 - Fixed `*StreamConnection` looping forever when closed in the middle of a bulk reply (#1731)
-- Fixed cluster CAS transactions returning transaction objects for reads and sending `MULTI` twice
-- Fixed `MultiExec::multi()` being ignored as the first call of a CAS transaction
-- Fixed cleanup of empty transactions and transaction callbacks that throw PHP errors
-- Fixed `spl_object_hash()` deprecation on PHP 8.6 in `ConnectionErrorProof` pipeline
+- Fixed cluster CAS transactions returning transaction objects for reads and sending `MULTI` twice (#1735)
+- Fixed `MultiExec::multi()` being ignored as the first call of a CAS transaction (#1735)
+- Fixed cleanup of empty transactions and transaction callbacks that throw PHP errors (#1735)
+- Fixed `spl_object_hash()` deprecation on PHP 8.6 in `ConnectionErrorProof` pipeline (#1738)
+- Fixed `ConnectionErrorProof` pipeline returning too few responses or throwing `ValueError` (#1739)
 
 ### Security
-- Fixed aborted cluster transactions leaving node connections in `MULTI`
+- Fixed aborted cluster transactions leaving node connections in `MULTI` (#1735)
 
 ## v3.6.1 (2026-09-17)
 ### Fixed

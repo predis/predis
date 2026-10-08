@@ -139,6 +139,62 @@ class ConnectionErrorProofTest extends PredisTestCase
     }
 
     /**
+     * @dataProvider singleConnectionReadFailureProvider
+     * @group disconnected
+     */
+    public function testReturnsExceptionForFailedAndRemainingCommandsOnReadFailureWithSingleConnection(
+        int $sizeOfPipe,
+        int $failingIndex
+    ): void {
+        $connection = $this->getMockConnection('tcp://127.0.0.1:7001');
+        $exception = new ConnectionException($connection, 'Connection lost');
+
+        $readResponses = [];
+        $expectedResponses = [];
+
+        for ($i = 0; $i < $sizeOfPipe; ++$i) {
+            if ($i < $failingIndex) {
+                $readResponses[] = "value$i";
+                $expectedResponses[] = "value$i";
+            } else {
+                $expectedResponses[] = $exception;
+            }
+        }
+
+        $readResponses[] = $this->throwException($exception);
+
+        $connection
+            ->expects($this->once())
+            ->method('write');
+        $connection
+            ->expects($this->exactly($failingIndex + 1))
+            ->method('readResponse')
+            ->willReturnOnConsecutiveCalls(...$readResponses);
+
+        $pipeline = new ConnectionErrorProof(new Client($connection));
+
+        for ($i = 0; $i < $sizeOfPipe; ++$i) {
+            $pipeline->echo("value$i");
+        }
+
+        $responses = $pipeline->execute();
+
+        $this->assertCount($sizeOfPipe, $responses);
+        $this->assertSame($expectedResponses, $responses);
+    }
+
+    public function singleConnectionReadFailureProvider(): array
+    {
+        return [
+            'single command' => [1, 0],
+            'first of three' => [3, 0],
+            'second of three' => [3, 1],
+            'last of three' => [3, 2],
+            'fourth of five' => [5, 3],
+        ];
+    }
+
+    /**
      * Returns a mocked cluster connection routing commands by their first key.
      *
      * @param array $connectionsByKey Node connections indexed by key

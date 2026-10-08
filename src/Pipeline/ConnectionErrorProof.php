@@ -73,7 +73,7 @@ class ConnectionErrorProof extends Pipeline
             try {
                 $responses[$i] = $connection->readResponse($command);
             } catch (CommunicationException $exception) {
-                $add = count($commands) - count($responses);
+                $add = $sizeOfPipe - count($responses);
                 $responses = array_merge($responses, array_fill(0, $add, $exception));
 
                 break;
