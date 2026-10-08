@@ -2062,6 +2062,9 @@ class RedisClusterTest extends PredisTestCase
             'port' => 7001,
             'protocol' => '3',
         ]);
+        $expectedConnection
+            ->method('getParameters')
+            ->willReturn($parameters);
 
         $cluster = new RedisCluster($factory, $parameters);
 
