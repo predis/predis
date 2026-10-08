@@ -280,9 +280,8 @@ $options    = ['cluster' => 'redis'];
 $client = new Predis\Client($parameters, $options);
 ```
 
-Valkey 9 and newer support numbered databases in cluster mode. Set `database` (or its alias `db`)
-in the shared connection parameters to select the same database on every node, including nodes
-discovered through the slot map or `MOVED` and `ASK` redirects:
+Valkey 9 and newer support numbered databases in cluster mode when configured with `cluster-databases`.
+Set `database` in the shared connection parameters to select the same database on every node:
 
 ```php
 $client = new Predis\Client($parameters, [
@@ -291,10 +290,9 @@ $client = new Predis\Client($parameters, [
 ]);
 ```
 
-When configuring databases on individual seed nodes, use the same database for every seed; newly
-discovered nodes inherit the first seed's database. `database` takes precedence over `db` when both
-are supplied. Enable multiple databases on the Valkey cluster with `cluster-databases`; Redis clusters
-and older Valkey clusters continue to use their existing database restrictions.
+Discovered nodes inherit the first seed's database, including through `MOVED` and `ASK` redirects.
+Use the same database for every seed. Redis clusters and older Valkey clusters retain their database
+restrictions.
 
 #### Redis Gears with cluster ####
 
