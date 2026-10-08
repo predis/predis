@@ -415,6 +415,8 @@ class RelayConnectionTest extends PredisTestCase
         $response = $connection->executeCommand($cmdSelect);
 
         $this->assertInstanceOf(ErrorResponseInterface::class, $response);
+        $this->assertInstanceOf(ErrorResponse::class, $response);
+        $this->assertSame('RELAY_ERR_REDIS', (string) $response);
     }
 
     /**
@@ -455,6 +457,21 @@ class RelayConnectionTest extends PredisTestCase
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //
+
+    /**
+     * @group connected
+     */
+    public function testRawServerErrorReturnsMessageWithoutThrowing(): void
+    {
+        $client = $this->createClient(null, ['connections' => 'relay']);
+        $client->set('key', 'string');
+
+        $response = $client->executeRaw(['LPUSH', 'key', 'value'], $error);
+
+        $this->assertTrue($error);
+        $this->assertStringStartsWith('WRONGTYPE', $response);
+        $this->assertStringNotContainsString('Stack trace:', $response);
+    }
 
     /**
      * @group connected

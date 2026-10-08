@@ -214,7 +214,9 @@ class RelayConnection extends AbstractConnection
             $exception = $this->onCommandError($ex, $command);
 
             if ($exception instanceof ErrorResponseInterface) {
-                return $exception;
+                return $exception instanceof ServerException
+                    ? $exception->toErrorResponse()
+                    : $exception;
             }
 
             throw $exception;
