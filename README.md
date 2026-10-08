@@ -623,8 +623,8 @@ $profile = $client->unpack($client->get('profile'));
 
 Normal commands, `executeRaw()`, pipelines and transactions leave stored values untouched.
 Raw commands also bypass the configured key prefix. See
-[relay_compression.php](examples/relay_compression.php) for explicit packing and
-[relay_dispatcher_loop.php](examples/relay_dispatcher_loop.php) for dispatching Pub/Sub messages
+[`relay_compression.php`](examples/relay_compression.php) for explicit packing and
+[`relay_dispatcher_loop.php`](examples/relay_dispatcher_loop.php) for dispatching Pub/Sub messages
 with Relay's callback API.
 
 Developers can create their own connection classes to support whole new network backends, extend
