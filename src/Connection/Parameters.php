@@ -48,10 +48,6 @@ class Parameters implements ParametersInterface
      */
     public function __construct(array $parameters = [])
     {
-        if (!array_key_exists('database', $parameters) && array_key_exists('db', $parameters)) {
-            $parameters['database'] = $parameters['db'];
-        }
-
         if (!array_key_exists('retry', $parameters)) {
             // Retries disabled by default
             static::$defaults['retry'] = new Retry(new NoBackoff(), 0);

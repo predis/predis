@@ -173,11 +173,6 @@ class Factory implements FactoryInterface
             $parameters = $parameters ?: [];
         }
 
-        // Resolve the alias before merging defaults so an explicit db takes precedence.
-        if (!array_key_exists('database', $parameters) && array_key_exists('db', $parameters)) {
-            $parameters['database'] = $parameters['db'];
-        }
-
         if ($this->defaults) {
             $parameters += $this->defaults;
         }
