@@ -4,6 +4,7 @@
 ### Added
 ### Changed
 ### Fixed
+- Fixed interrupted pipelines leaving unread replies on reused connections; failed pipelines now discard remaining commands and reset execution state (#1309)
 
 ## v3.7.0 (2026-10-08)
 ### Added
