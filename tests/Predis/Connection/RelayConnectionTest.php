@@ -13,6 +13,7 @@
 namespace Predis\Connection;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Client;
 use Predis\ClientException;
 use Predis\Command\RawCommand;
 use Predis\NotSupportedException;
@@ -156,7 +157,7 @@ class RelayConnectionTest extends PredisTestCase
         $this->mockClient
             ->expects($this->once())
             ->method('AUTH')
-            ->with('foo', 'bar')
+            ->with(['foo', 'bar'])
             ->willReturn(true);
 
         $response = $this->connection->executeCommand(new RawCommand('AUTH', ['foo', 'bar']));
@@ -454,6 +455,17 @@ class RelayConnectionTest extends PredisTestCase
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //
+
+    /**
+     * @group connected
+     */
+    public function testRawAclAuthentication(): void
+    {
+        $client = new Client($this->getParameters(['username' => 'default']), ['connections' => 'relay']);
+
+        $this->assertSame('PONG', $client->ping());
+        $this->assertTrue($client->executeRaw(['AUTH', 'default', constant('REDIS_PASSWORD')]));
+    }
 
     /**
      * @group connected

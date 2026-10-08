@@ -4,6 +4,7 @@
 ### Added
 ### Changed
 ### Fixed
+- Fixed Relay ACL authentication accepting username and password (#1292)
 
 ## v3.7.0 (2026-10-08)
 ### Added

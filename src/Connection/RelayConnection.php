@@ -195,13 +195,19 @@ class RelayConnection extends AbstractConnection
 
         try {
             $name = $command->getId();
+            $arguments = $command->getArguments();
+
+            // Relay accepts ACL credentials as a single [username, password] argument.
+            if ($name === 'AUTH' && count($arguments) === 2) {
+                $arguments = [$arguments];
+            }
 
             // When using compression or a serializer, we'll need a dedicated
             // handler for `Predis\Command\RawCommand` calls, currently both
             // parameters are unsupported until a future Relay release
             return in_array($name, $this->atypicalCommands)
-                ? $this->client->{$name}(...$command->getArguments())
-                : $this->client->rawCommand($name, ...$command->getArguments());
+                ? $this->client->{$name}(...$arguments)
+                : $this->client->rawCommand($name, ...$arguments);
         } catch (RelayException $ex) {
             $exception = $this->onCommandError($ex, $command);
 
