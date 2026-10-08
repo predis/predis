@@ -12,6 +12,7 @@
 - Fixed cluster CAS transactions returning transaction objects for reads and sending `MULTI` twice
 - Fixed `MultiExec::multi()` being ignored as the first call of a CAS transaction
 - Fixed cleanup of empty transactions and transaction callbacks that throw PHP errors
+- Fixed `spl_object_hash()` deprecation on PHP 8.6 in `ConnectionErrorProof` pipeline
 
 ### Security
 - Fixed aborted cluster transactions leaving node connections in `MULTI`
