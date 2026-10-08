@@ -886,6 +886,114 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testAskSlotMapRetriesOnDifferentNodeOnStreamInitFailure(): void
+    {
+        $slotsmap = [
+            [0, 5460, ['127.0.0.1', 9381], []],
+            [5461, 10922, ['127.0.0.1', 6382], []],
+            [10923, 16383, ['127.0.0.1', 6383], []],
+        ];
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=0-5460');
+        $connection1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'CLUSTER', ['SLOTS']
+            ))
+            ->willThrowException(
+                new Connection\Resource\Exception\StreamInitException('Operation timed out [tcp://127.0.0.1:6381]')
+            );
+
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6382?slots=5461-10922');
+        $connection2
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'CLUSTER', ['SLOTS']
+            ))
+            ->willThrowException(
+                new Connection\Resource\Exception\StreamInitException('Operation timed out [tcp://127.0.0.1:6382]')
+            );
+
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6383?slots=10923-16383');
+        $connection3
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'CLUSTER', ['SLOTS']
+            ))
+            ->willReturn($slotsmap);
+
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->never())
+            ->method('create');
+
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+            ->onlyMethods(['getRandomConnection'])
+            ->setConstructorArgs([$factory, new Parameters()])
+            ->getMock();
+        $cluster
+            ->expects($this->exactly(3))
+            ->method('getRandomConnection')
+            ->willReturnOnConsecutiveCalls($connection1, $connection2, $connection3);
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
+
+        $cluster->askSlotMap();
+
+        $this->assertCount(16384, $cluster->getSlotMap());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testAskSlotMapSurfacesOriginalExceptionWhenPoolIsExhausted(): void
+    {
+        // The fail callback evicts the node being queried, since a StreamInitException
+        // carries no connection, then finds the pool empty and re-throws the original
+        // exception rather than a ClientException.
+        $this->expectException('Predis\Connection\Resource\Exception\StreamInitException');
+        $this->expectExceptionMessage('Error while switching to encrypted communication');
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6381?slots=0-5460');
+        $connection1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'CLUSTER', ['SLOTS']
+            ))
+            ->willThrowException(
+                new Connection\Resource\Exception\StreamInitException('Error while switching to encrypted communication')
+            );
+
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->never())
+            ->method('create');
+
+        /** @var RedisCluster|MockObject */
+        $cluster = $this->getMockBuilder('Predis\Connection\Cluster\RedisCluster')
+            ->onlyMethods(['getRandomConnection'])
+            ->setConstructorArgs([$factory, new Parameters()])
+            ->getMock();
+        $cluster
+            ->expects($this->exactly(2))
+            ->method('getRandomConnection')
+            ->willReturnOnConsecutiveCalls($connection1, null);
+
+        $cluster->add($connection1);
+
+        $cluster->askSlotMap();
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testAskSlotMapHonorsRetryLimitOnMultipleConnectionFailures(): void
     {
         $this->expectException('Predis\Connection\ConnectionException');

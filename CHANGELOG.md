@@ -7,6 +7,7 @@
 - Added testing with a new HNSW compression (#1737)
 
 ### Fixed
+- Fixed Redis Cluster not retrying slot map discovery on `StreamInitException` (#1717)
 - Fixed client iteration with master/slave and Sentinel replication (#923)
 - Fixed `*StreamConnection` looping forever when closed in the middle of a bulk reply (#1731)
 - Fixed cluster CAS transactions returning transaction objects for reads and sending `MULTI` twice (#1735)
