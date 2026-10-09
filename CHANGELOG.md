@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- Added support for numbered databases in Valkey clusters (#1696)
 ### Changed
 ### Fixed
 
