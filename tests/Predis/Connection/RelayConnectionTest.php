@@ -13,6 +13,7 @@
 namespace Predis\Connection;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Predis\Client;
 use Predis\ClientException;
 use Predis\Command\RawCommand;
 use Predis\NotSupportedException;
@@ -454,6 +455,22 @@ class RelayConnectionTest extends PredisTestCase
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //
+
+    /**
+     * @group connected
+     */
+    public function testClientReconnectsAfterDisconnect(): void
+    {
+        $client = new Client($this->getParameters(), ['connections' => 'relay']);
+
+        $this->assertEquals('PONG', $client->ping());
+        $client->disconnect();
+        $this->assertFalse($client->isConnected());
+
+        $this->assertEquals('PONG', $client->ping());
+        $this->assertTrue($client->isConnected());
+        $client->disconnect();
+    }
 
     /**
      * @group connected
