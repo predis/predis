@@ -32,6 +32,61 @@ class RedisClusterTest extends PredisTestCase
 {
     /**
      * @group disconnected
+     * @dataProvider databaseParametersProvider
+     */
+    public function testInheritsDatabaseOnSeedAndDiscoveredConnections(array $parameters, $database, array $defaults = []): void
+    {
+        $factory = new Connection\Factory();
+        $factory->setDefaultParameters($defaults);
+        $seed = $factory->create($parameters);
+        $cluster = new RedisCluster($factory, new Parameters($defaults));
+        $cluster->add($seed);
+        $cluster->getSlotMap()->setSlots(0, 16383, '127.0.0.1:6380');
+
+        $discovered = $cluster->getConnectionBySlot(0);
+
+        // Evicting the seed must not lose the database for subsequent discoveries.
+        $cluster->remove($seed);
+        $cluster->remove($discovered);
+        $cluster->useClusterSlots(false);
+        $cluster->applyMovedResponse('0 127.0.0.1:6381');
+        $redirected = $cluster->getConnectionBySlot(0);
+
+        foreach ([$seed, $discovered, $redirected] as $connection) {
+            $this->assertSame($database, $connection->getParameters()->database);
+            $selects = array_values(array_filter($connection->getInitCommands(), static function ($command) {
+                return $command->getId() === 'SELECT';
+            }));
+
+            if ($database === null) {
+                $this->assertCount(0, $selects);
+            } else {
+                $this->assertCount(1, $selects);
+                $this->assertSame([$database], $selects[0]->getArguments());
+            }
+        }
+    }
+
+    public function databaseParametersProvider(): array
+    {
+        return [
+            'database' => [['database' => 3], 3],
+            'shared database' => [[], 3, ['database' => 3]],
+            'zero database' => [['database' => 0], 0],
+            'seed database overrides defaults' => [['database' => 3], 3, ['database' => 9]],
+            'seed zero overrides defaults' => [['database' => 0], 0, ['database' => 3]],
+            'seed null disables selection' => [['database' => null], null, ['database' => 3]],
+            'seed empty disables selection' => [['database' => ''], null, ['database' => 3]],
+        ];
+    }
+
+    public function clusterDatabaseProvider(): array
+    {
+        return [[null], [0], [3]];
+    }
+
+    /**
+     * @group disconnected
      */
     public function testAcceptsCustomConnectionFactory(): void
     {
@@ -323,12 +378,14 @@ class RedisClusterTest extends PredisTestCase
                     [
                         'host' => '127.0.0.1',
                         'port' => '6383',
+                        'database' => null,
                     ],
                 ],
                 [
                     [
                         'host' => '127.0.0.1',
                         'port' => '6384',
+                        'database' => null,
                     ],
                 ]
             )
@@ -648,6 +705,7 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '9381',
+                'database' => null,
             ])
             ->willReturn($connection4);
 
@@ -714,6 +772,7 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '9381',
+                'database' => null,
             ])
             ->willReturn($connection4);
 
@@ -1131,14 +1190,15 @@ class RedisClusterTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @dataProvider clusterDatabaseProvider
      */
-    public function testAskResponseWithConnectionNotInPool(): void
+    public function testAskResponseWithConnectionNotInPool(?int $database): void
     {
         $askResponse = new Response\Error('ASK 1970 127.0.0.1:6381');
 
         $command = $this->getCommandFactory()->create('get', ['node:1001']);
 
-        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection1 = $this->getMockConnection(['database' => $database]);
         $connection1
             ->expects($this->exactly(2))
             ->method('executeCommand')
@@ -1171,6 +1231,7 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '6381',
+                'database' => $database,
             ])
             ->willReturn($connection3);
 
@@ -1225,14 +1286,15 @@ class RedisClusterTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @dataProvider clusterDatabaseProvider
      */
-    public function testMovedResponseWithConnectionNotInPool(): void
+    public function testMovedResponseWithConnectionNotInPool(?int $database): void
     {
         $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6381');
 
         $command = $this->getCommandFactory()->create('get', ['node:1001']);
 
-        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection1 = $this->getMockConnection(['database' => $database]);
         $connection1
             ->expects($this->once())
             ->method('executeCommand')
@@ -1259,6 +1321,7 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '6381',
+                'database' => $database,
             ])
             ->willReturn($connection3);
 
@@ -1304,6 +1367,7 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '2001:db8:0:f101::2',
                 'port' => '6379',
+                'database' => null,
             ])
             ->willReturn($connection2);
 
@@ -1401,6 +1465,7 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '6380',
+                'database' => null,
             ])
             ->willReturn($connection2);
 
@@ -1435,6 +1500,7 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '6380',
+                'database' => null,
             ])
             ->willReturn($connection2);
 
@@ -1481,6 +1547,7 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '6380',
+                'database' => null,
             ])
             ->willReturn($connection2);
 
@@ -1543,6 +1610,7 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '9381',
+                'database' => null,
             ])
             ->willReturn($connection4);
 
@@ -1994,6 +2062,9 @@ class RedisClusterTest extends PredisTestCase
             'port' => 7001,
             'protocol' => '3',
         ]);
+        $expectedConnection
+            ->method('getParameters')
+            ->willReturn($parameters);
 
         $cluster = new RedisCluster($factory, $parameters);
 

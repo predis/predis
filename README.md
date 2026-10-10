@@ -281,6 +281,20 @@ $options    = ['cluster' => 'redis'];
 $client = new Predis\Client($parameters, $options);
 ```
 
+Valkey 9 and newer support numbered databases in cluster mode when configured with `cluster-databases`.
+Set `database` in the shared connection parameters to select the same database on every node:
+
+```php
+$client = new Predis\Client($parameters, [
+    'cluster' => 'redis',
+    'parameters' => ['database' => 3],
+]);
+```
+
+Discovered nodes inherit the first seed's database, including through `MOVED` and `ASK` redirects.
+Use the same database for every seed. Redis clusters and older Valkey clusters retain their database
+restrictions.
+
 #### Redis Gears with cluster ####
 
 Since Redis v7.2, Redis Gears module is a part of Redis Stack bundle. Client supports a variety of

@@ -567,6 +567,22 @@ class RelayConnectionTest extends PredisTestCase
     /**
      * @group connected
      */
+    public function testClientReconnectsAfterDisconnect(): void
+    {
+        $client = new Client($this->getParameters(), ['connections' => 'relay']);
+
+        $this->assertEquals('PONG', $client->ping());
+        $client->disconnect();
+        $this->assertFalse($client->isConnected());
+
+        $this->assertEquals('PONG', $client->ping());
+        $this->assertTrue($client->isConnected());
+        $client->disconnect();
+    }
+
+    /**
+     * @group connected
+     */
     public function testGetResourceForcesConnection(): void
     {
         $connection = new RelayConnection($this->getParameters(), new Relay());

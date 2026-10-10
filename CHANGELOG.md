@@ -1,7 +1,11 @@
 ## Changelog
 
 ## Unreleased
+### Added
+- Added support for numbered databases in Valkey clusters (#1696)
+
 ### Fixed
+- Fixed interrupted pipelines leaving unread replies on reused connections; failed pipelines now discard remaining commands and reset execution state (#1309)
 - Fixed Relay Pub/Sub subscriptions rejecting message callbacks and failing when the `prefix` option is set (#1292)
 - Fixed Relay returning server errors as error responses and raw error messages without stack traces (#1292)
 - Fixed Relay reconnecting after an explicit disconnect (#1292)

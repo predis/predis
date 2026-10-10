@@ -911,7 +911,7 @@ class MultiExecTest extends PredisTestCase
         $factory
             ->expects($this->once())
             ->method('create')
-            ->with(['host' => '127.0.0.1', 'port' => '6380'])
+            ->with(['host' => '127.0.0.1', 'port' => '6380', 'database' => null])
             ->willReturn($target);
 
         $cluster = new RedisCluster($factory, new Parameters(['protocol' => 2]));
@@ -954,7 +954,7 @@ class MultiExecTest extends PredisTestCase
         $factory
             ->expects($this->once())
             ->method('create')
-            ->with(['host' => '127.0.0.1', 'port' => '6380'])
+            ->with(['host' => '127.0.0.1', 'port' => '6380', 'database' => null])
             ->willReturn($target);
 
         $cluster = new RedisCluster($factory, new Parameters(['protocol' => 2]));
