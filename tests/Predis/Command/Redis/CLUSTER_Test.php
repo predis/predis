@@ -12,6 +12,8 @@
 
 namespace Predis\Command\Redis;
 
+use Predis\Client;
+
 class CLUSTER_Test extends PredisCommandTestCase
 {
     /**
@@ -96,20 +98,11 @@ class CLUSTER_Test extends PredisCommandTestCase
     {
         $redis = $this->getClient();
 
-        // Sometimes the cluster can be in a state where slots are
-        // missing on some shards (e.g. they are being rebalanced)
-        $shards = $redis->cluster->shards();
-        $slots = $shards[0][1] ?? $shards[0]['slots'];
-
-        if (empty($slots)) {
-            $slots = $shards[1][1] ?? $shards[1]['slots'];
-        }
-
-        if (empty($slots)) {
-            $slots = $shards[2][1] ?? $shards[2]['slots'];
-        }
-
-        [$startSlot, $endSlot] = $slots;
+        // ADDSLOTSRANGE assigns the slots to the node executing it, so only a
+        // range that node already owns can be removed and added back. Slots of
+        // any other shard would be taken away from their master, which turns
+        // into a replica while the cluster answers with CLUSTERDOWN and MOVED.
+        [$startSlot, $endSlot] = $this->getSlotsRangeOfExecutingNode($redis);
 
         $this->assertEquals('OK', $redis->cluster->delSlotsRange($startSlot, $endSlot));
         $this->assertEquals('OK', $redis->cluster->addSlotsRange($startSlot, $endSlot));
@@ -126,5 +119,33 @@ class CLUSTER_Test extends PredisCommandTestCase
         $redis = $this->getClient();
 
         $this->assertNotEmpty($redis->cluster->links());
+    }
+
+    /**
+     * Returns a range of slots owned by the node executing CLUSTER commands.
+     *
+     * @param  Client $redis
+     * @return int[]
+     */
+    private function getSlotsRangeOfExecutingNode(Client $redis): array
+    {
+        $nodes = explode("\n", trim($redis->executeRaw(['CLUSTER', 'NODES'])));
+
+        foreach ($nodes as $node) {
+            $fields = explode(' ', trim($node));
+
+            if (strpos($fields[2], 'myself') === false) {
+                continue;
+            }
+
+            // Slots follow the first eight fields, as "start-end" or a single slot
+            foreach (array_slice($fields, 8) as $slots) {
+                if (preg_match('/^(\d+)(?:-(\d+))?$/', $slots, $range)) {
+                    return [(int) $range[1], (int) ($range[2] ?? $range[1])];
+                }
+            }
+        }
+
+        $this->fail('The node executing CLUSTER commands does not own any slots');
     }
 }
