@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Fixed
-- Fixed Relay Pub/Sub subscriptions rejecting message callbacks (#1292)
+- Fixed Relay Pub/Sub subscriptions rejecting message callbacks and failing when the `prefix` option is set (#1292)
 - Fixed Relay returning server errors as error responses and raw error messages without stack traces (#1292)
 - Fixed Relay reconnecting after an explicit disconnect (#1292)
 - Fixed Relay ACL authentication accepting username and password (#1292)

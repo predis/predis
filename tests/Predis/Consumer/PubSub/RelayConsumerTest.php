@@ -58,4 +58,69 @@ class RelayConsumerTest extends TestCase
         ], $messages);
         $this->assertFalse($consumer->valid());
     }
+
+    /**
+     * @group disconnected
+     */
+    public function testSubscribeAppliesPrefixToChannelsOnly(): void
+    {
+        $relay = $this->getMockBuilder(Relay::class)
+            ->onlyMethods(['isConnected', 'subscribe', 'close'])
+            ->getMock();
+        $relay->method('isConnected')->willReturn(true);
+        $relay->expects($this->once())
+            ->method('subscribe')
+            ->with(['predis:notifications', 'predis:control'], $this->isType('callable'))
+            ->willReturnCallback(static function (array $channels, callable $callback) use ($relay) {
+                $callback($relay, 'predis:notifications', 'Make it so.');
+
+                return true;
+            });
+
+        $client = new Client(new RelayConnection(new Parameters(), $relay), ['prefix' => 'predis:']);
+        $messages = [];
+
+        $client->pubSubLoop()->subscribe('notifications', 'control', static function ($message) use (&$messages) {
+            $messages[] = $message;
+        });
+
+        $this->assertEquals([
+            (object) ['kind' => 'message', 'channel' => 'predis:notifications', 'payload' => 'Make it so.'],
+        ], $messages);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testPsubscribeAppliesPrefixToPatternsOnly(): void
+    {
+        $relay = $this->getMockBuilder(Relay::class)
+            ->onlyMethods(['isConnected', 'psubscribe', 'close'])
+            ->getMock();
+        $relay->method('isConnected')->willReturn(true);
+        $relay->expects($this->once())
+            ->method('psubscribe')
+            ->with(['predis:notifications.*', 'predis:control.*'], $this->isType('callable'))
+            ->willReturnCallback(static function (array $patterns, callable $callback) use ($relay) {
+                $callback($relay, 'predis:notifications.*', 'predis:notifications.bridge', 'Make it so.');
+
+                return true;
+            });
+
+        $client = new Client(new RelayConnection(new Parameters(), $relay), ['prefix' => 'predis:']);
+        $messages = [];
+
+        $client->pubSubLoop()->psubscribe('notifications.*', 'control.*', static function ($message) use (&$messages) {
+            $messages[] = $message;
+        });
+
+        $this->assertEquals([
+            (object) [
+                'kind' => 'pmessage',
+                'pattern' => 'predis:notifications.*',
+                'channel' => 'predis:notifications.bridge',
+                'payload' => 'Make it so.',
+            ],
+        ], $messages);
+    }
 }

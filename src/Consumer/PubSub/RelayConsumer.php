@@ -32,8 +32,10 @@ class RelayConsumer extends Consumer
 
         $this->statusFlags |= self::STATUS_SUBSCRIBED;
 
-        $command = $this->client->createCommand('subscribe', [
-            $channels,
+        $command = $this->client->createCommand('subscribe', $channels);
+
+        $command->setRawArguments([
+            $command->getArguments(),
             static function ($relay, $channel, $message) use ($callback) {
                 $callback((object) [
                     'kind' => is_null($message) ? self::SUBSCRIBE : self::MESSAGE,
@@ -61,8 +63,10 @@ class RelayConsumer extends Consumer
 
         $this->statusFlags |= self::STATUS_PSUBSCRIBED;
 
-        $command = $this->client->createCommand('psubscribe', [
-            $patterns,
+        $command = $this->client->createCommand('psubscribe', $patterns);
+
+        $command->setRawArguments([
+            $command->getArguments(),
             static function ($relay, $pattern, $channel, $message) use ($callback) {
                 $callback((object) [
                     'kind' => is_null($message) ? self::PSUBSCRIBE : self::PMESSAGE,
