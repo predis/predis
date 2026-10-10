@@ -64,7 +64,6 @@ class FTALIASLIST_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisVersion >= 8.9.0
      */
@@ -81,7 +80,6 @@ class FTALIASLIST_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisVersion >= 8.9.0
      */
@@ -112,7 +110,6 @@ class FTALIASLIST_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisVersion >= 8.9.0
      */

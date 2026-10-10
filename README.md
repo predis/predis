@@ -26,6 +26,7 @@ More details about this project can be found on the [frequently asked questions]
 - Abstraction for `SCAN`, `SSCAN`, `ZSCAN` and `HSCAN` (Redis >= 2.8) based on PHP iterators.
 - Connections are established lazily by the client upon the first command and can be persisted.
 - Connections can be established via TCP/IP (also TLS/SSL-encrypted) or UNIX domain sockets.
+- Optional [Relay](#using-relay) integration for shared memory caching, serialization and compression.
 - Support for custom connection classes for providing different network or protocol backends.
 - Flexible system for defining custom commands and override the default ones.
 
@@ -612,15 +613,8 @@ $response = $client->lpushrand('random_values', $seed = mt_rand());
 
 ### Customizable connection backends ###
 
-Predis can use different connection backends to connect to Redis. The builtin Relay integration
-leverages the [Relay](https://github.com/cachewerk/relay) extension for PHP for major performance
-gains, by caching a partial replica of the Redis dataset in PHP shared runtime memory.
-
-```php
-$client = new Predis\Client('tcp://127.0.0.1', [
-    'connections' => 'relay',
-]);
-```
+Predis uses PHP streams by default and supports different connection backends. The optional
+[Relay integration](#using-relay) provides a native extension with shared memory caching.
 
 Developers can create their own connection classes to support whole new network backends, extend
 existing classes or provide completely different implementations. Connection classes must implement
@@ -677,6 +671,149 @@ $retry = new \Predis\Retry\Retry(
 // Update a list of exceptions to catch
 $retry->updateCatchableExceptions([Exception::class]);
 ```
+
+## Using Relay ##
+
+[Relay](https://github.com/cachewerk/relay) is an optional PHP extension that caches a partial
+replica of Redis or Valkey data in PHP shared memory. Cached reads can avoid network round trips,
+which can improve performance for applications that repeatedly read the same keys. Relay also
+supports serialization, compression and cache event listeners.
+
+### Installation and configuration ###
+
+Install and enable the extension using the [Relay installation guide](https://relay.so/docs/installation).
+Make sure it is enabled in the PHP installation that runs your application, including PHP-FPM
+when applicable. Check the CLI installation with:
+
+```shell
+php --ri relay
+```
+
+Then select Relay with the `connections` client option. Connection parameters such as `host`,
+`port`, `username`, `password` and `database` are supplied as usual:
+
+```php
+$client = new Predis\Client([
+    'host' => '127.0.0.1',
+    'port' => 6379,
+], [
+    'connections' => 'relay',
+]);
+
+$client->set('hello', 'world');
+echo $client->get('hello');
+```
+
+Caching is enabled by default. Set the `cache` connection parameter to `false` to disable caching
+for that connection. Configure the shared memory budget and eviction policy with `relay.maxmemory`
+and `relay.eviction_policy` in [Relay's configuration](https://relay.so/docs/configuration).
+
+### Serialization and compression ###
+
+The `serializer` connection parameter accepts `php`, `igbinary`, `msgpack` or `json`, and
+`compression` accepts `lzf`, `lz4` or `zstd`, depending on the capabilities of your Relay build.
+Use `php` or `igbinary` when you need to preserve PHP objects. Serialization and compression can
+be used together to reduce the size of stored values and network traffic.
+
+Predis requires explicit `pack()` and `unpack()` calls when using these options:
+
+```php
+$client = new Predis\Client([
+    'host' => '127.0.0.1',
+    'serializer' => 'php',
+    'compression' => 'lzf',
+], ['connections' => 'relay']);
+
+$client->set('profile', $client->pack(['name' => 'Picard']));
+$profile = $client->unpack($client->get('profile'));
+```
+
+Normal commands, `executeRaw()`, pipelines and transactions leave stored values untouched.
+Apply `pack()` before writing and `unpack()` after reading. Raw commands also bypass the configured
+key prefix. See [`relay_compression.php`](examples/relay_compression.php) for a complete example.
+
+### Cache events ###
+
+Relay exposes [cache events](https://relay.so/docs/1.x/events) through the connection's `onInvalidated()`
+and `onFlushed()` methods. Applications that keep their own local copies of Redis values can use
+these callbacks to clear them when a key changes or a database is flushed.
+
+Open the connection before registering listeners:
+
+```php
+$client = new Predis\Client('tcp://127.0.0.1', ['connections' => 'relay']);
+$client->connect();
+$connection = $client->getConnection();
+
+$connection->onInvalidated(static function (\Relay\Event $event) {
+    echo "Invalidated key: {$event->key}\n";
+});
+
+$connection->onFlushed(static function (\Relay\Event $event) {
+    echo "Redis database flushed.\n";
+});
+
+$connection->dispatchEvents();
+```
+
+Database flushes have their own event and do not emit an invalidation event for each key.
+Use `dispatchEvents()` to process pending events explicitly in a worker loop. Listeners are tied
+to the connection and database, so register them again after changing either. See
+[`relay_events.php`](examples/relay_events.php) for an example that keeps a local value in sync.
+
+### Pub/Sub ###
+
+Relay Pub/Sub consumers process messages through a blocking callback instead of a `foreach` loop.
+Pass the callback as the last argument to `subscribe()` or `psubscribe()`. Set `read_write_timeout`
+to `0` when the consumer needs to wait indefinitely:
+
+```php
+$client = new Predis\Client(['read_write_timeout' => 0], ['connections' => 'relay']);
+$pubsub = $client->pubSubLoop();
+
+$pubsub->subscribe('notifications', 'control', static function ($message, \Relay\Relay $relay) {
+    if ($message->kind !== 'message') {
+        return;
+    }
+
+    if ($message->channel === 'control' && $message->payload === 'stop') {
+        $relay->unsubscribe();
+
+        return;
+    }
+
+    echo "{$message->channel}: {$message->payload}\n";
+});
+```
+
+Unsubscribing from all channels returns from the callback loop. From another terminal, publish a
+message and then stop the consumer:
+
+```shell
+redis-cli PUBLISH notifications "Make it so."
+redis-cli PUBLISH control stop
+```
+
+See [`relay_pubsub_consumer.php`](examples/relay_pubsub_consumer.php) for subscriptions and
+[`relay_dispatcher_loop.php`](examples/relay_dispatcher_loop.php) for routing messages to separate
+channel callbacks.
+
+### Compatibility ###
+
+Relay supports the normal Predis command API, key prefixes, pipelines and transactions, with some
+differences from the default connection backend:
+
+- Redis server errors follow the `exceptions` option; connection errors still throw exceptions.
+- Connection reuse is controlled by Relay's `relay.default_pconnect` setting. The `persistent`
+  connection parameter used by Predis does not select Relay's connection mode.
+- Low-level connection methods such as `read()`, `write()`, `writeRequest()` and `readResponse()`
+  are unavailable through Relay.
+- Pub/Sub uses callbacks, and some command responses differ when using RESP3.
+
+The `relay-incompatible` and `relay-resp3` groups in the [test suite](tests/README.md) identify
+remaining differences. Please report incompatibilities through the
+[issue tracker](https://github.com/predis/predis/issues).
+
 
 ## RESP3 ##
 

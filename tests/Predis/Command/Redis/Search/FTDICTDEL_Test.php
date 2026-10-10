@@ -78,7 +78,6 @@ class FTDICTDEL_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @dataProvider dictionariesProvider
      * @param  array $addArguments
      * @param  array $deleteArguments

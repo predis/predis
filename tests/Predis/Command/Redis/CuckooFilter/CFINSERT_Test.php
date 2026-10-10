@@ -115,7 +115,6 @@ class CFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.6.0
      */
@@ -134,7 +133,6 @@ class CFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
@@ -166,7 +164,6 @@ class CFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */

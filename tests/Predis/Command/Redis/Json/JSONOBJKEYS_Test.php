@@ -78,7 +78,6 @@ class JSONOBJKEYS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  array  $jsonArguments
      * @param  string $key

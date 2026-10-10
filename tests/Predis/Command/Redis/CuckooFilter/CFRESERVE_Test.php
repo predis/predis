@@ -101,7 +101,6 @@ class CFRESERVE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.6.0
      */

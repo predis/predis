@@ -18,7 +18,6 @@ use ValueError;
 
 /**
  * @group commands
- * @group relay-incompatible
  * @group realm-generic
  */
 class HOTKEYS_Test extends PredisCommandTestCase
@@ -61,6 +60,7 @@ class HOTKEYS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 8.5.0
      * @return void
      */
@@ -137,6 +137,7 @@ class HOTKEYS_Test extends PredisCommandTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
      * @requiresRedisVersion >= 8.5.0
      * @return void
      */

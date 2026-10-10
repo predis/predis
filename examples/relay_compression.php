@@ -30,8 +30,8 @@ $quote = (object) [
 // Serialize object and apply LZ4 compression, then write key to Redis
 $client->set('quote', $client->pack($quote));
 
-// NOTE: In Predis v3.x serialization and compression will happen
-// automatically without the need to call `pack()` and `unpack()`
+// Normal commands, executeRaw(), pipelines and transactions leave values
+// untouched. Use pack() and unpack() explicitly when these options are enabled.
 
 // Retrieve raw binary value from Redis
 $raw = $client->get('quote');

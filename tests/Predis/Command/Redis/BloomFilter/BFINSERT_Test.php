@@ -105,7 +105,6 @@ class BFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 2.6.0
      */
@@ -136,7 +135,6 @@ class BFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisBfVersion >= 1.0.0
      */
@@ -186,7 +184,6 @@ class BFINSERT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @dataProvider unexpectedValuesProvider
      * @param  array  $arguments
      * @param  string $expectedExceptionMessage

@@ -77,7 +77,6 @@ class JSONGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @dataProvider jsonProvider
      * @param  array  $jsonData
      * @param  string $key
@@ -120,7 +119,6 @@ class JSONGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisJsonVersion >= 1.0.0
      */
@@ -137,7 +135,6 @@ class JSONGET_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @dataProvider unexpectedValuesProvider
      * @param  array  $arguments
      * @param  string $expectedExceptionMessage

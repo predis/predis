@@ -100,7 +100,6 @@ class TSNRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisVersion >= 8.9.0
      */
@@ -151,7 +150,6 @@ class TSNRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisVersion >= 8.9.0
      */
@@ -174,7 +172,6 @@ class TSNRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisVersion >= 8.9.0
      */
@@ -201,7 +198,6 @@ class TSNRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisVersion >= 8.9.0
      */
@@ -232,7 +228,6 @@ class TSNRANGE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisVersion >= 8.9.0
      */

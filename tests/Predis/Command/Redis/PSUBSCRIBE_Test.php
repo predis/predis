@@ -39,7 +39,6 @@ class PSUBSCRIBE_Test extends PredisCommandTestCase
 
     /**
      * @group disconnected
-     * @group relay-incompatible
      */
     public function testFilterArguments(): void
     {

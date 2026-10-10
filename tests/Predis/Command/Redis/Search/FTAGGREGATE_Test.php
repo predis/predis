@@ -304,7 +304,6 @@ class FTAGGREGATE_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @return void
      * @requiresRedisVersion >= 1.1.0
      */

@@ -99,7 +99,6 @@ class MULTI_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-incompatible
-     * @group relay-fixme
      */
     public function testActuallyReturnsResponseObjectAbstraction(): void
     {
@@ -113,7 +112,6 @@ class MULTI_Test extends PredisCommandTestCase
     /**
      * @group connected
      * @group relay-incompatible
-     * @group relay-fixme
      */
     public function testThrowsExceptionWhenCallingMultiInsideTransaction(): void
     {

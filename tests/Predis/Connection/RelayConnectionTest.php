@@ -15,6 +15,7 @@ namespace Predis\Connection;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Predis\ClientException;
+use Predis\Command\Argument\Stream\XInfoStreamOptions;
 use Predis\Command\RawCommand;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
@@ -157,7 +158,7 @@ class RelayConnectionTest extends PredisTestCase
         $this->mockClient
             ->expects($this->once())
             ->method('AUTH')
-            ->with('foo', 'bar')
+            ->with(['foo', 'bar'])
             ->willReturn(true);
 
         $response = $this->connection->executeCommand(new RawCommand('AUTH', ['foo', 'bar']));
@@ -415,6 +416,8 @@ class RelayConnectionTest extends PredisTestCase
         $response = $connection->executeCommand($cmdSelect);
 
         $this->assertInstanceOf(ErrorResponseInterface::class, $response);
+        $this->assertInstanceOf(ErrorResponse::class, $response);
+        $this->assertSame('RELAY_ERR_REDIS', (string) $response);
     }
 
     /**
@@ -458,6 +461,111 @@ class RelayConnectionTest extends PredisTestCase
 
     /**
      * @group connected
+     * @dataProvider packingProvider
+     */
+    public function testExplicitPackingWorksForCommandsAndRawCalls(array $options, $value): void
+    {
+        $client = $this->createClient($options, ['connections' => 'relay', 'prefix' => 'packed:']);
+        $packed = $client->pack($value);
+
+        $this->assertSame('OK', $client->set('normal', $packed));
+        $this->assertSame($packed, $client->get('normal'));
+        $this->assertSame($value, $client->unpack($client->get('normal')));
+
+        $this->assertSame('OK', $client->executeRaw(['SET', 'raw', $packed]));
+        $this->assertSame($packed, $client->executeRaw(['GET', 'raw']));
+        $this->assertSame($value, $client->unpack($client->executeRaw(['GET', 'raw'])));
+        $this->assertNull($client->executeRaw(['GET', 'packed:raw']));
+
+        $responses = $client->pipeline(static function ($pipe) use ($packed) {
+            $pipe->set('pipeline', $packed);
+            $pipe->get('pipeline');
+        });
+        $this->assertSame($packed, $responses[1]);
+        $this->assertSame($value, $client->unpack($responses[1]));
+
+        $responses = $client->transaction(static function ($tx) use ($packed) {
+            $tx->set('transaction', $packed);
+            $tx->get('transaction');
+        });
+        $this->assertSame($packed, $responses[1]);
+        $this->assertSame($value, $client->unpack($responses[1]));
+    }
+
+    public function packingProvider(): array
+    {
+        return [
+            'serialization' => [['serializer' => 'php'], ['author' => 'Picard']],
+            'compression' => [['compression' => 'lzf'], str_repeat('Make it so. ', 100)],
+            'serialization and compression' => [
+                ['serializer' => 'php', 'compression' => 'lzf'],
+                ['author' => 'Picard', 'quote' => str_repeat('Make it so. ', 100)],
+            ],
+        ];
+    }
+
+    /**
+     * @group connected
+     */
+    public function testRawServerErrorReturnsMessageWithoutThrowing(): void
+    {
+        $client = $this->createClient(null, ['connections' => 'relay']);
+        $client->set('key', 'string');
+
+        $response = $client->executeRaw(['LPUSH', 'key', 'value'], $error);
+
+        $this->assertTrue($error);
+        $this->assertStringStartsWith('WRONGTYPE', $response);
+        $this->assertStringNotContainsString('Stack trace:', $response);
+    }
+
+    /**
+     * @group connected
+     */
+    public function testRawAclAuthenticationAndReconnect(): void
+    {
+        $client = new Client($this->getParameters(['username' => 'default']), ['connections' => 'relay']);
+
+        $this->assertSame('PONG', $client->ping());
+        $this->assertTrue($client->executeRaw(['AUTH', 'default', constant('REDIS_PASSWORD')]));
+        $client->disconnect();
+        $this->assertSame('PONG', $client->ping());
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testXinfoMatchesStreamConnectionReplies(): void
+    {
+        $relay = $this->createClient(null, ['connections' => 'relay']);
+        $stream = new Client($this->getParameters());
+
+        $relay->xadd('stream', ['field' => 'value'], '1-0');
+        $relay->xgroup->create('stream', 'group', '0');
+        $relay->xreadgroup('group', 'consumer', 1, null, false, 'stream', '>');
+
+        $this->assertSame($stream->xinfo->groups('stream'), $relay->xinfo->groups('stream'));
+        $this->assertSame(
+            $stream->xinfo->stream('stream', (new XInfoStreamOptions())->full(5)),
+            $relay->xinfo->stream('stream', (new XInfoStreamOptions())->full(5))
+        );
+
+        $expected = $stream->xinfo->consumers('stream', 'group');
+        $actual = $relay->xinfo->consumers('stream', 'group');
+        $withoutTiming = static function (array $consumers) {
+            return array_map(static function (array $consumer) {
+                unset($consumer['idle'], $consumer['inactive']);
+
+                return $consumer;
+            }, $consumers);
+        };
+
+        $this->assertSame($withoutTiming($expected), $withoutTiming($actual));
+    }
+
+    /**
+     * @group connected
      */
     public function testClientReconnectsAfterDisconnect(): void
     {
@@ -477,7 +585,7 @@ class RelayConnectionTest extends PredisTestCase
      */
     public function testGetResourceForcesConnection(): void
     {
-        $connection = new RelayConnection(new Parameters(), new Relay());
+        $connection = new RelayConnection($this->getParameters(), new Relay());
 
         $this->assertFalse($connection->isConnected());
         $connection->getResource();

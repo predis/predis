@@ -116,7 +116,6 @@ class CFADDNX_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-resp3
      * @requiresRedisBfVersion >= 1.0.0
      */
     public function testThrowsExceptionOnWrongType(): void
