@@ -18,6 +18,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Command\Factory as CommandFactory;
 use Predis\Command\Processor\KeyPrefixProcessor;
 use Predis\Command\RawCommand;
+use Predis\Command\Redis\Utils\CommandUtility;
 use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\Factory;
 use Predis\Connection\NodeConnectionInterface;
@@ -1729,7 +1730,7 @@ class ClientTest extends PredisTestCase
 
         $this->assertInstanceOf(SentinelReplication::class, $connection);
 
-        // SENTINEL slaves returns a map under RESP3 - calling getSlaves()
+        // SENTINEL replicas returns a map under RESP3 - calling getSlaves()
         // exercises the parsing path that previously read fields by
         // positional index. We do not assert on cardinality because the
         // CI topology may not include replicas; we only require that the
@@ -1743,6 +1744,39 @@ class ClientTest extends PredisTestCase
 
         $client->set('sentinel_resp3_test_key', 'sentinel_resp3_test_value');
         $this->assertEquals('sentinel_resp3_test_value', $client->get('sentinel_resp3_test_key'));
+    }
+
+    /**
+     * @group connected
+     * @group sentinel
+     * @group relay-incompatible
+     */
+    public function testSentinelReplicationDiscoversReplicasReportedBySentinel(): void
+    {
+        $client = $this->createClient();
+        $connection = $client->getConnection();
+
+        $this->assertInstanceOf(SentinelReplication::class, $connection);
+
+        // SENTINEL SLAVES is understood by every Sentinel version, so it is the
+        // reference for what SENTINEL REPLICAS (or the fallback to SENTINEL
+        // SLAVES on Redis < 5.0) has to discover.
+        $reportedReplicas = $connection->getSentinelConnection()->executeCommand(
+            RawCommand::create('SENTINEL', 'slaves', constant('REDIS_SENTINEL_SERVICE'))
+        );
+
+        $expectedReplicas = array_map(static function (array $replica): string {
+            $replica = CommandUtility::arrayToDictionary($replica, null, false);
+
+            return "{$replica['ip']}:{$replica['port']}";
+        }, $reportedReplicas);
+
+        $discoveredReplicas = array_map('strval', $connection->getSlaves());
+
+        sort($expectedReplicas);
+        sort($discoveredReplicas);
+
+        $this->assertSame($expectedReplicas, $discoveredReplicas);
     }
 
     // ******************************************************************** //

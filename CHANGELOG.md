@@ -4,6 +4,9 @@
 ### Added
 - Added support for numbered databases in Valkey clusters (#1696)
 
+### Changed
+- Use `SENTINEL REPLICAS` for Sentinel replica discovery, falling back to `SENTINEL SLAVES` on Redis < 5.0 (#776)
+
 ### Fixed
 - Fixed interrupted pipelines leaving unread replies on reused connections; failed pipelines now discard remaining commands and reset execution state (#1309)
 - Fixed Relay Pub/Sub subscriptions rejecting message callbacks and failing when the `prefix` option is set (#1292)

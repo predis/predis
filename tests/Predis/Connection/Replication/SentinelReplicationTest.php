@@ -298,13 +298,13 @@ class SentinelReplicationTest extends PredisTestCase
             ->method('executeCommand')
             ->withConsecutive(
                 [$this->isRedisCommand('SENTINEL', ['get-master-addr-by-name', 'svc'])],
-                [$this->isRedisCommand('SENTINEL', ['slaves', 'svc'])]
+                [$this->isRedisCommand('SENTINEL', ['replicas', 'svc'])]
             )
             ->willReturnOnConsecutiveCalls(
                 // SENTINEL get-master-addr-by-name svc
                 ['127.0.0.1', '6381'],
 
-                // SENTINEL slaves svc
+                // SENTINEL replicas svc
                 [
                     [
                         'name', '127.0.0.1:6382',
@@ -477,7 +477,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->withConsecutive(
                 [$this->isRedisCommand('SENTINEL', ['sentinels', 'svc'])],
                 [$this->isRedisCommand('SENTINEL', ['get-master-addr-by-name', 'svc'])],
-                [$this->isRedisCommand('SENTINEL', ['slaves', 'svc'])]
+                [$this->isRedisCommand('SENTINEL', ['replicas', 'svc'])]
             )
             ->willReturnOnConsecutiveCalls(
                 // SENTINEL sentinels svc
@@ -494,7 +494,7 @@ class SentinelReplicationTest extends PredisTestCase
                 // SENTINEL get-master-addr-by-name svc
                 ['127.0.0.1', '6381'],
 
-                // SENTINEL slaves svc
+                // SENTINEL replicas svc
                 [
                     [
                         'name', '127.0.0.1:6382',
@@ -603,7 +603,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->withConsecutive(
-                [$this->isRedisCommand('SENTINEL', ['slaves', 'svc'])]
+                [$this->isRedisCommand('SENTINEL', ['replicas', 'svc'])]
             )
             ->willReturnOnConsecutiveCalls(
                 [
@@ -646,7 +646,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->withConsecutive(
-                [$this->isRedisCommand('SENTINEL', ['slaves', 'svc'])]
+                [$this->isRedisCommand('SENTINEL', ['replicas', 'svc'])]
             )
             ->willReturnOnConsecutiveCalls(
                 [
@@ -694,6 +694,69 @@ class SentinelReplicationTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testMethodGetSlavesFallsBackToSentinelSlavesWhenReplicasIsUnknown(): void
+    {
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $sentinel1
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('SENTINEL', ['replicas', 'svc'])],
+                [$this->isRedisCommand('SENTINEL', ['slaves', 'svc'])]
+            )
+            ->willReturnOnConsecutiveCalls(
+                // SENTINEL replicas svc (Redis < 5.0)
+                new Response\Error("ERR Unknown sentinel subcommand 'replicas'"),
+
+                // SENTINEL slaves svc
+                [
+                    [
+                        'name', '127.0.0.1:6382',
+                        'ip', '127.0.0.1',
+                        'port', '6382',
+                        'runid', '112cdebd22924a7d962be496f3a1c4c7c9bad93f',
+                        'flags', 'slave',
+                        'master-host', '127.0.0.1',
+                        'master-port', '6381',
+                    ],
+                ]
+            );
+
+        $replication = $this->getReplicationConnection('svc', [$sentinel1]);
+
+        $slaves = $replication->getSlaves();
+
+        $this->assertCount(1, $slaves);
+        $this->assertSame('127.0.0.1:6382', (string) $slaves[0]);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testMethodGetSlavesDoesNotFallBackToSentinelSlavesOnOtherErrors(): void
+    {
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessage('ERR No such master with that name');
+
+        $sentinel1 = $this->getMockSentinelConnection('tcp://127.0.0.1:5381?role=sentinel');
+        $sentinel1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->isRedisCommand(
+                'SENTINEL', ['replicas', 'svc']
+            ))
+            ->willReturn(
+                new Response\Error('ERR No such master with that name')
+            );
+
+        $replication = $this->getReplicationConnection('svc', [$sentinel1]);
+
+        $replication->getSlaves();
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testMethodGetSlavesThrowsExceptionOnNoAvailableSentinels(): void
     {
         $this->expectException('Predis\ClientException');
@@ -704,7 +767,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->expects($this->any())
             ->method('executeCommand')
             ->with($this->isRedisCommand(
-                'SENTINEL', ['slaves', 'svc']
+                'SENTINEL', ['replicas', 'svc']
             ))
             ->willThrowException(
                 new Connection\ConnectionException($sentinel1, 'Unknown connection error [127.0.0.1:5381]')
@@ -762,7 +825,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->expects($this->any())
             ->method('executeCommand')
             ->with($this->isRedisCommand(
-                'SENTINEL', ['slaves', 'svc']
+                'SENTINEL', ['replicas', 'svc']
             ))
             ->willReturn(
                 [
@@ -817,7 +880,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->expects($this->exactly(2))
             ->method('executeCommand')
             ->withConsecutive(
-                [$this->isRedisCommand('SENTINEL', ['slaves', 'svc'])],
+                [$this->isRedisCommand('SENTINEL', ['replicas', 'svc'])],
                 [$this->isRedisCommand('SENTINEL', ['get-master-addr-by-name', 'svc'])]
             )
             ->willReturnOnConsecutiveCalls(
@@ -1209,7 +1272,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->expects($this->once())
             ->method('executeCommand')
             ->withConsecutive(
-                [$this->isRedisCommand('SENTINEL', ['slaves', 'svc'])]
+                [$this->isRedisCommand('SENTINEL', ['replicas', 'svc'])]
             )
             ->willReturnOnConsecutiveCalls(
                 [
@@ -1309,7 +1372,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->expects($this->any())
             ->method('executeCommand')
             ->with($this->isRedisCommand(
-                'SENTINEL', ['slaves', 'svc']
+                'SENTINEL', ['replicas', 'svc']
             ))
             ->willReturn(
                 [
@@ -1398,7 +1461,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->expects($this->any())
             ->method('executeCommand')
             ->with($this->isRedisCommand(
-                'SENTINEL', ['slaves', 'svc']
+                'SENTINEL', ['replicas', 'svc']
             ))
             ->willReturn(
                 [
@@ -1923,7 +1986,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->withConsecutive(
                 [$this->isRedisCommand('SENTINEL', ['sentinels', 'srv'])],
                 [$this->isRedisCommand('SENTINEL', ['get-master-addr-by-name', 'srv'])],
-                [$this->isRedisCommand('SENTINEL', ['slaves', 'srv'])]
+                [$this->isRedisCommand('SENTINEL', ['replicas', 'srv'])]
             )
             ->willReturnOnConsecutiveCalls(
                 // SENTINEL sentinels srv
@@ -1938,7 +2001,7 @@ class SentinelReplicationTest extends PredisTestCase
                 ],
                 // SENTINEL get-master-addr-by-name srv
                 ['127.0.0.1', '6381'],
-                // SENTINEL slaves srv
+                // SENTINEL replicas srv
                 []
             );
 
@@ -2159,7 +2222,7 @@ class SentinelReplicationTest extends PredisTestCase
             ->expects($this->any())
             ->method('executeCommand')
             ->with($this->isRedisCommand(
-                'SENTINEL', ['slaves', 'svc']
+                'SENTINEL', ['replicas', 'svc']
             ))
             ->willReturn(
                 [
