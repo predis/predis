@@ -39,8 +39,8 @@
 - Fixed `Stream::write()` and `read()` leaving a dead connection when a host error handler throws exception (#1725)
 
 ### Security
-- Deprecated `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
-- Fixed CRLF command smuggling and node misrouting in `AbstractAggregateConnection::write()` and `CommandInterface::deserializeCommand()` (CVE GHSA-w6f5-v2h6-g786)
+- Deprecated `CommandInterface::deserializeCommand()` (GHSA-v32q-pmmw-cf38)
+- Fixed CRLF command smuggling and node misrouting in `AbstractAggregateConnection::write()` and `CommandInterface::deserializeCommand()` (GHSA-v32q-pmmw-cf38)
 
 ## v3.6.0 (2026-08-14)
 ### Added
