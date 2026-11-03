@@ -56,9 +56,13 @@ class INFO extends RedisCommand
                 continue;
             }
 
-            if (preg_match('/^# (\w+)$/', $row, $matches)) {
+            if (preg_match('/^# (.+)$/', $row, $matches)) {
                 $info[$matches[1]] = [];
                 $current = &$info[$matches[1]];
+                continue;
+            }
+
+            if (strpos($row, ':') === false) {
                 continue;
             }
 
