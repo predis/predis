@@ -13,6 +13,7 @@
 - Fixed Relay returning server errors as error responses and raw error messages without stack traces (#1292)
 - Fixed Relay reconnecting after an explicit disconnect (#1292)
 - Fixed Relay ACL authentication accepting username and password (#1292)
+- Fixed Relay throwing a `TypeError` instead of returning an error response when selecting a non-integer database (#1751)
 
 ## v3.7.0 (2026-10-08)
 ### Added

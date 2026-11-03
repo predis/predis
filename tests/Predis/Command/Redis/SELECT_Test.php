@@ -119,31 +119,11 @@ class SELECT_Test extends PredisCommandTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      */
     public function testThrowsExceptionOnUnexpectedDatabaseName(): void
     {
         $this->expectException('Predis\Response\ServerException');
         $this->expectExceptionMessageMatches('/ERR.*(invalid DB index|value is not an integer or out of range)/');
-
-        $redis = $this->getClient();
-
-        $redis->select('x');
-    }
-
-    /**
-     * Relay only accepts integers in `select()` and rejects anything else
-     * client-side, instead of letting the server reply with an error.
-     *
-     * @group connected
-     */
-    public function testThrowsTypeErrorOnUnexpectedDatabaseNameWithRelay(): void
-    {
-        if (!getenv('USE_RELAY')) {
-            $this->markTestSkipped('Only Relay rejects database names client-side.');
-        }
-
-        $this->expectException('TypeError');
 
         $redis = $this->getClient();
 
