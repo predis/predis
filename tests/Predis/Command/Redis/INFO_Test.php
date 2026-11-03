@@ -192,6 +192,48 @@ BUFFER;
     /**
      * @group disconnected
      */
+    public function testCanParseSectionNamesContainingSpaces(): void
+    {
+        // INFO output from Valkey 9
+        $raw = <<<BUFFER
+# Cluster
+cluster_enabled:0
+
+# Cluster Info
+
+# Scripting Engines
+engines_count:1
+engines_total_used_memory:69632
+engines_total_memory_overhead:56
+engine_0:name=LUA,module=lua,abi_version=4,used_memory=69632,memory_overhead=56
+
+# Keyspace
+db0:keys=2,expires=0
+
+BUFFER;
+
+        $expected = [
+            'Cluster' => [
+                'cluster_enabled' => '0',
+            ],
+            'Cluster Info' => [],
+            'Scripting Engines' => [
+                'engines_count' => '1',
+                'engines_total_used_memory' => '69632',
+                'engines_total_memory_overhead' => '56',
+                'engine_0' => 'name=LUA,module=lua,abi_version=4,used_memory=69632,memory_overhead=56',
+            ],
+            'Keyspace' => [
+                'db0' => ['keys' => '2', 'expires' => '0'],
+            ],
+        ];
+
+        $this->assertSame($expected, $this->getCommand()->parseResponse($raw));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testCanParseOldResponsesFormat(): void
     {
         $raw = <<<BUFFER
