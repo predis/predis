@@ -139,7 +139,6 @@ jobs:
         uses: ramsey/composer-install@v4
         with:
           dependency-versions: highest
-          composer-options: ${{ matrix.php == '8.0' && '--ignore-platform-reqs' || '' }}
 
       - name: Run tests
         if: ${{ matrix.php != '8.4' || matrix.redis != '8.0' }}
