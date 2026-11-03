@@ -130,4 +130,23 @@ class SELECT_Test extends PredisCommandTestCase
 
         $redis->select('x');
     }
+
+    /**
+     * Relay only accepts integers in `select()` and rejects anything else
+     * client-side, instead of letting the server reply with an error.
+     *
+     * @group connected
+     */
+    public function testThrowsTypeErrorOnUnexpectedDatabaseNameWithRelay(): void
+    {
+        if (!getenv('USE_RELAY')) {
+            $this->markTestSkipped('Only Relay rejects database names client-side.');
+        }
+
+        $this->expectException('TypeError');
+
+        $redis = $this->getClient();
+
+        $redis->select('x');
+    }
 }
