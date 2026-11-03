@@ -1100,6 +1100,12 @@ class FTHYBRID_Test extends PredisCommandTestCase
      */
     public function testHybridSearchQueryWithCursor()
     {
+        // WITHCURSOR for FT.HYBRID is exposed only by Redis 8.4 to 8.10;
+        // newer servers reject it with "WITHCURSOR: Unknown argument".
+        if ($this->isRedisServerVersion('>=', '8.11')) {
+            $this->markTestSkipped('FT.HYBRID WITHCURSOR is not available on Redis >= 8.11');
+        }
+
         $redis = $this->getClient();
         $this->createHybridSearchIndex($redis);
         $this->generateData($redis, 10);
