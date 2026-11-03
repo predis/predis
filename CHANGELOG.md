@@ -14,6 +14,7 @@
 - Fixed Relay reconnecting after an explicit disconnect (#1292)
 - Fixed Relay ACL authentication accepting username and password (#1292)
 - Fixed Relay throwing a `TypeError` instead of returning an error response when selecting a non-integer database (#1751)
+- Fixed `INFO` parsing warnings with Valkey 9 (#1748)
 
 ## v3.7.0 (2026-10-08)
 ### Added
