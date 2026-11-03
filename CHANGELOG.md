@@ -1,23 +1,23 @@
 ## Changelog
 
-## Unreleased
+## v3.7.1 (2026-11-03)
 ### Added
 - Added support for numbered databases in Valkey clusters (#1696)
 
 ### Changed
-- Use `SENTINEL REPLICAS` for Sentinel replica discovery, falling back to `SENTINEL SLAVES` on Redis < 5.0 (#776)
+- Use `SENTINEL REPLICAS` for Sentinel replica discovery when available (#776)
 
 ### Fixed
-- Fixed interrupted pipelines leaving unread replies on reused connections; failed pipelines now discard remaining commands and reset execution state (#1309)
-- Fixed Relay Pub/Sub subscriptions rejecting message callbacks and failing when the `prefix` option is set (#1292)
+- Fixed interrupted pipelines leaving unread replies on reused connections (#1309)
+- Fixed `INFO` parsing warnings with Valkey 9 (#1748)
+- Fixed Relay Pub/Sub subscriptions rejecting message callbacks when `prefix` is set (#1292)
 - Fixed Relay returning server errors as error responses and raw error messages without stack traces (#1292)
 - Fixed Relay reconnecting after an explicit disconnect (#1292)
 - Fixed Relay ACL authentication accepting username and password (#1292)
-- Fixed Relay throwing a `TypeError` instead of returning an error response when selecting a non-integer database (#1751)
-- Fixed `INFO` parsing warnings with Valkey 9 (#1748)
+- Fixed Relay throwing a `TypeError` when selecting a non-integer database (#1751)
 
 ### Security
-- Fixed quadratic-time parsing of `MONITOR` events whose command arguments contain metadata-like text (GHSA-8hxw-46gv-qcm9)
+- Fixed quadratic-time parsing of `MONITOR` events (GHSA-8hxw-46gv-qcm9)
 
 ## v3.7.0 (2026-10-08)
 ### Added
