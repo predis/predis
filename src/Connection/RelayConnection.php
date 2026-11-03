@@ -12,10 +12,13 @@
 
 namespace Predis\Connection;
 
+use TypeError;
+use ArgumentCountError;
 use InvalidArgumentException;
 use Predis\ClientException;
 use Predis\Command\CommandInterface;
 use Predis\NotSupportedException;
+use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Relay\Exception as RelayException;
@@ -204,6 +207,10 @@ class RelayConnection extends AbstractConnection
                 $arguments = [$arguments];
             }
 
+            if ($name === 'SELECT') {
+                return $this->select($arguments);
+            }
+
             // Raw dispatch leaves values untouched. Serialization and compression
             // are applied explicitly with pack() and unpack().
             return in_array($name, $this->atypicalCommands)
@@ -219,6 +226,24 @@ class RelayConnection extends AbstractConnection
             }
 
             throw $exception;
+        }
+    }
+
+    /**
+     * Relay's select() throws a TypeError for a non-integer database, where
+     * other connections get an error response from the server.
+     *
+     * @param  array $arguments
+     * @return mixed
+     */
+    protected function select(array $arguments)
+    {
+        try {
+            return $this->client->select(...$arguments);
+        } catch (ArgumentCountError $ex) {
+            throw $ex;
+        } catch (TypeError $ex) {
+            return new ErrorResponse('ERR value is not an integer or out of range');
         }
     }
 

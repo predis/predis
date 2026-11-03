@@ -12,6 +12,7 @@
 
 namespace Predis\Connection;
 
+use ArgumentCountError;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Predis\ClientException;
@@ -24,6 +25,7 @@ use PredisTestCase;
 use ReflectionClass;
 use Relay\Exception as RelayException;
 use Relay\Relay;
+use TypeError;
 
 /**
  * @group ext-relay
@@ -164,6 +166,72 @@ class RelayConnectionTest extends PredisTestCase
         $response = $this->connection->executeCommand(new RawCommand('AUTH', ['foo', 'bar']));
 
         $this->assertTrue($response);
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testExecuteSelectOnClient(): void
+    {
+        $this->mockClient
+            ->expects($this->once())
+            ->method('isConnected')
+            ->withAnyParameters()
+            ->willReturn(true);
+
+        $this->mockClient
+            ->expects($this->once())
+            ->method('SELECT')
+            ->with(1)
+            ->willReturn(true);
+
+        $response = $this->connection->executeCommand(new RawCommand('SELECT', [1]));
+
+        $this->assertTrue($response);
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testExecuteSelectReturnsErrorResponseOnNonIntegerDatabase(): void
+    {
+        $this->mockClient
+            ->expects($this->once())
+            ->method('isConnected')
+            ->withAnyParameters()
+            ->willReturn(true);
+
+        $this->mockClient
+            ->method('SELECT')
+            ->willThrowException(new TypeError('Argument #1 ($db) must be of type int, string given'));
+
+        $response = $this->connection->executeCommand(new RawCommand('SELECT', ['x']));
+
+        $this->assertInstanceOf(ErrorResponse::class, $response);
+        $this->assertSame('ERR value is not an integer or out of range', (string) $response);
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testExecuteSelectDoesNotHideArgumentCountError(): void
+    {
+        $this->mockClient
+            ->expects($this->once())
+            ->method('isConnected')
+            ->withAnyParameters()
+            ->willReturn(true);
+
+        $this->mockClient
+            ->method('SELECT')
+            ->willThrowException(new ArgumentCountError('Too few arguments'));
+
+        $this->expectException(ArgumentCountError::class);
+
+        $this->connection->executeCommand(new RawCommand('SELECT', []));
     }
 
     /**
