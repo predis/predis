@@ -415,6 +415,33 @@ class RedisStrategyTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testKeysForSetMemberCommands(): void
+    {
+        $strategy = $this->getClusterStrategy();
+        $commands = $this->getCommandFactory();
+
+        $arguments = [
+            'SADDEX' => ['key', ['member']],
+            'SEXPIRE' => ['key', 60, ['member']],
+            'SEXPIREAT' => ['key', 1893456000, ['member']],
+            'SPEXPIRE' => ['key', 60000, ['member']],
+            'SPEXPIREAT' => ['key', 1893456000000, ['member']],
+            'STTL' => ['key', ['member']],
+            'SPTTL' => ['key', ['member']],
+            'SEXPIRETIME' => ['key', ['member']],
+            'SPEXPIRETIME' => ['key', ['member']],
+            'SPERSIST' => ['key', ['member']],
+        ];
+
+        foreach ($this->getExpectedCommands('keys-set-member') as $commandID) {
+            $command = $commands->create($commandID, $arguments[$commandID]);
+            $this->assertSame($strategy->getSlotByKey('key'), $strategy->getSlot($command), $commandID);
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testKeysForObjectSubcommand(): void
     {
         $strategy = $this->getClusterStrategy();
@@ -719,6 +746,16 @@ class RedisStrategyTest extends PredisTestCase
             'SPOP' => 'keys-first',
             'SRANDMEMBER' => 'keys-first',
             'SREM' => 'keys-first',
+            'SADDEX' => 'keys-set-member',
+            'SEXPIRE' => 'keys-set-member',
+            'SEXPIREAT' => 'keys-set-member',
+            'SPEXPIRE' => 'keys-set-member',
+            'SPEXPIREAT' => 'keys-set-member',
+            'STTL' => 'keys-set-member',
+            'SPTTL' => 'keys-set-member',
+            'SEXPIRETIME' => 'keys-set-member',
+            'SPEXPIRETIME' => 'keys-set-member',
+            'SPERSIST' => 'keys-set-member',
 
             /* commands operating on sorted sets */
             'ZADD' => 'keys-first',

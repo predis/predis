@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 - Added support for numbered databases in Valkey clusters (#1696)
+- Added support for Set Expiration commands
 
 ### Changed
 - Use `SENTINEL REPLICAS` for Sentinel replica discovery, falling back to `SENTINEL SLAVES` on Redis < 5.0 (#776)
