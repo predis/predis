@@ -12,6 +12,7 @@
 
 namespace Predis\Connection;
 
+use TypeError;
 use ArgumentCountError;
 use InvalidArgumentException;
 use Predis\ClientException;
@@ -22,7 +23,6 @@ use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
 use Relay\Exception as RelayException;
 use Relay\Relay;
-use TypeError;
 
 /**
  * This class provides the implementation of a Predis connection that
