@@ -16,6 +16,9 @@
 - Fixed Relay throwing a `TypeError` instead of returning an error response when selecting a non-integer database (#1751)
 - Fixed `INFO` parsing warnings with Valkey 9 (#1748)
 
+### Security
+- Fixed quadratic-time parsing of `MONITOR` events whose command arguments contain metadata-like text (GHSA-8hxw-46gv-qcm9)
+
 ## v3.7.0 (2026-10-08)
 ### Added
 - Added `BLESS *` command family (#1733)

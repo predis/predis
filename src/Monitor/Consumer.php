@@ -165,7 +165,7 @@ class Consumer implements Iterator
             return ' ';
         };
 
-        $event = preg_replace_callback('/ \(db (\d+)\) | \[(\d+) (.*?)\] /', $callback, $event, 1);
+        $event = preg_replace_callback('/\A\d+(?:\.\d+)?\K(?: \(db (\d+)\) | \[(\d+) (.*?)\] )/', $callback, $event, 1);
         @[$timestamp, $command, $arguments] = explode(' ', $event, 3);
 
         return (object) [

@@ -198,6 +198,125 @@ class ConsumerTest extends PredisTestCase
         $this->assertNull($payload->arguments);
     }
 
+    /**
+     * @group disconnected
+     * @dataProvider adversarialMonitorMessages
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testDoesNotScanArgumentsForMetadata(string $metadata, int $database, ?string $address): void
+    {
+        $this->usePcreInterpreterWithLowBacktrackLimit();
+
+        $arguments = '"' . str_repeat('[1 ', 22000) . '"';
+        $message = '1323367530.939137 ' . $metadata . '"ECHO" ' . $arguments;
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($message);
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
+        $monitor = (new Client($connection))->monitor();
+        $payload = $monitor->current();
+        $error = preg_last_error();
+
+        $this->assertSame(PREG_NO_ERROR, $error);
+        $this->assertSame(1323367530.939137, $payload->timestamp);
+        $this->assertSame($database, $payload->database);
+        $this->assertSame($address, $payload->client);
+        $this->assertSame('ECHO', $payload->command);
+        $this->assertSame($arguments, $payload->arguments);
+    }
+
+    public function adversarialMonitorMessages(): array
+    {
+        return [
+            'Redis 2.4' => ['(db 15) ', 15, null],
+            'IPv4' => ['[15 127.0.0.1:37265] ', 15, '127.0.0.1:37265'],
+            'IPv6' => ['[15 [::1]:37265] ', 15, '[::1]:37265'],
+            'Unix socket' => ['[15 unix:/tmp/redis.sock] ', 15, 'unix:/tmp/redis.sock'],
+            'Lua script' => ['[15 lua] ', 15, 'lua'],
+            'Missing metadata' => ['', 0, null],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testMalformedMonitorLineDoesNotSearchForMetadata(): void
+    {
+        $this->usePcreInterpreterWithLowBacktrackLimit();
+
+        $message = str_repeat('[1 ', 22000);
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($message);
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
+        $monitor = (new Client($connection))->monitor();
+        $payload = $monitor->current();
+        $error = preg_last_error();
+
+        $this->assertSame(PREG_NO_ERROR, $error);
+        $this->assertSame(0.0, $payload->timestamp);
+        $this->assertSame(0, $payload->database);
+        $this->assertNull($payload->client);
+    }
+
+    /**
+     * Metadata can only be matched directly after the timestamp. This is what
+     * keeps the extra search preg_replace_callback() performs after reaching
+     * its limit from scanning arguments, which no timing-free test can observe.
+     *
+     * @group disconnected
+     * @dataProvider adversarialMonitorMessages
+     */
+    public function testDoesNotReadMetadataFromArguments(string $metadata, int $database, ?string $address): void
+    {
+        $arguments = '"key" "x [5 spoof] (db 5) y"';
+        $message = '1323367530.939137 ' . $metadata . '"SET" ' . $arguments;
+
+        $connection = $this->getMockBuilder('Predis\Connection\NodeConnectionInterface')->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn($message);
+        $connection
+            ->expects($this->once())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
+        $monitor = (new Client($connection))->monitor();
+        $payload = $monitor->current();
+
+        $this->assertSame($database, $payload->database);
+        $this->assertSame($address, $payload->client);
+        $this->assertSame('SET', $payload->command);
+        $this->assertSame($arguments, $payload->arguments);
+    }
+
+    /**
+     * PHP decides whether to JIT a pattern when first compiling it, and PHPUnit
+     * has no annotation for ini settings, so callers must run in a separate process.
+     */
+    private function usePcreInterpreterWithLowBacktrackLimit(): void
+    {
+        ini_set('pcre.jit', '0');
+        ini_set('pcre.backtrack_limit', '1000');
+    }
+
     // ******************************************************************** //
     // ---- INTEGRATION TESTS --------------------------------------------- //
     // ******************************************************************** //
