@@ -84,6 +84,40 @@ class SELECT_Test extends PredisCommandTestCase
     }
 
     /**
+     * Relay warns before sending SELECT for indexes beyond `relay.databases`,
+     * which PHPUnit would turn into an exception before the server replies.
+     *
+     * @group connected
+     */
+    public function testThrowsExceptionOnUnexpectedDatabaseRangeDespiteRelayWarning(): void
+    {
+        if (!getenv('USE_RELAY')) {
+            $this->markTestSkipped('Relay only warns when it is the active connection.');
+        }
+
+        $this->expectException('Predis\Response\ServerException');
+        $this->expectExceptionMessageMatches('/ERR.*DB index/');
+
+        $redis = $this->getClient();
+
+        $previous = set_error_handler(
+            static function ($level, $message, $file = '', $line = 0) use (&$previous) {
+                if (strpos($message, 'in-memory databases') !== false) {
+                    return true;
+                }
+
+                return $previous ? $previous($level, $message, $file, $line) : false;
+            }
+        );
+
+        try {
+            $redis->select(100000000);
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    /**
      * @group connected
      * @group relay-incompatible
      */
