@@ -139,6 +139,16 @@ abstract class ClusterStrategy implements StrategyInterface
             'SPOP' => $getKeyFromFirstArgument,
             'SRANDMEMBER' => $getKeyFromFirstArgument,
             'SREM' => $getKeyFromFirstArgument,
+            'SADDEX' => $getKeyFromFirstArgument,
+            'SEXPIRE' => $getKeyFromFirstArgument,
+            'SEXPIREAT' => $getKeyFromFirstArgument,
+            'SPEXPIRE' => $getKeyFromFirstArgument,
+            'SPEXPIREAT' => $getKeyFromFirstArgument,
+            'STTL' => $getKeyFromFirstArgument,
+            'SPTTL' => $getKeyFromFirstArgument,
+            'SEXPIRETIME' => $getKeyFromFirstArgument,
+            'SPEXPIRETIME' => $getKeyFromFirstArgument,
+            'SPERSIST' => $getKeyFromFirstArgument,
 
             /* commands operating on sorted sets */
             'ZADD' => $getKeyFromFirstArgument,

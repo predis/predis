@@ -3,6 +3,7 @@
 ## v3.7.1 (2026-11-03)
 ### Added
 - Added support for numbered databases in Valkey clusters (#1696)
+- Added support for Set Expiration commands (#1749)
 
 ### Changed
 - Use `SENTINEL REPLICAS` for Sentinel replica discovery when available (#776)

@@ -54,6 +54,7 @@ use Predis\Command\Container\XGROUP;
 use Predis\Command\Container\XINFO;
 use Predis\Command\FactoryInterface;
 use Predis\Command\Redis\HSETEX;
+use Predis\Command\Redis\SADDEX;
 use Predis\Command\Redis\VADD;
 use Predis\Configuration\OptionsInterface;
 use Predis\Connection\ConnectionInterface;
@@ -273,10 +274,14 @@ use Predis\Response\Status;
  * @method int               rpush(string $key, array $values)
  * @method int               rpushx(string $key, array $values)
  * @method int               sadd(string $key, array $members)
+ * @method int               saddex(string $key, array $members, string $condition = SADDEX::COND_NULL, string $ttlModifier = SADDEX::TTL_NULL, int|bool $ttlModifierValue = false)
  * @method int               scard(string $key)
  * @method string[]          sdiff(array|string $keys)
  * @method int               sdiffcard(array $keys, int $limit = 0)
  * @method int               sdiffstore(string $destination, array|string $keys)
+ * @method array             sexpire(string $key, int $seconds, array $members, ?string $flag = null)
+ * @method array             sexpireat(string $key, int $unixTimeSeconds, array $members, ?string $flag = null)
+ * @method array             sexpiretime(string $key, array $members)
  * @method string[]          sinter(array|string $keys)
  * @method int               sintercard(array $keys, int $limit = 0)
  * @method int               sinterstore(string $destination, array|string $keys)
@@ -284,11 +289,17 @@ use Predis\Response\Status;
  * @method string[]          smembers(string $key)
  * @method array             smismember(string $key, string ...$members)
  * @method int               smove(string $source, string $destination, string $member)
+ * @method array             spersist(string $key, array $members)
+ * @method array             spexpire(string $key, int $milliseconds, array $members, ?string $flag = null)
+ * @method array             spexpireat(string $key, int $unixTimeMilliseconds, array $members, ?string $flag = null)
+ * @method array             spexpiretime(string $key, array $members)
  * @method string|array|null spop(string $key, ?int $count = null)
+ * @method array             spttl(string $key, array $members)
  * @method string|null       srandmember(string $key, ?int $count = null)
  * @method int               srem(string $key, array|string $member)
  * @method array             sscan(string $key, int $cursor, array $options = null)
  * @method array             ssubscribe(string ...$shardChannels)
+ * @method array             sttl(string $key, array $members)
  * @method array             subscribe(string ...$channels)
  * @method string[]          sunion(array|string $keys)
  * @method int               sunioncard(array $keys, bool $approx = false, int $limit = 0)

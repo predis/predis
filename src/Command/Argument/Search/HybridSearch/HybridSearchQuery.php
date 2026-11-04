@@ -270,6 +270,9 @@ class HybridSearchQuery implements ArrayableArgument
     }
 
     /**
+     * WITHCURSOR for FT.HYBRID is exposed only by Redis versions 8.4 to 8.10.
+     * Newer servers reject it as an unknown argument.
+     *
      * @param  int|null $readSize
      * @param  int|null $idleTime
      * @return $this
