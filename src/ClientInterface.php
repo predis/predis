@@ -127,6 +127,7 @@ use Predis\Response\Status;
  * @method array|null        bitfield(string $key, $subcommand, ...$subcommandArg)
  * @method array|null        bitfield_ro(string $key, ?array $encodingOffsetMap = null)
  * @method int               bitpos(string $key, $bit, $start = null, $end = null, string $index = 'byte')
+ * @method array             bitrangeintarray(string $key, int $start, int $end, ?string $index = null, ?int $limit = null, bool $zeros = false)
  * @method array             blmpop(int $timeout, array $keys, string $modifier = 'left', int $count = 1)
  * @method array             bzpopmax(array $keys, int $timeout)
  * @method array             bzpopmin(array $keys, int $timeout)

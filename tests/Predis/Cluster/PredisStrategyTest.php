@@ -669,6 +669,7 @@ class PredisStrategyTest extends PredisTestCase
             'BITOP' => 'keys-bitop',
             'BITCOUNT' => 'keys-first',
             'BITFIELD' => 'keys-first',
+            'BITRANGEINTARRAY' => 'keys-first',
 
             /* commands operating on lists */
             'LINSERT' => 'keys-first',
