@@ -82,6 +82,7 @@ abstract class ClusterStrategy implements StrategyInterface
             'BITOP' => [$this, 'getKeyFromBitOp'],
             'BITCOUNT' => $getKeyFromFirstArgument,
             'BITFIELD' => $getKeyFromFirstArgument,
+            'BITRANGEINTARRAY' => $getKeyFromFirstArgument,
 
             /* commands operating on lists */
             'LINSERT' => $getKeyFromFirstArgument,

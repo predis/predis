@@ -116,6 +116,7 @@ use Predis\Command\Redis\VADD;
  * @method $this bitfield($key, $subcommand, ...$subcommandArg)
  * @method $this bitfield_ro(string $key, ?array $encodingOffsetMap = null)
  * @method $this bitpos($key, $bit, $start = null, $end = null, string $index = 'byte')
+ * @method $this bitrangeintarray(string $key, int $start, int $end, ?string $index = null, ?int $limit = null, bool $zeros = false)
  * @method $this blmpop(int $timeout, array $keys, string $modifier = 'left', int $count = 1)
  * @method $this bzpopmax(array $keys, int $timeout)
  * @method $this bzpopmin(array $keys, int $timeout)

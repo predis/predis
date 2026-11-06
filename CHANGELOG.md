@@ -1,4 +1,6 @@
 ## Changelog
+### Added
+- Added support for BITRANGEINTARRAY command (#1754)
 
 ## v3.7.1 (2026-11-03)
 ### Added
