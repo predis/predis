@@ -46,6 +46,15 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     protected $state;
 
     /**
+     * Physical connection holding the transaction and its WATCH state. Commands
+     * are not retried once it is set: on another connection they would run
+     * outside of the transaction.
+     *
+     * @var NodeConnectionInterface|null
+     */
+    private $nodeConnection;
+
+    /**
      * @param NodeConnectionInterface|ReplicationInterface $connection
      */
     public function __construct($connection, MultiExecState $state)
@@ -59,7 +68,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
      */
     public function initializeTransaction(): bool
     {
-        return 'OK' == $this->executeBypassingTransaction(new MULTI())->getResponse();
+        return 'OK' == $this->multi();
     }
 
     /**
@@ -72,15 +81,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
             return $this->executeBypassingTransaction($command);
         }
 
-        $retry = $this->connection->getParameters()->retry;
-
-        return $retry->callWithRetry(
-            function () use ($command) {
-                return $this->connection->executeCommand($command);
-            }, function (CommunicationException $e) {
-                $this->onFailCallback($e);
-            }
-        );
+        return $this->send($command);
     }
 
     /**
@@ -88,7 +89,11 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
      */
     public function executeTransaction()
     {
-        return $this->executeBypassingTransaction(new EXEC())->getResponse();
+        try {
+            return $this->executeBypassingTransaction(new EXEC())->getResponse();
+        } finally {
+            $this->releaseNode();
+        }
     }
 
     /**
@@ -96,7 +101,11 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
      */
     public function multi()
     {
-        return $this->executeBypassingTransaction(new MULTI())->getResponse();
+        $multi = new MULTI();
+        $response = $this->executeBypassingTransaction($multi)->getResponse();
+        $this->holdConnection($multi);
+
+        return $response;
     }
 
     /**
@@ -106,8 +115,10 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     {
         $watch = new WATCH();
         $watch->setArguments($keys);
+        $response = $this->executeBypassingTransaction($watch)->getResponse();
+        $this->holdConnection($watch);
 
-        return $this->executeBypassingTransaction($watch)->getResponse();
+        return $response;
     }
 
     /**
@@ -116,6 +127,8 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
      */
     public function unwatch()
     {
+        // Retrying UNWATCH is harmless: a new connection watches nothing.
+        $this->releaseNode();
         $retry = $this->connection->getParameters()->retry;
 
         return $retry->callWithRetry(
@@ -132,7 +145,11 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
      */
     public function discard()
     {
-        return $this->executeBypassingTransaction(new DISCARD())->getResponse();
+        try {
+            return $this->executeBypassingTransaction(new DISCARD())->getResponse();
+        } finally {
+            $this->releaseNode();
+        }
     }
 
     /**
@@ -144,16 +161,8 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
      */
     protected function executeBypassingTransaction(CommandInterface $command): BypassTransactionResponse
     {
-        $retry = $this->connection->getParameters()->retry;
-
         try {
-            $response = $retry->callWithRetry(
-                function () use ($command) {
-                    return $this->connection->executeCommand($command);
-                }, function (CommunicationException $e) {
-                    $this->onFailCallback($e);
-                }
-            );
+            $response = $this->send($command);
         } catch (ServerException $exception) {
             if (!$this->connection instanceof RelayConnection) {
                 throw $exception;
@@ -175,6 +184,57 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
         }
 
         return new BypassTransactionResponse($response);
+    }
+
+    /**
+     * Sends a command to the connection holding the transaction, or with
+     * retries while the transaction has not reached any connection yet.
+     *
+     * @param  CommandInterface $command
+     * @return mixed
+     * @throws Throwable
+     */
+    private function send(CommandInterface $command)
+    {
+        if ($connection = $this->nodeConnection) {
+            try {
+                return $connection->executeCommand($command);
+            } catch (CommunicationException $exception) {
+                $this->releaseNode();
+                $this->onFailCallback($exception);
+
+                throw $exception;
+            }
+        }
+
+        $retry = $this->connection->getParameters()->retry;
+
+        return $retry->callWithRetry(
+            function () use ($command) {
+                return $this->connection->executeCommand($command);
+            }, function (CommunicationException $e) {
+                $this->onFailCallback($e);
+            }
+        );
+    }
+
+    /**
+     * Keeps the node connection that has just received WATCH or MULTI.
+     *
+     * @param CommandInterface $command
+     */
+    private function holdConnection(CommandInterface $command): void
+    {
+        if (null === $this->nodeConnection) {
+            $this->nodeConnection = $this->connection instanceof ReplicationInterface
+                ? $this->connection->getConnectionByCommand($command)
+                : $this->connection;
+        }
+    }
+
+    private function releaseNode(): void
+    {
+        $this->nodeConnection = null;
     }
 
     /**
