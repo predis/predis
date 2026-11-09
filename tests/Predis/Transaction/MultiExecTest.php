@@ -19,6 +19,7 @@ use Predis\ClientInterface;
 use Predis\Cluster\RedisStrategy;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\CommunicationException;
 use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\ConnectionException;
@@ -29,6 +30,7 @@ use Predis\Connection\StreamConnection;
 use Predis\Response;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
+use Predis\Retry\Strategy\NoBackoff;
 use Predis\TimeoutException;
 use Predis\Transaction\Exception\TransactionException;
 use PredisTestCase;
@@ -1316,6 +1318,106 @@ class MultiExecTest extends PredisTestCase
         $this->assertSame('OK', $responses[0]);
         $this->assertInstanceOf('Predis\Response\Error', $responses[1]);
         $this->assertSame('foobar', $responses[2]);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 5.0.0
+     */
+    public function testIntegrationLostConnectionInsideBlockIsNotRetried(): void
+    {
+        $client = $this->createClient(['retry' => new Retry(new NoBackoff(), 3)]);
+
+        $this->assertLostConnectionInsideBlockIsNotRetried($client, $this->createClient(null, null, false));
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 5.0.0
+     */
+    public function testIntegrationLostConnectionAfterWatchIsNotRetried(): void
+    {
+        $client = $this->createClient(['retry' => new Retry(new NoBackoff(), 3)]);
+
+        $this->assertLostConnectionAfterWatchIsNotRetried($client, $this->createClient(null, null, false));
+    }
+
+    /**
+     * @group connected
+     * @group sentinel
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testSentinelLostConnectionInsideBlockIsNotRetried(): void
+    {
+        $client = $this->createClient();
+        $admin = new Client($client->getConnection()->getMaster()->getParameters());
+
+        $this->assertLostConnectionInsideBlockIsNotRetried($client, $admin);
+    }
+
+    /**
+     * @group connected
+     * @group sentinel
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testSentinelLostConnectionAfterWatchIsNotRetried(): void
+    {
+        $client = $this->createClient();
+        $admin = new Client($client->getConnection()->getMaster()->getParameters());
+
+        $this->assertLostConnectionAfterWatchIsNotRetried($client, $admin);
+    }
+
+    /**
+     * Drops the connection of $client in the middle of a transaction block.
+     */
+    private function assertLostConnectionInsideBlockIsNotRetried(Client $client, Client $admin): void
+    {
+        $id = $client->client('ID');
+
+        try {
+            $client->transaction(static function (MultiExec $tx) use ($admin, $id) {
+                $tx->set('foo', 'bar');
+                $admin->client('KILL', 'ID', $id);
+                $tx->incr('counter');
+            });
+            $this->fail('Expected the transaction to fail.');
+        } catch (CommunicationException $exception) {
+            // NOOP
+        }
+
+        $this->assertNull($admin->get('foo'));
+        $this->assertNull($admin->get('counter'));
+        $this->assertSame([1], $client->transaction()->incr('counter')->execute());
+    }
+
+    /**
+     * Drops the connection of $client between WATCH and MULTI, after another
+     * client changed the watched key.
+     */
+    private function assertLostConnectionAfterWatchIsNotRetried(Client $client, Client $admin): void
+    {
+        $client->set('foo', 'original');
+        $id = $client->client('ID');
+
+        try {
+            $client->transaction(['cas' => true, 'watch' => 'foo'], static function (MultiExec $tx) use ($admin, $id) {
+                $value = $tx->get('foo');
+                $admin->set('foo', 'changed');
+                $admin->client('KILL', 'ID', $id);
+                $tx->multi();
+                $tx->set('foo', "$value, then the transaction");
+            });
+            $this->fail('Expected the transaction to fail.');
+        } catch (CommunicationException $exception) {
+            // NOOP
+        }
+
+        $this->assertSame('changed', $admin->get('foo'));
     }
 
     /**

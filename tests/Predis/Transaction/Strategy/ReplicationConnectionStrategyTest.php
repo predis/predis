@@ -14,6 +14,8 @@ namespace Predis\Transaction\Strategy;
 
 use PHPUnit\Framework\TestCase;
 use Predis\Command\CommandInterface;
+use Predis\Command\Redis\SET;
+use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Transaction\MultiExecState;
@@ -55,5 +57,43 @@ class ReplicationConnectionStrategyTest extends TestCase
         $strategy = new ReplicationConnectionStrategy($this->mockConnection, new MultiExecState());
 
         $this->assertEquals('OK', $strategy->executeCommand($this->mockCommand));
+    }
+
+    /**
+     * @return void
+     */
+    public function testCommandsAfterMultiGoOnlyToTheConnectionHoldingTheTransaction(): void
+    {
+        $master = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $master
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) {
+                return $command->getId() === 'EXEC' ? ['OK'] : 'QUEUED';
+            });
+
+        $this->mockConnection
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($this->callback(static function (CommandInterface $command) {
+                return $command->getId() === 'MULTI';
+            }))
+            ->willReturn('OK');
+
+        $this->mockConnection
+            ->expects($this->once())
+            ->method('getConnectionByCommand')
+            ->willReturn($master);
+
+        $this->mockConnection
+            ->expects($this->any())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
+
+        $strategy = new ReplicationConnectionStrategy($this->mockConnection, new MultiExecState());
+
+        $this->assertTrue($strategy->initializeTransaction());
+        $this->assertSame('QUEUED', $strategy->executeCommand(new SET()));
+        $this->assertSame(['OK'], $strategy->executeTransaction());
     }
 }
