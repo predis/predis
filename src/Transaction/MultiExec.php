@@ -50,6 +50,13 @@ class MultiExec implements ClientContextInterface
     protected $modeCAS = false;
 
     /**
+     * Error that aborted a transaction built with the fluent interface.
+     *
+     * @var string|null
+     */
+    private $abortedBy;
+
+    /**
      * @var StrategyInterface
      */
     protected $connectionStrategy;
@@ -142,6 +149,8 @@ class MultiExec implements ClientContextInterface
         if ($this->state->isInitialized()) {
             return;
         }
+
+        $this->assertNotAborted();
 
         if ($this->modeCAS) {
             $this->state->flag(MultiExecState::CAS);
@@ -239,6 +248,14 @@ class MultiExec implements ClientContextInterface
         } elseif ($response instanceof Relay) {
             $this->commands->enqueue($command);
         } elseif ($response instanceof ErrorResponseInterface) {
+            if (!$this->state->isExecuting()) {
+                // EXEC can only fail now, but the connection is still in MULTI.
+                // A transaction block discards it on the way out, the fluent
+                // interface has to do it here.
+                $this->abortQueuedTransaction();
+                $this->abortedBy = $response->getMessage();
+            }
+
             throw new AbortedMultiExecException($this, $response->getMessage());
         } else {
             $this->onProtocolError('The server did not return a +QUEUED status response.');
@@ -317,6 +334,8 @@ class MultiExec implements ClientContextInterface
      */
     public function discard()
     {
+        $this->abortedBy = null;
+
         if ($this->state->isInitialized()) {
             if ($this->state->isCAS()) {
                 $this->connectionStrategy->unwatch();
@@ -390,6 +409,7 @@ class MultiExec implements ClientContextInterface
      */
     public function execute($callable = null)
     {
+        $this->assertNotAborted();
         $this->checkBeforeExecution($callable);
 
         $execResponse = null;
@@ -490,6 +510,35 @@ class MultiExec implements ClientContextInterface
 
         if ($exception) {
             throw $exception;
+        }
+    }
+
+    /**
+     * Discards a transaction after Redis rejected one of its commands. When
+     * DISCARD fails too, the connection is closed so it cannot stay in MULTI.
+     */
+    private function abortQueuedTransaction(): void
+    {
+        try {
+            $this->discard();
+        } catch (Throwable $exception) {
+            $this->client->getConnection()->disconnect();
+            $this->reset();
+        }
+    }
+
+    /**
+     * Prevents commands queued after a failed one from running as a new
+     * transaction, unless discard() is called first.
+     *
+     * @throws AbortedMultiExecException
+     */
+    private function assertNotAborted(): void
+    {
+        if (null !== $this->abortedBy) {
+            throw new AbortedMultiExecException(
+                $this, "The transaction has already been aborted: {$this->abortedBy}"
+            );
         }
     }
 
