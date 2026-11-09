@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Fixed
-- Fixed transactions built with the fluent interface leaving the connection in `MULTI` after Redis rejected a queued command (#1755)
+- Fixed transactions built with the fluent interface leaving the connection in `MULTI` after Redis rejected a queued command; the transaction now throws `AbortedMultiExecException` until `discard()` is called (#1755)
 
 ## v3.7.1 (2026-11-03)
 ### Added

@@ -18,6 +18,7 @@ use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
+use Predis\Connection\Cluster\ClusterInterface;
 use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error;
@@ -48,13 +49,6 @@ class MultiExec implements ClientContextInterface
     protected $attempts = 0;
     protected $watchKeys = [];
     protected $modeCAS = false;
-
-    /**
-     * Error that aborted a transaction built with the fluent interface.
-     *
-     * @var string|null
-     */
-    private $abortedBy;
 
     /**
      * @var StrategyInterface
@@ -248,12 +242,12 @@ class MultiExec implements ClientContextInterface
         } elseif ($response instanceof Relay) {
             $this->commands->enqueue($command);
         } elseif ($response instanceof ErrorResponseInterface) {
-            if (!$this->state->isExecuting()) {
+            if (!$this->state->isExecuting() && !$this->isClusterTransaction()) {
                 // EXEC can only fail now, but the connection is still in MULTI.
                 // A transaction block discards it on the way out, the fluent
                 // interface has to do it here.
                 $this->abortQueuedTransaction();
-                $this->abortedBy = $response->getMessage();
+                $this->state->flag(MultiExecState::ABORTED);
             }
 
             throw new AbortedMultiExecException($this, $response->getMessage());
@@ -278,6 +272,8 @@ class MultiExec implements ClientContextInterface
         if (!$this->client->getCommandFactory()->supports('WATCH')) {
             throw new NotSupportedException('WATCH is not supported by the current command factory.');
         }
+
+        $this->assertNotAborted();
 
         if ($this->state->isWatchAllowed()) {
             throw new ClientException('Sending WATCH after MULTI is not allowed.');
@@ -320,6 +316,11 @@ class MultiExec implements ClientContextInterface
             );
         }
 
+        if ($this->state->isAborted()) {
+            // DISCARD has already unwatched the keys.
+            return $this;
+        }
+
         $this->state->unflag(MultiExecState::WATCH);
         $this->__call('UNWATCH', []);
 
@@ -334,7 +335,7 @@ class MultiExec implements ClientContextInterface
      */
     public function discard()
     {
-        $this->abortedBy = null;
+        $this->state->unflag(MultiExecState::ABORTED);
 
         if ($this->state->isInitialized()) {
             if ($this->state->isCAS()) {
@@ -382,14 +383,14 @@ class MultiExec implements ClientContextInterface
             }
 
             if (!$this->commands->isEmpty()) {
-                $this->discard();
+                $this->abortQueuedTransaction();
 
                 throw new ClientException(
                     'Cannot execute a transaction block after using fluent interface.'
                 );
             }
         } elseif ($this->attempts) {
-            $this->discard();
+            $this->abortQueuedTransaction();
 
             throw new ClientException(
                 'Automatic retries are supported only when a callable block is provided.'
@@ -422,7 +423,7 @@ class MultiExec implements ClientContextInterface
 
             if ($this->commands->isEmpty()) {
                 if ($this->state->isWatching() || ($this->state->isInitialized() && !$this->state->isCAS())) {
-                    $this->discard();
+                    $this->abortQueuedTransaction();
                 }
 
                 return;
@@ -503,7 +504,7 @@ class MultiExec implements ClientContextInterface
         } catch (ServerException $exception) {
             // NOOP
         } catch (Throwable $exception) {
-            $this->discard();
+            $this->abortQueuedTransaction();
         }
 
         $this->state->unflag(MultiExecState::INSIDEBLOCK);
@@ -514,17 +515,33 @@ class MultiExec implements ClientContextInterface
     }
 
     /**
-     * Discards a transaction after Redis rejected one of its commands. When
-     * DISCARD fails too, the connection is closed so it cannot stay in MULTI.
+     * Discards the transaction. When DISCARD fails, the connection is closed
+     * so that it cannot stay in MULTI.
      */
     private function abortQueuedTransaction(): void
     {
+        if ($this->isClusterTransaction()) {
+            // The cluster strategy releases the node by itself.
+            $this->discard();
+
+            return;
+        }
+
         try {
             $this->discard();
         } catch (Throwable $exception) {
             $this->client->getConnection()->disconnect();
             $this->reset();
         }
+    }
+
+    /**
+     * Cluster transactions send MULTI only from execute(), so their errors
+     * before that come from the client and nothing is queued on a node.
+     */
+    private function isClusterTransaction(): bool
+    {
+        return $this->client->getConnection() instanceof ClusterInterface;
     }
 
     /**
@@ -535,9 +552,9 @@ class MultiExec implements ClientContextInterface
      */
     private function assertNotAborted(): void
     {
-        if (null !== $this->abortedBy) {
+        if ($this->state->isAborted()) {
             throw new AbortedMultiExecException(
-                $this, "The transaction has already been aborted: {$this->abortedBy}"
+                $this, 'The transaction has already been aborted, call discard() to start a new one.'
             );
         }
     }

@@ -15,6 +15,7 @@ namespace Predis\Transaction;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
+use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Cluster\RedisStrategy;
 use Predis\Command\CommandInterface;
@@ -717,6 +718,148 @@ class MultiExecTest extends PredisTestCase
         } catch (AbortedMultiExecException $exception) {
             $this->assertSame("ERR wrong number of arguments for 'set' command", $exception->getMessage());
         }
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testUnwatchAfterQueueErrorKeepsTheTransactionAborted(): void
+    {
+        $commands = [];
+        $tx = $this->getMockedTransaction($this->getQueueErrorCallback($commands, ['foo']));
+
+        try {
+            $tx->set('foo', 'bar')->executeCommand(new RawCommand('SET', ['foo']));
+            $this->fail('Expected the transaction to abort.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertSame($tx, $tx->unwatch());
+        }
+
+        try {
+            $tx->set('foo', 'baz');
+            $this->fail('Expected the aborted transaction to stay aborted.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertStringStartsWith('The transaction has already been aborted', $exception->getMessage());
+        }
+
+        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD'], self::commandsToIDs($commands));
+
+        $this->assertSame(['foo'], $tx->discard()->echo('foo')->execute());
+        $this->assertSame(
+            ['MULTI', 'SET', 'SET', 'DISCARD', 'MULTI', 'ECHO', 'EXEC'],
+            self::commandsToIDs($commands)
+        );
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testWatchAfterQueueErrorIsNotSent(): void
+    {
+        $sent = [];
+        $callback = $this->getQueueErrorCallback();
+        $tx = $this->getMockedTransaction(static function (CommandInterface $command) use ($callback, &$sent) {
+            $sent[] = $command->getId();
+
+            return $callback($command);
+        });
+
+        try {
+            $tx->set('foo', 'bar')->executeCommand(new RawCommand('SET', ['foo']));
+        } catch (AbortedMultiExecException $exception) {
+            // NOOP
+        }
+
+        try {
+            $tx->watch('foo');
+            $this->fail('Expected the aborted transaction to stay aborted.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertStringStartsWith('The transaction has already been aborted', $exception->getMessage());
+        }
+
+        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD'], $sent);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterSlotErrorWithFluentInterfaceKeepsQueuedCommands(): void
+    {
+        $commands = [];
+        $tx = $this->getMockedClusterTransaction($this->getExecuteCallback(['OK', 'OK'], $commands));
+        $tx->set('{a}foo', 'bar');
+
+        try {
+            $tx->set('{b}foo', 'bar');
+            $this->fail('Expected the transaction to abort.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertStringContainsString('same hash slot', $exception->getMessage());
+        }
+
+        $this->assertEquals(['OK', 'OK'], $tx->set('{a}baz', 'qux')->execute());
+        $this->assertSame(['MULTI', 'SET', 'SET', 'EXEC'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider discardOnTheWayOut
+     */
+    public function testFailedDiscardClosesConnectionAndKeepsTheOriginalError(
+        callable $run,
+        string $exception,
+        string $message
+    ): void {
+        $connection = $this->getMockedConnection(static function (CommandInterface $command) {
+            switch ($command->getId()) {
+                case 'MULTI':
+                    return new Response\Status('OK');
+                case 'DISCARD':
+                    return new Response\Error('NOPERM simulated DISCARD failure');
+                default:
+                    return new Response\Status('QUEUED');
+            }
+        });
+        $connection
+            ->expects($this->once())
+            ->method('disconnect');
+
+        $this->expectException($exception);
+        $this->expectExceptionMessage($message);
+
+        $run(new Client($connection));
+    }
+
+    public function discardOnTheWayOut(): array
+    {
+        return [
+            'exception in block' => [
+                static function (Client $client) {
+                    $client->transaction(static function (MultiExec $tx) {
+                        $tx->set('foo', 'bar');
+
+                        throw new RuntimeException('block failed');
+                    });
+                },
+                RuntimeException::class,
+                'block failed',
+            ],
+            'block after fluent interface' => [
+                static function (Client $client) {
+                    $tx = new MultiExec($client);
+                    $tx->set('foo', 'bar')->execute(static function () {});
+                },
+                ClientException::class,
+                'Cannot execute a transaction block after using fluent interface.',
+            ],
+            'retry without block' => [
+                static function (Client $client) {
+                    $tx = new MultiExec($client, ['retry' => 1]);
+                    $tx->set('foo', 'bar')->execute();
+                },
+                ClientException::class,
+                'Automatic retries are supported only when a callable block is provided.',
+            ],
+        ];
     }
 
     /**
