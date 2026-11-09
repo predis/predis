@@ -638,6 +638,90 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testQueueErrorWithFluentInterfaceDiscardsTransaction(): void
+    {
+        $commands = [];
+        $tx = $this->getMockedTransaction($this->getQueueErrorCallback($commands));
+
+        try {
+            $tx->set('foo', 'bar')->executeCommand(new RawCommand('SET', ['foo']))->execute();
+            $this->fail('Expected the transaction to abort.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertSame("ERR wrong number of arguments for 'set' command", $exception->getMessage());
+        }
+
+        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testFluentTransactionAbortedByQueueErrorCannotBeReused(): void
+    {
+        $commands = [];
+        $tx = $this->getMockedTransaction($this->getQueueErrorCallback($commands, ['foo']));
+
+        try {
+            $tx->set('foo', 'bar')->executeCommand(new RawCommand('SET', ['foo']));
+        } catch (AbortedMultiExecException $exception) {
+            // NOOP
+        }
+
+        foreach ([
+            static function (MultiExec $tx) { $tx->set('foo', 'baz'); },
+            static function (MultiExec $tx) { $tx->execute(); },
+        ] as $reuse) {
+            try {
+                $reuse($tx);
+                $this->fail('Expected the aborted transaction to stay aborted.');
+            } catch (AbortedMultiExecException $exception) {
+                $this->assertStringStartsWith('The transaction has already been aborted', $exception->getMessage());
+            }
+        }
+
+        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD'], self::commandsToIDs($commands));
+
+        $this->assertSame(['foo'], $tx->discard()->echo('foo')->execute());
+        $this->assertSame(
+            ['MULTI', 'SET', 'SET', 'DISCARD', 'MULTI', 'ECHO', 'EXEC'],
+            self::commandsToIDs($commands)
+        );
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testQueueErrorWithFluentInterfaceClosesConnectionWhenDiscardFails(): void
+    {
+        $connection = $this->getMockedConnection(static function (CommandInterface $command) {
+            switch ($command->getId()) {
+                case 'MULTI':
+                    return new Response\Status('OK');
+                case 'DISCARD':
+                    return new Response\Error('NOPERM simulated DISCARD failure');
+                case 'SET':
+                    return new Response\Error("ERR wrong number of arguments for 'set' command");
+                default:
+                    return new Response\Status('QUEUED');
+            }
+        });
+        $connection
+            ->expects($this->once())
+            ->method('disconnect');
+
+        $tx = new MultiExec(new Client($connection));
+
+        try {
+            $tx->executeCommand(new RawCommand('SET', ['foo']));
+            $this->fail('Expected the transaction to abort.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertSame("ERR wrong number of arguments for 'set' command", $exception->getMessage());
+        }
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testExceptionsOptionTakesPrecedenceOverClientOptionsWhenFalse(): void
     {
         $expected = ['before', new Response\Error('ERR simulated error'), 'after'];
@@ -1283,6 +1367,34 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group connected
      * @group relay-incompatible
+     * @dataProvider clusterTransactionPersistence
+     */
+    public function testIntegrationQueueErrorWithFluentInterfaceLeavesConnectionUsable(bool $persistent): void
+    {
+        $client = $this->createClient(['persistent' => $persistent]);
+        $client->set('foo', 'original');
+
+        try {
+            try {
+                $client->transaction()->set('foo', 'queued')->executeCommand(new RawCommand('SET', ['foo']))->execute();
+                $this->fail('Expected the transaction to abort.');
+            } catch (AbortedMultiExecException $exception) {
+                $this->assertStringStartsWith('ERR wrong number of arguments', $exception->getMessage());
+            }
+
+            $this->assertSame('original', $client->get('foo'));
+            $this->assertEquals('OK', $client->set('foo', 'after-abort'));
+
+            $nextClient = $this->createClient(['persistent' => $persistent], null, false);
+            $this->assertSame('after-abort', $nextClient->get('foo'));
+        } finally {
+            $client->disconnect();
+        }
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
      */
     public function testIntegrationReturnsErrorObjectOnRedisErrorInBlock(): void
     {
@@ -1734,6 +1846,30 @@ class MultiExecTest extends PredisTestCase
                 default:
                     return $multi ? new Response\Status('QUEUED') : 'DUMMY_RESPONSE';
             }
+        };
+    }
+
+    /**
+     * Returns a callback emulating a server-side MULTI/EXEC context that
+     * rejects SET with a single argument while queueing it.
+     *
+     * @param ?array $commands Reference to an array storing the whole flow of commands
+     * @param ?array $expected List of expected responses
+     *
+     * @return callable
+     */
+    protected function getQueueErrorCallback(?array &$commands = [], ?array $expected = null): callable
+    {
+        $callback = $this->getExecuteCallback($expected, $commands);
+
+        return static function (CommandInterface $command) use ($callback) {
+            $response = $callback($command);
+
+            if ($command->getId() === 'SET' && count($command->getArguments()) === 1) {
+                return new Response\Error("ERR wrong number of arguments for 'set' command");
+            }
+
+            return $response;
         };
     }
 
