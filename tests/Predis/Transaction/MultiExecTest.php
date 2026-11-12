@@ -13,6 +13,7 @@
 namespace Predis\Transaction;
 
 use Exception;
+use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Predis\ClientException;
@@ -262,6 +263,58 @@ class MultiExecTest extends PredisTestCase
 
         $this->assertNull($responses);
         $this->assertSame(['MULTI', 'SET', 'GET', 'DISCARD'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCheckAndSetTransactionSendsUnwatchOnDiscard(): void
+    {
+        $commands = $cas = [];
+
+        $callback = $this->getExecuteCallback(null, $commands, $cas);
+        $tx = $this->getMockedTransaction($callback, ['cas' => true, 'watch' => 'foo']);
+
+        $responses = $tx->execute(static function ($tx) {
+            $tx->get('foo');
+            $tx->discard();
+        });
+
+        $this->assertNull($responses);
+        $this->assertSame([], self::commandsToIDs($commands));
+        $this->assertSame(['WATCH', 'GET', 'UNWATCH'], self::commandsToIDs($cas));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testThrowsExceptionOnNonCallableArgument(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The argument must be a callable object.');
+
+        $this->getMockedTransaction($this->getExecuteCallback())->execute('not a callable');
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testParsesExecRepliesWithResp3(): void
+    {
+        $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $connection
+            ->method('executeCommand')
+            ->willReturnCallback($this->getExecuteCallback([[['member', 1.0]]]));
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 3]));
+        $connection
+            ->method('isConnected')
+            ->willReturn(true);
+
+        $tx = new MultiExec(new Client($connection));
+
+        $this->assertSame([[['member' => 1.0]]], $tx->zpopmin('key')->execute());
     }
 
     /**

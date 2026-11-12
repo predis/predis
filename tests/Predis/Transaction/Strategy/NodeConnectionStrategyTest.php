@@ -19,6 +19,8 @@ use Predis\Command\Redis\SET;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
+use Predis\Connection\RelayConnection;
+use Predis\Response\ServerException;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
 use Predis\TimeoutException;
@@ -326,5 +328,85 @@ class NodeConnectionStrategyTest extends TestCase
 
         $this->assertTrue($strategy->initializeTransaction());
         $this->assertSame(['MULTI', 'SET', 'MULTI'], $sent);
+    }
+
+    /**
+     * @return void
+     */
+    public function testServerExceptionFromNodeConnectionIsRethrown(): void
+    {
+        $this->mockConnection
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) {
+                if ($command->getId() === 'EXEC') {
+                    throw new ServerException('ERR RELAY_ERR_REDIS simulated');
+                }
+
+                return 'OK';
+            });
+
+        $this->mockConnection
+            ->expects($this->any())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
+
+        $strategy = new NodeConnectionStrategy($this->mockConnection, new MultiExecState());
+        $strategy->initializeTransaction();
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('ERR RELAY_ERR_REDIS simulated');
+
+        $strategy->executeTransaction();
+    }
+
+    /**
+     * @requires extension relay
+     * @dataProvider relayServerErrors
+     * @return void
+     */
+    public function testServerExceptionFromRelay(string $failing, string $message, bool $aborted): void
+    {
+        $relay = $this->getMockBuilder(RelayConnection::class)->disableOriginalConstructor()->getMock();
+        $relay
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use ($failing, $message) {
+                if ($command->getId() === $failing) {
+                    throw new ServerException($message);
+                }
+
+                return 'OK';
+            });
+        $relay
+            ->method('isConnected')
+            ->willReturn(true);
+        $relay
+            ->method('getParameters')
+            ->willReturn(new Parameters());
+
+        $state = new MultiExecState();
+        $state->flag(MultiExecState::CAS);
+        $strategy = new NodeConnectionStrategy($relay, $state);
+        $strategy->watch(['foo']);
+        $strategy->multi();
+
+        if ($aborted) {
+            $this->assertNull($strategy->executeTransaction());
+
+            return;
+        }
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage($message);
+
+        $failing === 'EXEC' ? $strategy->executeTransaction() : $strategy->executeCommand(new GET());
+    }
+
+    public function relayServerErrors(): array
+    {
+        return [
+            'aborted EXEC' => ['EXEC', 'ERR RELAY_ERR_REDIS simulated', true],
+            'other EXEC error' => ['EXEC', 'ERR simulated', false],
+            'error on another command' => ['GET', 'ERR RELAY_ERR_REDIS simulated', false],
+        ];
     }
 }
