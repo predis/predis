@@ -1,21 +1,20 @@
 ## Changelog
+
+## Unreleased
 ### Added
+- Added support for Set Expiration commands (#1749)
 - Added support for BITRANGEINTARRAY command (#1754)
 - Added support for ZMOVE, BZMOVE, ZMOVEMEMBER commands (#1762)
 
-## Unreleased
 ### Fixed
-- Fixed transactions retrying commands on a new connection after WATCH or MULTI, where they ran outside of the transaction (#1756)
-- Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
-
-## Unreleased
-### Fixed
+- Fixed transactions retrying commands on a new connection after WATCH or MULTI, where they ran outside of the transaction; once that connection is lost, the transaction now fails until `discard()` is called (#1756, #1758)
 - Fixed transactions built with the fluent interface leaving the connection in `MULTI` after Redis rejected a queued command; the transaction now throws `AbortedMultiExecException` until `discard()` is called (#1755)
+- Fixed cluster transactions built with the fluent interface committing the remaining commands after one was rejected for using another hash slot (#1758)
+- Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
 
 ## v3.7.1 (2026-11-03)
 ### Added
 - Added support for numbered databases in Valkey clusters (#1696)
-- Added support for Set Expiration commands (#1749)
 
 ### Changed
 - Use `SENTINEL REPLICAS` for Sentinel replica discovery when available (#776)
