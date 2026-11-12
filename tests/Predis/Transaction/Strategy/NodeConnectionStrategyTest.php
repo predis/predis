@@ -19,7 +19,6 @@ use Predis\Command\Redis\SET;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
-use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
 use Predis\TimeoutException;
@@ -281,13 +280,6 @@ class NodeConnectionStrategyTest extends TestCase
             case 'UNWATCH':
                 $strategy->unwatch();
                 break;
-            case 'connection error':
-                try {
-                    $strategy->executeCommand(new SET());
-                } catch (ConnectionException $exception) {
-                    // NOOP
-                }
-                break;
         }
 
         $failMulti = true;
@@ -300,14 +292,13 @@ class NodeConnectionStrategyTest extends TestCase
         return [
             'DISCARD' => ['DISCARD'],
             'UNWATCH' => ['UNWATCH'],
-            'connection error' => ['connection error'],
         ];
     }
 
     /**
      * @return void
      */
-    public function testCommandsAfterWatchFailWhenTheConnectionIsNoLongerOpen(): void
+    public function testCommandsAfterWatchFailUntilUnwatchOnceTheConnectionIsLost(): void
     {
         $sent = [];
         $this->mockConnection
@@ -332,42 +323,47 @@ class NodeConnectionStrategyTest extends TestCase
         // e.g. after MultiExec::onProtocolError() disconnected it
         $this->connected = false;
 
-        try {
-            $strategy->executeCommand(new GET());
-            $this->fail('Expected the lost connection to reach the caller.');
-        } catch (ConnectionException $exception) {
-            $this->assertSame(['WATCH'], $sent);
+        for ($i = 0; $i < 2; ++$i) {
+            try {
+                $strategy->executeCommand(new GET());
+                $this->fail('Expected the lost connection to reach the caller.');
+            } catch (ConnectionException $exception) {
+                $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
+            }
         }
 
-        // The transaction no longer holds the connection, so commands go through retries again.
-        $this->connected = true;
+        $this->assertSame(['WATCH'], $sent);
+
+        $strategy->unwatch();
+
         $this->assertSame('OK', $strategy->executeCommand(new GET())->getResponse());
-        $this->assertSame('OK', $strategy->executeCommand(new GET())->getResponse());
-        $this->assertSame(['WATCH', 'GET', 'GET'], $sent);
+        $this->assertSame(['WATCH', 'UNWATCH', 'GET'], $sent);
     }
 
     /**
      * @return void
      */
-    public function testAFailedReconnectReleasesTheConnection(): void
+    public function testDiscardEndsATransactionWhoseConnectionWasLost(): void
     {
-        $calls = 0;
+        $sent = [];
         $this->mockConnection
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(3))
             ->method('executeCommand')
-            ->willReturnCallback(function (CommandInterface $command) use (&$calls) {
-                ++$calls;
+            ->willReturnCallback(function (CommandInterface $command) use (&$sent) {
+                $sent[] = $command->getId();
 
-                if ($calls === 2) {
-                    throw new StreamInitException('Connection refused');
-                }
-
-                // Only a released connection retries this one.
-                if ($calls === 3) {
-                    throw new TimeoutException($this->mockConnection);
+                if ($command->getId() === 'SET') {
+                    throw new ConnectionException($this->mockConnection, 'Connection lost');
                 }
 
                 return 'OK';
+            });
+
+        $this->mockConnection
+            ->expects($this->once())
+            ->method('disconnect')
+            ->willReturnCallback(function () {
+                $this->connected = false;
             });
 
         $this->mockConnection
@@ -375,17 +371,27 @@ class NodeConnectionStrategyTest extends TestCase
             ->method('getParameters')
             ->willReturn(new Parameters(['retry' => new Retry(new ExponentialBackoff(1, 10), 3)]));
 
-        $state = new MultiExecState();
-        $state->flag(MultiExecState::CAS);
-        $strategy = new NodeConnectionStrategy($this->mockConnection, $state);
-        $strategy->watch(['foo']);
+        $strategy = new NodeConnectionStrategy($this->mockConnection, new MultiExecState());
+        $strategy->initializeTransaction();
 
         try {
-            $strategy->executeCommand(new GET());
-            $this->fail('Expected the stream error to reach the caller.');
-        } catch (StreamInitException $exception) {
+            $strategy->executeCommand(new SET());
+            $this->fail('Expected the connection error to reach the caller.');
+        } catch (ConnectionException $exception) {
+            // NOOP
         }
 
-        $this->assertSame('OK', $strategy->executeCommand(new GET())->getResponse());
+        try {
+            $strategy->executeTransaction();
+            $this->fail('Expected EXEC to fail on the lost connection.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
+        }
+
+        $this->assertEquals('OK', $strategy->discard());
+        $this->assertSame(['MULTI', 'SET'], $sent);
+
+        $this->assertTrue($strategy->initializeTransaction());
+        $this->assertSame(['MULTI', 'SET', 'MULTI'], $sent);
     }
 }

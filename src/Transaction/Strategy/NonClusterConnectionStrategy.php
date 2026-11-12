@@ -23,9 +23,9 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\RelayConnection;
 use Predis\Connection\Replication\ReplicationInterface;
-use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Response\ErrorInterface;
 use Predis\Response\ServerException;
+use Predis\Response\Status;
 use Predis\TimeoutException;
 use Predis\Transaction\MultiExecState;
 use Predis\Transaction\Response\BypassTransactionResponse;
@@ -47,9 +47,10 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     protected $state;
 
     /**
-     * Physical connection holding the transaction and its WATCH state. Commands
-     * are not retried once it is set: on another connection they would run
-     * outside of the transaction.
+     * Node connection holding the transaction from WATCH or MULTI until EXEC,
+     * DISCARD or UNWATCH. Commands are not retried while it is set, since they
+     * would run outside of the transaction on another connection. Once it is
+     * lost, commands fail until discard() or unwatch().
      *
      * @var NodeConnectionInterface|null
      */
@@ -93,7 +94,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
         try {
             return $this->executeBypassingTransaction(new EXEC())->getResponse();
         } finally {
-            $this->releaseNode();
+            $this->releaseConnection();
         }
     }
 
@@ -102,8 +103,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
      */
     public function multi()
     {
-        $multi = new MULTI();
-        $response = $this->executeBypassingTransaction($multi)->getResponse();
+        $response = $this->executeBypassingTransaction(new MULTI())->getResponse();
         $this->holdConnection();
 
         return $response;
@@ -128,21 +128,36 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
      */
     public function unwatch()
     {
-        // Retrying UNWATCH is harmless: a new connection watches nothing.
-        $this->releaseNode();
+        $this->nodeConnection = null;
 
         return $this->send(new UNWATCH());
     }
 
     /**
+     * Ends the transaction even when DISCARD fails, closing the connection so
+     * that it cannot stay in MULTI. A lost connection has nothing left to
+     * discard: closing it ended the transaction on the server.
+     *
      * {@inheritDoc}
      */
     public function discard()
     {
+        if ($this->isConnectionLost()) {
+            $this->nodeConnection = null;
+
+            return new Status('OK');
+        }
+
+        $connection = $this->nodeConnection ?: $this->connection;
+
         try {
             return $this->executeBypassingTransaction(new DISCARD())->getResponse();
+        } catch (ServerException $exception) {
+            $connection->disconnect();
+
+            throw $exception;
         } finally {
-            $this->releaseNode();
+            $this->nodeConnection = null;
         }
     }
 
@@ -191,21 +206,14 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     private function send(CommandInterface $command)
     {
         if ($connection = $this->nodeConnection) {
-            // A connection that is no longer open would reconnect and run the command outside the transaction.
             if (!$connection->isConnected()) {
-                $this->releaseNode();
-
                 throw new ConnectionException($connection, 'The connection holding the transaction was lost.');
             }
 
             try {
                 return $connection->executeCommand($command);
-            } catch (CommunicationException|StreamInitException $exception) {
-                $this->releaseNode();
-
-                if ($exception instanceof CommunicationException) {
-                    $this->onFailCallback($exception);
-                }
+            } catch (CommunicationException $exception) {
+                $connection->disconnect();
 
                 throw $exception;
             }
@@ -234,9 +242,20 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
         }
     }
 
-    private function releaseNode(): void
+    /**
+     * Stops holding the connection once it has replied to EXEC. A lost
+     * connection stays held until discard() or unwatch().
+     */
+    private function releaseConnection(): void
     {
-        $this->nodeConnection = null;
+        if (!$this->isConnectionLost()) {
+            $this->nodeConnection = null;
+        }
+    }
+
+    private function isConnectionLost(): bool
+    {
+        return $this->nodeConnection && !$this->nodeConnection->isConnected();
     }
 
     /**
