@@ -19,6 +19,7 @@ use Predis\ClientInterface;
 use Predis\Cluster\RedisStrategy;
 use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
+use Predis\CommunicationException;
 use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\ConnectionException;
@@ -29,6 +30,7 @@ use Predis\Connection\StreamConnection;
 use Predis\Response;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
+use Predis\Retry\Strategy\NoBackoff;
 use Predis\TimeoutException;
 use Predis\Transaction\Exception\TransactionException;
 use PredisTestCase;
@@ -307,6 +309,42 @@ class MultiExecTest extends PredisTestCase
 
         $this->assertSame($responses, $expected);
         $this->assertSame(['MULTI', 'ECHO', 'UNWATCH', 'EXEC'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testUnwatchReleasesTheConnectionOfTheTransaction(): void
+    {
+        $sent = [];
+        $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $connection
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$sent, $connection) {
+                $sent[] = $command->getId();
+
+                // The first GET after UNWATCH loses the connection; a retry must follow.
+                if ($sent === ['WATCH', 'GET', 'UNWATCH', 'GET']) {
+                    throw new ConnectionException($connection, 'Connection lost');
+                }
+
+                return $command->getId() === 'GET' ? 'bar' : new Response\Status('OK');
+            });
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2, 'retry' => new Retry(new ExponentialBackoff(1, 10), 3)]));
+        $connection
+            ->method('isConnected')
+            ->willReturn(true);
+
+        $tx = new MultiExec(new Client($connection), ['cas' => true]);
+        $tx->watch('foo');
+        // A read before UNWATCH initializes the transaction in CAS mode, without sending MULTI.
+        $this->assertSame('bar', $tx->get('foo'));
+        $tx->unwatch();
+
+        $this->assertSame('bar', $tx->get('foo'));
+        $this->assertSame(['WATCH', 'GET', 'UNWATCH', 'GET', 'GET'], $sent);
     }
 
     /**
@@ -746,6 +784,10 @@ class MultiExecTest extends PredisTestCase
             ->expects($this->atLeast(3))
             ->method('disconnect')
             ->withAnyParameters();
+
+        $mockConnection
+            ->method('isConnected')
+            ->willReturn(true);
 
         $mockConnection
             ->expects($this->exactly(8))
@@ -1320,6 +1362,106 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 5.0.0
+     */
+    public function testIntegrationLostConnectionInsideBlockIsNotRetried(): void
+    {
+        $client = $this->createClient(['retry' => new Retry(new NoBackoff(), 3)]);
+
+        $this->assertLostConnectionInsideBlockIsNotRetried($client, $this->createClient(null, null, false));
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 5.0.0
+     */
+    public function testIntegrationLostConnectionAfterWatchIsNotRetried(): void
+    {
+        $client = $this->createClient(['retry' => new Retry(new NoBackoff(), 3)]);
+
+        $this->assertLostConnectionAfterWatchIsNotRetried($client, $this->createClient(null, null, false));
+    }
+
+    /**
+     * @group connected
+     * @group sentinel
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testSentinelLostConnectionInsideBlockIsNotRetried(): void
+    {
+        $client = $this->createClient();
+        $admin = new Client($client->getConnection()->getMaster()->getParameters());
+
+        $this->assertLostConnectionInsideBlockIsNotRetried($client, $admin);
+    }
+
+    /**
+     * @group connected
+     * @group sentinel
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 7.0.0
+     */
+    public function testSentinelLostConnectionAfterWatchIsNotRetried(): void
+    {
+        $client = $this->createClient();
+        $admin = new Client($client->getConnection()->getMaster()->getParameters());
+
+        $this->assertLostConnectionAfterWatchIsNotRetried($client, $admin);
+    }
+
+    /**
+     * Drops the connection of $client in the middle of a transaction block.
+     */
+    private function assertLostConnectionInsideBlockIsNotRetried(Client $client, Client $admin): void
+    {
+        $id = $client->client('ID');
+
+        try {
+            $client->transaction(static function (MultiExec $tx) use ($admin, $id) {
+                $tx->set('foo', 'bar');
+                $admin->client('KILL', 'ID', $id);
+                $tx->incr('counter');
+            });
+            $this->fail('Expected the transaction to fail.');
+        } catch (CommunicationException $exception) {
+            // NOOP
+        }
+
+        $this->assertNull($admin->get('foo'));
+        $this->assertNull($admin->get('counter'));
+        $this->assertSame([1], $client->transaction()->incr('counter')->execute());
+    }
+
+    /**
+     * Drops the connection of $client between WATCH and MULTI, after another
+     * client changed the watched key.
+     */
+    private function assertLostConnectionAfterWatchIsNotRetried(Client $client, Client $admin): void
+    {
+        $client->set('foo', 'original');
+        $id = $client->client('ID');
+
+        try {
+            $client->transaction(['cas' => true, 'watch' => 'foo'], static function (MultiExec $tx) use ($admin, $id) {
+                $value = $tx->get('foo');
+                $admin->set('foo', 'changed');
+                $admin->client('KILL', 'ID', $id);
+                $tx->multi();
+                $tx->set('foo', "$value, then the transaction");
+            });
+            $this->fail('Expected the transaction to fail.');
+        } catch (CommunicationException $exception) {
+            // NOOP
+        }
+
+        $this->assertSame('changed', $admin->get('foo'));
+    }
+
+    /**
+     * @group connected
      * @requiresRedisVersion >= 2.0.0
      */
     public function testIntegrationSendMultiOnCommandsAfterDiscard(): void
@@ -1588,6 +1730,10 @@ class MultiExecTest extends PredisTestCase
         $connection
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
+
+        $connection
+            ->method('isConnected')
+            ->willReturn(true);
 
         return $connection;
     }
