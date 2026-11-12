@@ -18,9 +18,11 @@ use Predis\Client;
 use Predis\ClientException;
 use Predis\Command\Argument\Stream\XInfoStreamOptions;
 use Predis\Command\RawCommand;
+use Predis\CommunicationException;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
+use Predis\Transaction\MultiExec;
 use PredisTestCase;
 use ReflectionClass;
 use Relay\Exception as RelayException;
@@ -101,16 +103,46 @@ class RelayConnectionTest extends PredisTestCase
     {
         $this->mockClient
             ->expects($this->once())
-            ->method('isConnected')
-            ->withAnyParameters()
-            ->willReturn(true);
-
-        $this->mockClient
-            ->expects($this->once())
             ->method('close')
             ->withAnyParameters();
 
         $this->connection->disconnect();
+    }
+
+    /**
+     * @group disconnected
+     * @return void
+     */
+    public function testDisconnectIgnoresExceptionsOfAClosedConnection(): void
+    {
+        $this->mockClient
+            ->expects($this->once())
+            ->method('close')
+            ->willThrowException(new RelayException('Server closed the connection (RELAY_ERR_EOF; relay.c:5274)'));
+
+        $this->connection->disconnect();
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider lostConnectionErrors
+     * @return void
+     */
+    public function testOnCommandErrorReturnsConnectionExceptionForALostConnection(string $message): void
+    {
+        $exception = $this->connection->onCommandError(new RelayException($message), RawCommand::create('GET', 'key'));
+
+        $this->assertInstanceOf(ConnectionException::class, $exception);
+        $this->assertSame($message, $exception->getMessage());
+        $this->assertSame($this->connection, $exception->getConnection());
+    }
+
+    public function lostConnectionErrors(): array
+    {
+        return [
+            ['Server closed the connection (RELAY_ERR_EOF; relay.c:5274)'],
+            ['Not connected (RELAY_ERR_IO; relay.c:5207)'],
+        ];
     }
 
     /**
@@ -646,6 +678,45 @@ class RelayConnectionTest extends PredisTestCase
         $this->assertEquals('PONG', $client->ping());
         $this->assertTrue($client->isConnected());
         $client->disconnect();
+    }
+
+    /**
+     * @group connected
+     */
+    public function testDisconnectAfterTheServerClosedTheConnection(): void
+    {
+        $client = new Client($this->getParameters(), ['connections' => 'relay']);
+        $admin = new Client($this->getParameters());
+        $admin->client('KILL', 'ID', $client->client('ID'));
+
+        $client->disconnect();
+
+        $this->assertEquals('PONG', $client->ping());
+    }
+
+    /**
+     * @group connected
+     */
+    public function testTransactionLosingItsConnectionLeavesTheClientUsable(): void
+    {
+        $client = new Client($this->getParameters(), ['connections' => 'relay']);
+        $admin = new Client($this->getParameters());
+        $admin->del('relay:lost-transaction');
+        $id = $client->client('ID');
+
+        try {
+            $client->transaction(static function (MultiExec $tx) use ($admin, $id) {
+                $tx->set('relay:lost-transaction', 'queued');
+                $admin->client('KILL', 'ID', $id);
+                $tx->set('relay:lost-transaction', 'queued');
+            });
+            $this->fail('Expected the lost connection to reach the caller.');
+        } catch (CommunicationException $exception) {
+            // NOOP
+        }
+
+        $this->assertEquals('PONG', $client->ping());
+        $this->assertNull($admin->get('relay:lost-transaction'));
     }
 
     /**
