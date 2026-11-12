@@ -6,6 +6,10 @@
 ### Fixed
 - Fixed transactions retrying commands on a new connection after WATCH or MULTI, where they ran outside of the transaction (#1756)
 
+## Unreleased
+### Fixed
+- Fixed transactions built with the fluent interface leaving the connection in `MULTI` after Redis rejected a queued command; the transaction now throws `AbortedMultiExecException` until `discard()` is called (#1755)
+
 ## v3.7.1 (2026-11-03)
 ### Added
 - Added support for numbered databases in Valkey clusters (#1696)

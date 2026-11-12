@@ -22,6 +22,7 @@ class MultiExecState
     public const DISCARDED = 4;    // 0b00100
     public const CAS = 8;    // 0b01000
     public const WATCH = 16;   // 0b10000
+    public const ABORTED = 32; // 0b100000
 
     private $flags;
 
@@ -158,5 +159,15 @@ class MultiExecState
     public function isDiscarded()
     {
         return $this->check(self::DISCARDED);
+    }
+
+    /**
+     * Returns the state of the ABORTED flag.
+     *
+     * @return bool
+     */
+    public function isAborted()
+    {
+        return $this->check(self::ABORTED);
     }
 }

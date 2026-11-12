@@ -29,6 +29,7 @@ class MultiExecStateTest extends PredisTestCase
         $this->assertSame(4, MultiExecState::DISCARDED);
         $this->assertSame(8, MultiExecState::CAS);
         $this->assertSame(16, MultiExecState::WATCH);
+        $this->assertSame(32, MultiExecState::ABORTED);
     }
 
     /**
@@ -199,5 +200,19 @@ class MultiExecStateTest extends PredisTestCase
 
         $state->set(MultiExecState::DISCARDED);
         $this->assertTrue($state->isDiscarded());
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testIsAborted(): void
+    {
+        $state = new MultiExecState();
+
+        $this->assertFalse($state->isAborted());
+
+        $state->set(MultiExecState::ABORTED);
+        $this->assertTrue($state->isAborted());
+        $this->assertFalse($state->isReset());
     }
 }
