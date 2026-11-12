@@ -860,6 +860,39 @@ class ClusterConnectionStrategyTest extends TestCase
 
     /**
      * @group disconnected
+     * @dataProvider cleanupMethods
+     */
+    public function testCleanupReleasesTheTransactionWhenItsConnectionIsLost(string $method): void
+    {
+        $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
+        $this->mockNodeConnection->expects($this->exactly(3))->method('executeCommand')
+            ->withConsecutive(
+                [$this->isInstanceOf(WATCH::class)],
+                [$this->isInstanceOf(UNWATCH::class)],
+                [$this->isInstanceOf(WATCH::class)]
+            )
+            ->willReturnOnConsecutiveCalls(
+                'OK',
+                $this->throwException(new ConnectionException($this->mockNodeConnection, 'Connection lost')),
+                'OK'
+            );
+        $this->mockNodeConnection->expects($this->once())->method('disconnect');
+
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
+        $strategy->watch(['key1']);
+
+        try {
+            $strategy->$method();
+            $this->fail('Expected the connection failure to be rethrown.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('Connection lost', $exception->getMessage());
+        }
+
+        $this->assertTrue($strategy->watch(['key1']));
+    }
+
+    /**
+     * @group disconnected
      */
     public function testCommandsFailUntilUnwatchOnceTheConnectionHoldingTheWatchIsLost(): void
     {
