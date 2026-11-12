@@ -304,7 +304,14 @@ class MultiExec implements ClientContextInterface
         }
 
         $this->state->unflag(MultiExecState::WATCH);
-        $this->__call('UNWATCH', []);
+
+        if ($this->state->isInitialized()) {
+            // After MULTI, UNWATCH is queued with the other commands.
+            $this->__call('UNWATCH', []);
+        } else {
+            // The strategy also stops keeping the transaction on its connection.
+            $this->connectionStrategy->unwatch();
+        }
 
         return $this;
     }

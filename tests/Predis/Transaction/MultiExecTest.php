@@ -314,6 +314,43 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testUnwatchReleasesTheConnectionOfTheTransaction(): void
+    {
+        $sent = [];
+        $lost = false;
+        $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $connection
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$sent, &$lost, $connection) {
+                $sent[] = $command->getId();
+
+                // The first GET after UNWATCH loses the connection; a retry must follow.
+                if ($command->getId() === 'GET' && !$lost) {
+                    $lost = true;
+
+                    throw new ConnectionException($connection, 'Connection lost');
+                }
+
+                return $command->getId() === 'GET' ? 'bar' : new Response\Status('OK');
+            });
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2, 'retry' => new Retry(new ExponentialBackoff(1, 10), 3)]));
+        $connection
+            ->method('isConnected')
+            ->willReturn(true);
+
+        $tx = new MultiExec(new Client($connection), ['cas' => true]);
+        $tx->watch('foo');
+        $tx->unwatch();
+
+        $this->assertSame('bar', $tx->get('foo'));
+        $this->assertSame(['WATCH', 'UNWATCH', 'GET', 'GET'], $sent);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testAutomaticWatchInOptions(): void
     {
         $txCommands = $casCommands = [];
@@ -748,6 +785,10 @@ class MultiExecTest extends PredisTestCase
             ->expects($this->atLeast(3))
             ->method('disconnect')
             ->withAnyParameters();
+
+        $mockConnection
+            ->method('isConnected')
+            ->willReturn(true);
 
         $mockConnection
             ->expects($this->exactly(8))
@@ -1690,6 +1731,10 @@ class MultiExecTest extends PredisTestCase
         $connection
             ->method('getParameters')
             ->willReturn(new Parameters(['protocol' => 2]));
+
+        $connection
+            ->method('isConnected')
+            ->willReturn(true);
 
         return $connection;
     }

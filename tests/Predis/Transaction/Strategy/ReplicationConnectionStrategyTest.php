@@ -71,6 +71,9 @@ class ReplicationConnectionStrategyTest extends TestCase
             ->willReturnCallback(static function (CommandInterface $command) {
                 return $command->getId() === 'EXEC' ? ['OK'] : 'QUEUED';
             });
+        $master
+            ->method('isConnected')
+            ->willReturn(true);
 
         $this->mockConnection
             ->expects($this->once())
@@ -80,9 +83,10 @@ class ReplicationConnectionStrategyTest extends TestCase
             }))
             ->willReturn('OK');
 
+        // The node that has just run MULTI.
         $this->mockConnection
             ->expects($this->once())
-            ->method('getConnectionByCommand')
+            ->method('getCurrent')
             ->willReturn($master);
 
         $this->mockConnection
