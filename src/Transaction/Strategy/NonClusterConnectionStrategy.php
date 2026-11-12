@@ -223,8 +223,10 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
         return $retry->callWithRetry(
             function () use ($command) {
                 return $this->connection->executeCommand($command);
-            }, function (CommunicationException $e) {
-                $e->getConnection()->disconnect();
+            }, function (Throwable $e) {
+                if ($e instanceof CommunicationException) {
+                    $e->getConnection()->disconnect();
+                }
             }
         );
     }
