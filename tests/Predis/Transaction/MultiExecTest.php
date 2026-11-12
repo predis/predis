@@ -317,17 +317,14 @@ class MultiExecTest extends PredisTestCase
     public function testUnwatchReleasesTheConnectionOfTheTransaction(): void
     {
         $sent = [];
-        $lost = false;
         $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
         $connection
             ->method('executeCommand')
-            ->willReturnCallback(static function (CommandInterface $command) use (&$sent, &$lost, $connection) {
+            ->willReturnCallback(static function (CommandInterface $command) use (&$sent, $connection) {
                 $sent[] = $command->getId();
 
                 // The first GET after UNWATCH loses the connection; a retry must follow.
-                if ($command->getId() === 'GET' && !$lost) {
-                    $lost = true;
-
+                if ($sent === ['WATCH', 'GET', 'UNWATCH', 'GET']) {
                     throw new ConnectionException($connection, 'Connection lost');
                 }
 
@@ -342,10 +339,12 @@ class MultiExecTest extends PredisTestCase
 
         $tx = new MultiExec(new Client($connection), ['cas' => true]);
         $tx->watch('foo');
+        // A read before UNWATCH initializes the transaction in CAS mode, without sending MULTI.
+        $this->assertSame('bar', $tx->get('foo'));
         $tx->unwatch();
 
         $this->assertSame('bar', $tx->get('foo'));
-        $this->assertSame(['WATCH', 'UNWATCH', 'GET', 'GET'], $sent);
+        $this->assertSame(['WATCH', 'GET', 'UNWATCH', 'GET', 'GET'], $sent);
     }
 
     /**

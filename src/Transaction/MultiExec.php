@@ -305,8 +305,8 @@ class MultiExec implements ClientContextInterface
 
         $this->state->unflag(MultiExecState::WATCH);
 
-        if ($this->state->isInitialized()) {
-            // After MULTI, UNWATCH is queued with the other commands.
+        // MULTI has been sent: at once without CAS, by multi() in CAS mode. UNWATCH is then queued with the other commands.
+        if ($this->state->isInitialized() && !$this->state->isCAS()) {
             $this->__call('UNWATCH', []);
         } else {
             // The strategy also stops keeping the transaction on its connection.
