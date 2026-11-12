@@ -20,6 +20,7 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\RelayConnection;
+use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Response\ServerException;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
@@ -160,6 +161,35 @@ class NodeConnectionStrategyTest extends TestCase
 
         $this->assertTrue($strategy->initializeTransaction());
         $this->assertSame([], $strategy->executeTransaction());
+        $this->assertTrue($strategy->initializeTransaction());
+    }
+
+    /**
+     * @return void
+     */
+    public function testMultiIsRetriedAfterAFailedConnect(): void
+    {
+        $failed = false;
+        $this->mockConnection
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->willReturnCallback(function () use (&$failed) {
+                if (!$failed) {
+                    $failed = true;
+
+                    throw new StreamInitException('Connection refused');
+                }
+
+                return 'OK';
+            });
+
+        $this->mockConnection
+            ->expects($this->any())
+            ->method('getParameters')
+            ->willReturn(new Parameters(['retry' => new Retry(new ExponentialBackoff(1, 10), 3)]));
+
+        $strategy = new NodeConnectionStrategy($this->mockConnection, new MultiExecState());
+
         $this->assertTrue($strategy->initializeTransaction());
     }
 

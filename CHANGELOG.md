@@ -11,6 +11,7 @@
 - Fixed fluent transactions leaving the connection in `MULTI` after a queued command was rejected (#1755)
 - Fixed fluent cluster transactions committing other commands after a cross-slot error (#1758)
 - Fixed a `TypeError` on protocol errors in transactions with replication or cluster (#1758)
+- Fixed a `TypeError` when retrying a transaction after a failed connect (#1758)
 - Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
 
 ## v3.7.1 (2026-11-03)
