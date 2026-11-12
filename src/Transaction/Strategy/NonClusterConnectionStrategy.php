@@ -26,7 +26,6 @@ use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Response\ErrorInterface;
 use Predis\Response\ServerException;
 use Predis\Response\Status;
-use Predis\TimeoutException;
 use Predis\Transaction\MultiExecState;
 use Predis\Transaction\Response\BypassTransactionResponse;
 use Throwable;
@@ -225,7 +224,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
             function () use ($command) {
                 return $this->connection->executeCommand($command);
             }, function (CommunicationException $e) {
-                $this->onFailCallback($e);
+                $e->getConnection()->disconnect();
             }
         );
     }
@@ -256,39 +255,5 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     private function isConnectionLost(): bool
     {
         return $this->nodeConnection && !$this->nodeConnection->isConnected();
-    }
-
-    /**
-     * Handle communication exception.
-     *
-     * @param  CommunicationException $e
-     * @return void
-     */
-    private function onFailCallback(CommunicationException $e)
-    {
-        $connection = $e->getConnection();
-
-        if ($connection instanceof NodeConnectionInterface) {
-            $connection->disconnect();
-
-            return;
-        }
-
-        if ($e instanceof ConnectionException) {
-            $nodeConnection = $e->getConnection();
-
-            if ($nodeConnection) {
-                $nodeConnection->disconnect();
-                $this->connection->remove($nodeConnection);
-            }
-        }
-
-        if ($e instanceof TimeoutException) {
-            $nodeConnection = $e->getConnection();
-
-            if ($nodeConnection) {
-                $nodeConnection->disconnect();
-            }
-        }
     }
 }
