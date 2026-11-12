@@ -135,86 +135,6 @@ class NodeConnectionStrategyTest extends TestCase
     /**
      * @return void
      */
-    public function testCommandsAfterMultiAreNotRetried(): void
-    {
-        $sent = [];
-        $this->mockConnection
-            ->expects($this->exactly(2))
-            ->method('executeCommand')
-            ->willReturnCallback(function (CommandInterface $command) use (&$sent) {
-                $sent[] = $command->getId();
-
-                if ($command->getId() === 'MULTI') {
-                    return 'OK';
-                }
-
-                throw new ConnectionException($this->mockConnection, 'Connection lost');
-            });
-
-        $this->mockConnection
-            ->expects($this->any())
-            ->method('getParameters')
-            ->willReturn(new Parameters(['retry' => new Retry(new ExponentialBackoff(1, 10), 3)]));
-
-        $this->mockConnection
-            ->expects($this->once())
-            ->method('disconnect');
-
-        $strategy = new NodeConnectionStrategy($this->mockConnection, new MultiExecState());
-        $this->assertTrue($strategy->initializeTransaction());
-
-        try {
-            $strategy->executeCommand(new SET());
-            $this->fail('Expected the connection error to reach the caller.');
-        } catch (ConnectionException $exception) {
-            $this->assertSame(['MULTI', 'SET'], $sent);
-        }
-    }
-
-    /**
-     * @return void
-     */
-    public function testCommandsAfterWatchAreNotRetried(): void
-    {
-        $sent = [];
-        $this->mockConnection
-            ->expects($this->exactly(2))
-            ->method('executeCommand')
-            ->willReturnCallback(function (CommandInterface $command) use (&$sent) {
-                $sent[] = $command->getId();
-
-                if ($command->getId() === 'WATCH') {
-                    return 'OK';
-                }
-
-                throw new TimeoutException($this->mockConnection);
-            });
-
-        $this->mockConnection
-            ->expects($this->any())
-            ->method('getParameters')
-            ->willReturn(new Parameters(['retry' => new Retry(new ExponentialBackoff(1, 10), 3)]));
-
-        $this->mockConnection
-            ->expects($this->once())
-            ->method('disconnect');
-
-        $state = new MultiExecState();
-        $state->flag(MultiExecState::CAS);
-        $strategy = new NodeConnectionStrategy($this->mockConnection, $state);
-        $strategy->watch(['foo']);
-
-        try {
-            $strategy->executeCommand(new GET());
-            $this->fail('Expected the connection error to reach the caller.');
-        } catch (TimeoutException $exception) {
-            $this->assertSame(['WATCH', 'GET'], $sent);
-        }
-    }
-
-    /**
-     * @return void
-     */
     public function testMultiIsRetriedUntilTheTransactionReachesTheConnection(): void
     {
         $failures = 0;
@@ -302,12 +222,23 @@ class NodeConnectionStrategyTest extends TestCase
     {
         $sent = [];
         $this->mockConnection
-            ->expects($this->exactly(3))
+            ->expects($this->exactly(4))
             ->method('executeCommand')
             ->willReturnCallback(function (CommandInterface $command) use (&$sent) {
                 $sent[] = $command->getId();
 
+                if ($sent === ['WATCH', 'GET']) {
+                    throw new TimeoutException($this->mockConnection);
+                }
+
                 return 'OK';
+            });
+
+        $this->mockConnection
+            ->expects($this->once())
+            ->method('disconnect')
+            ->willReturnCallback(function () {
+                $this->connected = false;
             });
 
         $this->mockConnection
@@ -320,24 +251,26 @@ class NodeConnectionStrategyTest extends TestCase
         $strategy = new NodeConnectionStrategy($this->mockConnection, $state);
         $strategy->watch(['foo']);
 
-        // e.g. after MultiExec::onProtocolError() disconnected it
-        $this->connected = false;
-
-        for ($i = 0; $i < 2; ++$i) {
-            try {
-                $strategy->executeCommand(new GET());
-                $this->fail('Expected the lost connection to reach the caller.');
-            } catch (ConnectionException $exception) {
-                $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
-            }
+        try {
+            $strategy->executeCommand(new GET());
+            $this->fail('Expected the connection error to reach the caller.');
+        } catch (TimeoutException $exception) {
+            // NOOP
         }
 
-        $this->assertSame(['WATCH'], $sent);
+        try {
+            $strategy->executeCommand(new GET());
+            $this->fail('Expected the lost connection to reach the caller.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
+        }
+
+        $this->assertSame(['WATCH', 'GET'], $sent);
 
         $strategy->unwatch();
 
         $this->assertSame('OK', $strategy->executeCommand(new GET())->getResponse());
-        $this->assertSame(['WATCH', 'UNWATCH', 'GET'], $sent);
+        $this->assertSame(['WATCH', 'GET', 'UNWATCH', 'GET'], $sent);
     }
 
     /**
