@@ -517,7 +517,6 @@ class MultiExec implements ClientContextInterface
     private function abortQueuedTransaction(): void
     {
         if ($this->isClusterTransaction()) {
-            // The cluster strategy releases the node by itself.
             $this->discard();
 
             return;
