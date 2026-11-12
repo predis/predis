@@ -243,9 +243,6 @@ class MultiExec implements ClientContextInterface
             $this->commands->enqueue($command);
         } elseif ($response instanceof ErrorResponseInterface) {
             if (!$this->state->isExecuting() && !$this->isClusterTransaction()) {
-                // EXEC can only fail now, but the connection is still in MULTI.
-                // A transaction block discards it on the way out, the fluent
-                // interface has to do it here.
                 $this->abortQueuedTransaction();
                 $this->state->flag(MultiExecState::ABORTED);
             }
@@ -317,7 +314,6 @@ class MultiExec implements ClientContextInterface
         }
 
         if ($this->state->isAborted()) {
-            // DISCARD has already unwatched the keys.
             return $this;
         }
 
