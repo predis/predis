@@ -27,8 +27,10 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
+use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Connection\StreamConnection;
 use Predis\PredisException;
+use Predis\Protocol\ProtocolException;
 use Predis\Response;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
@@ -851,6 +853,83 @@ class MultiExecTest extends PredisTestCase
                 'Connection lost',
                 ['WATCH', 'MULTI', 'UNWATCH', 'WATCH', 'MULTI', 'SET', 'EXEC'],
             ],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider protocolErrors
+     */
+    public function testProtocolErrorIsReportedOnTheConnectionHoldingTheTransaction(
+        string $type,
+        Response\Status $reply,
+        string $message
+    ): void {
+        $node = $this->getMockedConnection(static function (CommandInterface $command) use ($reply) {
+            switch ($command->getId()) {
+                case 'MULTI':
+                    return new Response\Status('OK');
+                case 'EXEC':
+                    return [];
+                default:
+                    return $reply;
+            }
+        });
+        $node
+            ->expects($this->once())
+            ->method('disconnect');
+
+        switch ($type) {
+            case 'replication':
+                $connection = $this->getMockBuilder(ReplicationInterface::class)->getMock();
+                $connection
+                    ->method('getCurrent')
+                    ->willReturn($node);
+                break;
+            case 'cluster':
+                $connection = $this->getMockBuilder(ClusterInterface::class)->getMock();
+                $connection
+                    ->method('getClusterStrategy')
+                    ->willReturn(new RedisStrategy());
+                break;
+            default:
+                $connection = $node;
+        }
+
+        if ($connection !== $node) {
+            $connection
+                ->method('getConnectionByCommand')
+                ->willReturn($node);
+            $connection
+                ->method('getParameters')
+                ->willReturn(new Parameters(['protocol' => 2]));
+            $connection
+                ->method('executeCommand')
+                ->willReturnCallback(static function (CommandInterface $command) use ($node) {
+                    return $node->executeCommand($command);
+                });
+        }
+
+        try {
+            (new MultiExec(new Client($connection)))->set('foo', 'bar')->execute();
+            $this->fail('Expected a protocol error.');
+        } catch (ProtocolException $exception) {
+            $this->assertSame($message, $exception->getMessage());
+            $this->assertSame($node, $exception->getConnection());
+        }
+    }
+
+    public function protocolErrors(): array
+    {
+        $notQueued = 'The server did not return a +QUEUED status response.';
+        $execCount = 'EXEC returned an unexpected number of response items.';
+
+        return [
+            'unexpected reply on a node' => ['node', new Response\Status('OK'), $notQueued],
+            'unexpected reply on replication' => ['replication', new Response\Status('OK'), $notQueued],
+            'EXEC reply count on a node' => ['node', new Response\Status('QUEUED'), $execCount],
+            'EXEC reply count on replication' => ['replication', new Response\Status('QUEUED'), $execCount],
+            'EXEC reply count on cluster' => ['cluster', new Response\Status('QUEUED'), $execCount],
         ];
     }
 

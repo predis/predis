@@ -18,6 +18,7 @@ use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
+use Predis\Connection\AggregateConnectionInterface;
 use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error;
@@ -248,7 +249,7 @@ class MultiExec implements ClientContextInterface
 
             throw new AbortedMultiExecException($this, $response->getMessage());
         } else {
-            $this->onProtocolError('The server did not return a +QUEUED status response.');
+            $this->onProtocolError('The server did not return a +QUEUED status response.', $command);
         }
 
         return $this;
@@ -458,7 +459,7 @@ class MultiExec implements ClientContextInterface
         $protocolVersion = $this->client->getConnection()->getParameters()->protocol;
 
         if ($size !== count($commands)) {
-            $this->onProtocolError('EXEC returned an unexpected number of response items.');
+            $this->onProtocolError('EXEC returned an unexpected number of response items.', $commands->bottom());
         }
 
         for ($i = 0; $i < $size; ++$i) {
@@ -549,15 +550,17 @@ class MultiExec implements ClientContextInterface
     /**
      * Helper method for protocol errors encountered inside the transaction.
      *
-     * @param string $message Error message.
+     * @param string           $message Error message.
+     * @param CommandInterface $command Command sent to the connection holding the transaction.
      */
-    private function onProtocolError($message)
+    private function onProtocolError($message, CommandInterface $command)
     {
-        // Since a MULTI/EXEC block cannot be initialized when using aggregate
-        // connections we can safely assume that Predis\Client::getConnection()
-        // will return a Predis\Connection\NodeConnectionInterface instance.
-        CommunicationException::handle(new ProtocolException(
-            $this->client->getConnection(), $message
-        ));
+        $connection = $this->client->getConnection();
+
+        if ($connection instanceof AggregateConnectionInterface) {
+            $connection = $connection->getConnectionByCommand($command);
+        }
+
+        CommunicationException::handle(new ProtocolException($connection, $message));
     }
 }
