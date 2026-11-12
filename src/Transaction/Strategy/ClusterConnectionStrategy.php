@@ -247,9 +247,11 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function unwatch()
     {
-        $this->lostConnection = null;
-
-        return $this->releaseNode(new UNWATCH());
+        try {
+            return $this->releaseNode(new UNWATCH());
+        } finally {
+            $this->lostConnection = null;
+        }
     }
 
     /**
