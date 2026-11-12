@@ -17,11 +17,11 @@ namespace Predis\Transaction;
  */
 class MultiExecState
 {
-    public const INITIALIZED = 1;    // 0b000001
-    public const INSIDEBLOCK = 2;    // 0b000010
-    public const DISCARDED = 4;    // 0b000100
-    public const CAS = 8;    // 0b001000
-    public const WATCH = 16;   // 0b010000
+    public const INITIALIZED = 1;    // 0b00001
+    public const INSIDEBLOCK = 2;    // 0b00010
+    public const DISCARDED = 4;    // 0b00100
+    public const CAS = 8;    // 0b01000
+    public const WATCH = 16;   // 0b10000
     public const ABORTED = 32;   // 0b100000
 
     private $flags;
