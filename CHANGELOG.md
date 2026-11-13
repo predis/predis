@@ -5,6 +5,7 @@
 ## Unreleased
 ### Fixed
 - Fixed transactions retrying commands on a new connection after WATCH or MULTI, where they ran outside of the transaction (#1756)
+- Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
 
 ## Unreleased
 ### Fixed

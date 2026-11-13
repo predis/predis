@@ -110,12 +110,17 @@ class RelayConnection extends AbstractConnection
     }
 
     /**
+     * Closes the connection even when Relay has already lost it, which clears
+     * what Relay keeps for it, such as an open MULTI.
+     *
      * {@inheritdoc}
      */
     public function disconnect()
     {
-        if ($this->client->isConnected()) {
+        try {
             $this->client->close();
+        } catch (RelayException $exception) {
+            // The connection is already closed.
         }
 
         parent::disconnect();
@@ -255,7 +260,7 @@ class RelayConnection extends AbstractConnection
         $code = $exception->getCode();
         $message = $exception->getMessage();
 
-        if (strpos($message, 'RELAY_ERR_IO') !== false) {
+        if (strpos($message, 'RELAY_ERR_IO') !== false || strpos($message, 'RELAY_ERR_EOF') !== false) {
             return new ConnectionException($this, $message, $code, $exception);
         }
 
