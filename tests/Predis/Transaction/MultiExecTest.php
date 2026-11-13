@@ -1148,6 +1148,103 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testDiscardInCasModeSucceedsWhileTheServerIsDownAfterALostConnection(): void
+    {
+        $sent = [];
+        $connected = true;
+        $down = false;
+        $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $connection
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$sent, &$connected, &$down, $connection) {
+                if ($down) {
+                    throw new ConnectionException($connection, 'Connection refused');
+                }
+
+                $connected = true;
+                $sent[] = $command->getId();
+
+                if ($command->getId() === 'GET') {
+                    $down = true;
+
+                    throw new ConnectionException($connection, 'Connection lost');
+                }
+
+                return new Response\Status('OK');
+            });
+        $connection
+            ->method('disconnect')
+            ->willReturnCallback(static function () use (&$connected) {
+                $connected = false;
+            });
+        $connection
+            ->method('isConnected')
+            ->willReturnCallback(static function () use (&$connected) {
+                return $connected;
+            });
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
+        $tx = new MultiExec(new Client($connection), ['watch' => 'foo', 'cas' => true]);
+
+        try {
+            $tx->get('foo');
+            $this->fail('Expected the connection to be lost.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('Connection lost', $exception->getMessage());
+        }
+
+        $this->assertSame($tx, $tx->discard());
+        $this->assertSame(['WATCH', 'GET'], $sent);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRejectedExecOnReplicationClosesTheNodeHoldingTheTransaction(): void
+    {
+        $node = $this->getMockedConnection(static function (CommandInterface $command) {
+            switch ($command->getId()) {
+                case 'SET':
+                    return new Response\Status('QUEUED');
+                case 'EXEC':
+                    return new Response\Error('BUSY Redis is busy running a script. You can only call SCRIPT KILL or SHUTDOWN NOSAVE.');
+                default:
+                    return new Response\Status('OK');
+            }
+        });
+        $node
+            ->expects($this->once())
+            ->method('disconnect');
+
+        $replication = $this->getMockBuilder(ReplicationInterface::class)->getMock();
+        $replication
+            ->method('getCurrent')
+            ->willReturn($node);
+        $replication
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+        $replication
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use ($node) {
+                return $node->executeCommand($command);
+            });
+        $replication
+            ->expects($this->never())
+            ->method('disconnect');
+
+        try {
+            (new MultiExec(new Client($replication)))->set('foo', 'bar')->execute();
+            $this->fail('Expected EXEC to be rejected.');
+        } catch (Response\ServerException $exception) {
+            $this->assertStringStartsWith('BUSY ', $exception->getMessage());
+        }
+    }
+
+    /**
+     * @group disconnected
      * @dataProvider discardOnTheWayOut
      */
     public function testFailedDiscardClosesConnectionAndKeepsTheOriginalError(
@@ -2121,6 +2218,7 @@ class MultiExecTest extends PredisTestCase
         }
 
         $this->assertInstanceOf(Response\ServerException::class, $exception);
+        $this->assertTrue($client1->getConnection()->isConnected());
         $this->assertSame('client2', $client1->get('sentinel'));
     }
 
