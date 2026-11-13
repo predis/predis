@@ -19,6 +19,7 @@
 - Fixed Relay reporting a transaction aborted by `WATCH` as a `ServerException` and ignoring `retry` (#1765)
 - Fixed cluster transactions reporting server errors as a WATCH conflict and retrying them (#1763)
 - Fixed cluster transactions committing without their `WATCH` after a server error before `multi()` (#1764)
+- Fixed cluster transactions committing without their `WATCH` after an `ASK` redirect (#1767)
 
 ## v3.7.1 (2026-11-03)
 ### Added

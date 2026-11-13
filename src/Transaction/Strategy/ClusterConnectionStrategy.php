@@ -406,7 +406,11 @@ class ClusterConnectionStrategy implements StrategyInterface
             }
 
             if (!$this->nodeConnection) {
-                $response = $this->connection->executeCommand($command);
+                // Following -ASK would run the command on another node than
+                // the one taken from the slots map to hold the transaction.
+                $response = $this->connection instanceof RedisCluster
+                    ? $this->connection->executeCommandOnSlotOwner($command)
+                    : $this->connection->executeCommand($command);
                 $this->nodeConnection = $this->connection->getConnectionByCommand($command);
 
                 return $response;

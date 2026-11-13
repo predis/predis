@@ -77,6 +77,11 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
     private $retryInterval = 10;
 
     /**
+     * @var bool
+     */
+    private $followAsk = true;
+
+    /**
      * @var int|string|null
      */
     private $database;
@@ -486,6 +491,10 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
                 return $this->onMovedResponse($command, $details[1]);
 
             case 'ASK':
+                if (!$this->followAsk) {
+                    return $error;
+                }
+
                 return $this->onAskResponse($command, $details[1]);
 
             default:
@@ -691,6 +700,27 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
         }
 
         return $response;
+    }
+
+    /**
+     * Executes a command like executeCommand(), but returns -ASK responses
+     * instead of executing the command again on the node importing the slot,
+     * so that it only runs on the node the slots map associates to its slot.
+     *
+     * @param CommandInterface $command Command instance.
+     *
+     * @return mixed
+     */
+    public function executeCommandOnSlotOwner(CommandInterface $command)
+    {
+        $followAsk = $this->followAsk;
+        $this->followAsk = false;
+
+        try {
+            return $this->executeCommand($command);
+        } finally {
+            $this->followAsk = $followAsk;
+        }
     }
 
     /**

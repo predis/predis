@@ -564,7 +564,7 @@ class ClusterConnectionStrategyTest extends TestCase
         $exception = new ConnectionException($this->mockNodeConnection, 'Connection refused');
         $cluster = $this->getMockBuilder(RedisCluster::class)->disableOriginalConstructor()->getMock();
         $cluster->method('getClusterStrategy')->willReturn($this->mockStrategy);
-        $cluster->expects($this->once())->method('executeCommand')->with(new MULTI())->willThrowException($exception);
+        $cluster->expects($this->once())->method('executeCommandOnSlotOwner')->with(new MULTI())->willThrowException($exception);
         $cluster->expects($this->never())->method('getConnectionByCommand');
         $cluster->expects($this->never())->method('applyNodeFailure');
         $this->mockNodeConnection->expects($this->never())->method('executeCommand');
@@ -814,6 +814,54 @@ class ClusterConnectionStrategyTest extends TestCase
         $this->expectExceptionMessage('NOPERM this user has no permissions');
 
         $strategy->watch(['key1', 'key2']);
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider firstCommandsBeforeMulti
+     */
+    public function testAskResponseToTheFirstCommandIsNotFollowedToTheImportingNode(callable $send, string $id): void
+    {
+        $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
+        $this->mockStrategy->method('getSlotByKey')->willReturn(123);
+
+        $cluster = $this->getMockBuilder(RedisCluster::class)->disableOriginalConstructor()->getMock();
+        $cluster->method('getClusterStrategy')->willReturn($this->mockStrategy);
+        $cluster->method('getConnectionByCommand')->willReturn($this->mockNodeConnection);
+        // Following -ASK would run the command on the importing node.
+        $cluster->expects($this->never())->method('executeCommand')->willReturn(new Status('OK'));
+        $cluster->expects($this->never())->method('applyMovedResponse');
+        $cluster->expects($this->once())->method('executeCommandOnSlotOwner')
+            ->with($this->callback(static function ($command) use ($id) {
+                return $command->getId() === $id;
+            }))
+            ->willReturn(new Error('ASK 123 127.0.0.1:6380'));
+        $this->mockNodeConnection->expects($this->once())->method('executeCommand')
+            ->with($this->isInstanceOf(UNWATCH::class))->willReturn(new Status('OK'));
+        $this->mockNodeConnection->expects($this->never())->method('disconnect');
+
+        $state = new MultiExecState();
+        $state->flag(MultiExecState::CAS);
+        $strategy = new ClusterConnectionStrategy($cluster, $state);
+
+        try {
+            $send($strategy);
+            $this->fail('Expected the -ASK response to fail the transaction.');
+        } catch (ServerException $exception) {
+            $this->assertSame('ASK 123 127.0.0.1:6380', $exception->getMessage());
+        }
+    }
+
+    public function firstCommandsBeforeMulti(): array
+    {
+        return [
+            'WATCH' => [static function (ClusterConnectionStrategy $strategy) {
+                $strategy->watch(['key1']);
+            }, 'WATCH'],
+            'CAS read' => [static function (ClusterConnectionStrategy $strategy) {
+                $strategy->executeCommand(new GET());
+            }, 'GET'],
+        ];
     }
 
     /**
@@ -1420,6 +1468,7 @@ class ClusterConnectionStrategyTest extends TestCase
         $cluster->method('getClusterStrategy')->willReturn($this->mockStrategy);
         $cluster->method('getConnectionByCommand')->willReturn($this->mockNodeConnection);
         $cluster->method('executeCommand')->willReturnCallback($this->routeToMockNode());
+        $cluster->method('executeCommandOnSlotOwner')->willReturnCallback($this->routeToMockNode());
 
         return $cluster;
     }
