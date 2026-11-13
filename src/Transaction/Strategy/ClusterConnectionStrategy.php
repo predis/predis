@@ -22,7 +22,6 @@ use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
-use Predis\Connection\RelayConnection;
 use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface;
@@ -283,7 +282,7 @@ class ClusterConnectionStrategy implements StrategyInterface
 
     /**
      * Aborts the transaction after an error response and tells whether it can
-     * be retried like after a WATCH conflict, which Relay reports as an error.
+     * be retried like after a WATCH conflict.
      * That is the case when the transaction's slot was moved or the cluster is
      * unavailable. Other errors would repeat, as a transaction does not send
      * ASKING for a slot being migrated, so the caller reports them with the
@@ -296,7 +295,6 @@ class ClusterConnectionStrategy implements StrategyInterface
     private function abortTransaction(CommandInterface $cleanup, $response): bool
     {
         $slot = $this->slot;
-        $node = $this->nodeConnection;
         $this->abort($cleanup, $response);
 
         if (!$response instanceof ErrorInterface) {
@@ -315,8 +313,7 @@ class ClusterConnectionStrategy implements StrategyInterface
                 return true;
 
             default:
-                return $node instanceof RelayConnection
-                    && strpos($response->getMessage(), 'Transaction failed') === 0;
+                return false;
         }
     }
 
