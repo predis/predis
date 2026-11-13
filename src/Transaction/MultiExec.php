@@ -242,7 +242,7 @@ class MultiExec implements ClientContextInterface
         } elseif ($response instanceof Relay) {
             $this->commands->enqueue($command);
         } elseif ($response instanceof ErrorResponseInterface) {
-            if (!$this->state->isExecuting()) {
+            if (!$this->state->isExecuting() && !$this->state->isCAS()) {
                 $this->abortQueuedTransaction();
                 $this->state->flag(MultiExecState::ABORTED);
             }

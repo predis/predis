@@ -801,6 +801,31 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testClusterSlotErrorBeforeMultiWithFluentInterfaceDoesNotAbortTransaction(): void
+    {
+        $commands = [];
+        $cas = [];
+        $tx = $this->getMockedClusterTransaction(
+            $this->getExecuteCallback(['OK'], $commands, $cas),
+            ['cas' => true, 'watch' => '{a}foo']
+        );
+        $tx->get('{a}foo');
+
+        try {
+            $tx->get('{b}foo');
+            $this->fail('Expected the command to be rejected.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertStringContainsString('same hash slot', $exception->getMessage());
+        }
+
+        $this->assertEquals(['OK'], $tx->multi()->set('{a}foo', 'bar')->execute());
+        $this->assertSame(['WATCH', 'GET'], self::commandsToIDs($cas));
+        $this->assertSame(['MULTI', 'SET', 'EXEC'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
      * @dataProvider completedTransactions
      */
     public function testExecEndsTheTransaction($exec, ?string $error, bool $discard): void
