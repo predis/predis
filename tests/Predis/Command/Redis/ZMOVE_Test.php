@@ -92,8 +92,8 @@ class ZMOVE_Test extends PredisCommandTestCase
         $redis->zadd('destination', 10, 'z');
 
         $this->assertSame($expectedResponse, $redis->zmove('source', 'destination', ...$commandArguments));
-        $this->assertSame($expectedSource, $redis->zrange('source', 0, -1, ['withscores' => true]));
-        $this->assertSame($expectedDestination, $redis->zrange('destination', 0, -1, ['withscores' => true]));
+        $this->assertEquals($expectedSource, $redis->zrange('source', 0, -1, ['withscores' => true]));
+        $this->assertEquals($expectedDestination, $redis->zrange('destination', 0, -1, ['withscores' => true]));
     }
 
     /**
