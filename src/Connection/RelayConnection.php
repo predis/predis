@@ -222,6 +222,11 @@ class RelayConnection extends AbstractConnection
                 ? $this->client->{$name}(...$arguments)
                 : $this->client->rawCommand($name, ...$arguments);
         } catch (RelayException $ex) {
+            // Relay throws when a watched key aborts EXEC, where Redis replies with a null array.
+            if ($command->getId() === 'EXEC' && strpos($ex->getMessage(), 'Transaction failed') === 0) {
+                return null;
+            }
+
             $exception = $this->onCommandError($ex, $command);
 
             if ($exception instanceof ErrorResponseInterface) {

@@ -16,6 +16,7 @@
 - Fixed transactions leaving the connection in `MULTI` when Redis before 6.0.6 rejected `EXEC` (#1758)
 - Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
 - Fixed transactions in CAS mode treating a rejected `MULTI` as an open transaction (#1766)
+- Fixed Relay reporting a transaction aborted by `WATCH` as a `ServerException` and ignoring `retry` (#1765)
 
 ## v3.7.1 (2026-11-03)
 ### Added
