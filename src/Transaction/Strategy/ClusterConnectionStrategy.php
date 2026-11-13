@@ -261,7 +261,11 @@ class ClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
-     * Executes a command ahead of MULTI, releasing the node on error responses.
+     * Executes a command ahead of MULTI. Like in Redis, an error response keeps
+     * the WATCH on the node holding the transaction, so that EXEC still fails
+     * after a change to a watched key. A -MOVED response only updates the slots
+     * map, as the queued commands are rejected by that node. The first command
+     * releases its node on error, as nothing is watched yet.
      *
      * @param  CommandInterface $command
      * @return mixed
@@ -269,12 +273,19 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     private function executeBeforeMulti(CommandInterface $command)
     {
+        $isHeld = null !== $this->nodeConnection;
         $response = $this->setSlotAndExecute($command);
 
         if ($response instanceof ErrorInterface) {
-            $this->abort(new UNWATCH(), $response);
+            $message = $response->getMessage();
 
-            throw new ServerException($response->getMessage());
+            if (!$isHeld) {
+                $this->abort(new UNWATCH(), $response);
+            } elseif (0 === strpos($message, 'MOVED ') && $this->connection instanceof RedisCluster) {
+                $this->connection->applyMovedResponse(substr($message, 6));
+            }
+
+            throw new ServerException($message);
         }
 
         return $response;

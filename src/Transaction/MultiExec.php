@@ -520,8 +520,6 @@ class MultiExec implements ClientContextInterface
             call_user_func($callable, $this);
         } catch (CommunicationException $exception) {
             // NOOP
-        } catch (ServerException $exception) {
-            // NOOP
         } catch (Throwable $exception) {
             $this->abortQueuedTransaction();
         }
