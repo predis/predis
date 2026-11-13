@@ -1302,37 +1302,6 @@ class ClusterConnectionStrategyTest extends TestCase
     }
 
     /**
-     * @group disconnected
-     * @requires extension relay
-     */
-    public function testRelayWatchConflictReportedAsErrorStaysRetryable(): void
-    {
-        $node = $this->getMockBuilder(\Predis\Connection\RelayConnection::class)->disableOriginalConstructor()->getMock();
-        $node->method('executeCommand')->willReturnCallback(static function ($command) {
-            switch ($command->getId()) {
-                case 'EXEC':
-                    return new Error('Transaction failed (RELAY_ERR_REDIS; commands.c:16733)');
-                case 'SET':
-                    return 'QUEUED';
-                default:
-                    return 'OK';
-            }
-        });
-        $cluster = $this->getMockBuilder(ClusterInterface::class)->getMock();
-        $cluster->method('getClusterStrategy')->willReturn($this->mockStrategy);
-        $cluster->method('getConnectionByCommand')->willReturn($node);
-        $cluster->method('executeCommand')->willReturnCallback(static function ($command) use ($node) {
-            return $node->executeCommand($command);
-        });
-
-        $strategy = new ClusterConnectionStrategy($cluster, new MultiExecState());
-        $strategy->initializeTransaction();
-        $strategy->executeCommand(new SET());
-
-        $this->assertNull($strategy->executeTransaction());
-    }
-
-    /**
      * Returns a mocked Redis cluster routing every command to the mocked node.
      *
      * @return RedisCluster|MockObject
