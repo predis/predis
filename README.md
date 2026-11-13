@@ -438,12 +438,18 @@ hash slot, due to this limitation it's recommended to use `{}` syntax to make su
 slot. Apart from it no additional configuration needed on a client side.
 
 Transaction commands stay on the same physical node connection. The first command of a transaction is still retried and
-redirected like any other command, as no node holds any state for the transaction yet. After that, redirection errors and
-connection failures abort the transaction: pending commands are discarded or the connection is closed if cleanup fails.
-An abort also updates the slots map when the node moved the slot or became unreachable, so retrying the transaction
-reaches the node that serves the slot. Other errors, including an `ASK` redirect for a slot being migrated, are not
-retried: a command rejected by the server throws `AbortedMultiExecException`, and an error from `MULTI` or `EXEC` throws
-`ServerException`, both with the server's message as they do with a single node.
+follows a `-MOVED` redirect like any other command, as no node holds any state for the transaction yet. After that,
+redirection errors and connection failures abort the transaction: pending commands are discarded or the connection is
+closed if cleanup fails. An abort also updates the slots map when the node moved the slot or became unreachable, so
+retrying the transaction reaches the node that serves the slot. Other errors are not retried: a command rejected by the
+server throws `AbortedMultiExecException`, and an error from `MULTI` or `EXEC` throws `ServerException`, both with the
+server's message as they do with a single node.
+
+An `-ASK` redirect, sent while a slot is being migrated, is never followed and aborts the transaction, even when it
+answers the first command. It fails with a `ServerException` when it answers `WATCH` or a command sent before `MULTI`,
+and with an `AbortedMultiExecException` when it answers a queued command. Running `WATCH` on the node importing the slot
+would leave the rest of the transaction unchecked on the node that still serves it, so retry the transaction once the
+migration has finished.
 
 ```php
 $redis = $this->getClient();

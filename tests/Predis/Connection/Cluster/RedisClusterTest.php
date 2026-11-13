@@ -1249,6 +1249,142 @@ class RedisClusterTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testExecuteCommandOnSlotOwnerReturnsAskResponse(): void
+    {
+        $askResponse = new Response\Error('ASK 1970 127.0.0.1:6380');
+
+        $command = $this->getCommandFactory()->create('get', ['node:1001']);
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection1
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->with($command)
+            ->willReturn($askResponse);
+
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $connection2
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('ASKING')],
+                [$this->isRedisCommand($command)]
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                'foobar'
+            );
+
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory->expects($this->never())->method('create');
+
+        $cluster = new RedisCluster($factory, new Parameters());
+        $cluster->useClusterSlots(false);
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+
+        $this->assertSame($askResponse, $cluster->executeCommandOnSlotOwner($command));
+        $this->assertSame($connection1, $cluster->getConnectionByCommand($command));
+
+        // executeCommand() keeps following -ASK responses.
+        $this->assertSame('foobar', $cluster->executeCommand($command));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecuteCommandOnSlotOwnerFollowsMovedResponseButNotAsk(): void
+    {
+        $command = $this->getCommandFactory()->create('get', ['node:1001']);
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($command)
+            ->willReturn(new Response\Error('MOVED 1970 127.0.0.1:6380'));
+
+        $askResponse = new Response\Error('ASK 1970 127.0.0.1:6381');
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $connection2
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($command)
+            ->willReturn($askResponse);
+
+        $connection3 = $this->getMockConnection('tcp://127.0.0.1:6381');
+        $connection3->expects($this->never())->method('executeCommand');
+
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory->expects($this->never())->method('create');
+
+        $cluster = new RedisCluster($factory, new Parameters());
+        $cluster->useClusterSlots(false);
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+        $cluster->add($connection3);
+
+        $this->assertSame($askResponse, $cluster->executeCommandOnSlotOwner($command));
+        $this->assertSame($connection2, $cluster->getConnectionByCommand($command));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecuteCommandFollowsAskResponseAfterExecuteCommandOnSlotOwnerFailed(): void
+    {
+        $command = $this->getCommandFactory()->create('get', ['node:1001']);
+        $exception = new RuntimeException('Unexpected failure');
+
+        $connection1 = $this->getMockConnection('tcp://127.0.0.1:6379');
+        $connection1
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->with($command)
+            ->willReturnOnConsecutiveCalls(
+                $this->throwException($exception),
+                new Response\Error('ASK 1970 127.0.0.1:6380')
+            );
+
+        $connection2 = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $connection2
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->withConsecutive(
+                [$this->isRedisCommand('ASKING')],
+                [$this->isRedisCommand($command)]
+            )
+            ->willReturnOnConsecutiveCalls(
+                new Response\Status('OK'),
+                'foobar'
+            );
+
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+
+        $cluster = new RedisCluster($factory, new Parameters());
+        $cluster->useClusterSlots(false);
+
+        $cluster->add($connection1);
+        $cluster->add($connection2);
+
+        try {
+            $cluster->executeCommandOnSlotOwner($command);
+            $this->fail('Expected the failure to be rethrown.');
+        } catch (RuntimeException $caught) {
+            $this->assertSame($exception, $caught);
+        }
+
+        $this->assertSame('foobar', $cluster->executeCommand($command));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testMovedResponseWithConnectionInPool(): void
     {
         $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6380');

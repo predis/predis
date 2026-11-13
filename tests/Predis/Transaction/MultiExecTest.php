@@ -2056,6 +2056,64 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testClusterDoesNotFollowAskRedirectionOfTheFirstCommand(): void
+    {
+        $sourceCommands = $targetCommands = [];
+        $slot = (new RedisStrategy())->getSlotByKey('foo');
+
+        // The source still serves the slot, but the watched key was migrated.
+        $source = $this->getMockConnection('tcp://127.0.0.1:6379?slots=0-16383');
+        $source
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$sourceCommands, $slot) {
+                $sourceCommands[] = $id = $command->getId();
+
+                switch ($id) {
+                    case 'WATCH':
+                        return new Response\Error("ASK $slot 127.0.0.1:6380");
+
+                    case 'EXEC':
+                        return ['OK'];
+
+                    case 'SET':
+                        return new Response\Status('QUEUED');
+
+                    default:
+                        return new Response\Status('OK');
+                }
+            });
+
+        $target = $this->getMockConnection('tcp://127.0.0.1:6380');
+        $target
+            ->method('executeCommand')
+            ->willReturnCallback($this->getClusterNodeCallback($targetCommands));
+
+        $factory = $this->getMockBuilder(FactoryInterface::class)->getMock();
+        $factory->expects($this->never())->method('create');
+
+        $cluster = new RedisCluster($factory, new Parameters(['protocol' => 2]));
+        $cluster->add($source);
+        $cluster->add($target);
+
+        $tx = new MultiExec(new Client($cluster), ['watch' => 'foo']);
+
+        try {
+            $tx->execute(static function (MultiExec $tx) {
+                $tx->set('foo', 'bar');
+            });
+            $this->fail('Expected the -ASK response to WATCH to fail the transaction.');
+        } catch (Response\ServerException $exception) {
+            $this->assertSame("ASK $slot 127.0.0.1:6380", $exception->getMessage());
+        }
+
+        // Neither WATCH nor the transaction run on the node importing the slot.
+        $this->assertSame(['WATCH', 'UNWATCH'], $sourceCommands);
+        $this->assertSame([], $targetCommands);
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testClusterRetriesTheFirstCommandOnConnectionFailure(): void
     {
         $deadCommands = $aliveCommands = [];
