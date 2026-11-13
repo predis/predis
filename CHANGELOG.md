@@ -17,6 +17,7 @@
 - Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
 - Fixed transactions in CAS mode treating a rejected `MULTI` as an open transaction (#1766)
 - Fixed Relay reporting a transaction aborted by `WATCH` as a `ServerException` and ignoring `retry` (#1765)
+- Fixed cluster transactions reporting server errors as a WATCH conflict and retrying them (#1763)
 
 ## v3.7.1 (2026-11-03)
 ### Added

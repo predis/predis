@@ -441,7 +441,9 @@ Transaction commands stay on the same physical node connection. The first comman
 redirected like any other command, as no node holds any state for the transaction yet. After that, redirection errors and
 connection failures abort the transaction: pending commands are discarded or the connection is closed if cleanup fails.
 An abort also updates the slots map when the node moved the slot or became unreachable, so retrying the transaction
-reaches the node that serves the slot.
+reaches the node that serves the slot. Other errors, including an `ASK` redirect for a slot being migrated, are not
+retried: a command rejected by the server throws `AbortedMultiExecException`, and an error from `MULTI` or `EXEC` throws
+`ServerException`, both with the server's message as they do with a single node.
 
 ```php
 $redis = $this->getClient();
