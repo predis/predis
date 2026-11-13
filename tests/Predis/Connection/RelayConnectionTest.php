@@ -18,6 +18,7 @@ use Predis\Client;
 use Predis\ClientException;
 use Predis\Command\Argument\Stream\XInfoStreamOptions;
 use Predis\Command\RawCommand;
+use Predis\Command\Redis\EXEC;
 use Predis\CommunicationException;
 use Predis\NotSupportedException;
 use Predis\Response\Error as ErrorResponse;
@@ -480,6 +481,63 @@ class RelayConnectionTest extends PredisTestCase
         $propertyClient->setValue($connection, $relayMock);
 
         $this->assertEquals('127.0.0.1:6379', $connection->getIdentifier());
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider execFailures
+     * @param mixed $expected
+     */
+    public function testExecuteExecReturnsNullOnlyWhenAbortedByWatch(string $method, string $message, $expected): void
+    {
+        $this->mockClient
+            ->method('isConnected')
+            ->willReturn(true);
+
+        $this->mockClient
+            ->expects($this->once())
+            ->method($method)
+            ->willThrowException(new RelayException($message, 14));
+
+        $response = $this->connection->executeCommand($method === 'exec' ? new EXEC() : RawCommand::create('GET', 'key'));
+
+        if ($expected === null) {
+            $this->assertNull($response);
+        } else {
+            $this->assertInstanceOf(ErrorResponse::class, $response);
+            $this->assertSame($expected, $response->getMessage());
+        }
+    }
+
+    public function execFailures(): array
+    {
+        $watch = 'Transaction failed (RELAY_ERR_REDIS; commands.c:16733)';
+        $execabort = 'EXECABORT Transaction discarded because of previous errors. (RELAY_ERR_REDIS; commands.c:17075)';
+
+        return [
+            'EXEC aborted by WATCH' => ['exec', $watch, null],
+            'EXEC rejected by the server' => ['exec', $execabort, $execabort],
+            'same message on another command' => ['rawCommand', $watch, $watch],
+        ];
+    }
+
+    /**
+     * @group connected
+     */
+    public function testWatchAbortedTransactionKeepsTheConnection(): void
+    {
+        $client = $this->createClient(null, ['connections' => 'relay']);
+        $other = $this->createClient(null, null, false);
+        $id = $client->client('ID');
+
+        $client->watch('key');
+        $other->set('key', 'other');
+        $client->multi();
+        $client->set('key', 'mine');
+
+        $this->assertNull($client->exec());
+        $this->assertSame('other', $client->get('key'));
+        $this->assertEquals($id, $client->client('ID'));
     }
 
     /**
