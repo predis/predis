@@ -10,6 +10,7 @@
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /.php-cs-fixer.dist.php export-ignore
+/AGENTS.md export-ignore
 /CHANGELOG.md export-ignore linguist-documentation
 /CONTRIBUTING.md export-ignore linguist-documentation
 /FAQ.md export-ignore linguist-documentation
