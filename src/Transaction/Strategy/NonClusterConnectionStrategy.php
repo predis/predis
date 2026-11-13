@@ -135,11 +135,20 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
+     * A lost connection has nothing left to unwatch: closing it dropped the
+     * watched keys on the server.
+     *
      * {@inheritDoc}
      * @throws Throwable
      */
     public function unwatch()
     {
+        if ($this->isConnectionLost()) {
+            $this->nodeConnection = null;
+
+            return new Status('OK');
+        }
+
         $this->nodeConnection = null;
 
         return $this->send(new UNWATCH());

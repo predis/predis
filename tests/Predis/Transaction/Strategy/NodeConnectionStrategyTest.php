@@ -255,7 +255,7 @@ class NodeConnectionStrategyTest extends TestCase
     {
         $sent = [];
         $this->mockConnection
-            ->expects($this->exactly(4))
+            ->expects($this->exactly(3))
             ->method('executeCommand')
             ->willReturnCallback(function (CommandInterface $command) use (&$sent) {
                 $sent[] = $command->getId();
@@ -300,10 +300,10 @@ class NodeConnectionStrategyTest extends TestCase
 
         $this->assertSame(['WATCH', 'GET'], $sent);
 
-        $strategy->unwatch();
+        $this->assertEquals('OK', $strategy->unwatch());
 
         $this->assertSame('OK', $strategy->executeCommand(new GET())->getResponse());
-        $this->assertSame(['WATCH', 'GET', 'UNWATCH', 'GET'], $sent);
+        $this->assertSame(['WATCH', 'GET', 'GET'], $sent);
     }
 
     /**

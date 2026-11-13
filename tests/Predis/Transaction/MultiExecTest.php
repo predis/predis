@@ -1039,7 +1039,7 @@ class MultiExecTest extends PredisTestCase
                     return null;
                 },
                 'Connection lost',
-                ['WATCH', 'MULTI', 'UNWATCH', 'WATCH', 'MULTI', 'SET', 'EXEC'],
+                ['WATCH', 'MULTI', 'WATCH', 'MULTI', 'SET', 'EXEC'],
             ],
         ];
     }
