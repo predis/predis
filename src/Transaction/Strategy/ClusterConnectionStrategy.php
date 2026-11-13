@@ -64,8 +64,8 @@ class ClusterConnectionStrategy implements StrategyInterface
     private $isInitialized = false;
 
     /**
-     * Set when a command is rejected, so that EXEC fails like it does after
-     * Redis rejects a queued command.
+     * Set when a queued command is rejected, so that EXEC fails like it does
+     * after Redis rejects one. Commands before MULTI run on their own.
      *
      * @var bool
      */
@@ -124,7 +124,9 @@ class ClusterConnectionStrategy implements StrategyInterface
         }
 
         if (is_int($commandSlot) && $commandSlot !== $this->slot) {
-            $this->isAborted = true;
+            if (!$this->state->isCAS()) {
+                $this->isAborted = true;
+            }
 
             return new Error(
                 'To be able to execute a transaction against cluster, all commands should operate on the same hash slot'
