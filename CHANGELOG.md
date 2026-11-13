@@ -1,6 +1,7 @@
 ## Changelog
 ### Added
 - Added support for BITRANGEINTARRAY command (#1754)
+- Added support for ZMOVE, BZMOVE, ZMOVEMEMBER commands (#1762)
 
 ## Unreleased
 ### Fixed
