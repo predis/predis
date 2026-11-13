@@ -7,9 +7,9 @@
 - Added support for ZMOVE, BZMOVE, ZMOVEMEMBER commands (#1762)
 
 ### Fixed
-- Fixed transactions running commands outside of the transaction after a lost connection (#1756, #1758)
+- Fixed transactions running commands outside of the transaction after a lost connection (#1756, #1758, #1759)
 - Fixed fluent transactions leaving the connection in `MULTI` after a queued command was rejected (#1755)
-- Fixed fluent cluster transactions committing other commands after a cross-slot error (#1758)
+- Fixed cluster transactions committing other commands after a cross-slot error (#1758, #1759)
 - Fixed a `TypeError` on protocol errors in transactions with replication or cluster (#1758)
 - Fixed a `TypeError` when retrying a transaction after a failed connect (#1758)
 - Fixed transactions reused after `exec()` running commands outside of `MULTI` and failing on `discard()` (#1758)

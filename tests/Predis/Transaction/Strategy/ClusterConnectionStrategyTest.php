@@ -860,6 +860,127 @@ class ClusterConnectionStrategyTest extends TestCase
 
     /**
      * @group disconnected
+     * @dataProvider cleanupMethods
+     */
+    public function testCleanupReleasesTheTransactionWhenItsConnectionIsLost(string $method): void
+    {
+        $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
+        $this->mockNodeConnection->expects($this->exactly(3))->method('executeCommand')
+            ->withConsecutive(
+                [$this->isInstanceOf(WATCH::class)],
+                [$this->isInstanceOf(UNWATCH::class)],
+                [$this->isInstanceOf(WATCH::class)]
+            )
+            ->willReturnOnConsecutiveCalls(
+                'OK',
+                $this->throwException(new ConnectionException($this->mockNodeConnection, 'Connection lost')),
+                'OK'
+            );
+        $this->mockNodeConnection->expects($this->once())->method('disconnect');
+
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
+        $strategy->watch(['key1']);
+
+        try {
+            $strategy->$method();
+            $this->fail('Expected the connection failure to be rethrown.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('Connection lost', $exception->getMessage());
+        }
+
+        $this->assertTrue($strategy->watch(['key1']));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCommandsFailUntilUnwatchOnceTheConnectionHoldingTheWatchIsLost(): void
+    {
+        $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
+        $this->mockNodeConnection->expects($this->exactly(3))->method('executeCommand')
+            ->withConsecutive([$this->isInstanceOf(WATCH::class)], [new GET()], [$this->isInstanceOf(WATCH::class)])
+            ->willReturnOnConsecutiveCalls(
+                'OK',
+                $this->throwException(new ConnectionException($this->mockNodeConnection, 'Connection lost')),
+                'OK'
+            );
+        $this->mockNodeConnection->expects($this->once())->method('disconnect');
+
+        $state = new MultiExecState();
+        $state->flag(MultiExecState::CAS);
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, $state);
+        $strategy->watch(['key1']);
+
+        try {
+            $strategy->executeCommand(new GET());
+            $this->fail('Expected the connection failure to be rethrown.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('Connection lost', $exception->getMessage());
+        }
+
+        $attempts = [
+            function () use ($strategy) {
+                $strategy->executeCommand(new GET());
+            },
+            function () use ($strategy, $state) {
+                $state->unflag(MultiExecState::CAS);
+                $strategy->multi();
+                $strategy->executeCommand(new SET());
+                $strategy->executeTransaction();
+            },
+        ];
+
+        foreach ($attempts as $attempt) {
+            try {
+                $attempt();
+                $this->fail('Expected the transaction to fail on its lost connection.');
+            } catch (ConnectionException $exception) {
+                $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
+            }
+        }
+
+        $this->assertEquals('OK', $strategy->unwatch());
+        $this->assertTrue($strategy->watch(['key1']));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRejectedCommandMakesExecFailUntilTheTransactionIsReset(): void
+    {
+        $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
+        $this->mockStrategy->method('getSlotByKey')->willReturn(1);
+        $this->mockStrategy->method('getSlot')->willReturnOnConsecutiveCalls(1, 2, 1);
+        $this->mockNodeConnection->expects($this->exactly(5))->method('executeCommand')
+            ->withConsecutive(
+                [$this->isInstanceOf(WATCH::class)],
+                [$this->isInstanceOf(UNWATCH::class)],
+                [$this->isInstanceOf(MULTI::class)],
+                [$this->isInstanceOf(SET::class)],
+                [$this->isInstanceOf(EXEC::class)]
+            )
+            ->willReturnOnConsecutiveCalls('OK', 'OK', 'OK', 'QUEUED', [new Status('OK')]);
+
+        $strategy = new ClusterConnectionStrategy($this->mockConnection, new MultiExecState());
+        $strategy->watch(['key1']);
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+        $this->assertInstanceOf(ErrorInterface::class, $strategy->executeCommand(new SET()));
+
+        try {
+            $strategy->executeTransaction();
+            $this->fail('Expected EXEC to fail after the rejected command.');
+        } catch (ServerException $exception) {
+            $this->assertSame('EXECABORT Transaction discarded because of previous errors.', $exception->getMessage());
+        }
+
+        $strategy->initializeTransaction();
+        $strategy->executeCommand(new SET());
+        $this->assertEquals([new Status('OK')], $strategy->executeTransaction());
+    }
+
+    /**
+     * @group disconnected
      */
     public function testFailedUnwatchDisconnectsTheNode(): void
     {
