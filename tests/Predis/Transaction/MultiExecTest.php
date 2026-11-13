@@ -1778,6 +1778,112 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @dataProvider clusterServerErrors
+     */
+    public function testClusterServerErrorIsReportedWithItsMessageWithoutRetrying(
+        string $stage,
+        string $error,
+        string $exceptionClass,
+        array $sent
+    ): void {
+        $commands = [];
+        $calls = 0;
+        $tx = $this->getMockedClusterTransaction(
+            static function (CommandInterface $command) use (&$stage, $error, &$commands) {
+                $commands[] = $id = $command->getId();
+
+                if ($id === $stage) {
+                    return new Response\Error($error);
+                }
+
+                switch ($id) {
+                    case 'MULTI':
+                    case 'DISCARD':
+                    case 'UNWATCH':
+                        return new Response\Status('OK');
+                    case 'EXEC':
+                        return ['bar'];
+                    default:
+                        return new Response\Status('QUEUED');
+                }
+            },
+            ['retry' => 2]
+        );
+        $block = static function (MultiExec $tx) use (&$calls) {
+            $calls++;
+            $tx->get('{a}foo');
+        };
+
+        try {
+            $tx->execute($block);
+            $this->fail('Expected the server error to reach the caller.');
+        } catch (PredisException $exception) {
+            $this->assertInstanceOf($exceptionClass, $exception);
+            $this->assertSame($error, $exception->getMessage());
+        }
+
+        $this->assertSame(1, $calls);
+        $this->assertSame($sent, $commands);
+
+        // The transaction is reset and can be used again.
+        $stage = 'none';
+        $commands = [];
+        $this->assertSame(['bar'], $tx->execute($block));
+        $this->assertSame(['bar'], $tx->discard()->execute($block));
+        $this->assertSame(['MULTI', 'GET', 'EXEC', 'MULTI', 'GET', 'EXEC'], $commands);
+    }
+
+    public function clusterServerErrors(): array
+    {
+        $queued = ['MULTI', 'GET', 'DISCARD'];
+        $exec = ['MULTI', 'GET', 'EXEC', 'UNWATCH'];
+
+        return [
+            'queued command, wrong arity' => ['GET', "ERR wrong number of arguments for 'get' command", AbortedMultiExecException::class, $queued],
+            'queued command, cross-slot' => ['GET', "CROSSSLOT Keys in request don't hash to the same slot", AbortedMultiExecException::class, $queued],
+            'queued command, out of memory' => ['GET', "OOM command not allowed when used memory > 'maxmemory'.", AbortedMultiExecException::class, $queued],
+            'queued command, busy script' => ['GET', 'BUSY Redis is busy running a script. You can only call SCRIPT KILL or SHUTDOWN NOSAVE.', AbortedMultiExecException::class, $queued],
+            'EXEC, aborted by OOM' => ['EXEC', "EXECABORT Transaction discarded because of: OOM command not allowed when used memory > 'maxmemory'.", Response\ServerException::class, $exec],
+            'EXEC, cross-slot' => ['EXEC', "CROSSSLOT Keys in request don't hash to the same slot", Response\ServerException::class, $exec],
+            'MULTI denied' => ['MULTI', "NOPERM User default has no permissions to run the 'multi' command", Response\ServerException::class, ['MULTI', 'UNWATCH']],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterFluentTransactionReportsRejectedCommandAndCanBeReused(): void
+    {
+        $reject = true;
+        $tx = $this->getMockedClusterTransaction(static function (CommandInterface $command) use (&$reject) {
+            switch ($command->getId()) {
+                case 'MULTI':
+                case 'DISCARD':
+                    return new Response\Status('OK');
+                case 'EXEC':
+                    return ['bar'];
+                case 'SET':
+                    return $reject ? new Response\Error("OOM command not allowed when used memory > 'maxmemory'.") : new Response\Status('QUEUED');
+                default:
+                    return new Response\Status('QUEUED');
+            }
+        });
+
+        try {
+            $tx->get('{a}foo')->set('{a}foo', 'bar')->execute();
+            $this->fail('Expected the rejected command to abort the transaction.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertSame("OOM command not allowed when used memory > 'maxmemory'.", $exception->getMessage());
+            $this->assertSame($tx, $exception->getTransaction());
+        }
+
+        $reject = false;
+        $this->assertSame(['bar'], $tx->get('{a}foo')->execute());
+        $this->assertSame(['bar'], $tx->discard()->get('{a}foo')->execute());
+    }
+
+    /**
+     * @group disconnected
      */
     public function testClusterRetryReachesTheNodeTheSlotWasMovedTo(): void
     {
@@ -2039,6 +2145,66 @@ class MultiExecTest extends PredisTestCase
     public function connectionPersistence(): array
     {
         return [[false], [true]];
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterServerErrorReachesTheCallerWithoutRetrying(): void
+    {
+        $redis = $this->getClient();
+        $key = '{p1}value';
+        $redis->set($key, 'original');
+        $calls = 0;
+
+        try {
+            $redis->transaction(['retry' => 2], static function (MultiExec $tx) use ($key, &$calls) {
+                $calls++;
+                $tx->set($key, 'queued');
+                $tx->mget($key, '{p1-other}value');
+            });
+            $this->fail('Expected the cross-slot command to abort the transaction.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertStringStartsWith('CROSSSLOT', $exception->getMessage());
+        }
+
+        $this->assertSame(1, $calls);
+        $this->assertSame('original', $redis->get($key));
+        $this->assertEquals(['OK'], $redis->transaction(static function (MultiExec $tx) use ($key) {
+            $tx->set($key, 'after');
+        }));
+        $this->assertSame('after', $redis->get($key));
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterWatchConflictIsStillRetried(): void
+    {
+        $redis = $this->getClient();
+        $other = $this->getClient();
+        $key = '{p1}watched';
+        $redis->set($key, 'original');
+        $calls = 0;
+
+        $responses = $redis->transaction(['watch' => $key, 'cas' => true, 'retry' => 1], static function (MultiExec $tx) use ($key, $other, &$calls) {
+            $tx->get($key);
+
+            if (++$calls === 1) {
+                $other->set($key, 'changed');
+            }
+
+            $tx->multi();
+            $tx->set($key, 'committed');
+        });
+
+        $this->assertEquals(['OK'], $responses);
+        $this->assertSame(2, $calls);
+        $this->assertSame('committed', $redis->get($key));
     }
 
     /**

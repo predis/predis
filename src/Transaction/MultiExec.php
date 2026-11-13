@@ -447,6 +447,12 @@ class MultiExec implements ClientContextInterface
             $commands = $this->commands;
             $this->reset();
 
+            // A cluster transaction queues its commands client-side, so the
+            // one rejected by the server is only known once it runs.
+            if ($execResponse instanceof ErrorResponseInterface) {
+                throw new AbortedMultiExecException($this, $execResponse->getMessage());
+            }
+
             // The additional `false` check is needed for Relay,
             // let's hope it won't break anything
             if ($execResponse === null || $execResponse === false) {
