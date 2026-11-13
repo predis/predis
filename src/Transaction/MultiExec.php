@@ -283,7 +283,9 @@ class MultiExec implements ClientContextInterface
     }
 
     /**
-     * Finalizes the transaction by executing MULTI on the server.
+     * Finalizes the transaction by executing MULTI on the server. CAS mode ends
+     * only once MULTI succeeds: when Redis rejects it, the connection stays out
+     * of MULTI and keeps watching its keys.
      *
      * @return MultiExec
      */
@@ -292,8 +294,8 @@ class MultiExec implements ClientContextInterface
         $this->initialize();
 
         if ($this->state->isCAS()) {
-            $this->state->unflag(MultiExecState::CAS);
             $this->connectionStrategy->multi();
+            $this->state->unflag(MultiExecState::CAS);
         }
 
         return $this;
