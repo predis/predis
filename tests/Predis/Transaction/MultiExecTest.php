@@ -903,6 +903,42 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @dataProvider clusterOrSingleNode
+     */
+    public function testServerErrorEscapingTheBlockUnwatchesTheKeys(bool $cluster): void
+    {
+        $commands = [];
+        $cas = [];
+        $callback = $this->getWrongTypeCallback($this->getExecuteCallback([], $commands, $cas));
+        $options = ['cas' => true, 'watch' => '{a}foo'];
+        $tx = $cluster
+            ? $this->getMockedClusterTransaction($callback, $options)
+            : $this->getMockedTransaction($callback, $options);
+
+        try {
+            $tx->execute(static function (MultiExec $tx) {
+                $tx->get('{a}foo');
+                $tx->get('{a}hash');
+            });
+            $this->fail('Expected the server error to be thrown.');
+        } catch (Response\ServerException $exception) {
+            $this->assertStringStartsWith('WRONGTYPE', $exception->getMessage());
+        }
+
+        $this->assertSame(['WATCH', 'GET', 'GET', 'UNWATCH'], self::commandsToIDs($cas));
+        $this->assertSame([], $commands);
+    }
+
+    public function clusterOrSingleNode(): array
+    {
+        return [
+            'single node' => [false],
+            'cluster' => [true],
+        ];
+    }
+
+    /**
+     * @group disconnected
      */
     public function testClusterSlotErrorBeforeMultiWithFluentInterfaceDoesNotAbortTransaction(): void
     {
@@ -2681,6 +2717,30 @@ class MultiExecTest extends PredisTestCase
      * @group connected
      * @requiresRedisVersion >= 2.2.0
      */
+    public function testIntegrationServerErrorEscapingTheBlockUnwatchesTheKeys(): void
+    {
+        $redis = $this->getClient();
+        $other = $this->getClient();
+        $redis->hset('hash', 'field', 'value');
+
+        try {
+            $redis->transaction(['cas' => true, 'watch' => 'foo'], static function (MultiExec $tx) {
+                $tx->get('hash');
+            });
+            $this->fail('Expected the server error to be thrown.');
+        } catch (Response\ServerException $exception) {
+            $this->assertStringStartsWith('WRONGTYPE', $exception->getMessage());
+        }
+
+        $other->set('foo', 'changed');
+
+        $this->assertEquals(['OK'], $redis->transaction()->set('bar', 'baz')->execute());
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 2.2.0
+     */
     public function testIntegrationWritesOnWatchedKeysAbortTransaction(): void
     {
         $exception = null;
@@ -3100,6 +3160,28 @@ class MultiExecTest extends PredisTestCase
 
             if ($command->getId() === 'SET' && count($command->getArguments()) === 1) {
                 return new Response\Error("ERR wrong number of arguments for 'set' command");
+            }
+
+            return $response;
+        };
+    }
+
+    /**
+     * Wraps a callback emulating a server-side MULTI/EXEC context, so that GET
+     * on a key named "hash" fails with WRONGTYPE.
+     *
+     * @param callable $callback
+     *
+     * @return callable
+     */
+    protected function getWrongTypeCallback(callable $callback): callable
+    {
+        return static function (CommandInterface $command) use ($callback) {
+            $response = $callback($command);
+            $arguments = $command->getArguments();
+
+            if ($command->getId() === 'GET' && substr($arguments[0], -4) === 'hash') {
+                return new Response\Error('WRONGTYPE Operation against a key holding the wrong kind of value');
             }
 
             return $response;
