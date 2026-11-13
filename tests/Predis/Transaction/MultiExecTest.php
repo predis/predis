@@ -1173,6 +1173,139 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @dataProvider callsAfterARejectedMulti
+     */
+    public function testRejectedMultiLeavesTheTransactionInCheckAndSetMode(callable $call, $expected, array $commands): void
+    {
+        $sent = [];
+        $callback = $this->getExecuteCallback(['OK']);
+        $connection = $this->getMockedConnection(static function (CommandInterface $command) use ($callback, &$sent) {
+            $sent[] = $command->getId();
+
+            if ($sent === ['WATCH', 'GET', 'MULTI']) {
+                return new Response\Error("NOPERM User test has no permissions to run the 'multi' command");
+            }
+
+            return $callback($command);
+        });
+        $connection
+            ->expects($this->never())
+            ->method('disconnect');
+
+        $tx = new MultiExec(new Client($connection), ['cas' => true, 'watch' => 'foo']);
+        $this->assertSame('DUMMY_RESPONSE', $tx->get('foo'));
+
+        try {
+            $tx->multi();
+            $this->fail('Expected MULTI to be rejected.');
+        } catch (Response\ServerException $exception) {
+            $this->assertStringStartsWith('NOPERM', $exception->getMessage());
+        }
+
+        $this->assertSame($expected, $call($tx));
+        $this->assertSame(array_merge(['WATCH', 'GET', 'MULTI'], $commands), $sent);
+    }
+
+    public function callsAfterARejectedMulti(): array
+    {
+        return [
+            'discard()' => [
+                static function (MultiExec $tx) { return $tx->discard()->execute(); },
+                null,
+                ['UNWATCH'],
+            ],
+            'unwatch()' => [
+                static function (MultiExec $tx) { return $tx->unwatch()->execute(); },
+                null,
+                ['UNWATCH'],
+            ],
+            'execute()' => [
+                static function (MultiExec $tx) { return $tx->execute(); },
+                null,
+                ['UNWATCH'],
+            ],
+            'a command' => [
+                static function (MultiExec $tx) { return $tx->get('foo'); },
+                'DUMMY_RESPONSE',
+                ['GET'],
+            ],
+            'multi() again' => [
+                static function (MultiExec $tx) { return $tx->multi()->set('foo', 'bar')->execute(); },
+                ['OK'],
+                ['MULTI', 'SET', 'EXEC'],
+            ],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCheckAndSetMultiOnALostConnectionFailsUntilUnwatch(): void
+    {
+        $sent = [];
+        $connected = true;
+        $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $connection
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$sent, &$connected, $connection) {
+                $connected = true;
+                $sent[] = $command->getId();
+
+                switch ($command->getId()) {
+                    case 'GET':
+                        return 'bar';
+                    case 'MULTI':
+                        if ($sent === ['WATCH', 'GET', 'MULTI']) {
+                            throw new ConnectionException($connection, 'Connection lost');
+                        }
+
+                        return new Response\Status('OK');
+                    case 'SET':
+                        return new Response\Status('QUEUED');
+                    case 'EXEC':
+                        return [new Response\Status('OK')];
+                    default:
+                        return new Response\Status('OK');
+                }
+            });
+        $connection
+            ->expects($this->once())
+            ->method('disconnect')
+            ->willReturnCallback(static function () use (&$connected) {
+                $connected = false;
+            });
+        $connection
+            ->method('isConnected')
+            ->willReturnCallback(static function () use (&$connected) {
+                return $connected;
+            });
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
+        $tx = new MultiExec(new Client($connection), ['cas' => true, 'watch' => 'foo']);
+        $this->assertSame('bar', $tx->get('foo'));
+
+        try {
+            $tx->multi();
+            $this->fail('Expected the transaction to fail.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('Connection lost', $exception->getMessage());
+        }
+
+        try {
+            $tx->get('foo');
+            $this->fail('Expected the transaction to fail on its lost connection.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
+        }
+
+        $this->assertEquals(['OK'], $tx->unwatch()->multi()->set('foo', 'bar')->execute());
+        $this->assertSame(['WATCH', 'GET', 'MULTI', 'MULTI', 'SET', 'EXEC'], $sent);
+    }
+
+    /**
+     * @group disconnected
      * @dataProvider protocolErrors
      */
     public function testProtocolErrorIsReportedOnTheConnectionHoldingTheTransaction(
@@ -2174,6 +2307,43 @@ class MultiExecTest extends PredisTestCase
 
         $this->assertEquals(['OK'], $tx->set('baz', 'quux')->execute());
         $this->assertSame('quux', $client->get('baz'));
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 6.0.0
+     */
+    public function testIntegrationDiscardAfterRejectedMultiLeavesConnectionUsable(): void
+    {
+        $admin = $this->createClient();
+        $admin->acl->setUser('predis-multi-denied', 'reset', 'on', '>secret', '~*', '+@all', '-multi');
+
+        try {
+            $client = $this->createClient(['username' => 'predis-multi-denied', 'password' => 'secret'], null, false);
+            $client->set('foo', 'bar');
+            $id = $client->client('ID');
+
+            $tx = $client->transaction(['cas' => true, 'watch' => 'foo']);
+            $this->assertSame('bar', $tx->get('foo'));
+
+            try {
+                $tx->multi();
+                $this->fail('Expected MULTI to be rejected.');
+            } catch (Response\ServerException $exception) {
+                $this->assertStringStartsWith('NOPERM', $exception->getMessage());
+            }
+
+            $tx->discard();
+
+            // A WATCH left on the connection would abort the next transaction.
+            $admin->set('foo', 'baz');
+            $admin->acl->setUser('predis-multi-denied', '+multi');
+
+            $this->assertSame([1], $client->transaction()->incr('counter')->execute());
+            $this->assertSame($id, $client->client('ID'));
+        } finally {
+            $admin->acl->delUser('predis-multi-denied');
+        }
     }
 
     /**
