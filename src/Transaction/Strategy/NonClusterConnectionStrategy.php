@@ -86,12 +86,25 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
+     * Closes the connection when Redis rejects EXEC without discarding the
+     * transaction, as versions before 6.0.6 do on BUSY or LOADING, so that
+     * it cannot stay in MULTI.
+     *
      * {@inheritDoc}
      */
     public function executeTransaction()
     {
+        $connection = $this->nodeConnection ?: $this->connection;
+
         try {
             return $this->executeBypassingTransaction(new EXEC())->getResponse();
+        } catch (ServerException $exception) {
+            if (strpos($exception->getMessage(), 'EXECABORT') !== 0 && !$connection instanceof RelayConnection) {
+                $connection->disconnect();
+                $this->nodeConnection = null;
+            }
+
+            throw $exception;
         } finally {
             $this->releaseConnection();
         }

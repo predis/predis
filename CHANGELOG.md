@@ -13,6 +13,7 @@
 - Fixed a `TypeError` on protocol errors in transactions with replication or cluster (#1758)
 - Fixed a `TypeError` when retrying a transaction after a failed connect (#1758)
 - Fixed transactions reused after `exec()` running commands outside of `MULTI` and failing on `discard()` (#1758)
+- Fixed transactions leaving the connection in `MULTI` when Redis before 6.0.6 rejected `EXEC` (#1758)
 - Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
 
 ## v3.7.1 (2026-11-03)

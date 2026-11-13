@@ -21,6 +21,7 @@ use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
 use Predis\Connection\RelayConnection;
 use Predis\Connection\Resource\Exception\StreamInitException;
+use Predis\Response\Error;
 use Predis\Response\ServerException;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
@@ -387,6 +388,57 @@ class NodeConnectionStrategyTest extends TestCase
         $this->expectExceptionMessage('ERR RELAY_ERR_REDIS simulated');
 
         $strategy->executeTransaction();
+    }
+
+    /**
+     * @dataProvider rejectedExecReplies
+     * @return void
+     */
+    public function testRejectedExecClosesTheConnectionUnlessTheTransactionWasDiscarded(string $error, bool $closed): void
+    {
+        $this->mockConnection
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use ($error) {
+                return $command->getId() === 'EXEC' ? new Error($error) : 'OK';
+            });
+
+        $this->mockConnection
+            ->expects($closed ? $this->once() : $this->never())
+            ->method('disconnect')
+            ->willReturnCallback(function () {
+                $this->connected = false;
+            });
+
+        $this->mockConnection
+            ->expects($this->any())
+            ->method('getParameters')
+            ->willReturn(new Parameters());
+
+        $strategy = new NodeConnectionStrategy($this->mockConnection, new MultiExecState());
+        $strategy->initializeTransaction();
+
+        try {
+            $strategy->executeTransaction();
+            $this->fail('Expected EXEC to fail.');
+        } catch (ServerException $exception) {
+            $this->assertSame($error, $exception->getMessage());
+        }
+
+        $this->assertTrue($strategy->initializeTransaction());
+    }
+
+    public function rejectedExecReplies(): array
+    {
+        return [
+            'transaction discarded' => [
+                'EXECABORT Transaction discarded because of previous errors.',
+                false,
+            ],
+            'EXEC rejected while MULTI stays open' => [
+                'BUSY Redis is busy running a script. You can only call SCRIPT KILL or SHUTDOWN NOSCRIPT.',
+                true,
+            ],
+        ];
     }
 
     /**
