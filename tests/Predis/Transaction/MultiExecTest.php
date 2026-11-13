@@ -903,6 +903,37 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
+     */
+    public function testClusterServerErrorCaughtBeforeMultiKeepsTheWatch(): void
+    {
+        $commands = [];
+        $cas = [];
+        $tx = $this->getMockedClusterTransaction(
+            $this->getWrongTypeCallback($this->getExecuteCallback(['OK'], $commands, $cas)),
+            ['cas' => true, 'watch' => '{a}foo']
+        );
+
+        $response = $tx->execute(function (MultiExec $tx) {
+            $tx->get('{a}foo');
+
+            try {
+                $tx->get('{a}hash');
+                $this->fail('Expected the server error to be thrown.');
+            } catch (Response\ServerException $exception) {
+                $this->assertStringStartsWith('WRONGTYPE', $exception->getMessage());
+            }
+
+            $tx->multi();
+            $tx->set('{a}foo', 'bar');
+        });
+
+        $this->assertSame(['OK'], $response);
+        $this->assertSame(['WATCH', 'GET', 'GET'], self::commandsToIDs($cas));
+        $this->assertSame(['MULTI', 'SET', 'EXEC'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
      * @dataProvider clusterOrSingleNode
      */
     public function testServerErrorEscapingTheBlockUnwatchesTheKeys(bool $cluster): void
@@ -2355,6 +2386,70 @@ class MultiExecTest extends PredisTestCase
         $this->assertEquals('OK', $redis->set($key, 'after-abort'));
         $this->assertSame('after-abort', $redis->get($key));
         $redis->disconnect();
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterIntegrationServerErrorCaughtBeforeMultiKeepsTheWatch(): void
+    {
+        $redis = $this->getClient();
+        $key = '{cas}foo';
+        $hash = '{cas}hash';
+        $redis->set($key, 'original');
+        $redis->hset($hash, 'field', 'value');
+        $node = $redis->getConnection()->getConnectionByCommand($redis->createCommand('GET', [$key]));
+        $other = new Client($node->getParameters());
+
+        try {
+            $redis->transaction(['cas' => true, 'watch' => $key], function (MultiExec $tx) use ($key, $hash, $other) {
+                try {
+                    $tx->get($hash);
+                    $this->fail('Expected the server error to be thrown.');
+                } catch (Response\ServerException $exception) {
+                    $this->assertStringStartsWith('WRONGTYPE', $exception->getMessage());
+                }
+
+                $other->set($key, 'changed');
+                $tx->multi();
+                $tx->set($key, 'overwritten');
+            });
+            $this->fail('Expected EXEC to fail after the change to the watched key.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertSame('The current transaction has been aborted by the server.', $exception->getMessage());
+        }
+
+        $this->assertSame('changed', $redis->get($key));
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterIntegrationServerErrorEscapingTheBlockUnwatchesTheKeys(): void
+    {
+        $redis = $this->getClient();
+        $key = '{cas}foo';
+        $hash = '{cas}hash';
+        $redis->hset($hash, 'field', 'value');
+        $node = $redis->getConnection()->getConnectionByCommand($redis->createCommand('GET', [$key]));
+        $other = new Client($node->getParameters());
+
+        try {
+            $redis->transaction(['cas' => true, 'watch' => $key], static function (MultiExec $tx) use ($hash) {
+                $tx->get($hash);
+            });
+            $this->fail('Expected the server error to be thrown.');
+        } catch (Response\ServerException $exception) {
+            $this->assertStringStartsWith('WRONGTYPE', $exception->getMessage());
+        }
+
+        $other->set($key, 'changed');
+
+        $this->assertEquals(['OK'], $redis->transaction()->set('{cas}bar', 'baz')->execute());
     }
 
     /**
