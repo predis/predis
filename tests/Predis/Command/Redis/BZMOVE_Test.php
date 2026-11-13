@@ -71,7 +71,7 @@ class BZMOVE_Test extends PredisCommandTestCase
 
         $redis->zadd('source', 1, 'a', 2, 'b', 3, 'c');
 
-        $this->assertSame(['a' => '1', 'b' => '2'], $redis->bzmove('source', 'destination', 'min', 0.1, 2));
+        $this->assertSame(['a' => 1.0, 'b' => 2.0], $redis->bzmove('source', 'destination', 'min', 0.1, 2));
         $this->assertSame(['c' => '3'], $redis->zrange('source', 0, -1, ['withscores' => true]));
         $this->assertSame(['a' => '1', 'b' => '2'], $redis->zrange('destination', 0, -1, ['withscores' => true]));
     }

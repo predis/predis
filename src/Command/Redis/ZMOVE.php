@@ -48,6 +48,7 @@ class ZMOVE extends RedisCommand
 
     /**
      * Converts the list of [member, score] pairs into a member => score map.
+     * Scores are always floats: RESP2 replies them as strings (incl. "inf").
      *
      * {@inheritdoc}
      */
@@ -60,7 +61,11 @@ class ZMOVE extends RedisCommand
         $result = [];
 
         foreach ($data as [$member, $score]) {
-            $result[$member] = $score;
+            if (!is_numeric($score)) {
+                $score = '-' === $score[0] ? -INF : INF;
+            }
+
+            $result[$member] = (float) $score;
         }
 
         return $result;

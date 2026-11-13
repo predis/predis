@@ -55,7 +55,11 @@ class ZMOVE_Test extends PredisCommandTestCase
     {
         $command = $this->getCommand();
 
-        $this->assertSame(['a' => '1', 'b' => '2'], $command->parseResponse([['a', '1'], ['b', '2']]));
+        $this->assertSame(
+            ['a' => 1.0, 'b' => 2.5, 'c' => INF, 'd' => -INF],
+            $command->parseResponse([['a', '1'], ['b', '2.5'], ['c', 'inf'], ['d', '-inf']])
+        );
+        $this->assertSame(['a' => 1.0, 'b' => INF], $command->parseResp3Response([['a', 1.0], ['b', INF]]));
         $this->assertNull($command->parseResponse(null));
     }
 
@@ -110,6 +114,21 @@ class ZMOVE_Test extends PredisCommandTestCase
      * @group connected
      * @requiresRedisVersion >= 8.11.0
      */
+    public function testResp2AndResp3RepliesAreIdentical(): void
+    {
+        $expected = ['low' => -INF, 'mid' => 1.5, 'high' => INF];
+
+        foreach ([$this->getClient(), $this->getResp3Client()] as $redis) {
+            $redis->zadd('source', '-inf', 'low', 1.5, 'mid', '+inf', 'high');
+
+            $this->assertSame($expected, $redis->zmove('source', 'destination', 'min', 3));
+        }
+    }
+
+    /**
+     * @group connected
+     * @requiresRedisVersion >= 8.11.0
+     */
     public function testThrowsExceptionOnWrongType(): void
     {
         $redis = $this->getClient();
@@ -148,25 +167,25 @@ class ZMOVE_Test extends PredisCommandTestCase
         return [
             'MIN moves single lowest member' => [
                 ['min'],
-                ['a' => '1'],
+                ['a' => 1.0],
                 ['b' => '2', 'c' => '3'],
                 ['a' => '1', 'z' => '10'],
             ],
             'MAX with COUNT moves highest members' => [
                 ['max', 2],
-                ['c' => '3', 'b' => '2'],
+                ['c' => 3.0, 'b' => 2.0],
                 ['a' => '1'],
                 ['b' => '2', 'c' => '3', 'z' => '10'],
             ],
             'BYSCORE moves score range' => [
                 [[2, 3]],
-                ['b' => '2', 'c' => '3'],
+                ['b' => 2.0, 'c' => 3.0],
                 ['a' => '1'],
                 ['b' => '2', 'c' => '3', 'z' => '10'],
             ],
             'BYSCORE with COUNT limits batch' => [
                 [['-inf', '+inf'], 1],
-                ['a' => '1'],
+                ['a' => 1.0],
                 ['b' => '2', 'c' => '3'],
                 ['a' => '1', 'z' => '10'],
             ],

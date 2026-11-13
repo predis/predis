@@ -115,19 +115,19 @@ class ZMOVEMEMBER_Test extends PredisCommandTestCase
         return [
             'moves given members, overwriting destination score' => [
                 [['c', 'b', 'missing']],
-                ['c' => '3', 'b' => '2'],
+                ['c' => 3.0, 'b' => 2.0],
                 ['a' => '1'],
                 ['b' => '2', 'c' => '3'],
             ],
             'NX skips members present in destination' => [
                 [['a', 'b'], 'NX'],
-                ['a' => '1'],
+                ['a' => 1.0],
                 ['b' => '2', 'c' => '3'],
                 ['a' => '1', 'b' => '10'],
             ],
             'XX moves only members present in destination' => [
                 [['a', 'b'], 'XX'],
-                ['b' => '2'],
+                ['b' => 2.0],
                 ['a' => '1', 'c' => '3'],
                 ['b' => '2'],
             ],
