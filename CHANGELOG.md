@@ -18,6 +18,7 @@
 - Fixed a failed TLS handshake throwing the error handler's exception instead of `StreamInitException`, which skipped retries (#1768)
 - Fixed transactions in CAS mode treating a rejected `MULTI` as an open transaction (#1766)
 - Fixed Relay reporting a transaction aborted by `WATCH` as a `ServerException` and ignoring `retry` (#1765)
+- Fixed cluster transactions reporting server errors as a WATCH conflict and retrying them (#1763)
 
 ## v3.7.1 (2026-11-03)
 ### Added
