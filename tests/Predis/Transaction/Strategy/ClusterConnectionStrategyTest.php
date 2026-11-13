@@ -1154,6 +1154,7 @@ class ClusterConnectionStrategyTest extends TestCase
     public function testMovedResponseToCasReadUpdatesSlotMapAndKeepsTheWatch(): void
     {
         $events = [];
+        $this->mockStrategy->method('getSlot')->willReturn(123);
         $this->mockStrategy->method('checkSameSlotForKeys')->willReturn(true);
         $cluster = $this->getMockRedisCluster();
         $cluster->expects($this->exactly(2))->method('applyMovedResponse')->with('123 127.0.0.1:6380')
