@@ -2513,7 +2513,6 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group relay-incompatible
      * @requiresRedisVersion >= 2.2.0
      */
     public function testIntegrationWritesOnWatchedKeysAbortTransaction(): void
@@ -2538,28 +2537,29 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group connected
-     * @group ext-relay
      * @requiresRedisVersion >= 2.2.0
      */
-    public function testRelayIntegrationWritesOnWatchedKeysAbortTransaction(): void
+    public function testIntegrationRetriesTransactionAbortedByWatch(): void
     {
-        $exception = null;
         $client1 = $this->getClient();
         $client2 = $this->getClient();
+        $attempts = 0;
+        $options = ['watch' => 'sentinel', 'cas' => true, 'retry' => 1];
 
-        try {
-            $client1->transaction(['watch' => 'sentinel'], static function ($tx) use ($client2) {
-                $tx->set('sentinel', 'client1');
-                $tx->get('sentinel');
+        $responses = $client1->transaction($options, static function ($tx) use ($client2, &$attempts) {
+            $tx->get('sentinel');
+
+            if (++$attempts === 1) {
                 $client2->set('sentinel', 'client2');
-            });
-        } catch (Response\ServerException $ex) {
-            $exception = $ex;
-        }
+            }
 
-        $this->assertInstanceOf(Response\ServerException::class, $exception);
-        $this->assertTrue($client1->getConnection()->isConnected());
-        $this->assertSame('client2', $client1->get('sentinel'));
+            $tx->multi();
+            $tx->set('sentinel', 'client1');
+        });
+
+        $this->assertSame(2, $attempts);
+        $this->assertEquals(['OK'], $responses);
+        $this->assertSame('client1', $client2->get('sentinel'));
     }
 
     /**
