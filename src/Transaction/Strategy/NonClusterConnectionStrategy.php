@@ -86,9 +86,9 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
-     * Closes the connection when Redis rejects EXEC without discarding the
-     * transaction, as versions before 6.0.6 do on BUSY or LOADING, so that
-     * it cannot stay in MULTI.
+     * Closes the connection when EXEC fails with any error but EXECABORT,
+     * since Redis before 6.0.6 can reject EXEC with BUSY, LOADING or
+     * MASTERDOWN and keep MULTI open.
      *
      * {@inheritDoc}
      */
