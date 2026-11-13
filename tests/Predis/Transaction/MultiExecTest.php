@@ -13,6 +13,7 @@
 namespace Predis\Transaction;
 
 use Exception;
+use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Predis\Client;
 use Predis\ClientException;
@@ -27,7 +28,10 @@ use Predis\Connection\ConnectionException;
 use Predis\Connection\FactoryInterface;
 use Predis\Connection\NodeConnectionInterface;
 use Predis\Connection\Parameters;
+use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Connection\StreamConnection;
+use Predis\PredisException;
+use Predis\Protocol\ProtocolException;
 use Predis\Response;
 use Predis\Retry\Retry;
 use Predis\Retry\Strategy\ExponentialBackoff;
@@ -259,6 +263,58 @@ class MultiExecTest extends PredisTestCase
 
         $this->assertNull($responses);
         $this->assertSame(['MULTI', 'SET', 'GET', 'DISCARD'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testCheckAndSetTransactionSendsUnwatchOnDiscard(): void
+    {
+        $commands = $cas = [];
+
+        $callback = $this->getExecuteCallback(null, $commands, $cas);
+        $tx = $this->getMockedTransaction($callback, ['cas' => true, 'watch' => 'foo']);
+
+        $responses = $tx->execute(static function ($tx) {
+            $tx->get('foo');
+            $tx->discard();
+        });
+
+        $this->assertNull($responses);
+        $this->assertSame([], self::commandsToIDs($commands));
+        $this->assertSame(['WATCH', 'GET', 'UNWATCH'], self::commandsToIDs($cas));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testThrowsExceptionOnNonCallableArgument(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The argument must be a callable object.');
+
+        $this->getMockedTransaction($this->getExecuteCallback())->execute('not a callable');
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testParsesExecRepliesWithResp3(): void
+    {
+        $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $connection
+            ->method('executeCommand')
+            ->willReturnCallback($this->getExecuteCallback([[['member', 1.0]]]));
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 3]));
+        $connection
+            ->method('isConnected')
+            ->willReturn(true);
+
+        $tx = new MultiExec(new Client($connection));
+
+        $this->assertSame([[['member' => 1.0]]], $tx->zpopmin('key')->execute());
     }
 
     /**
@@ -677,10 +733,16 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      */
-    public function testQueueErrorWithFluentInterfaceDiscardsTransaction(): void
+    public function testQueueErrorWithFluentInterfaceAbortsTransactionUntilDiscard(): void
     {
+        $sent = [];
         $commands = [];
-        $tx = $this->getMockedTransaction($this->getQueueErrorCallback($commands));
+        $callback = $this->getQueueErrorCallback($commands, ['foo']);
+        $tx = $this->getMockedTransaction(static function (CommandInterface $command) use ($callback, &$sent) {
+            $sent[] = $command->getId();
+
+            return $callback($command);
+        });
 
         try {
             $tx->set('foo', 'bar')->executeCommand(new RawCommand('SET', ['foo']))->execute();
@@ -689,25 +751,11 @@ class MultiExecTest extends PredisTestCase
             $this->assertSame("ERR wrong number of arguments for 'set' command", $exception->getMessage());
         }
 
-        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD'], self::commandsToIDs($commands));
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testFluentTransactionAbortedByQueueErrorCannotBeReused(): void
-    {
-        $commands = [];
-        $tx = $this->getMockedTransaction($this->getQueueErrorCallback($commands, ['foo']));
-
-        try {
-            $tx->set('foo', 'bar')->executeCommand(new RawCommand('SET', ['foo']));
-        } catch (AbortedMultiExecException $exception) {
-            // NOOP
-        }
+        $this->assertSame($tx, $tx->unwatch());
 
         foreach ([
             static function (MultiExec $tx) { $tx->set('foo', 'baz'); },
+            static function (MultiExec $tx) { $tx->watch('foo'); },
             static function (MultiExec $tx) { $tx->execute(); },
         ] as $reuse) {
             try {
@@ -718,113 +766,19 @@ class MultiExecTest extends PredisTestCase
             }
         }
 
-        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD'], self::commandsToIDs($commands));
+        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD', 'UNWATCH'], $sent);
 
         $this->assertSame(['foo'], $tx->discard()->echo('foo')->execute());
-        $this->assertSame(
-            ['MULTI', 'SET', 'SET', 'DISCARD', 'MULTI', 'ECHO', 'EXEC'],
-            self::commandsToIDs($commands)
-        );
+        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD', 'UNWATCH', 'MULTI', 'ECHO', 'EXEC'], $sent);
     }
 
     /**
      * @group disconnected
      */
-    public function testQueueErrorWithFluentInterfaceClosesConnectionWhenDiscardFails(): void
-    {
-        $connection = $this->getMockedConnection(static function (CommandInterface $command) {
-            switch ($command->getId()) {
-                case 'MULTI':
-                    return new Response\Status('OK');
-                case 'DISCARD':
-                    return new Response\Error('NOPERM simulated DISCARD failure');
-                case 'SET':
-                    return new Response\Error("ERR wrong number of arguments for 'set' command");
-                default:
-                    return new Response\Status('QUEUED');
-            }
-        });
-        $connection
-            ->expects($this->once())
-            ->method('disconnect');
-
-        $tx = new MultiExec(new Client($connection));
-
-        try {
-            $tx->executeCommand(new RawCommand('SET', ['foo']));
-            $this->fail('Expected the transaction to abort.');
-        } catch (AbortedMultiExecException $exception) {
-            $this->assertSame("ERR wrong number of arguments for 'set' command", $exception->getMessage());
-        }
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testUnwatchAfterQueueErrorKeepsTheTransactionAborted(): void
+    public function testClusterSlotErrorWithFluentInterfaceAbortsTransaction(): void
     {
         $commands = [];
-        $tx = $this->getMockedTransaction($this->getQueueErrorCallback($commands, ['foo']));
-
-        try {
-            $tx->set('foo', 'bar')->executeCommand(new RawCommand('SET', ['foo']));
-            $this->fail('Expected the transaction to abort.');
-        } catch (AbortedMultiExecException $exception) {
-            $this->assertSame($tx, $tx->unwatch());
-        }
-
-        try {
-            $tx->set('foo', 'baz');
-            $this->fail('Expected the aborted transaction to stay aborted.');
-        } catch (AbortedMultiExecException $exception) {
-            $this->assertStringStartsWith('The transaction has already been aborted', $exception->getMessage());
-        }
-
-        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD'], self::commandsToIDs($commands));
-
-        $this->assertSame(['foo'], $tx->discard()->echo('foo')->execute());
-        $this->assertSame(
-            ['MULTI', 'SET', 'SET', 'DISCARD', 'MULTI', 'ECHO', 'EXEC'],
-            self::commandsToIDs($commands)
-        );
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testWatchAfterQueueErrorIsNotSent(): void
-    {
-        $sent = [];
-        $callback = $this->getQueueErrorCallback();
-        $tx = $this->getMockedTransaction(static function (CommandInterface $command) use ($callback, &$sent) {
-            $sent[] = $command->getId();
-
-            return $callback($command);
-        });
-
-        try {
-            $tx->set('foo', 'bar')->executeCommand(new RawCommand('SET', ['foo']));
-        } catch (AbortedMultiExecException $exception) {
-            // NOOP
-        }
-
-        try {
-            $tx->watch('foo');
-            $this->fail('Expected the aborted transaction to stay aborted.');
-        } catch (AbortedMultiExecException $exception) {
-            $this->assertStringStartsWith('The transaction has already been aborted', $exception->getMessage());
-        }
-
-        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD'], $sent);
-    }
-
-    /**
-     * @group disconnected
-     */
-    public function testClusterSlotErrorWithFluentInterfaceKeepsQueuedCommands(): void
-    {
-        $commands = [];
-        $tx = $this->getMockedClusterTransaction($this->getExecuteCallback(['OK', 'OK'], $commands));
+        $tx = $this->getMockedClusterTransaction($this->getExecuteCallback(['OK'], $commands));
         $tx->set('{a}foo', 'bar');
 
         try {
@@ -834,8 +788,459 @@ class MultiExecTest extends PredisTestCase
             $this->assertStringContainsString('same hash slot', $exception->getMessage());
         }
 
-        $this->assertEquals(['OK', 'OK'], $tx->set('{a}baz', 'qux')->execute());
-        $this->assertSame(['MULTI', 'SET', 'SET', 'EXEC'], self::commandsToIDs($commands));
+        try {
+            $tx->set('{a}baz', 'qux')->execute();
+            $this->fail('Expected the aborted transaction to stay aborted.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertStringStartsWith('The transaction has already been aborted', $exception->getMessage());
+        }
+
+        $this->assertEquals(['OK'], $tx->discard()->set('{a}baz', 'qux')->execute());
+        $this->assertSame(['MULTI', 'SET', 'EXEC'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterSlotErrorBeforeMultiWithFluentInterfaceDoesNotAbortTransaction(): void
+    {
+        $commands = [];
+        $cas = [];
+        $tx = $this->getMockedClusterTransaction(
+            $this->getExecuteCallback(['OK'], $commands, $cas),
+            ['cas' => true, 'watch' => '{a}foo']
+        );
+        $tx->get('{a}foo');
+
+        try {
+            $tx->get('{b}foo');
+            $this->fail('Expected the command to be rejected.');
+        } catch (AbortedMultiExecException $exception) {
+            $this->assertStringContainsString('same hash slot', $exception->getMessage());
+        }
+
+        $this->assertEquals(['OK'], $tx->multi()->set('{a}foo', 'bar')->execute());
+        $this->assertSame(['WATCH', 'GET'], self::commandsToIDs($cas));
+        $this->assertSame(['MULTI', 'SET', 'EXEC'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider completedTransactions
+     */
+    public function testExecEndsTheTransaction($exec, ?string $error, bool $discard): void
+    {
+        $sent = [];
+        $connection = $this->getMockedConnection(static function (CommandInterface $command) use ($exec, &$sent) {
+            $sent[] = $command->getId();
+
+            switch ($command->getId()) {
+                case 'SET':
+                    return new Response\Status('QUEUED');
+                case 'EXEC':
+                    return $exec;
+                default:
+                    return new Response\Status('OK');
+            }
+        });
+        $connection
+            ->expects($this->never())
+            ->method('disconnect');
+
+        $tx = new MultiExec(new Client($connection), ['watch' => 'foo']);
+
+        try {
+            $tx->set('foo', 'bar')->execute();
+            $this->assertNull($error);
+        } catch (PredisException $exception) {
+            $this->assertSame($error, $exception->getMessage());
+        }
+
+        if ($discard) {
+            $this->assertNull($tx->discard()->execute());
+        }
+
+        $this->assertSame(['WATCH', 'MULTI', 'SET', 'EXEC'], $sent);
+
+        $tx->set('foo', 'baz');
+        $this->assertSame(['WATCH', 'MULTI', 'SET', 'EXEC', 'WATCH', 'MULTI', 'SET'], $sent);
+    }
+
+    public function completedTransactions(): array
+    {
+        $outcomes = [
+            'EXEC succeeded' => [
+                [new Response\Status('OK')],
+                null,
+            ],
+            'EXEC reported a failed command' => [
+                [new Response\Error('ERR value is not an integer or out of range')],
+                'ERR value is not an integer or out of range',
+            ],
+            'EXEC aborted by a watched key' => [
+                null,
+                'The current transaction has been aborted by the server.',
+            ],
+            'EXEC rejected' => [
+                new Response\Error('EXECABORT Transaction discarded because of previous errors.'),
+                'EXECABORT Transaction discarded because of previous errors.',
+            ],
+        ];
+
+        $cases = [];
+
+        foreach ($outcomes as $outcome => $arguments) {
+            $cases["$outcome, then discard() and reuse"] = array_merge($arguments, [true]);
+            $cases["$outcome, then reuse"] = array_merge($arguments, [false]);
+        }
+
+        return $cases;
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecOnALostConnectionFailsUntilDiscard(): void
+    {
+        $sent = [];
+        $connected = true;
+        $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $connection
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$sent, &$connected, $connection) {
+                $connected = true;
+                $sent[] = $command->getId();
+
+                switch ($command->getId()) {
+                    case 'SET':
+                        return new Response\Status('QUEUED');
+                    case 'EXEC':
+                        if ($sent === ['MULTI', 'SET', 'EXEC']) {
+                            throw new ConnectionException($connection, 'Connection lost');
+                        }
+
+                        return [new Response\Status('OK')];
+                    default:
+                        return new Response\Status('OK');
+                }
+            });
+        $connection
+            ->expects($this->once())
+            ->method('disconnect')
+            ->willReturnCallback(static function () use (&$connected) {
+                $connected = false;
+            });
+        $connection
+            ->method('isConnected')
+            ->willReturnCallback(static function () use (&$connected) {
+                return $connected;
+            });
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
+        $tx = new MultiExec(new Client($connection));
+
+        try {
+            $tx->set('foo', 'bar')->execute();
+            $this->fail('Expected the transaction to fail.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('Connection lost', $exception->getMessage());
+        }
+
+        try {
+            $tx->set('foo', 'baz');
+            $this->fail('Expected the transaction to fail on its lost connection.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
+        }
+
+        $this->assertEquals(['OK'], $tx->discard()->set('foo', 'baz')->execute());
+        $this->assertSame(['MULTI', 'SET', 'EXEC', 'MULTI', 'SET', 'EXEC'], $sent);
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider transactionFailures
+     */
+    public function testDiscardAfterAFailureMakesTheTransactionUsableAgain(
+        array $options,
+        callable $respond,
+        string $message,
+        array $expected
+    ): void {
+        $sent = [];
+        $connected = true;
+        $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $connection
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$sent, &$connected, $connection, $respond) {
+                $connected = true;
+                $sent[] = $command->getId();
+
+                if (null !== $response = $respond($command, $sent, $connection)) {
+                    return $response;
+                }
+
+                switch ($command->getId()) {
+                    case 'SET':
+                        return new Response\Status('QUEUED');
+                    case 'EXEC':
+                        return [new Response\Status('OK')];
+                    default:
+                        return new Response\Status('OK');
+                }
+            });
+        $connection
+            ->expects($this->once())
+            ->method('disconnect')
+            ->willReturnCallback(static function () use (&$connected) {
+                $connected = false;
+            });
+        $connection
+            ->method('isConnected')
+            ->willReturnCallback(static function () use (&$connected) {
+                return $connected;
+            });
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
+        $tx = new MultiExec(new Client($connection), $options);
+
+        try {
+            $tx->executeCommand(new RawCommand('SET', ['foo']));
+            $this->fail('Expected the transaction to fail.');
+        } catch (PredisException $exception) {
+            $this->assertSame($message, $exception->getMessage());
+        }
+
+        $this->assertEquals(['OK'], $tx->discard()->set('foo', 'bar')->execute());
+        $this->assertSame($expected, $sent);
+    }
+
+    public function transactionFailures(): array
+    {
+        $queueError = static function (CommandInterface $command) {
+            if ($command->getId() === 'SET' && count($command->getArguments()) === 1) {
+                return new Response\Error("ERR wrong number of arguments for 'set' command");
+            }
+
+            return null;
+        };
+
+        return [
+            'DISCARD rejected after a queue error' => [
+                [],
+                static function (CommandInterface $command) use ($queueError) {
+                    if ($command->getId() === 'DISCARD') {
+                        return new Response\Error('NOPERM simulated DISCARD failure');
+                    }
+
+                    return $queueError($command);
+                },
+                "ERR wrong number of arguments for 'set' command",
+                ['MULTI', 'SET', 'DISCARD', 'MULTI', 'SET', 'EXEC'],
+            ],
+            'connection lost on DISCARD after a queue error' => [
+                [],
+                static function (CommandInterface $command, array $sent, NodeConnectionInterface $connection) use ($queueError) {
+                    if ($command->getId() === 'DISCARD') {
+                        throw new ConnectionException($connection, 'Connection lost');
+                    }
+
+                    return $queueError($command);
+                },
+                "ERR wrong number of arguments for 'set' command",
+                ['MULTI', 'SET', 'DISCARD', 'MULTI', 'SET', 'EXEC'],
+            ],
+            'connection lost between WATCH and MULTI' => [
+                ['watch' => 'foo'],
+                static function (CommandInterface $command, array $sent, NodeConnectionInterface $connection) {
+                    if ($sent === ['WATCH', 'MULTI']) {
+                        throw new ConnectionException($connection, 'Connection lost');
+                    }
+
+                    return null;
+                },
+                'Connection lost',
+                ['WATCH', 'MULTI', 'WATCH', 'MULTI', 'SET', 'EXEC'],
+            ],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     * @dataProvider protocolErrors
+     */
+    public function testProtocolErrorIsReportedOnTheConnectionHoldingTheTransaction(
+        string $type,
+        Response\Status $reply,
+        string $message
+    ): void {
+        $node = $this->getMockedConnection(static function (CommandInterface $command) use ($reply) {
+            switch ($command->getId()) {
+                case 'MULTI':
+                    return new Response\Status('OK');
+                case 'EXEC':
+                    return [];
+                default:
+                    return $reply;
+            }
+        });
+        $node
+            ->expects($this->once())
+            ->method('disconnect');
+
+        switch ($type) {
+            case 'replication':
+                $connection = $this->getMockBuilder(ReplicationInterface::class)->getMock();
+                $connection
+                    ->method('getCurrent')
+                    ->willReturn($node);
+                break;
+            case 'cluster':
+                $connection = $this->getMockBuilder(ClusterInterface::class)->getMock();
+                $connection
+                    ->method('getClusterStrategy')
+                    ->willReturn(new RedisStrategy());
+                break;
+            default:
+                $connection = $node;
+        }
+
+        if ($connection !== $node) {
+            $connection
+                ->method('getConnectionByCommand')
+                ->willReturn($node);
+            $connection
+                ->method('getParameters')
+                ->willReturn(new Parameters(['protocol' => 2]));
+            $connection
+                ->method('executeCommand')
+                ->willReturnCallback(static function (CommandInterface $command) use ($node) {
+                    return $node->executeCommand($command);
+                });
+        }
+
+        try {
+            (new MultiExec(new Client($connection)))->set('foo', 'bar')->execute();
+            $this->fail('Expected a protocol error.');
+        } catch (ProtocolException $exception) {
+            $this->assertSame($message, $exception->getMessage());
+            $this->assertSame($node, $exception->getConnection());
+        }
+    }
+
+    public function protocolErrors(): array
+    {
+        $notQueued = 'The server did not return a +QUEUED status response.';
+        $execCount = 'EXEC returned an unexpected number of response items.';
+
+        return [
+            'unexpected reply on a node' => ['node', new Response\Status('OK'), $notQueued],
+            'unexpected reply on replication' => ['replication', new Response\Status('OK'), $notQueued],
+            'EXEC reply count on a node' => ['node', new Response\Status('QUEUED'), $execCount],
+            'EXEC reply count on replication' => ['replication', new Response\Status('QUEUED'), $execCount],
+            'EXEC reply count on cluster' => ['cluster', new Response\Status('QUEUED'), $execCount],
+        ];
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testDiscardInCasModeSucceedsWhileTheServerIsDownAfterALostConnection(): void
+    {
+        $sent = [];
+        $connected = true;
+        $down = false;
+        $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $connection
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$sent, &$connected, &$down, $connection) {
+                if ($down) {
+                    throw new ConnectionException($connection, 'Connection refused');
+                }
+
+                $connected = true;
+                $sent[] = $command->getId();
+
+                if ($command->getId() === 'GET') {
+                    $down = true;
+
+                    throw new ConnectionException($connection, 'Connection lost');
+                }
+
+                return new Response\Status('OK');
+            });
+        $connection
+            ->method('disconnect')
+            ->willReturnCallback(static function () use (&$connected) {
+                $connected = false;
+            });
+        $connection
+            ->method('isConnected')
+            ->willReturnCallback(static function () use (&$connected) {
+                return $connected;
+            });
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
+        $tx = new MultiExec(new Client($connection), ['watch' => 'foo', 'cas' => true]);
+
+        try {
+            $tx->get('foo');
+            $this->fail('Expected the connection to be lost.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('Connection lost', $exception->getMessage());
+        }
+
+        $this->assertSame($tx, $tx->discard());
+        $this->assertSame(['WATCH', 'GET'], $sent);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRejectedExecOnReplicationClosesTheNodeHoldingTheTransaction(): void
+    {
+        $node = $this->getMockedConnection(static function (CommandInterface $command) {
+            switch ($command->getId()) {
+                case 'SET':
+                    return new Response\Status('QUEUED');
+                case 'EXEC':
+                    return new Response\Error('BUSY Redis is busy running a script. You can only call SCRIPT KILL or SHUTDOWN NOSAVE.');
+                default:
+                    return new Response\Status('OK');
+            }
+        });
+        $node
+            ->expects($this->once())
+            ->method('disconnect');
+
+        $replication = $this->getMockBuilder(ReplicationInterface::class)->getMock();
+        $replication
+            ->method('getCurrent')
+            ->willReturn($node);
+        $replication
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+        $replication
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use ($node) {
+                return $node->executeCommand($command);
+            });
+        $replication
+            ->expects($this->never())
+            ->method('disconnect');
+
+        try {
+            (new MultiExec(new Client($replication)))->set('foo', 'bar')->execute();
+            $this->fail('Expected EXEC to be rejected.');
+        } catch (Response\ServerException $exception) {
+            $this->assertStringStartsWith('BUSY ', $exception->getMessage());
+        }
     }
 
     /**
@@ -1365,7 +1770,7 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group connected
      * @group cluster
-     * @dataProvider clusterTransactionPersistence
+     * @dataProvider connectionPersistence
      * @requiresRedisVersion >= 3.0.0
      */
     public function testClusterQueueErrorLeavesConnectionUsable(bool $persistent): void
@@ -1396,7 +1801,7 @@ class MultiExecTest extends PredisTestCase
         $redis->disconnect();
     }
 
-    public function clusterTransactionPersistence(): array
+    public function connectionPersistence(): array
     {
         return [[false], [true]];
     }
@@ -1404,7 +1809,7 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group connected
      * @group cluster
-     * @dataProvider clusterTransactionPersistence
+     * @dataProvider connectionPersistence
      * @requiresRedisVersion >= 3.0.0
      */
     public function testClusterFailedDiscardClosesThePhysicalSocket(bool $persistent): void
@@ -1552,7 +1957,7 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group connected
      * @group relay-incompatible
-     * @dataProvider clusterTransactionPersistence
+     * @dataProvider connectionPersistence
      */
     public function testIntegrationQueueErrorWithFluentInterfaceLeavesConnectionUsable(bool $persistent): void
     {
@@ -1575,6 +1980,30 @@ class MultiExecTest extends PredisTestCase
         } finally {
             $client->disconnect();
         }
+    }
+
+    /**
+     * @group connected
+     */
+    public function testIntegrationDiscardAfterExecLeavesConnectionUsable(): void
+    {
+        $client = $this->createClient();
+        $client->set('foo', 'bar');
+        $tx = $client->transaction();
+
+        try {
+            $tx->set('baz', 'qux')->incr('foo')->execute();
+            $this->fail('Expected EXEC to report the failed command.');
+        } catch (Response\ServerException $exception) {
+            $this->assertStringStartsWith('ERR value is not an integer', $exception->getMessage());
+        }
+
+        $this->assertNull($tx->discard()->execute());
+        $this->assertTrue($client->getConnection()->isConnected());
+        $this->assertSame('qux', $client->get('baz'));
+
+        $this->assertEquals(['OK'], $tx->set('baz', 'quux')->execute());
+        $this->assertSame('quux', $client->get('baz'));
     }
 
     /**
@@ -1632,11 +2061,11 @@ class MultiExecTest extends PredisTestCase
      * @group relay-incompatible
      * @requiresRedisVersion >= 5.0.0
      */
-    public function testIntegrationLostConnectionAfterWatchIsNotRetried(): void
+    public function testIntegrationLostConnectionAfterWatchFailsUntilDiscard(): void
     {
         $client = $this->createClient(['retry' => new Retry(new NoBackoff(), 3)]);
 
-        $this->assertLostConnectionAfterWatchIsNotRetried($client, $this->createClient(null, null, false));
+        $this->assertLostConnectionAfterWatchFailsUntilDiscard($client, $this->createClient(null, null, false));
     }
 
     /**
@@ -1659,12 +2088,12 @@ class MultiExecTest extends PredisTestCase
      * @group relay-incompatible
      * @requiresRedisVersion >= 7.0.0
      */
-    public function testSentinelLostConnectionAfterWatchIsNotRetried(): void
+    public function testSentinelLostConnectionAfterWatchFailsUntilDiscard(): void
     {
         $client = $this->createClient();
         $admin = new Client($client->getConnection()->getMaster()->getParameters());
 
-        $this->assertLostConnectionAfterWatchIsNotRetried($client, $admin);
+        $this->assertLostConnectionAfterWatchFailsUntilDiscard($client, $admin);
     }
 
     /**
@@ -1692,27 +2121,35 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * Drops the connection of $client between WATCH and MULTI, after another
-     * client changed the watched key.
+     * client changed the watched key, and keeps using the transaction after
+     * catching the error.
      */
-    private function assertLostConnectionAfterWatchIsNotRetried(Client $client, Client $admin): void
+    private function assertLostConnectionAfterWatchFailsUntilDiscard(Client $client, Client $admin): void
     {
         $client->set('foo', 'original');
         $id = $client->client('ID');
 
+        $tx = $client->transaction(['cas' => true, 'watch' => 'foo']);
+        $value = $tx->get('foo');
+        $admin->set('foo', 'changed');
+        $admin->client('KILL', 'ID', $id);
+
         try {
-            $client->transaction(['cas' => true, 'watch' => 'foo'], static function (MultiExec $tx) use ($admin, $id) {
-                $value = $tx->get('foo');
-                $admin->set('foo', 'changed');
-                $admin->client('KILL', 'ID', $id);
-                $tx->multi();
-                $tx->set('foo', "$value, then the transaction");
-            });
-            $this->fail('Expected the transaction to fail.');
+            $tx->multi();
+            $this->fail('Expected the lost connection to reach the caller.');
         } catch (CommunicationException $exception) {
             // NOOP
         }
 
+        try {
+            $tx->set('foo', "$value, then the transaction")->execute();
+            $this->fail('Expected the transaction to fail on its lost connection.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
+        }
+
         $this->assertSame('changed', $admin->get('foo'));
+        $this->assertSame([1], $tx->discard()->incr('counter')->execute());
     }
 
     /**
@@ -1781,6 +2218,7 @@ class MultiExecTest extends PredisTestCase
         }
 
         $this->assertInstanceOf(Response\ServerException::class, $exception);
+        $this->assertTrue($client1->getConnection()->isConnected());
         $this->assertSame('client2', $client1->get('sentinel'));
     }
 

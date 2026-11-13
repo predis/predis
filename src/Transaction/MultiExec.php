@@ -18,7 +18,7 @@ use Predis\ClientException;
 use Predis\ClientInterface;
 use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
-use Predis\Connection\Cluster\ClusterInterface;
+use Predis\Connection\AggregateConnectionInterface;
 use Predis\NotSupportedException;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error;
@@ -242,14 +242,14 @@ class MultiExec implements ClientContextInterface
         } elseif ($response instanceof Relay) {
             $this->commands->enqueue($command);
         } elseif ($response instanceof ErrorResponseInterface) {
-            if (!$this->state->isExecuting() && !$this->isClusterTransaction()) {
+            if (!$this->state->isExecuting() && !$this->state->isCAS()) {
                 $this->abortQueuedTransaction();
                 $this->state->flag(MultiExecState::ABORTED);
             }
 
             throw new AbortedMultiExecException($this, $response->getMessage());
         } else {
-            $this->onProtocolError('The server did not return a +QUEUED status response.');
+            $this->onProtocolError('The server did not return a +QUEUED status response.', $command);
         }
 
         return $this;
@@ -313,17 +313,11 @@ class MultiExec implements ClientContextInterface
             );
         }
 
-        if ($this->state->isAborted()) {
-            return $this;
-        }
-
         $this->state->unflag(MultiExecState::WATCH);
 
-        // MULTI has been sent: at once without CAS, by multi() in CAS mode. UNWATCH is then queued with the other commands.
         if ($this->state->isInitialized() && !$this->state->isCAS()) {
             $this->__call('UNWATCH', []);
         } else {
-            // The strategy also stops keeping the transaction on its connection.
             $this->connectionStrategy->unwatch();
         }
 
@@ -341,14 +335,22 @@ class MultiExec implements ClientContextInterface
         $this->state->unflag(MultiExecState::ABORTED);
 
         if ($this->state->isInitialized()) {
-            if ($this->state->isCAS()) {
-                $this->connectionStrategy->unwatch();
-            } else {
-                $this->connectionStrategy->discard();
+            try {
+                if ($this->state->isCAS()) {
+                    $this->connectionStrategy->unwatch();
+                } else {
+                    $this->connectionStrategy->discard();
+                }
+            } finally {
+                $this->reset();
+                $this->state->flag(MultiExecState::DISCARDED);
             }
-
-            $this->reset();
-            $this->state->flag(MultiExecState::DISCARDED);
+        } elseif ($this->state->isWatching()) {
+            try {
+                $this->connectionStrategy->unwatch();
+            } finally {
+                $this->reset();
+            }
         }
 
         return $this;
@@ -432,7 +434,16 @@ class MultiExec implements ClientContextInterface
                 return;
             }
 
-            $execResponse = $this->connectionStrategy->executeTransaction();
+            try {
+                $execResponse = $this->connectionStrategy->executeTransaction();
+            } catch (ServerException $exception) {
+                $this->reset();
+
+                throw $exception;
+            }
+
+            $commands = $this->commands;
+            $this->reset();
 
             // The additional `false` check is needed for Relay,
             // let's hope it won't break anything
@@ -443,8 +454,6 @@ class MultiExec implements ClientContextInterface
                     );
                 }
 
-                $this->reset();
-
                 continue;
             }
 
@@ -452,12 +461,11 @@ class MultiExec implements ClientContextInterface
         } while ($attempts-- > 0);
 
         $response = [];
-        $commands = $this->commands;
         $size = count($execResponse);
         $protocolVersion = $this->client->getConnection()->getParameters()->protocol;
 
         if ($size !== count($commands)) {
-            $this->onProtocolError('EXEC returned an unexpected number of response items.');
+            $this->onProtocolError('EXEC returned an unexpected number of response items.', $commands->bottom());
         }
 
         for ($i = 0; $i < $size; ++$i) {
@@ -518,32 +526,16 @@ class MultiExec implements ClientContextInterface
     }
 
     /**
-     * Discards the transaction. When DISCARD fails, the connection is closed
-     * so that it cannot stay in MULTI.
+     * Discards the transaction, keeping the error that aborted it rather than
+     * one from DISCARD. When DISCARD fails, the connection strategy closes the
+     * connection, so that it cannot stay in MULTI.
      */
     private function abortQueuedTransaction(): void
     {
-        if ($this->isClusterTransaction()) {
-            $this->discard();
-
-            return;
-        }
-
         try {
             $this->discard();
         } catch (Throwable $exception) {
-            $this->client->getConnection()->disconnect();
-            $this->reset();
         }
-    }
-
-    /**
-     * Cluster transactions send MULTI only from execute(), so their errors
-     * before that come from the client and nothing is queued on a node.
-     */
-    private function isClusterTransaction(): bool
-    {
-        return $this->client->getConnection() instanceof ClusterInterface;
     }
 
     /**
@@ -564,15 +556,17 @@ class MultiExec implements ClientContextInterface
     /**
      * Helper method for protocol errors encountered inside the transaction.
      *
-     * @param string $message Error message.
+     * @param string           $message Error message.
+     * @param CommandInterface $command Command sent to the connection holding the transaction.
      */
-    private function onProtocolError($message)
+    private function onProtocolError($message, CommandInterface $command)
     {
-        // Since a MULTI/EXEC block cannot be initialized when using aggregate
-        // connections we can safely assume that Predis\Client::getConnection()
-        // will return a Predis\Connection\NodeConnectionInterface instance.
-        CommunicationException::handle(new ProtocolException(
-            $this->client->getConnection(), $message
-        ));
+        $connection = $this->client->getConnection();
+
+        if ($connection instanceof AggregateConnectionInterface) {
+            $connection = $connection->getConnectionByCommand($command);
+        }
+
+        CommunicationException::handle(new ProtocolException($connection, $message));
     }
 }
