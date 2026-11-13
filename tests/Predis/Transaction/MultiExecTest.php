@@ -858,6 +858,52 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testClusterExecReportsALostConnectionBeforeARejectedCommand(): void
+    {
+        $node = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $callback = $this->getExecuteCallback(['OK']);
+        $gets = 0;
+        $tx = $this->getMockedClusterTransaction(
+            static function (CommandInterface $command) use ($callback, $node, &$gets) {
+                if ($command->getId() === 'GET' && ++$gets === 2) {
+                    throw new ConnectionException($node, 'Connection lost');
+                }
+
+                return $callback($command);
+            },
+            ['cas' => true, 'watch' => '{a}foo']
+        );
+
+        try {
+            $tx->execute(static function (MultiExec $tx) {
+                $tx->get('{a}foo');
+
+                try {
+                    $tx->get('{a}foo');
+                } catch (CommunicationException $exception) {
+                    // NOOP
+                }
+
+                $tx->multi();
+                $tx->set('{a}foo', 'bar');
+
+                try {
+                    $tx->set('{b}foo', 'bar');
+                } catch (AbortedMultiExecException $exception) {
+                    // NOOP
+                }
+            });
+            $this->fail('Expected EXEC to fail on the lost connection.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
+        }
+
+        $this->assertTrue($tx->discard()->watch('{a}foo'));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testClusterSlotErrorBeforeMultiWithFluentInterfaceDoesNotAbortTransaction(): void
     {
         $commands = [];

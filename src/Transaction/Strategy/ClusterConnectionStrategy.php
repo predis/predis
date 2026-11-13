@@ -161,6 +161,8 @@ class ClusterConnectionStrategy implements StrategyInterface
             throw new TransactionException('Transaction context should be initialized first');
         }
 
+        $this->assertConnectionNotLost();
+
         if ($this->isAborted) {
             $this->releaseNode(new UNWATCH());
 
@@ -329,6 +331,16 @@ class ClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
+     * @throws ConnectionException
+     */
+    private function assertConnectionNotLost(): void
+    {
+        if ($this->lostConnection) {
+            throw new ConnectionException($this->lostConnection, 'The connection holding the transaction was lost.');
+        }
+    }
+
+    /**
      * Assigns slot to a command and executes.
      *
      * @param  CommandInterface $command
@@ -336,9 +348,7 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     private function setSlotAndExecute(CommandInterface $command)
     {
-        if ($this->lostConnection) {
-            throw new ConnectionException($this->lostConnection, 'The connection holding the transaction was lost.');
-        }
+        $this->assertConnectionNotLost();
 
         try {
             if (null !== $this->slot) {
