@@ -801,6 +801,141 @@ class MultiExecTest extends PredisTestCase
 
     /**
      * @group disconnected
+     * @dataProvider completedTransactions
+     */
+    public function testExecEndsTheTransaction($exec, ?string $error, bool $discard): void
+    {
+        $sent = [];
+        $connection = $this->getMockedConnection(static function (CommandInterface $command) use ($exec, &$sent) {
+            $sent[] = $command->getId();
+
+            switch ($command->getId()) {
+                case 'SET':
+                    return new Response\Status('QUEUED');
+                case 'EXEC':
+                    return $exec;
+                default:
+                    return new Response\Status('OK');
+            }
+        });
+        $connection
+            ->expects($this->never())
+            ->method('disconnect');
+
+        $tx = new MultiExec(new Client($connection), ['watch' => 'foo']);
+
+        try {
+            $tx->set('foo', 'bar')->execute();
+            $this->assertNull($error);
+        } catch (PredisException $exception) {
+            $this->assertSame($error, $exception->getMessage());
+        }
+
+        if ($discard) {
+            $this->assertNull($tx->discard()->execute());
+        }
+
+        $this->assertSame(['WATCH', 'MULTI', 'SET', 'EXEC'], $sent);
+
+        $tx->set('foo', 'baz');
+        $this->assertSame(['WATCH', 'MULTI', 'SET', 'EXEC', 'WATCH', 'MULTI', 'SET'], $sent);
+    }
+
+    public function completedTransactions(): array
+    {
+        $outcomes = [
+            'EXEC succeeded' => [
+                [new Response\Status('OK')],
+                null,
+            ],
+            'EXEC reported a failed command' => [
+                [new Response\Error('ERR value is not an integer or out of range')],
+                'ERR value is not an integer or out of range',
+            ],
+            'EXEC aborted by a watched key' => [
+                null,
+                'The current transaction has been aborted by the server.',
+            ],
+            'EXEC rejected' => [
+                new Response\Error('EXECABORT Transaction discarded because of previous errors.'),
+                'EXECABORT Transaction discarded because of previous errors.',
+            ],
+        ];
+
+        $cases = [];
+
+        foreach ($outcomes as $outcome => $arguments) {
+            $cases["$outcome, then discard() and reuse"] = array_merge($arguments, [true]);
+            $cases["$outcome, then reuse"] = array_merge($arguments, [false]);
+        }
+
+        return $cases;
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testExecOnALostConnectionFailsUntilDiscard(): void
+    {
+        $sent = [];
+        $connected = true;
+        $connection = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $connection
+            ->method('executeCommand')
+            ->willReturnCallback(static function (CommandInterface $command) use (&$sent, &$connected, $connection) {
+                $connected = true;
+                $sent[] = $command->getId();
+
+                switch ($command->getId()) {
+                    case 'SET':
+                        return new Response\Status('QUEUED');
+                    case 'EXEC':
+                        if ($sent === ['MULTI', 'SET', 'EXEC']) {
+                            throw new ConnectionException($connection, 'Connection lost');
+                        }
+
+                        return [new Response\Status('OK')];
+                    default:
+                        return new Response\Status('OK');
+                }
+            });
+        $connection
+            ->expects($this->once())
+            ->method('disconnect')
+            ->willReturnCallback(static function () use (&$connected) {
+                $connected = false;
+            });
+        $connection
+            ->method('isConnected')
+            ->willReturnCallback(static function () use (&$connected) {
+                return $connected;
+            });
+        $connection
+            ->method('getParameters')
+            ->willReturn(new Parameters(['protocol' => 2]));
+
+        $tx = new MultiExec(new Client($connection));
+
+        try {
+            $tx->set('foo', 'bar')->execute();
+            $this->fail('Expected the transaction to fail.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('Connection lost', $exception->getMessage());
+        }
+
+        try {
+            $tx->set('foo', 'baz');
+            $this->fail('Expected the transaction to fail on its lost connection.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
+        }
+
+        $this->assertEquals(['OK'], $tx->discard()->set('foo', 'baz')->execute());
+        $this->assertSame(['MULTI', 'SET', 'EXEC', 'MULTI', 'SET', 'EXEC'], $sent);
+    }
+
+    /**
+     * @group disconnected
      * @dataProvider transactionFailures
      */
     public function testDiscardAfterAFailureMakesTheTransactionUsableAgain(
@@ -1723,6 +1858,30 @@ class MultiExecTest extends PredisTestCase
         } finally {
             $client->disconnect();
         }
+    }
+
+    /**
+     * @group connected
+     */
+    public function testIntegrationDiscardAfterExecLeavesConnectionUsable(): void
+    {
+        $client = $this->createClient();
+        $client->set('foo', 'bar');
+        $tx = $client->transaction();
+
+        try {
+            $tx->set('baz', 'qux')->incr('foo')->execute();
+            $this->fail('Expected EXEC to report the failed command.');
+        } catch (Response\ServerException $exception) {
+            $this->assertStringStartsWith('ERR value is not an integer', $exception->getMessage());
+        }
+
+        $this->assertNull($tx->discard()->execute());
+        $this->assertTrue($client->getConnection()->isConnected());
+        $this->assertSame('qux', $client->get('baz'));
+
+        $this->assertEquals(['OK'], $tx->set('baz', 'quux')->execute());
+        $this->assertSame('quux', $client->get('baz'));
     }
 
     /**

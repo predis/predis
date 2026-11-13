@@ -434,7 +434,16 @@ class MultiExec implements ClientContextInterface
                 return;
             }
 
-            $execResponse = $this->connectionStrategy->executeTransaction();
+            try {
+                $execResponse = $this->connectionStrategy->executeTransaction();
+            } catch (ServerException $exception) {
+                $this->reset();
+
+                throw $exception;
+            }
+
+            $commands = $this->commands;
+            $this->reset();
 
             // The additional `false` check is needed for Relay,
             // let's hope it won't break anything
@@ -445,8 +454,6 @@ class MultiExec implements ClientContextInterface
                     );
                 }
 
-                $this->reset();
-
                 continue;
             }
 
@@ -454,7 +461,6 @@ class MultiExec implements ClientContextInterface
         } while ($attempts-- > 0);
 
         $response = [];
-        $commands = $this->commands;
         $size = count($execResponse);
         $protocolVersion = $this->client->getConnection()->getParameters()->protocol;
 
