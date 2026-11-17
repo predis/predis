@@ -176,7 +176,8 @@ class StreamFactory implements StreamFactoryInterface
             $this->onInitializationError($resource, $parameters, 'Error while setting SSL context options');
         }
 
-        if (!stream_socket_enable_crypto($resource, true, $options['crypto_type'])) {
+        // Suppressed: see the note in Stream::write().
+        if (!@stream_socket_enable_crypto($resource, true, $options['crypto_type'])) {
             $this->onInitializationError($resource, $parameters, 'Error while switching to encrypted communication');
         }
 
