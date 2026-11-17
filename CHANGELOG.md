@@ -7,7 +7,7 @@
 ### Fixed
 - Fixed transactions retrying commands on a new connection after WATCH or MULTI, where they ran outside of the transaction (#1756)
 - Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
-- Fixed a failed TLS handshake throwing the error handler's exception instead of `StreamInitException`, which skipped retries (#1768)
+- Fixed a failed TLS handshake throwing the error handler's exception instead of `StreamInitException`, which skipped retries; the exception now includes the OpenSSL error (#1768)
 
 ## Unreleased
 ### Fixed
