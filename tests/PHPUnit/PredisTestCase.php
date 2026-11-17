@@ -99,7 +99,7 @@ abstract class PredisTestCase extends PHPUnit\Framework\TestCase
     public function assertRedisCommand($expected, $actual, string $message = ''): void
     {
         if (is_array($expected)) {
-            @[$command, $arguments] = $expected;
+            [$command, $arguments] = $expected + [null, null];
         } else {
             $command = $expected;
             $arguments = null;
