@@ -1,22 +1,20 @@
 ## Changelog
-### Added
-- Added support for BITRANGEINTARRAY command (#1754)
-- Added support for ZMOVE, BZMOVE, ZMOVEMEMBER commands (#1762)
 
 ## Unreleased
+### Added
+- Added support for Set Expiration commands (#1749)
+- Added support for `BITRANGEINTARRAY` command (#1754)
+- Added support for `ZMOVE`, `BZMOVE`, `ZMOVEMEMBER` commands (#1762)
+
 ### Fixed
-- Fixed transactions retrying commands on a new connection after WATCH or MULTI, where they ran outside of the transaction (#1756)
+- Fixed transactions retrying commands on a new connection after `WATCH` or `MULTI`, where they ran outside of the transaction (#1756)
+- Fixed transactions built with the fluent interface leaving the connection in `MULTI` after Redis rejected a queued command; the transaction now throws `AbortedMultiExecException` until `discard()` is called (#1755)
 - Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
 - Fixed a failed TLS handshake throwing the error handler's exception instead of `StreamInitException`, which skipped retries; the exception now includes the OpenSSL error (#1768)
-
-## Unreleased
-### Fixed
-- Fixed transactions built with the fluent interface leaving the connection in `MULTI` after Redis rejected a queued command; the transaction now throws `AbortedMultiExecException` until `discard()` is called (#1755)
 
 ## v3.7.1 (2026-11-03)
 ### Added
 - Added support for numbered databases in Valkey clusters (#1696)
-- Added support for Set Expiration commands (#1749)
 
 ### Changed
 - Use `SENTINEL REPLICAS` for Sentinel replica discovery when available (#776)
