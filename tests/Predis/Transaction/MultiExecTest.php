@@ -766,10 +766,10 @@ class MultiExecTest extends PredisTestCase
             }
         }
 
-        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD', 'UNWATCH'], $sent);
+        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD'], $sent);
 
         $this->assertSame(['foo'], $tx->discard()->echo('foo')->execute());
-        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD', 'UNWATCH', 'MULTI', 'ECHO', 'EXEC'], $sent);
+        $this->assertSame(['MULTI', 'SET', 'SET', 'DISCARD', 'MULTI', 'ECHO', 'EXEC'], $sent);
     }
 
     /**

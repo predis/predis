@@ -313,6 +313,10 @@ class MultiExec implements ClientContextInterface
             );
         }
 
+        if ($this->state->isAborted()) {
+            return $this;
+        }
+
         $this->state->unflag(MultiExecState::WATCH);
 
         if ($this->state->isInitialized() && !$this->state->isCAS()) {
