@@ -802,6 +802,108 @@ class MultiExecTest extends PredisTestCase
     /**
      * @group disconnected
      */
+    public function testClusterSlotErrorCaughtInsideBlockAbortsExec(): void
+    {
+        $commands = [];
+        $tx = $this->getMockedClusterTransaction($this->getExecuteCallback(['OK'], $commands));
+
+        try {
+            $tx->execute(static function (MultiExec $tx) {
+                $tx->set('{a}foo', 'bar');
+
+                try {
+                    $tx->set('{b}foo', 'bar');
+                } catch (AbortedMultiExecException $exception) {
+                    // NOOP
+                }
+            });
+            $this->fail('Expected EXEC to fail after the rejected command.');
+        } catch (Response\ServerException $exception) {
+            $this->assertSame('EXECABORT Transaction discarded because of previous errors.', $exception->getMessage());
+        }
+
+        $this->assertSame([], $commands);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterSlotErrorCaughtBeforeMultiDoesNotAbortExec(): void
+    {
+        $commands = [];
+        $cas = [];
+        $tx = $this->getMockedClusterTransaction(
+            $this->getExecuteCallback(['OK'], $commands, $cas),
+            ['cas' => true, 'watch' => '{a}foo']
+        );
+
+        $response = $tx->execute(static function (MultiExec $tx) {
+            $tx->get('{a}foo');
+
+            try {
+                $tx->get('{b}foo');
+            } catch (AbortedMultiExecException $exception) {
+                // NOOP
+            }
+
+            $tx->multi();
+            $tx->set('{a}foo', 'bar');
+        });
+
+        $this->assertSame(['OK'], $response);
+        $this->assertSame(['WATCH', 'GET'], self::commandsToIDs($cas));
+        $this->assertSame(['MULTI', 'SET', 'EXEC'], self::commandsToIDs($commands));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testClusterExecReportsALostConnectionBeforeARejectedCommand(): void
+    {
+        $node = $this->getMockBuilder(NodeConnectionInterface::class)->getMock();
+        $callback = $this->getExecuteCallback(['OK']);
+        $gets = 0;
+        $tx = $this->getMockedClusterTransaction(
+            static function (CommandInterface $command) use ($callback, $node, &$gets) {
+                if ($command->getId() === 'GET' && ++$gets === 2) {
+                    throw new ConnectionException($node, 'Connection lost');
+                }
+
+                return $callback($command);
+            },
+            ['cas' => true, 'watch' => '{a}foo']
+        );
+
+        try {
+            $tx->execute(static function (MultiExec $tx) {
+                $tx->get('{a}foo');
+
+                try {
+                    $tx->get('{a}foo');
+                } catch (CommunicationException $exception) {
+                    // NOOP
+                }
+
+                $tx->multi();
+                $tx->set('{a}foo', 'bar');
+
+                try {
+                    $tx->set('{b}foo', 'bar');
+                } catch (AbortedMultiExecException $exception) {
+                    // NOOP
+                }
+            });
+            $this->fail('Expected EXEC to fail on the lost connection.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
+        }
+
+        $this->assertTrue($tx->discard()->watch('{a}foo'));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testClusterSlotErrorBeforeMultiWithFluentInterfaceDoesNotAbortTransaction(): void
     {
         $commands = [];
@@ -1804,6 +1906,74 @@ class MultiExecTest extends PredisTestCase
     public function connectionPersistence(): array
     {
         return [[false], [true]];
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @requiresRedisVersion >= 3.0.0
+     */
+    public function testClusterSlotErrorCaughtInsideBlockCommitsNothing(): void
+    {
+        $redis = $this->getClient();
+
+        try {
+            $redis->transaction(static function (MultiExec $tx) {
+                $tx->set('{a}foo', 'bar');
+
+                try {
+                    $tx->set('{b}foo', 'bar');
+                } catch (AbortedMultiExecException $exception) {
+                    // NOOP
+                }
+            });
+            $this->fail('Expected EXEC to fail after the rejected command.');
+        } catch (Response\ServerException $exception) {
+            $this->assertStringStartsWith('EXECABORT', $exception->getMessage());
+        }
+
+        $this->assertNull($redis->get('{a}foo'));
+    }
+
+    /**
+     * @group connected
+     * @group cluster
+     * @group relay-incompatible
+     * @requiresRedisVersion >= 5.0.0
+     */
+    public function testClusterLostConnectionAfterWatchFailsUntilDiscard(): void
+    {
+        // Nodes found after the lost one is reported get only these parameters.
+        $redis = $this->createClient(null, [
+            'parameters' => ['password' => getenv('REDIS_PASSWORD') ?: constant('REDIS_PASSWORD')],
+        ]);
+        $key = '{cas}foo';
+        $redis->set($key, 'original');
+        $node = $redis->getConnection()->getConnectionByCommand($redis->createCommand('GET', [$key]));
+        $admin = new Client($node->getParameters());
+        $id = $node->executeCommand($redis->createCommand('CLIENT', ['ID']));
+
+        $tx = $redis->transaction(['cas' => true, 'watch' => $key]);
+        $value = $tx->get($key);
+        $admin->set($key, 'changed');
+        $admin->client('KILL', 'ID', $id);
+
+        try {
+            $tx->get($key);
+            $this->fail('Expected the lost connection to reach the caller.');
+        } catch (CommunicationException $exception) {
+            // NOOP
+        }
+
+        try {
+            $tx->multi()->set($key, "$value, then the transaction")->execute();
+            $this->fail('Expected the transaction to fail on its lost connection.');
+        } catch (ConnectionException $exception) {
+            $this->assertSame('The connection holding the transaction was lost.', $exception->getMessage());
+        }
+
+        $this->assertSame('changed', $admin->get($key));
+        $this->assertSame([1], $tx->discard()->incr('{cas}counter')->execute());
     }
 
     /**

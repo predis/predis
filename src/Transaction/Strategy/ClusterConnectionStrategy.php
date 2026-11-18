@@ -64,11 +64,27 @@ class ClusterConnectionStrategy implements StrategyInterface
     private $isInitialized = false;
 
     /**
+     * Set when a queued command is rejected, so that EXEC fails like it does
+     * after Redis rejects one. Commands before MULTI run on their own.
+     *
+     * @var bool
+     */
+    private $isAborted = false;
+
+    /**
      * Physical connection holding the transaction and its WATCH state.
      *
      * @var NodeConnectionInterface|null
      */
     private $nodeConnection;
+
+    /**
+     * Node connection lost while holding the transaction. Its WATCH is gone
+     * with it, so commands fail until discard() or unwatch().
+     *
+     * @var NodeConnectionInterface|null
+     */
+    private $lostConnection;
 
     /**
      * @var \Predis\Cluster\StrategyInterface
@@ -108,6 +124,10 @@ class ClusterConnectionStrategy implements StrategyInterface
         }
 
         if (is_int($commandSlot) && $commandSlot !== $this->slot) {
+            if (!$this->state->isCAS()) {
+                $this->isAborted = true;
+            }
+
             return new Error(
                 'To be able to execute a transaction against cluster, all commands should operate on the same hash slot'
             );
@@ -139,6 +159,14 @@ class ClusterConnectionStrategy implements StrategyInterface
     {
         if (!$this->isInitialized) {
             throw new TransactionException('Transaction context should be initialized first');
+        }
+
+        $this->assertConnectionNotLost();
+
+        if ($this->isAborted) {
+            $this->releaseNode(new UNWATCH());
+
+            throw new ServerException('EXECABORT Transaction discarded because of previous errors.');
         }
 
         $exec = new EXEC();
@@ -223,7 +251,11 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function unwatch()
     {
-        return $this->releaseNode(new UNWATCH());
+        try {
+            return $this->releaseNode(new UNWATCH());
+        } finally {
+            $this->lostConnection = null;
+        }
     }
 
     /**
@@ -299,6 +331,16 @@ class ClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
+     * @throws ConnectionException
+     */
+    private function assertConnectionNotLost(): void
+    {
+        if ($this->lostConnection) {
+            throw new ConnectionException($this->lostConnection, 'The connection holding the transaction was lost.');
+        }
+    }
+
+    /**
      * Assigns slot to a command and executes.
      *
      * @param  CommandInterface $command
@@ -306,6 +348,8 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     private function setSlotAndExecute(CommandInterface $command)
     {
+        $this->assertConnectionNotLost();
+
         try {
             if (null !== $this->slot) {
                 $command->setSlot($this->slot);
@@ -325,6 +369,7 @@ class ClusterConnectionStrategy implements StrategyInterface
 
             if ($node) {
                 $node->disconnect();
+                $this->lostConnection = $node;
                 $this->reportNodeFailure($node, $exception);
             }
 
@@ -362,5 +407,6 @@ class ClusterConnectionStrategy implements StrategyInterface
         $this->nodeConnection = null;
         $this->commandsQueue = new SplQueue();
         $this->isInitialized = false;
+        $this->isAborted = false;
     }
 }
