@@ -21,7 +21,6 @@ use Predis\Command\Redis\WATCH;
 use Predis\CommunicationException;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\NodeConnectionInterface;
-use Predis\Connection\RelayConnection;
 use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Response\ErrorInterface;
 use Predis\Response\ServerException;
@@ -99,7 +98,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
         try {
             return $this->executeBypassingTransaction(new EXEC())->getResponse();
         } catch (ServerException $exception) {
-            if (strpos($exception->getMessage(), 'EXECABORT') !== 0 && !$connection instanceof RelayConnection) {
+            if (strpos($exception->getMessage(), 'EXECABORT') !== 0) {
                 $connection->disconnect();
                 $this->nodeConnection = null;
             }
@@ -191,23 +190,7 @@ abstract class NonClusterConnectionStrategy implements StrategyInterface
      */
     protected function executeBypassingTransaction(CommandInterface $command): BypassTransactionResponse
     {
-        try {
-            $response = $this->send($command);
-        } catch (ServerException $exception) {
-            if (!$this->connection instanceof RelayConnection) {
-                throw $exception;
-            }
-
-            if (strcasecmp($command->getId(), 'EXEC') != 0) {
-                throw $exception;
-            }
-
-            if (!strpos($exception->getMessage(), 'RELAY_ERR_REDIS')) {
-                throw $exception;
-            }
-
-            return new BypassTransactionResponse(null);
-        }
+        $response = $this->send($command);
 
         if ($response instanceof ErrorInterface) {
             throw new ServerException($response->getMessage());
