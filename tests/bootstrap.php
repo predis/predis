@@ -12,7 +12,7 @@
 
 if (file_exists(__DIR__ . '/../autoload.php')) {
     require __DIR__ . '/../autoload.php';
-} elseif (@include ('Predis/Autoloader.php')) {
+} elseif (($autoloader = stream_resolve_include_path('Predis/Autoloader.php')) !== false && include $autoloader) {
     Predis\Autoloader::register();
 } else {
     exit('ERROR: Unable to find a suitable mean to register Predis\Autoloader.');

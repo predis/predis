@@ -166,7 +166,7 @@ class Consumer implements Iterator
         };
 
         $event = preg_replace_callback('/\A\d+(?:\.\d+)?\K(?: \(db (\d+)\) | \[(\d+) (.*?)\] )/', $callback, $event, 1);
-        @[$timestamp, $command, $arguments] = explode(' ', $event, 3);
+        [$timestamp, $command, $arguments] = explode(' ', $event, 3) + ['', '', null];
 
         return (object) [
             'timestamp' => (float) $timestamp,

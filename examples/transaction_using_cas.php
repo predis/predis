@@ -36,7 +36,7 @@ function zpop($client, $key)
     ];
 
     $client->transaction($options, static function ($tx) use ($key, &$element) {
-        @[$element] = $tx->zrange($key, 0, 0);
+        $element = $tx->zrange($key, 0, 0)[0] ?? null;
 
         if (isset($element)) {
             $tx->multi();   // With CAS, MULTI *must* be explicitly invoked.

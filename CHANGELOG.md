@@ -15,7 +15,7 @@
 - Fixed transactions reused after `exec()` running commands outside of `MULTI` and failing on `discard()` (#1758)
 - Fixed transactions leaving the connection in `MULTI` when Redis before 6.0.6 rejected `EXEC` (#1758)
 - Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
-- Fixed a failed TLS handshake throwing the error handler's exception instead of `StreamInitException`, which skipped retries (#1768)
+- Fixed a failed TLS handshake throwing the error handler's exception instead of `StreamInitException`, which skipped retries; the exception now includes the OpenSSL error (#1768)
 - Fixed transactions in CAS mode treating a rejected `MULTI` as an open transaction (#1766)
 - Fixed Relay reporting a transaction aborted by `WATCH` as a `ServerException` and ignoring `retry` (#1765)
 - Fixed cluster transactions reporting server errors as a WATCH conflict and retrying them (#1763)
