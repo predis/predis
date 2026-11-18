@@ -174,9 +174,11 @@ class ClusterConnectionStrategy implements StrategyInterface
 
         // Begin transaction
         if (('OK' != $multiResp) && !$multiResp instanceof Relay) {
-            $this->abort(new UNWATCH(), $multiResp);
+            if ($this->abortTransaction(new UNWATCH(), $multiResp)) {
+                return null;
+            }
 
-            return null;
+            throw new ServerException($multiResp->getMessage());
         }
 
         // Transaction body
@@ -186,9 +188,7 @@ class ClusterConnectionStrategy implements StrategyInterface
             $commandResp = $this->setSlotAndExecute($command);
 
             if (('QUEUED' != $commandResp) && !$commandResp instanceof Relay) {
-                $this->abort(new DISCARD(), $commandResp);
-
-                return null;
+                return $this->abortTransaction(new DISCARD(), $commandResp) ? null : $commandResp;
             }
         }
 
@@ -196,9 +196,11 @@ class ClusterConnectionStrategy implements StrategyInterface
         $exec = $this->setSlotAndExecute($exec);
 
         if ($exec instanceof ErrorInterface) {
-            $this->abort(new UNWATCH(), $exec);
+            if ($this->abortTransaction(new UNWATCH(), $exec)) {
+                return null;
+            }
 
-            return null;
+            throw new ServerException($exec->getMessage());
         }
 
         $this->reset();
@@ -276,6 +278,43 @@ class ClusterConnectionStrategy implements StrategyInterface
         }
 
         return $response;
+    }
+
+    /**
+     * Aborts the transaction after an error response and tells whether it can
+     * be retried like after a WATCH conflict.
+     * That is the case when the transaction's slot was moved or the cluster is
+     * unavailable. Other errors would repeat, as a transaction does not send
+     * ASKING for a slot being migrated, so the caller reports them with the
+     * server's message.
+     *
+     * @param  CommandInterface $cleanup
+     * @param  mixed            $response
+     * @return bool
+     */
+    private function abortTransaction(CommandInterface $cleanup, $response): bool
+    {
+        $slot = $this->slot;
+        $this->abort($cleanup, $response);
+
+        if (!$response instanceof ErrorInterface) {
+            return true;
+        }
+
+        switch ($response->getErrorType()) {
+            case 'MOVED':
+                $details = explode(' ', $response->getMessage(), 3);
+
+                return null !== $slot && isset($details[1]) && (string) $slot === $details[1];
+
+            case 'TRYAGAIN':
+            case 'CLUSTERDOWN':
+            case 'READONLY':
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     /**
