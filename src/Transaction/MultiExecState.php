@@ -22,7 +22,7 @@ class MultiExecState
     public const DISCARDED = 4;    // 0b00100
     public const CAS = 8;    // 0b01000
     public const WATCH = 16;   // 0b10000
-    public const ABORTED = 32; // 0b100000
+    public const ABORTED = 32;   // 0b100000
 
     private $flags;
 

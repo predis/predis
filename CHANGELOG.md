@@ -7,10 +7,20 @@
 - Added support for `ZMOVE`, `BZMOVE`, `ZMOVEMEMBER` commands (#1762)
 
 ### Fixed
-- Fixed transactions retrying commands on a new connection after `WATCH` or `MULTI`, where they ran outside of the transaction (#1756)
-- Fixed transactions built with the fluent interface leaving the connection in `MULTI` after Redis rejected a queued command; the transaction now throws `AbortedMultiExecException` until `discard()` is called (#1755)
+- Fixed transactions running commands outside of the transaction after a lost connection (#1756, #1758, #1759)
+- Fixed fluent transactions leaving the connection in `MULTI` after a queued command was rejected (#1755)
+- Fixed cluster transactions committing other commands after a cross-slot error (#1758, #1759)
+- Fixed a `TypeError` on protocol errors in transactions with replication or cluster (#1758)
+- Fixed a `TypeError` when retrying a transaction after a failed connect (#1758)
+- Fixed transactions reused after `exec()` running commands outside of `MULTI` and failing on `discard()` (#1758)
+- Fixed transactions leaving the connection in `MULTI` when Redis before 6.0.6 rejected `EXEC` (#1758)
 - Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
 - Fixed a failed TLS handshake throwing the error handler's exception instead of `StreamInitException`, which skipped retries; the exception now includes the OpenSSL error (#1768)
+- Fixed transactions in CAS mode treating a rejected `MULTI` as an open transaction (#1766)
+- Fixed Relay reporting a transaction aborted by `WATCH` as a `ServerException` and ignoring `retry` (#1765)
+- Fixed cluster transactions reporting server errors as a WATCH conflict and retrying them (#1763)
+- Fixed cluster transactions committing without their `WATCH` after a server error before `multi()` (#1764)
+- Fixed cluster transactions committing without their `WATCH` after an `ASK` redirect (#1767)
 
 ## v3.7.1 (2026-11-03)
 ### Added

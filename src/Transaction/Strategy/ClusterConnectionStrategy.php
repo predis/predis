@@ -64,11 +64,27 @@ class ClusterConnectionStrategy implements StrategyInterface
     private $isInitialized = false;
 
     /**
+     * Set when a queued command is rejected, so that EXEC fails like it does
+     * after Redis rejects one. Commands before MULTI run on their own.
+     *
+     * @var bool
+     */
+    private $isAborted = false;
+
+    /**
      * Physical connection holding the transaction and its WATCH state.
      *
      * @var NodeConnectionInterface|null
      */
     private $nodeConnection;
+
+    /**
+     * Node connection lost while holding the transaction. Its WATCH is gone
+     * with it, so commands fail until discard() or unwatch().
+     *
+     * @var NodeConnectionInterface|null
+     */
+    private $lostConnection;
 
     /**
      * @var \Predis\Cluster\StrategyInterface
@@ -108,6 +124,10 @@ class ClusterConnectionStrategy implements StrategyInterface
         }
 
         if (is_int($commandSlot) && $commandSlot !== $this->slot) {
+            if (!$this->state->isCAS()) {
+                $this->isAborted = true;
+            }
+
             return new Error(
                 'To be able to execute a transaction against cluster, all commands should operate on the same hash slot'
             );
@@ -141,14 +161,24 @@ class ClusterConnectionStrategy implements StrategyInterface
             throw new TransactionException('Transaction context should be initialized first');
         }
 
+        $this->assertConnectionNotLost();
+
+        if ($this->isAborted) {
+            $this->releaseNode(new UNWATCH());
+
+            throw new ServerException('EXECABORT Transaction discarded because of previous errors.');
+        }
+
         $exec = new EXEC();
         $multiResp = $this->setSlotAndExecute(new MULTI());
 
         // Begin transaction
         if (('OK' != $multiResp) && !$multiResp instanceof Relay) {
-            $this->abort(new UNWATCH(), $multiResp);
+            if ($this->abortTransaction(new UNWATCH(), $multiResp)) {
+                return null;
+            }
 
-            return null;
+            throw new ServerException($multiResp->getMessage());
         }
 
         // Transaction body
@@ -158,9 +188,7 @@ class ClusterConnectionStrategy implements StrategyInterface
             $commandResp = $this->setSlotAndExecute($command);
 
             if (('QUEUED' != $commandResp) && !$commandResp instanceof Relay) {
-                $this->abort(new DISCARD(), $commandResp);
-
-                return null;
+                return $this->abortTransaction(new DISCARD(), $commandResp) ? null : $commandResp;
             }
         }
 
@@ -168,9 +196,11 @@ class ClusterConnectionStrategy implements StrategyInterface
         $exec = $this->setSlotAndExecute($exec);
 
         if ($exec instanceof ErrorInterface) {
-            $this->abort(new UNWATCH(), $exec);
+            if ($this->abortTransaction(new UNWATCH(), $exec)) {
+                return null;
+            }
 
-            return null;
+            throw new ServerException($exec->getMessage());
         }
 
         $this->reset();
@@ -223,11 +253,19 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     public function unwatch()
     {
-        return $this->releaseNode(new UNWATCH());
+        try {
+            return $this->releaseNode(new UNWATCH());
+        } finally {
+            $this->lostConnection = null;
+        }
     }
 
     /**
-     * Executes a command ahead of MULTI, releasing the node on error responses.
+     * Executes a command ahead of MULTI. Like in Redis, an error response keeps
+     * the WATCH on the node holding the transaction, so that EXEC still fails
+     * after a change to a watched key. A -MOVED response only updates the slots
+     * map, as the queued commands are rejected by that node. The first command
+     * releases its node on error, as nothing is watched yet.
      *
      * @param  CommandInterface $command
      * @return mixed
@@ -235,15 +273,59 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     private function executeBeforeMulti(CommandInterface $command)
     {
+        $isHeld = null !== $this->nodeConnection;
         $response = $this->setSlotAndExecute($command);
 
         if ($response instanceof ErrorInterface) {
-            $this->abort(new UNWATCH(), $response);
+            $message = $response->getMessage();
 
-            throw new ServerException($response->getMessage());
+            if (!$isHeld) {
+                $this->abort(new UNWATCH(), $response);
+            } elseif (0 === strpos($message, 'MOVED ') && $this->connection instanceof RedisCluster) {
+                $this->connection->applyMovedResponse(substr($message, 6));
+            }
+
+            throw new ServerException($message);
         }
 
         return $response;
+    }
+
+    /**
+     * Aborts the transaction after an error response and tells whether it can
+     * be retried like after a WATCH conflict.
+     * That is the case when the transaction's slot was moved or the cluster is
+     * unavailable. Other errors would repeat, as a transaction does not send
+     * ASKING for a slot being migrated, so the caller reports them with the
+     * server's message.
+     *
+     * @param  CommandInterface $cleanup
+     * @param  mixed            $response
+     * @return bool
+     */
+    private function abortTransaction(CommandInterface $cleanup, $response): bool
+    {
+        $slot = $this->slot;
+        $this->abort($cleanup, $response);
+
+        if (!$response instanceof ErrorInterface) {
+            return true;
+        }
+
+        switch ($response->getErrorType()) {
+            case 'MOVED':
+                $details = explode(' ', $response->getMessage(), 3);
+
+                return null !== $slot && isset($details[1]) && (string) $slot === $details[1];
+
+            case 'TRYAGAIN':
+            case 'CLUSTERDOWN':
+            case 'READONLY':
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     /**
@@ -299,6 +381,16 @@ class ClusterConnectionStrategy implements StrategyInterface
     }
 
     /**
+     * @throws ConnectionException
+     */
+    private function assertConnectionNotLost(): void
+    {
+        if ($this->lostConnection) {
+            throw new ConnectionException($this->lostConnection, 'The connection holding the transaction was lost.');
+        }
+    }
+
+    /**
      * Assigns slot to a command and executes.
      *
      * @param  CommandInterface $command
@@ -306,13 +398,19 @@ class ClusterConnectionStrategy implements StrategyInterface
      */
     private function setSlotAndExecute(CommandInterface $command)
     {
+        $this->assertConnectionNotLost();
+
         try {
             if (null !== $this->slot) {
                 $command->setSlot($this->slot);
             }
 
             if (!$this->nodeConnection) {
-                $response = $this->connection->executeCommand($command);
+                // Following -ASK would run the command on another node than
+                // the one taken from the slots map to hold the transaction.
+                $response = $this->connection instanceof RedisCluster
+                    ? $this->connection->executeCommandOnSlotOwner($command)
+                    : $this->connection->executeCommand($command);
                 $this->nodeConnection = $this->connection->getConnectionByCommand($command);
 
                 return $response;
@@ -325,6 +423,7 @@ class ClusterConnectionStrategy implements StrategyInterface
 
             if ($node) {
                 $node->disconnect();
+                $this->lostConnection = $node;
                 $this->reportNodeFailure($node, $exception);
             }
 
@@ -362,5 +461,6 @@ class ClusterConnectionStrategy implements StrategyInterface
         $this->nodeConnection = null;
         $this->commandsQueue = new SplQueue();
         $this->isInitialized = false;
+        $this->isAborted = false;
     }
 }
