@@ -7,8 +7,13 @@
 - Added support for `ZMOVE`, `BZMOVE`, `ZMOVEMEMBER` commands (#1762)
 
 ### Fixed
-- Fixed transactions retrying commands on a new connection after `WATCH` or `MULTI`, where they ran outside of the transaction (#1756)
-- Fixed transactions built with the fluent interface leaving the connection in `MULTI` after Redis rejected a queued command; the transaction now throws `AbortedMultiExecException` until `discard()` is called (#1755)
+- Fixed transactions running commands outside of the transaction after a lost connection (#1756, #1758)
+- Fixed fluent transactions leaving the connection in `MULTI` after a queued command was rejected (#1755)
+- Fixed fluent cluster transactions committing other commands after a cross-slot error (#1758)
+- Fixed a `TypeError` on protocol errors in transactions with replication or cluster (#1758)
+- Fixed a `TypeError` when retrying a transaction after a failed connect (#1758)
+- Fixed transactions reused after `exec()` running commands outside of `MULTI` and failing on `discard()` (#1758)
+- Fixed transactions leaving the connection in `MULTI` when Redis before 6.0.6 rejected `EXEC` (#1758)
 - Fixed Relay connections closed by the server throwing on `disconnect()` or failing the next command (#1761)
 - Fixed a failed TLS handshake throwing the error handler's exception instead of `StreamInitException`, which skipped retries (#1768)
 
