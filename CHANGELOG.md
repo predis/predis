@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Added
+- Added PHP 8.6 to the test matrix and updated session handling for PHP 8.6 (#1771)
 - Added support for Set Expiration commands (#1749)
 - Added support for `BITRANGEINTARRAY` command (#1754)
 - Added support for `ZMOVE`, `BZMOVE`, `ZMOVEMEMBER` commands (#1762)
