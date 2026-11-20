@@ -1464,6 +1464,7 @@ class ClientTest extends PredisTestCase
      * @group cluster
      * @requiresRedisVersion >= 2.0.0
      * @requires PHP >= 7.4
+     * @requires extension relay
      * @return void
      */
     public function testCreatesClusterWithRelayConnection(): void

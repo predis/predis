@@ -515,6 +515,11 @@ class ConsumerTest extends PredisTestCase
                 '__subkeyspaceevent@0__:hset|test:hash'
             );
 
+            // Wait until Redis has registered every subscription before publishing.
+            for ($i = 0; $i < 4; $i++) {
+                $this->assertSame('subscribe', $pubsub->current()->kind);
+            }
+
             $producer->hset('test:hash', 'field', 'value');
 
             foreach ($pubsub as $message) {
