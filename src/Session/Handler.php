@@ -15,16 +15,14 @@ namespace Predis\Session;
 use Predis\ClientInterface;
 use ReturnTypeWillChange;
 use SessionHandlerInterface;
+use SessionIdInterface;
+use SessionUpdateTimestampHandlerInterface;
 
 /**
  * Session handler class that relies on Predis\Client to store PHP's sessions
  * data into one or multiple Redis servers.
- *
- * This class is mostly intended for PHP 5.4 but it can be used under PHP 5.3
- * provided that a polyfill for `SessionHandlerInterface` is defined by either
- * you or an external package such as `symfony/http-foundation`.
  */
-class Handler implements SessionHandlerInterface
+class Handler implements SessionHandlerInterface, SessionIdInterface, SessionUpdateTimestampHandlerInterface
 {
     protected $client;
     protected $ttl;
@@ -50,6 +48,28 @@ class Handler implements SessionHandlerInterface
     public function register()
     {
         session_set_save_handler($this, true);
+    }
+
+    #[ReturnTypeWillChange]
+    public function create_sid()
+    {
+        do {
+            $id = bin2hex(random_bytes(32));
+        } while ($this->validateId($id));
+
+        return $id;
+    }
+
+    #[ReturnTypeWillChange]
+    public function validateId($id)
+    {
+        return (bool) $this->client->exists($id);
+    }
+
+    #[ReturnTypeWillChange]
+    public function updateTimestamp($id, $data)
+    {
+        return $this->write($id, $data);
     }
 
     /**
