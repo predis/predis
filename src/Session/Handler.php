@@ -13,6 +13,8 @@
 namespace Predis\Session;
 
 use Predis\ClientInterface;
+use Predis\Response\ErrorInterface;
+use Predis\Response\ServerException;
 use ReturnTypeWillChange;
 use SessionHandlerInterface;
 use SessionIdInterface;
@@ -63,7 +65,13 @@ class Handler implements SessionHandlerInterface, SessionIdInterface, SessionUpd
     #[ReturnTypeWillChange]
     public function validateId($id)
     {
-        return (bool) $this->client->exists($id);
+        $response = $this->client->exists($id);
+
+        if ($response instanceof ErrorInterface) {
+            throw new ServerException($response->getMessage());
+        }
+
+        return (bool) $response;
     }
 
     #[ReturnTypeWillChange]

@@ -14,6 +14,8 @@ namespace Predis\Session;
 
 use PHPUnit\Framework\TestCase;
 use Predis\ClientInterface;
+use Predis\Response\Error;
+use Predis\Response\ServerException;
 
 class HandlerTest extends TestCase
 {
@@ -48,5 +50,28 @@ class HandlerTest extends TestCase
         $handler = new Handler($client, ['gc_maxlifetime' => 120]);
 
         $this->assertTrue($handler->updateTimestamp('session-id', 'data'));
+    }
+
+    /**
+     * @dataProvider sessionIdOperations
+     */
+    public function testRejectsRedisErrorsDuringSessionIdOperations($operation, array $arguments)
+    {
+        $client = $this->createMock(ClientInterface::class);
+        $client->expects($this->once())->method('__call')
+            ->willReturn(new Error('NOPERM denied'));
+        $handler = new Handler($client);
+
+        $this->expectException(ServerException::class);
+        $this->expectExceptionMessage('NOPERM denied');
+        $handler->$operation(...$arguments);
+    }
+
+    public function sessionIdOperations()
+    {
+        return [
+            ['validateId', ['session-id']],
+            ['create_sid', []],
+        ];
     }
 }
