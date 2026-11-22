@@ -323,12 +323,16 @@ class RedisClusterTest extends PredisTestCase
                     [
                         'host' => '127.0.0.1',
                         'port' => '6383',
+                        'scheme' => 'tcp',
+                        'protocol' => 2,
                     ],
                 ],
                 [
                     [
                         'host' => '127.0.0.1',
                         'port' => '6384',
+                        'scheme' => 'tcp',
+                        'protocol' => 2,
                     ],
                 ]
             )
@@ -648,6 +652,8 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '9381',
+                'scheme' => 'tcp',
+                'protocol' => 2,
             ])
             ->willReturn($connection4);
 
@@ -714,6 +720,8 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '9381',
+                'scheme' => 'tcp',
+                'protocol' => 2,
             ])
             ->willReturn($connection4);
 
@@ -1063,6 +1071,8 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '6381',
+                'scheme' => 'tcp',
+                'protocol' => 2,
             ])
             ->willReturn($connection3);
 
@@ -1151,6 +1161,8 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '6381',
+                'scheme' => 'tcp',
+                'protocol' => 2,
             ])
             ->willReturn($connection3);
 
@@ -1163,6 +1175,55 @@ class RedisClusterTest extends PredisTestCase
         $this->assertSame('foobar', $cluster->executeCommand($command));
         $this->assertSame('foobar', $cluster->executeCommand($command));
         $this->assertCount(3, $cluster);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testMovedResponseWithConnectionNotInPoolReusesParametersOfKnownNodes(): void
+    {
+        $movedResponse = new Response\Error('MOVED 1970 127.0.0.1:6380');
+
+        $command = $this->getCommandFactory()->create('get', ['node:1001']);
+
+        $connection1 = $this->getMockConnection('rediss://127.0.0.1:6379?username=user&password=secret&ssl[verify_peer]=0&alias=seed');
+        $connection1
+            ->expects($this->once())
+            ->method('executeCommand')
+            ->with($command)
+            ->willReturn($movedResponse);
+
+        $connection2 = $this->getMockConnection('rediss://127.0.0.1:6380');
+        $connection2
+            ->expects($this->exactly(2))
+            ->method('executeCommand')
+            ->with($command)
+            ->willReturnOnConsecutiveCalls('foobar', 'foobar');
+
+        /** @var FactoryInterface|MockObject */
+        $factory = $this->getMockBuilder('Predis\Connection\FactoryInterface')->getMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->with([
+                'scheme' => 'rediss',
+                'host' => '127.0.0.1',
+                'port' => '6380',
+                'protocol' => 2,
+                'username' => 'user',
+                'password' => 'secret',
+                'ssl' => ['verify_peer' => '0'],
+            ])
+            ->willReturn($connection2);
+
+        $cluster = new RedisCluster($factory, new Parameters());
+        $cluster->useClusterSlots(false);
+
+        $cluster->add($connection1);
+
+        $this->assertSame('foobar', $cluster->executeCommand($command));
+        $this->assertSame('foobar', $cluster->executeCommand($command));
+        $this->assertCount(2, $cluster);
     }
 
     /**
@@ -1196,6 +1257,8 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '2001:db8:0:f101::2',
                 'port' => '6379',
+                'scheme' => 'tcp',
+                'protocol' => 2,
             ])
             ->willReturn($connection2);
 
@@ -1293,6 +1356,8 @@ class RedisClusterTest extends PredisTestCase
             ->with([
                 'host' => '127.0.0.1',
                 'port' => '6380',
+                'scheme' => 'tcp',
+                'protocol' => 2,
             ])
             ->willReturn($connection2);
 
