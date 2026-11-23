@@ -354,6 +354,10 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
     /**
      * Creates a new connection instance from the given connection ID.
      *
+     * Parameters such as the scheme, credentials or TLS options are copied
+     * from a connection already in the pool, so nodes discovered later on
+     * (slot map, -MOVED and -ASK redirections) are set up the same way.
+     *
      * @param string $connectionID Identifier for the connection.
      *
      * @return NodeConnectionInterface
@@ -361,11 +365,19 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
     protected function createConnection($connectionID)
     {
         $separator = strrpos($connectionID, ':');
+        $parameters = [];
+
+        if ($connection = reset($this->pool)) {
+            $parameters = array_diff_key(
+                $connection->getParameters()->toArray(),
+                array_flip(['host', 'port', 'path', 'alias', 'slots', 'retry'])
+            );
+        }
 
         return $this->connections->create([
             'host' => substr($connectionID, 0, $separator),
             'port' => substr($connectionID, $separator + 1),
-        ]);
+        ] + $parameters);
     }
 
     /**

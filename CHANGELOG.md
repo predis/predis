@@ -5,6 +5,7 @@
 - Changed RESP3 double parsing to return `NAN` for NaN payloads instead of `0.0`
 - Changed `CompositeStreamConnection` to return simple strings other than `OK`, `QUEUED`, `NOKEY` and `PONG` as plain strings instead of `Status` responses, like `StreamConnection` (#1147)
 - Changed RESP3 double parsing to return `NAN` for NaN payloads instead of `0.0` (#1718)
+- Changed `RedisCluster` to reuse the connection parameters of known nodes (scheme, credentials, TLS options) when connecting to nodes from the slot map or redirections (#1259)
 
 ### Fixed
 - Fixed CRLF command injection in `AbstractAggregateConnection::write()` (#1719, CVE GHSA-w6f5-v2h6-g786, CWE-93)
