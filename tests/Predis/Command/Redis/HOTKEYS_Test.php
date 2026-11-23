@@ -72,7 +72,7 @@ class HOTKEYS_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU]));
 
         // A single SET's CPU time can round down to 0 and be excluded from tracking.
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $redis->set('key', 'value');
         }
 
@@ -84,7 +84,7 @@ class HOTKEYS_Test extends PredisCommandTestCase
         // Starts hotkeys tracking (CPU and NET)
         $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU, Container::NET]));
 
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $redis->set('key', 'value');
             $redis->set('key1', 'value1');
         }
@@ -149,7 +149,7 @@ class HOTKEYS_Test extends PredisCommandTestCase
         $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU]));
 
         // A single SET's CPU time can round down to 0 and be excluded from tracking.
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $redis->set('key', 'value');
         }
 
@@ -161,7 +161,7 @@ class HOTKEYS_Test extends PredisCommandTestCase
         // Starts hotkeys tracking (CPU and NET)
         $this->assertEquals('OK', $redis->hotkeys->start([Container::CPU, Container::NET]));
 
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $redis->set('key', 'value');
             $redis->set('key1', 'value1');
         }
