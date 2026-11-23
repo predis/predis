@@ -1,6 +1,6 @@
 ## Changelog
 
-## Unreleased
+## v3.8.0 (2026-11-23)
 ### Added
 - Added PHP 8.6 to the test matrix and updated session handling for PHP 8.6 (#1771)
 - Added support for Set Expiration commands (#1749)
