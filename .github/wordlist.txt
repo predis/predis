@@ -60,3 +60,7 @@ HIMPORT
 fieldset
 fieldsets
 failover
+OpenTelemetry
+Observability
+OTLP
+SDK
