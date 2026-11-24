@@ -14,6 +14,7 @@ namespace Predis\Retry;
 
 use Predis\Connection\ConnectionException;
 use Predis\Connection\Resource\Exception\StreamInitException;
+use Predis\Observability\ObservabilityInstance;
 use Predis\Retry\Strategy\RetryStrategyInterface;
 use Predis\TimeoutException;
 use Throwable;
@@ -136,6 +137,10 @@ class Retry
 
                 if ($this->retries >= 0 && $failures > $this->retries) {
                     throw $e;
+                }
+
+                if ($collector = ObservabilityInstance::getInstance()->getCollector()) {
+                    $collector->countRetry();
                 }
 
                 if ($fail !== null) {

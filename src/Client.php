@@ -31,6 +31,7 @@ use Predis\Consumer\PubSub\Consumer as PubSubConsumer;
 use Predis\Consumer\PubSub\RelayConsumer as RelayPubSubConsumer;
 use Predis\Consumer\Push\Consumer as PushConsumer;
 use Predis\Monitor\Consumer as MonitorConsumer;
+use Predis\Observability\ObservabilityInstance;
 use Predis\Pipeline\Atomic;
 use Predis\Pipeline\FireAndForget;
 use Predis\Pipeline\Pipeline;
@@ -313,9 +314,21 @@ class Client implements ClientInterface, IteratorAggregate
         $error = false;
         $commandID = array_shift($arguments);
 
-        $response = $this->connection->executeCommand(
-            new RawCommand($commandID, $arguments)
-        );
+        $command = new RawCommand($commandID, $arguments);
+        $collector = ObservabilityInstance::getInstance()->getCollector();
+
+        if ($collector === null || !$collector->tracksOperation($commandID)) {
+            $response = $this->connection->executeCommand($command);
+        } else {
+            $response = $collector->measureOperation(
+                $commandID,
+                $this->connection,
+                function () use ($command) {
+                    return $this->connection->executeCommand($command);
+                },
+                $command
+            );
+        }
 
         if ($response instanceof ResponseInterface) {
             if ($response instanceof ErrorResponseInterface) {
@@ -413,6 +426,31 @@ class Client implements ClientInterface, IteratorAggregate
      * @throws Throwable
      */
     public function executeCommand(CommandInterface $command)
+    {
+        $collector = ObservabilityInstance::getInstance()->getCollector();
+
+        if ($collector === null || !$collector->tracksOperation($command->getId())) {
+            return $this->sendCommand($command);
+        }
+
+        return $collector->measureOperation(
+            $command->getId(),
+            $this->connection,
+            function () use ($command) {
+                return $this->sendCommand($command);
+            },
+            $command
+        );
+    }
+
+    /**
+     * Sends the command to the server, retrying on failure, and returns its parsed response.
+     *
+     * @param  CommandInterface $command
+     * @return mixed
+     * @throws Throwable
+     */
+    protected function sendCommand(CommandInterface $command)
     {
         $parameters = $this->connection->getParameters();
 

@@ -20,6 +20,7 @@ use Predis\Command\CommandInterface;
 use Predis\CommunicationException;
 use Predis\Connection\AggregateConnectionInterface;
 use Predis\NotSupportedException;
+use Predis\Observability\ObservabilityInstance;
 use Predis\Protocol\ProtocolException;
 use Predis\Response\Error;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
@@ -420,6 +421,30 @@ class MultiExec implements ClientContextInterface
      * @throws ServerException
      */
     public function execute($callable = null)
+    {
+        $collector = ObservabilityInstance::getInstance()->getCollector();
+
+        if ($collector === null || !$collector->tracksOperation('MULTI')) {
+            return $this->executeTransaction($callable);
+        }
+
+        return $collector->measureOperation(
+            'MULTI',
+            $this->client->getConnection(),
+            function () use ($callable) {
+                return $this->executeTransaction($callable);
+            }
+        );
+    }
+
+    /**
+     * @param  mixed                     $callable Optional callback for execution.
+     * @return array|null
+     * @throws CommunicationException
+     * @throws AbortedMultiExecException
+     * @throws ServerException
+     */
+    protected function executeTransaction($callable)
     {
         $this->assertNotAborted();
         $this->checkBeforeExecution($callable);
