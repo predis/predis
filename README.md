@@ -680,6 +680,62 @@ $retry = new \Predis\Retry\Retry(
 $retry->updateCatchableExceptions([Exception::class]);
 ```
 
+### OpenTelemetry metrics ###
+
+Predis can report client-side metrics using [OpenTelemetry](https://opentelemetry.io/docs/languages/php/).
+Metrics are disabled by default and Predis never exports anything on its own: it only records
+measurements on the meter provider of the OpenTelemetry SDK that your application has configured, the
+SDK and its exporter (for example OTLP) decide where metrics are sent.
+
+This feature requires PHP 8.1 or newer and the optional `open-telemetry/api` package (1.1 or newer):
+
+```shell
+composer require open-telemetry/api
+```
+
+Observability is configured once per process, usually while bootstrapping the application, and
+applies to every client created afterwards. No client-level configuration is needed:
+
+```php
+use Predis\Observability\MetricGroup;
+use Predis\Observability\MetricsConfig;
+use Predis\Observability\ObservabilityInstance;
+use Predis\Observability\OTelConfig;
+
+ObservabilityInstance::getInstance()->init(new OTelConfig(
+    new MetricsConfig([
+        'enabled' => true,
+        'enabled_metric_groups' => [MetricGroup::CONNECTION_BASIC, MetricGroup::RESILIENCY],
+    ])
+));
+
+$client = new Predis\Client();
+```
+
+By default metrics are recorded on the globally registered meter provider
+(`OpenTelemetry\API\Globals::meterProvider()`). A specific provider can be passed as the second
+argument of `OTelConfig`. The following options are supported by `MetricsConfig`:
+
+| Option                               | Default                          | Description                                              |
+|--------------------------------------|----------------------------------|----------------------------------------------------------|
+| `enabled`                            | `false`                          | Enables metrics.                                         |
+| `enabled_metric_groups`              | `connection-basic`, `resiliency` | Groups of metrics to report, see `MetricGroup`.          |
+| `include_commands`                   | `[]`                             | Only these commands are tracked by command metrics.      |
+| `exclude_commands`                   | `[]`                             | These commands are not tracked by command metrics.       |
+| `hide_pubsub_channel_names`          | `false`                          | Omits channel names from Pub/Sub metrics.                |
+| `hide_stream_names`                  | `false`                          | Omits stream names from stream metrics.                  |
+| `buckets_operation_duration`         | `0.0001` ... `2.5`               | Histogram bucket boundaries, in seconds.                 |
+| `buckets_stream_processing_duration` | `0.0001` ... `10`                | Histogram bucket boundaries, in seconds.                 |
+| `buckets_connection_create_time`     | `0.0001` ... `10`                | Histogram bucket boundaries, in seconds.                 |
+| `custom_attributes`                  | `[]`                             | Attributes added to every metric.                        |
+
+Other aspects of the aggregation, such as using exponential histograms, are configured with the views
+of the OpenTelemetry SDK.
+
+PHP has no background exporter, so metrics leave the process only when the meter provider is flushed
+or shut down, which usually happens once at the end of each request. Long-running processes such as
+queue workers should flush periodically using `ObservabilityInstance::getInstance()->forceFlush()`.
+
 ## Using Relay ##
 
 [Relay](https://github.com/cachewerk/relay) is an optional PHP extension that caches a partial

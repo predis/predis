@@ -32,7 +32,8 @@
         "phpunit/phpcov": "^6.0 || ^8.0"
     },
     "suggest": {
-        "ext-relay": "Faster connection with in-memory caching (>=0.6.2)"
+        "ext-relay": "Faster connection with in-memory caching (>=0.6.2)",
+        "open-telemetry/api": "Export client metrics using OpenTelemetry (>=1.1, requires PHP >=8.1)"
     },
     "scripts": {
         "phpstan": "phpstan analyse",
