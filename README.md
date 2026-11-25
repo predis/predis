@@ -743,8 +743,8 @@ each command as seen by the application, retries and cluster redirects included:
   by Relay are not visible to Predis and are not counted.
 - `db.namespace` is the database selected when connecting, later `SELECT` commands are not tracked.
 - `server.address` and `server.port` are the connection parameters of the node, while
-  `network.peer.address` and `network.peer.port` are the resolved address of the socket (not available
-  with Relay). With aggregate connections they are reported only when the node is known: always with
+  `network.peer.address` and `network.peer.port` are the resolved address of the socket (with Relay,
+  which does not expose it, they repeat the connection parameters). With aggregate connections they are reported only when the node is known: always with
   replication, and for commands that succeeded or failed with a connection error with cluster.
 
 PHP has no background exporter, so metrics leave the process only when the meter provider is flushed

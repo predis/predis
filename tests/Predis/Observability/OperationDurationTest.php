@@ -18,6 +18,7 @@ use OpenTelemetry\API\Metrics\MeterProviderInterface;
 use Predis\Client;
 use Predis\Command\CommandInterface;
 use Predis\Connection\ConnectionException;
+use Predis\Connection\RelayConnection;
 use Predis\Connection\StreamConnection;
 use Predis\Response\Error;
 use Predis\Response\ServerException;
@@ -315,6 +316,24 @@ class OperationDurationTest extends PredisTestCase
         $this->assertArrayNotHasKey('server.port', $attributes);
         $this->assertSame('::1', $attributes['network.peer.address']);
         $this->assertSame(6379, $attributes['network.peer.port']);
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testRecordsConfiguredAddressAsPeerWithRelay(): void
+    {
+        $this->enableCommandMetrics();
+
+        $connection = $this->getMockBuilder(RelayConnection::class)->disableOriginalConstructor()->getMock();
+        $connection->method('getParameters')->willReturn($this->getParameters(['host' => 'redis.local', 'port' => 6380]));
+        $connection->method('executeCommand')->willReturn('bar');
+
+        (new Client($connection))->get('foo');
+
+        $attributes = $this->records[0][1];
+        $this->assertSame('redis.local', $attributes['network.peer.address']);
+        $this->assertSame(6380, $attributes['network.peer.port']);
     }
 
     /**

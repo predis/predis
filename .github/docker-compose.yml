@@ -119,3 +119,16 @@ services:
     profiles:
       - sentinel
       - all
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    command: ["--config=/etc/otel-collector.yml"]
+    ports:
+      - 4318:4318 # OTLP HTTP receiver
+      - 8889:8889 # Prometheus endpoint read by the tests
+    volumes:
+      - "./otel-collector.yml:/etc/otel-collector.yml"
+    profiles:
+      - otel
+      - all

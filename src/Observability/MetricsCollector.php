@@ -20,6 +20,7 @@ use Predis\CommunicationException;
 use Predis\Connection\Cluster\ClusterInterface;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\NodeConnectionInterface;
+use Predis\Connection\RelayConnection;
 use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Connection\StreamConnection;
@@ -229,6 +230,13 @@ class MetricsCollector
             } else {
                 $attributes['network.peer.address'] = trim(substr($peer, 0, $separator), '[]');
                 $attributes['network.peer.port'] = (int) substr($peer, $separator + 1);
+            }
+        } elseif ($node instanceof RelayConnection) {
+            // Relay does not expose the resolved address of its socket, the configured one is the closest known.
+            $attributes['network.peer.address'] = $attributes['server.address'];
+
+            if (isset($attributes['server.port'])) {
+                $attributes['network.peer.port'] = $attributes['server.port'];
             }
         }
 
