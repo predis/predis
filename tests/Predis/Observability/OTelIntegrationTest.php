@@ -42,6 +42,9 @@ class OTelIntegrationTest extends PredisTestCase
             $this->markTestSkipped('The OpenTelemetry SDK and OTLP exporter are not installed.');
         }
 
+        // Applies @requiresRedisVersion.
+        parent::setUp();
+
         // The collector keeps the series of previous runs, this label tells ours apart.
         $this->runId = uniqid('predis');
     }
