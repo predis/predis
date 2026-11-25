@@ -1,4 +1,8 @@
 ## Changelog
+## Unreleased
+
+### Maintenance
+- Added testing with Redis 8.12 GA
 
 ## v3.8.0 (2026-11-23)
 ### Added
