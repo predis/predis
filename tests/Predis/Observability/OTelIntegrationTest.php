@@ -115,6 +115,7 @@ class OTelIntegrationTest extends PredisTestCase
     /**
      * @group connected
      * @group relay-incompatible
+     * @requiresRedisVersion >= 5.0.0
      */
     public function testExportsRetryAttemptsThroughCollector(): void
     {
