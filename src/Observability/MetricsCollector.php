@@ -12,6 +12,7 @@
 
 namespace Predis\Observability;
 
+use OpenTelemetry\API\Metrics\CounterInterface;
 use OpenTelemetry\API\Metrics\HistogramInterface;
 use OpenTelemetry\API\Metrics\MeterInterface;
 use Predis\Client;
@@ -24,6 +25,7 @@ use Predis\Connection\RelayConnection;
 use Predis\Connection\Replication\ReplicationInterface;
 use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\Connection\StreamConnection;
+use Predis\PredisException;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Throwable;
 
@@ -33,6 +35,24 @@ use Throwable;
 class MetricsCollector
 {
     public const METER_NAME = 'predis';
+
+    /**
+     * Lower-cased messages of the ERR replies reported in the auth category.
+     */
+    protected const AUTH_ERRORS = [
+        'invalid password',
+        "wrong number of arguments for 'auth' command",
+        'auth <password> called without any password configured for the default user. are you sure your configuration is correct?',
+        'client sent auth, but no password is set',
+    ];
+
+    /**
+     * Lower-cased messages of the ERR replies reported in the network category.
+     */
+    protected const NETWORK_ERRORS = [
+        'max number of clients reached',
+        'problem with ldap service',
+    ];
 
     /**
      * @var MeterInterface
@@ -48,6 +68,11 @@ class MetricsCollector
      * @var HistogramInterface|null
      */
     protected $operationDuration;
+
+    /**
+     * @var CounterInterface|null
+     */
+    protected $errors;
 
     /**
      * @var int
@@ -71,15 +96,32 @@ class MetricsCollector
                 ['ExplicitBucketBoundaries' => $config->getBucketsOperationDuration()]
             );
         }
+
+        if ($config->isGroupEnabled(MetricGroup::RESILIENCY)) {
+            $this->errors = $meter->createCounter(
+                'redis.client.errors',
+                '{error}',
+                'Errors returned to the application or handled by the client.'
+            );
+        }
     }
 
     /**
-     * Tells if the duration of the given operation must be measured.
+     * Tells if the given operation must go through measureOperation(), to record its duration or its errors.
      *
      * @param  string $operation Command ID, PIPELINE or MULTI.
      * @return bool
      */
     public function tracksOperation(string $operation): bool
+    {
+        return $this->tracksErrors() || $this->tracksDuration($operation);
+    }
+
+    /**
+     * @param  string $operation
+     * @return bool
+     */
+    protected function tracksDuration(string $operation): bool
     {
         return $this->operationDuration !== null
             && $this->operationDuration->isEnabled()
@@ -87,11 +129,38 @@ class MetricsCollector
     }
 
     /**
-     * Counts a retry of the operation being measured.
+     * @return bool
      */
-    public function countRetry(): void
+    protected function tracksErrors(): bool
     {
+        return $this->errors !== null && $this->errors->isEnabled();
+    }
+
+    /**
+     * Records a failure that is about to be retried and counts the retry of the operation being measured.
+     *
+     * @param Throwable $error
+     */
+    public function recordRetry(Throwable $error): void
+    {
+        $this->recordInternalError($error);
         ++$this->retryAttempts;
+    }
+
+    /**
+     * Records an error handled by the client instead of being returned to the application,
+     * such as a failure that is retried or a cluster redirection.
+     *
+     * @param Throwable|ErrorResponseInterface $error
+     * @param NodeConnectionInterface|null     $node  Node that caused the error, when known.
+     */
+    public function recordInternalError($error, ?NodeConnectionInterface $node = null): void
+    {
+        if ($node === null && $error instanceof CommunicationException) {
+            $node = $error->getConnection();
+        }
+
+        $this->recordError($error, $node, true);
     }
 
     /**
@@ -119,7 +188,7 @@ class MetricsCollector
         try {
             $response = $callback();
         } catch (Throwable $exception) {
-            $this->recordOperationDuration($operation, $start, $connection, $command, $batchSize, $exception);
+            $this->recordOperation($operation, $start, $connection, $command, $batchSize, $exception);
 
             throw $exception;
         }
@@ -129,7 +198,7 @@ class MetricsCollector
         }
 
         $error = $response instanceof ErrorResponseInterface ? $response : null;
-        $this->recordOperationDuration($operation, $start, $connection, $command, $batchSize, $error);
+        $this->recordOperation($operation, $start, $connection, $command, $batchSize, $error);
 
         return $response;
     }
@@ -142,7 +211,7 @@ class MetricsCollector
      * @param int|null                              $batchSize
      * @param Throwable|ErrorResponseInterface|null $error
      */
-    protected function recordOperationDuration(
+    protected function recordOperation(
         string $operation,
         $start,
         ConnectionInterface $connection,
@@ -151,6 +220,20 @@ class MetricsCollector
         $error
     ): void {
         $duration = (hrtime(true) - $start) / 1e9;
+
+        try {
+            $node = $this->resolveNode($connection, $command, $error);
+        } catch (Throwable $exception) {
+            $node = null;
+        }
+
+        if ($error !== null) {
+            $this->recordError($error, $node, false);
+        }
+
+        if (!$this->tracksDuration($operation)) {
+            return;
+        }
 
         try {
             $attributes = [
@@ -162,10 +245,36 @@ class MetricsCollector
                 $attributes['db.operation.batch.size'] = $batchSize;
             }
 
-            $attributes += $this->nodeAttributes($this->resolveNode($connection, $command, $error));
+            $attributes += $this->nodeAttributes($node);
             $attributes += $this->errorAttributes($error);
 
             $this->operationDuration->record($duration, $this->buildAttributes($attributes));
+        } catch (Throwable $exception) {
+            // Telemetry must never break the operation it observes.
+        }
+    }
+
+    /**
+     * Counts an error on redis.client.errors.
+     *
+     * @param Throwable|ErrorResponseInterface $error
+     * @param NodeConnectionInterface|null     $node
+     * @param bool                             $internal TRUE when the client handled the error itself.
+     */
+    protected function recordError($error, ?NodeConnectionInterface $node, bool $internal): void
+    {
+        if (!$this->tracksErrors()) {
+            return;
+        }
+
+        try {
+            $attributes = $this->nodeAttributes($node) + $this->errorAttributes($error) + [
+                'redis.client.errors.internal' => $internal,
+                'redis.client.operation.retry_attempts' => $this->retryAttempts,
+            ];
+            unset($attributes['db.namespace']);
+
+            $this->errors->add(1, $this->buildAttributes($attributes));
         } catch (Throwable $exception) {
             // Telemetry must never break the operation it observes.
         }
@@ -254,23 +363,42 @@ class MetricsCollector
         }
 
         // Error responses and the exceptions created from them carry the error prefix sent by the server.
+        // Categories follow redis-py, which also classifies a few generic ERR replies by their message.
         if ($error instanceof ErrorResponseInterface) {
-            $status = $error->getErrorType();
+            $parts = explode(' ', $error->getMessage(), 2);
+            $status = $parts[0];
+            $message = $status === 'ERR' ? strtolower($parts[1] ?? '') : null;
 
-            return [
-                'error.type' => $status,
-                'db.response.status_code' => $status,
-                'redis.client.errors.category' => in_array($status, ['NOAUTH', 'WRONGPASS', 'NOPERM'], true)
-                    ? 'auth'
-                    : 'server',
-            ];
+            if (in_array($status, ['NOAUTH', 'WRONGPASS', 'NOPERM'], true) || in_array($message, self::AUTH_ERRORS, true)) {
+                $category = 'auth';
+            } elseif ($status === 'LOADING' || in_array($message, self::NETWORK_ERRORS, true)) {
+                $category = 'network';
+            } else {
+                $category = 'server';
+            }
+
+            // The same type whether the error is thrown or returned as a response object.
+            $attributes = ['error.type' => 'ServerException', 'redis.client.errors.category' => $category];
+
+            // A reply that does not start with an error code, such as "Syntax error at offset 3", has no status code.
+            if (preg_match('/^[A-Z][A-Z0-9_]{0,63}$/', $status)) {
+                $attributes['db.response.status_code'] = $status;
+            }
+
+            return $attributes;
         }
 
-        $isNetwork = $error instanceof CommunicationException || $error instanceof StreamInitException;
+        if ($error instanceof CommunicationException || $error instanceof StreamInitException) {
+            $category = 'network';
+        } else {
+            // Like redis-py, errors raised by the client itself count as server errors.
+            $category = $error instanceof PredisException ? 'server' : 'other';
+        }
 
         return [
-            'error.type' => get_class($error),
-            'redis.client.errors.category' => $isNetwork ? 'network' : 'other',
+            // Class name without its namespace.
+            'error.type' => substr(strrchr('\\' . get_class($error), '\\'), 1),
+            'redis.client.errors.category' => $category,
         ];
     }
 

@@ -140,7 +140,7 @@ class Retry
                 }
 
                 if ($collector = ObservabilityInstance::getInstance()->getCollector()) {
-                    $collector->countRetry();
+                    $collector->recordRetry($e);
                 }
 
                 if ($fail !== null) {
