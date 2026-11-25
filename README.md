@@ -739,7 +739,7 @@ each command as seen by the application, retries and cluster redirects included:
   number of commands in `db.operation.batch.size`.
 - Failed operations carry `error.type` and `redis.client.errors.category`, plus `db.response.status_code`
   with the error prefix returned by the server. `error.type` is the class name of the exception,
-  without its namespace: `ServerException` for any error returned by Redis. Categories are the ones used by redis-py: `auth` for authentication and
+  without its namespace: `ServerException` for any error returned by Redis. Categories are `auth` for authentication and
   permission errors, `network` for connection and timeout errors, a server still loading its dataset or
   out of client slots, `server` for any other error returned by Redis or raised by Predis, and `other`
   for everything else.
