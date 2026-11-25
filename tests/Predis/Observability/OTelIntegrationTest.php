@@ -19,6 +19,8 @@ use OpenTelemetry\SDK\Metrics\MeterProvider;
 use OpenTelemetry\SDK\Metrics\MetricReader\ExportingReader;
 use OpenTelemetry\SDK\Resource\ResourceInfo;
 use Predis\Response\ServerException;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\NoBackoff;
 use PredisTestCase;
 
 /**
@@ -108,6 +110,29 @@ class OTelIntegrationTest extends PredisTestCase
         // The bucket boundaries advised by Predis reach the backend, not the SDK defaults (0, 5, 10, ...).
         $this->assertSeries($series, $name . '_bucket', ['db_operation_name' => 'SET', 'le' => '0.0001']);
         $this->assertSeries($series, $name . '_bucket', ['db_operation_name' => 'SET', 'le' => '2.5']);
+    }
+
+    /**
+     * @group connected
+     * @group relay-incompatible
+     */
+    public function testExportsRetryAttemptsThroughCollector(): void
+    {
+        $client = $this->createClient(['retry' => new Retry(new NoBackoff(), 3)]);
+
+        // Closes the connection server-side: the next command fails once, then succeeds on retry.
+        $this->createClient()->executeRaw(['CLIENT', 'KILL', 'ID', $client->executeRaw(['CLIENT', 'ID'])]);
+
+        $this->initObservability([MetricGroup::COMMAND]);
+
+        $this->assertNull($client->get('otel:missing'));
+        $this->assertTrue(ObservabilityInstance::getInstance()->forceFlush());
+
+        $name = 'db_client_operation_duration_seconds_count';
+        $series = $this->scrape($name, 1);
+
+        $this->assertSeries($series, $name, ['db_operation_name' => 'GET', 'redis_client_operation_retry_attempts' => '1']);
+        $this->assertStringNotContainsString('error_type', $series[0]);
     }
 
     /**

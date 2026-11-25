@@ -29,11 +29,14 @@ use OpenTelemetry\SDK\Metrics\MeterProvider;
 use OpenTelemetry\SDK\Metrics\MetricReader\ExportingReader;
 use OpenTelemetry\SDK\Resource\ResourceInfo;
 use Predis\Client;
+use Predis\Connection\Parameters;
 use Predis\Observability\MetricGroup;
 use Predis\Observability\MetricsConfig;
 use Predis\Observability\ObservabilityInstance;
 use Predis\Observability\OTelConfig;
 use Predis\Response\ServerException;
+use Predis\Retry\Retry;
+use Predis\Retry\Strategy\ExponentialBackoff;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -56,7 +59,8 @@ ObservabilityInstance::getInstance()->init(new OTelConfig(
     $provider
 ));
 
-$client = new Client($redis);
+$client = new Client(Parameters::parse($redis) + ['retry' => new Retry(new ExponentialBackoff(1000, 10000), 3)]);
+$admin = new Client($redis);
 
 echo "Exporting to $collector for $seconds seconds as service 'predis-example'", PHP_EOL;
 
@@ -81,6 +85,11 @@ do {
     $client->transaction(function ($transaction) {
         $transaction->incr('otel:counter');
     });
+
+    // Closes the connection server-side: the next command fails once, then succeeds on retry
+    // and is recorded with redis.client.operation.retry_attempts = 1.
+    $admin->executeRaw(['CLIENT', 'KILL', 'ID', $client->executeRaw(['CLIENT', 'ID'])]);
+    $client->get('otel:string');
 
     $client->del('otel:string', 'otel:counter');
 
