@@ -61,7 +61,7 @@ class OTelIntegrationTest extends PredisTestCase
     {
         $client = $this->createClient();
 
-        $this->initObservability([MetricGroup::COMMAND]);
+        $this->initObservability([MetricGroup::COMMAND, MetricGroup::RESILIENCY]);
 
         $client->set('otel:string', 'bar');
         $client->get('otel:string');
@@ -103,7 +103,7 @@ class OTelIntegrationTest extends PredisTestCase
         $this->assertSeries($series, $name . '_count', ['db_operation_name' => 'GET'] + $node);
         $this->assertSeries($series, $name . '_count', [
             'db_operation_name' => 'LPUSH',
-            'error_type' => 'WRONGTYPE',
+            'error_type' => 'ServerException',
             'db_response_status_code' => 'WRONGTYPE',
             'redis_client_errors_category' => 'server',
         ] + $node);
@@ -113,6 +113,16 @@ class OTelIntegrationTest extends PredisTestCase
         // The bucket boundaries advised by Predis reach the backend, not the SDK defaults (0, 5, 10, ...).
         $this->assertSeries($series, $name . '_bucket', ['db_operation_name' => 'SET', 'le' => '0.0001']);
         $this->assertSeries($series, $name . '_bucket', ['db_operation_name' => 'SET', 'le' => '2.5']);
+
+        // Only the failed LPUSH is counted as an error.
+        $this->assertSeries($series, 'redis_client_errors_total', [
+            'error_type' => 'ServerException',
+            'db_response_status_code' => 'WRONGTYPE',
+            'redis_client_errors_category' => 'server',
+            'redis_client_errors_internal' => 'false',
+            'server_address' => constant('REDIS_SERVER_HOST'),
+        ]);
+        $this->assertSeries($series, 'redis_client_errors_total', []);
     }
 
     /**
@@ -127,7 +137,7 @@ class OTelIntegrationTest extends PredisTestCase
         // Closes the connection server-side: the next command fails once, then succeeds on retry.
         $this->createClient()->executeRaw(['CLIENT', 'KILL', 'ID', $client->executeRaw(['CLIENT', 'ID'])]);
 
-        $this->initObservability([MetricGroup::COMMAND]);
+        $this->initObservability([MetricGroup::COMMAND, MetricGroup::RESILIENCY]);
 
         $this->assertNull($client->get('otel:missing'));
         $this->assertTrue(ObservabilityInstance::getInstance()->forceFlush());
@@ -136,7 +146,14 @@ class OTelIntegrationTest extends PredisTestCase
         $series = $this->scrape($name, 1);
 
         $this->assertSeries($series, $name, ['db_operation_name' => 'GET', 'redis_client_operation_retry_attempts' => '1']);
-        $this->assertStringNotContainsString('error_type', $series[0]);
+        $this->assertStringNotContainsString('error_type', implode("\n", preg_grep('/^db_client_operation_duration/', $series)));
+
+        // The failure that was retried is counted as handled by the client.
+        $this->assertSeries($series, 'redis_client_errors_total', [
+            'redis_client_errors_category' => 'network',
+            'redis_client_errors_internal' => 'true',
+            'redis_client_operation_retry_attempts' => '0',
+        ]);
     }
 
     /**

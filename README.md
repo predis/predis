@@ -737,8 +737,12 @@ each command as seen by the application, retries and cluster redirects included:
 
 - Pipelines and transactions are reported as a single operation named `PIPELINE` or `MULTI`, with the
   number of commands in `db.operation.batch.size`.
-- Failed operations carry `error.type` and `redis.client.errors.category` (`network`, `auth`, `server`
-  or `other`), plus `db.response.status_code` with the error prefix returned by the server.
+- Failed operations carry `error.type` and `redis.client.errors.category`, plus `db.response.status_code`
+  with the error prefix returned by the server. `error.type` is the class name of the exception,
+  without its namespace: `ServerException` for any error returned by Redis. Categories are `auth` for authentication and
+  permission errors, `network` for connection and timeout errors, a server still loading its dataset or
+  out of client slots, `server` for any other error returned by Redis or raised by Predis, and `other`
+  for everything else.
 - `redis.client.operation.retry_attempts` is the number of retries performed by Predis. Retries made
   by Relay are not visible to Predis and are not counted.
 - `db.namespace` is the database selected when connecting, later `SELECT` commands are not tracked.
@@ -746,6 +750,18 @@ each command as seen by the application, retries and cluster redirects included:
   `network.peer.address` and `network.peer.port` are the resolved address of the socket (with Relay,
   which does not expose it, they repeat the connection parameters). With aggregate connections they are reported only when the node is known: always with
   replication, and for commands that succeeded or failed with a connection error with cluster.
+
+The `resiliency` group reports `redis.client.errors`, a counter of the errors met by the client:
+
+- Errors returned to the application have `redis.client.errors.internal` set to `false`. They are counted
+  once per command, pipeline or transaction, whatever the `include_commands` and `exclude_commands` options.
+- Errors handled by Predis have it set to `true`: every failure that is retried, and the `MOVED`, `ASK`
+  and `READONLY` responses followed by cluster connections.
+- `error.type`, `redis.client.errors.category`, `db.response.status_code`, the node attributes and
+  `redis.client.operation.retry_attempts` have the same meaning as for the `command` group. For a retried
+  failure the latter is the number of retries already made when it happened.
+- Error responses inside the result of a pipeline are not counted, nor are failures retried by Relay or
+  by replication connections without a `retry` configuration.
 
 PHP has no background exporter, so metrics leave the process only when the meter provider is flushed
 or shut down, which usually happens once at the end of each request. Long-running processes such as

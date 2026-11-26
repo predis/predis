@@ -130,7 +130,7 @@ class OperationDurationTest extends PredisTestCase
 
         $attributes = $this->records[0][1];
 
-        $this->assertSame('WRONGTYPE', $attributes['error.type']);
+        $this->assertSame('ServerException', $attributes['error.type']);
         $this->assertSame('WRONGTYPE', $attributes['db.response.status_code']);
         $this->assertSame('server', $attributes['redis.client.errors.category']);
     }
@@ -203,7 +203,7 @@ class OperationDurationTest extends PredisTestCase
         $client->get('foo');
 
         $failed = $this->records[0][1];
-        $this->assertSame(ConnectionException::class, $failed['error.type']);
+        $this->assertSame('ConnectionException', $failed['error.type']);
         $this->assertSame('network', $failed['redis.client.errors.category']);
         $this->assertSame(1, $failed['redis.client.operation.retry_attempts']);
         $this->assertArrayNotHasKey('db.response.status_code', $failed);
@@ -227,7 +227,7 @@ class OperationDurationTest extends PredisTestCase
             // Expected.
         }
 
-        $this->assertSame(RuntimeException::class, $this->records[0][1]['error.type']);
+        $this->assertSame('RuntimeException', $this->records[0][1]['error.type']);
         $this->assertSame('other', $this->records[0][1]['redis.client.errors.category']);
     }
 

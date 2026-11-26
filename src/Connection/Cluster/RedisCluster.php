@@ -31,6 +31,7 @@ use Predis\Connection\ParametersInterface;
 use Predis\Connection\RelayFactory;
 use Predis\Connection\Resource\Exception\StreamInitException;
 use Predis\NotSupportedException;
+use Predis\Observability\ObservabilityInstance;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ServerException;
@@ -482,6 +483,13 @@ class RedisCluster extends AbstractAggregateConnection implements ClusterInterfa
     protected function onErrorResponse(CommandInterface $command, ErrorResponseInterface $error)
     {
         $details = explode(' ', $error->getMessage(), 2);
+
+        $handled = in_array($details[0], ['READONLY', 'MOVED'], true) || ($details[0] === 'ASK' && $this->followAsk);
+
+        if ($handled && $collector = ObservabilityInstance::getInstance()->getCollector()) {
+            // The slots map still points to the node that returned the error.
+            $collector->recordInternalError($error, $this->getConnectionByCommand($command));
+        }
 
         switch ($details[0]) {
             case 'READONLY':
