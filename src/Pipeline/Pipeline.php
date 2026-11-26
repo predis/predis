@@ -23,6 +23,7 @@ use Predis\Connection\Cluster\RedisCluster;
 use Predis\Connection\ConnectionException;
 use Predis\Connection\ConnectionInterface;
 use Predis\Connection\Replication\ReplicationInterface;
+use Predis\Observability\ObservabilityInstance;
 use Predis\Response\ErrorInterface as ErrorResponseInterface;
 use Predis\Response\ResponseInterface;
 use Predis\Response\ServerException;
@@ -309,8 +310,22 @@ class Pipeline implements ClientContextInterface
         if ($send && !$this->pipeline->isEmpty()) {
             $connection = $this->getConnection();
 
+            $collector = ObservabilityInstance::getInstance()->getCollector();
+
             try {
-                $responses = $this->executePipeline($connection, $this->pipeline);
+                if ($collector === null || !$collector->tracksOperation('PIPELINE')) {
+                    $responses = $this->executePipeline($connection, $this->pipeline);
+                } else {
+                    $responses = $collector->measureOperation(
+                        'PIPELINE',
+                        $connection,
+                        function () use ($connection) {
+                            return $this->executePipeline($connection, $this->pipeline);
+                        },
+                        null,
+                        count($this->pipeline)
+                    );
+                }
             } catch (Throwable $exception) {
                 $this->pipeline = new SplQueue();
 

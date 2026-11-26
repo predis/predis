@@ -9,8 +9,8 @@ parameters:
     - message: "#^Static method Predis\\\\Command\\\\RawCommand\\:\\:create\\(\\) invoked with 0 parameters, at least 1 required\\.$#"
       count: 1
       path: tests/Predis/Command/RawCommandTest.php
-    # Optional dependency (open-telemetry/api) that cannot be installed on PHP < 8.1
-    - message: "#OpenTelemetry\\\\API\\\\#"
+    # Optional dependencies (open-telemetry/api, sdk, exporter-otlp) that cannot be installed on PHP < 8.1
+    - message: "#OpenTelemetry\\\\#"
       path: tests/Predis/Observability/*
     # Mockery
     - message: "#^Call to an undefined method Predis\\\\Configuration\\\\Option\\\\AggregateTest\\:\\:getMockConnectionClass\\(\\)\\.$#"

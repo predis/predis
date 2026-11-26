@@ -428,6 +428,20 @@ class StreamTest extends TestCase
     /**
      * @return void
      */
+    public function testGetPeerNameReturnsNullWithoutRemoteEnd(): void
+    {
+        $stream = new Stream(fopen('php://temp', 'rb+'));
+
+        $this->assertNull($stream->getPeerName());
+
+        $stream->detach();
+
+        $this->assertNull($stream->getPeerName());
+    }
+
+    /**
+     * @return void
+     */
     public function testDoNotCloseResourceOnObjectDestruction(): void
     {
         $handle = fopen('php://temp', 'rb+');

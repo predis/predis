@@ -319,6 +319,20 @@ class Stream implements StreamInterface
     }
 
     /**
+     * Returns the address of the remote end of a socket stream, such as "127.0.0.1:6379".
+     *
+     * @return string|null
+     */
+    public function getPeerName(): ?string
+    {
+        if (!isset($this->stream)) {
+            return null;
+        }
+
+        return @stream_socket_get_name($this->stream, true) ?: null;
+    }
+
+    /**
      * {@inheritDoc}
      * @return mixed
      */

@@ -732,6 +732,21 @@ argument of `OTelConfig`. The following options are supported by `MetricsConfig`
 Other aspects of the aggregation, such as using exponential histograms, are configured with the views
 of the OpenTelemetry SDK.
 
+The `command` group reports `db.client.operation.duration`, a histogram of the time spent executing
+each command as seen by the application, retries and cluster redirects included:
+
+- Pipelines and transactions are reported as a single operation named `PIPELINE` or `MULTI`, with the
+  number of commands in `db.operation.batch.size`.
+- Failed operations carry `error.type` and `redis.client.errors.category` (`network`, `auth`, `server`
+  or `other`), plus `db.response.status_code` with the error prefix returned by the server.
+- `redis.client.operation.retry_attempts` is the number of retries performed by Predis. Retries made
+  by Relay are not visible to Predis and are not counted.
+- `db.namespace` is the database selected when connecting, later `SELECT` commands are not tracked.
+- `server.address` and `server.port` are the connection parameters of the node, while
+  `network.peer.address` and `network.peer.port` are the resolved address of the socket (with Relay,
+  which does not expose it, they repeat the connection parameters). With aggregate connections they are reported only when the node is known: always with
+  replication, and for commands that succeeded or failed with a connection error with cluster.
+
 PHP has no background exporter, so metrics leave the process only when the meter provider is flushed
 or shut down, which usually happens once at the end of each request. Long-running processes such as
 queue workers should flush periodically using `ObservabilityInstance::getInstance()->forceFlush()`.

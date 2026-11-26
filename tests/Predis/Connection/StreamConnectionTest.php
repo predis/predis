@@ -785,6 +785,25 @@ class StreamConnectionTest extends PredisConnectionTestCase
 
     /**
      * @group connected
+     */
+    public function testGetPeerNameReturnsAddressOfLastConnectedServer(): void
+    {
+        $connection = $this->createConnection();
+
+        $this->assertNull($connection->getPeerName());
+
+        $connection->connect();
+        $peerName = $connection->getPeerName();
+
+        $this->assertStringEndsWith(':' . constant('REDIS_SERVER_PORT'), $peerName);
+
+        $connection->disconnect();
+
+        $this->assertSame($peerName, $connection->getPeerName());
+    }
+
+    /**
+     * @group connected
      * @requires PHP 5.4
      */
     public function testPersistentParameterWithFalseLikeValues(): void

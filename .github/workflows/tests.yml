@@ -139,10 +139,28 @@ jobs:
         with:
           dependency-versions: highest
 
-      # Optional dependency that cannot be part of require-dev: it does not support PHP < 8.1.
-      - name: Install OpenTelemetry API
+      # Optional dependencies that cannot be part of require-dev: they do not support PHP < 8.2.
+      - name: Install OpenTelemetry SDK
         if: ${{ matrix.php >= '8.2' }}
-        run: composer require --dev --no-interaction open-telemetry/api
+        run: |
+          composer config --no-plugins allow-plugins.php-http/discovery false
+          composer config --no-plugins allow-plugins.tbachert/spi false
+          composer require --dev --no-interaction open-telemetry/sdk open-telemetry/exporter-otlp guzzlehttp/guzzle
+
+      - name: Start OpenTelemetry collector
+        if: ${{ matrix.php >= '8.2' }}
+        uses: hoverkraft-tech/compose-action@v3.2.0
+        with:
+          compose-file: .github/docker-compose.yml
+          services: otel-collector
+
+      - name: Run OpenTelemetry tests
+        if: ${{ matrix.php >= '8.2' }}
+        run: vendor/bin/phpunit --group otel
+
+      - name: Run OpenTelemetry tests using Relay
+        if: ${{ matrix.php >= '8.2' && matrix.redis >= '8.0' }}
+        run: vendor/bin/phpunit -c phpunit.relay.xml --group otel
 
       - name: Run tests
         if: ${{ matrix.php != '8.4' || matrix.redis != '8.0' }}

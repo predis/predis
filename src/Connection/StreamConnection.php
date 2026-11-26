@@ -16,6 +16,7 @@ use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\CommunicationException;
 use Predis\Connection\Resource\Exception\StreamInitException;
+use Predis\Connection\Resource\Stream;
 use Predis\Connection\Resource\StreamFactory;
 use Predis\Connection\Resource\StreamFactoryInterface;
 use Predis\Consumer\Push\PushNotificationException;
@@ -51,6 +52,11 @@ class StreamConnection extends AbstractConnection
      * @var StreamFactoryInterface
      */
     protected $streamFactory;
+
+    /**
+     * @var string|null
+     */
+    protected $peerName;
 
     /**
      * @param ParametersInterface         $parameters
@@ -92,6 +98,8 @@ class StreamConnection extends AbstractConnection
         if (!parent::connect()) {
             return;
         }
+
+        $this->peerName = null;
 
         if ($this->initCommands) {
             $responses = $this->sendPipeline($this->initCommands);
@@ -161,6 +169,24 @@ class StreamConnection extends AbstractConnection
         }
 
         return $responses;
+    }
+
+    /**
+     * Returns the address of the server the connection is, or was last, connected to.
+     *
+     * It is the resolved peer of the socket (for example "127.0.0.1:6379"), which may
+     * differ from the host given in the connection parameters.
+     *
+     * @return string|null
+     */
+    public function getPeerName(): ?string
+    {
+        if ($this->peerName === null && $this->isConnected()) {
+            $stream = $this->getResource();
+            $this->peerName = $stream instanceof Stream ? $stream->getPeerName() : null;
+        }
+
+        return $this->peerName;
     }
 
     /**
