@@ -35,6 +35,9 @@ parameters:
     - message: "#^Access to an undefined property Predis\\\\Connection\\\\ParametersInterface\\:\\:\\$role\\.$#"
       count: 1
       path: src/Connection/Replication/SentinelReplication.php
+    # Optional dependency (open-telemetry/api) that cannot be installed on PHP < 8.1
+    - message: "#OpenTelemetry\\\\API\\\\#"
+      path: src/Observability/*
     # try/catch problems
     - message: "#^Variable \\$connection might not be defined\\.$#"
       count: 1

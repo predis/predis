@@ -139,6 +139,11 @@ jobs:
         with:
           dependency-versions: highest
 
+      # Optional dependency that cannot be part of require-dev: it does not support PHP < 8.1.
+      - name: Install OpenTelemetry API
+        if: ${{ matrix.php >= '8.2' }}
+        run: composer require --dev --no-interaction open-telemetry/api
+
       - name: Run tests
         if: ${{ matrix.php != '8.4' || matrix.redis != '8.0' }}
         run: vendor/bin/phpunit
