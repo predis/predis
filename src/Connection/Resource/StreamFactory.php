@@ -176,9 +176,17 @@ class StreamFactory implements StreamFactoryInterface
             $this->onInitializationError($resource, $parameters, 'Error while setting SSL context options');
         }
 
-        // Suppressed: see the note in Stream::write().
-        if (!@stream_socket_enable_crypto($resource, true, $options['crypto_type'])) {
-            $this->onInitializationError($resource, $parameters, 'Error while switching to encrypted communication');
+        [$enabled, $warning] = $this->callWithoutErrorHandler(static function () use ($resource, $options) {
+            return stream_socket_enable_crypto($resource, true, $options['crypto_type']);
+        });
+
+        if (!$enabled) {
+            $message = 'Error while switching to encrypted communication';
+            if ($warning !== null) {
+                $message .= ': ' . $warning;
+            }
+
+            $this->onInitializationError($resource, $parameters, $message);
         }
 
         return $resource;
@@ -211,19 +219,60 @@ class StreamFactory implements StreamFactoryInterface
         // Needs to create multiple persistent connections to the same resource
         $address = $address . $conn_uid;
 
-        if (!$resource = @stream_socket_client($address, $errno, $errstr, $timeout, $flags, $context)) {
+        [$resource] = $this->callWithoutErrorHandler(static function () use ($address, &$errno, &$errstr, $timeout, $flags, $context) {
+            return stream_socket_client($address, $errno, $errstr, $timeout, $flags, $context);
+        });
+
+        if ($resource === false) {
             $this->onInitializationError($resource, $parameters, trim($errstr), $errno);
         }
 
         if (isset($parameters->read_write_timeout)) {
             $rwtimeout = (float) $parameters->read_write_timeout;
             $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
-            $timeoutSeconds = floor($rwtimeout);
-            $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
+            $timeoutSeconds = (int) floor($rwtimeout);
+            $timeoutUSeconds = (int) round(($rwtimeout - $timeoutSeconds) * 1000000);
             stream_set_timeout($resource, $timeoutSeconds, $timeoutUSeconds);
         }
 
         return $resource;
+    }
+
+    /**
+     * Calls the function without passing its errors to the host's error
+     * handler, which may throw on warnings even when silenced with @.
+     *
+     * @param callable $callback Function to call.
+     *
+     * @return array The function's result and its first warning as plain text, or null.
+     */
+    private function callWithoutErrorHandler(callable $callback): array
+    {
+        $warning = null;
+        set_error_handler(static function (int $level, string $message) use (&$warning): bool {
+            if ($level === E_WARNING && $warning === null) {
+                $warning = $message;
+            }
+
+            return true;
+        });
+
+        try {
+            $result = $callback();
+        } finally {
+            restore_error_handler();
+        }
+
+        if ($warning !== null) {
+            // With html_errors, PHP escapes the message and may link the function's docs.
+            if (filter_var(ini_get('html_errors'), FILTER_VALIDATE_BOOLEAN)) {
+                $warning = html_entity_decode(strip_tags($warning), ENT_QUOTES);
+            }
+
+            $warning = preg_replace(['/^\w+\(\)(?: \[[^]]*\])?: /', '/\s+/'], ['', ' '], trim($warning));
+        }
+
+        return [$result, $warning];
     }
 
     /**

@@ -134,7 +134,7 @@ class CLIENT extends RedisCommand
             $client = [];
 
             foreach (explode(' ', $clientData) as $kv) {
-                @[$k, $v] = explode('=', $kv);
+                [$k, $v] = explode('=', $kv, 2) + [null, null];
                 $client[$k] = $v;
             }
 

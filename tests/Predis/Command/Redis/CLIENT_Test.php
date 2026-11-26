@@ -146,6 +146,22 @@ BUFFER;
     }
 
     /**
+     * @group disconnected
+     */
+    public function testParseResponseOfClientListKeepsEqualsSignsAndDefaultsMissingValues(): void
+    {
+        $command = $this->getCommand();
+        $command->setArguments(['list']);
+
+        $raw = "id=3 name=a=b lib-name= flags\n";
+        $parsed = [
+            ['id' => '3', 'name' => 'a=b', 'lib-name' => '', 'flags' => null],
+        ];
+
+        $this->assertSame($parsed, $command->parseResponse($raw));
+    }
+
+    /**
      * @group connected
      * @requiresRedisVersion >= 2.4.0
      */
