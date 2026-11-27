@@ -16,6 +16,7 @@ use Predis\Command\CommandInterface;
 use Predis\Command\RawCommand;
 use Predis\CommunicationException;
 use Predis\Connection\Resource\Exception\StreamInitException;
+use Predis\Observability\ObservabilityInstance;
 use Predis\Protocol\Parser\ParserStrategyResolver;
 use Predis\Protocol\Parser\Strategy\ParserStrategyInterface;
 use Predis\Protocol\ProtocolException;
@@ -39,6 +40,13 @@ abstract class AbstractConnection implements NodeConnectionInterface
 
     protected $resource;
     private $cachedId;
+
+    /**
+     * Start time of the connection being established, when the metrics collector measures it.
+     *
+     * @var int|float|null
+     */
+    private $connectStart;
 
     protected $parameters;
 
@@ -106,12 +114,28 @@ abstract class AbstractConnection implements NodeConnectionInterface
     public function connect()
     {
         if (!$this->isConnected()) {
+            $collector = ObservabilityInstance::getInstance()->getCollector();
+            $this->connectStart = $collector ? $collector->startConnectionTimer() : null;
+
             $this->resource = $this->createResource();
 
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Reports to the metrics collector a connection that completed its handshake.
+     * Must be called by subclasses at the end of connect().
+     */
+    protected function onConnected(): void
+    {
+        if ($this->connectStart !== null && $collector = ObservabilityInstance::getInstance()->getCollector()) {
+            $collector->recordConnectionCreateTime($this, $this->connectStart);
+        }
+
+        $this->connectStart = null;
     }
 
     /**

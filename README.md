@@ -751,6 +751,11 @@ each command as seen by the application, retries and cluster redirects included:
   which does not expose it, they repeat the connection parameters). With aggregate connections they are reported only when the node is known: always with
   replication, and for commands that succeeded or failed with a connection error with cluster.
 
+The `connection-basic` group reports `db.client.connection.create_time`, a histogram of the time it took
+to open a connection to a Redis node, including the commands sent when connecting (`HELLO`, `AUTH`,
+`SELECT`, `CLIENT SETINFO`). It carries `server.address`, `server.port` and `db.namespace`, which
+identify the node.
+
 The `resiliency` group reports `redis.client.errors`, a counter of the errors met by the client:
 
 - Errors returned to the application have `redis.client.errors.internal` set to `false`. They are counted

@@ -117,6 +117,7 @@ class StreamConnection extends AbstractConnection
         }
 
         $this->replaySessionCommands();
+        $this->onConnected();
     }
 
     /**
