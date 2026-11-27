@@ -54,7 +54,7 @@ $provider = MeterProvider::builder()
 ObservabilityInstance::getInstance()->init(new OTelConfig(
     new MetricsConfig([
         'enabled' => true,
-        'enabled_metric_groups' => [MetricGroup::COMMAND, MetricGroup::RESILIENCY],
+        'enabled_metric_groups' => [MetricGroup::COMMAND, MetricGroup::RESILIENCY, MetricGroup::CONNECTION_BASIC],
     ]),
     $provider
 ));

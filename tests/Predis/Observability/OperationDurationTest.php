@@ -78,7 +78,7 @@ class OperationDurationTest extends PredisTestCase
         $meter = $this->createMock(MeterInterface::class);
         $meter->expects($this->never())->method('createHistogram');
 
-        $collector = new MetricsCollector($meter, new MetricsConfig());
+        $collector = new MetricsCollector($meter, new MetricsConfig(['enabled_metric_groups' => [MetricGroup::RESILIENCY]]));
 
         $this->assertFalse($collector->tracksOperation('GET'));
     }

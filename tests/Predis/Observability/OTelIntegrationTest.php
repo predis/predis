@@ -157,6 +157,30 @@ class OTelIntegrationTest extends PredisTestCase
     }
 
     /**
+     * @group connected
+     */
+    public function testExportsConnectionMetricsThroughCollector(): void
+    {
+        $this->initObservability([MetricGroup::CONNECTION_BASIC]);
+
+        $client = $this->createClient();
+        $client->ping();
+
+        $server = [
+            'server_address' => constant('REDIS_SERVER_HOST'),
+            'server_port' => (string) constant('REDIS_SERVER_PORT'),
+            'db_namespace' => (string) constant('REDIS_SERVER_DBNUM'),
+        ];
+
+        $this->assertTrue(ObservabilityInstance::getInstance()->forceFlush());
+        $series = $this->scrape('db_client_connection_create_time_seconds_count', 1);
+
+        $this->assertSeries($series, 'db_client_connection_create_time_seconds_count', $server);
+        // The bucket boundaries advised by Predis reach the backend.
+        $this->assertSeries($series, 'db_client_connection_create_time_seconds_bucket', $server + ['le' => '0.0001']);
+    }
+
+    /**
      * Enables the given metric groups with a provider exporting to the collector.
      */
     private function initObservability(array $groups): void

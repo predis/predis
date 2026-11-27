@@ -75,6 +75,11 @@ class MetricsCollector
     protected $errors;
 
     /**
+     * @var HistogramInterface|null
+     */
+    protected $connectionCreateTime;
+
+    /**
      * @var int
      */
     protected $retryAttempts = 0;
@@ -94,6 +99,15 @@ class MetricsCollector
                 's',
                 'Duration of operations as seen by the application, retries included.',
                 ['ExplicitBucketBoundaries' => $config->getBucketsOperationDuration()]
+            );
+        }
+
+        if ($config->isGroupEnabled(MetricGroup::CONNECTION_BASIC)) {
+            $this->connectionCreateTime = $meter->createHistogram(
+                'db.client.connection.create_time',
+                's',
+                'Time it took to create a new connection, handshake included.',
+                ['ExplicitBucketBoundaries' => $config->getBucketsConnectionCreateTime()]
             );
         }
 
@@ -134,6 +148,37 @@ class MetricsCollector
     protected function tracksErrors(): bool
     {
         return $this->errors !== null && $this->errors->isEnabled();
+    }
+
+    /**
+     * Returns the time to pass to recordConnectionCreateTime() once the connection is established,
+     * or NULL when the creation of connections is not measured.
+     *
+     * @return int|float|null
+     */
+    public function startConnectionTimer()
+    {
+        return $this->connectionCreateTime !== null && $this->connectionCreateTime->isEnabled() ? hrtime(true) : null;
+    }
+
+    /**
+     * Records the time it took to establish a connection.
+     *
+     * @param NodeConnectionInterface $connection
+     * @param int|float               $start      Value returned by startConnectionTimer().
+     */
+    public function recordConnectionCreateTime(NodeConnectionInterface $connection, $start): void
+    {
+        $duration = (hrtime(true) - $start) / 1e9;
+
+        try {
+            $attributes = $this->nodeAttributes($connection);
+            unset($attributes['network.peer.address'], $attributes['network.peer.port']);
+
+            $this->connectionCreateTime->record($duration, $this->buildAttributes($attributes));
+        } catch (Throwable $exception) {
+            // Telemetry must never break the operation it observes.
+        }
     }
 
     /**

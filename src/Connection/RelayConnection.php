@@ -434,6 +434,8 @@ class RelayConnection extends AbstractConnection
                 unset($this->sessionCommands[$key]);
             }
         }
+
+        $this->onConnected();
     }
 
     /**
